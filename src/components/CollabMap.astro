@@ -73,6 +73,13 @@ const label = (pin) =>
     <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
   </figcaption>
 
+  <p class="cmap-caveat">
+    <strong>Incomplete by construction.</strong> Every post here comes from what
+    that person chose to publish on ORCID, so someone who keeps no record has no
+    pins, and someone who kept one for a while has gaps. Undated posts are left
+    off entirely rather than guessed at. Read it as a floor, not a census.
+  </p>
+
   <ol class="cmap-list">
     {people.map((p) => (
       <li data-c={people.indexOf(p)} style={`--h:${p.hue}`} tabindex="0">

@@ -76,10 +76,10 @@ describe('the collaborator map', () => {
     }
   });
 
-  it('orders each trajectory in time', () => {
+  it('orders each trajectory newest first', () => {
     for (const p of people) {
       const starts = p.pins.map((pin) => pin.start);
-      expect([...starts].sort()).toEqual(starts);
+      expect([...starts].sort().reverse()).toEqual(starts);
     }
   });
 

@@ -3,6 +3,45 @@
   "source": "https://orcid.org",
   "people": [
     {
+      "orcid": "0000-0002-7626-506X",
+      "name": "Aarya A. Patil",
+      "affiliations": [
+        {
+          "organization": "Max Planck Institute for Astronomy",
+          "city": "Heidelberg",
+          "region": null,
+          "country": "DE",
+          "role": "LSST Discovery Alliance Catalyst Fellow",
+          "start": "2023",
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-6431-9633",
+      "name": "Adam Ginsburg",
+      "affiliations": [
+        {
+          "organization": "University of Florida",
+          "city": "Gainesville",
+          "region": "FL",
+          "country": "US",
+          "role": "Associate Professor",
+          "start": "2023-08",
+          "end": null
+        },
+        {
+          "organization": "University of Florida",
+          "city": "Gainesville",
+          "region": "FL",
+          "country": "US",
+          "role": "Assistant Professor",
+          "start": "2019-08",
+          "end": "2023-08"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0003-0872-7098",
       "name": "Adrian M. Price-Whelan",
       "affiliations": [
@@ -32,6 +71,21 @@
           "role": "Lyman J. Spitzer, Jr. fellow",
           "start": "2016-07",
           "end": "2019-07"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-6874-2594",
+      "name": "Albert Y. Shih",
+      "affiliations": [
+        {
+          "organization": "NASA",
+          "city": "Washington",
+          "region": "DC",
+          "country": "US",
+          "role": null,
+          "start": "2010",
+          "end": null
         }
       ]
     },
@@ -107,6 +161,96 @@
       ]
     },
     {
+      "orcid": "0000-0003-2528-3409",
+      "name": "Brett M. Morris",
+      "affiliations": [
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Senior Astronomical Data Scientist",
+          "start": "2026-04",
+          "end": null
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Senior Software Engineer",
+          "start": "2022-09",
+          "end": "2026-03"
+        },
+        {
+          "organization": "Universität Bern",
+          "city": "Bern",
+          "region": "BE",
+          "country": "CH",
+          "role": "Postdoctoral research fellow",
+          "start": "2019-07",
+          "end": "2022-08"
+        },
+        {
+          "organization": "NASA",
+          "city": "Washington",
+          "region": "DC",
+          "country": "US",
+          "role": "Research Associate",
+          "start": "2013-01",
+          "end": "2013-08"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-3713-6337",
+      "name": "Brigitta M. Sipőcz",
+      "affiliations": [
+        {
+          "organization": "California Institute of Technology",
+          "city": "Pasadena",
+          "region": "CA",
+          "country": "US",
+          "role": null,
+          "start": "2021",
+          "end": null
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "DiRAC Fellow",
+          "start": "2018",
+          "end": "2021"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-9314-960X",
+      "name": "C. E. Brasseur",
+      "affiliations": [
+        {
+          "organization": "Lowell Observatory",
+          "city": "Flagstaff",
+          "region": "Arizona",
+          "country": "US",
+          "role": "NST Postdoctoral Fellow",
+          "start": "2025-10",
+          "end": null
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Software Engineer",
+          "start": "2016-05",
+          "end": "2021-08"
+        }
+      ]
+    },
+    {
       "orcid": "0009-0005-9329-8196",
       "name": "Charlotte Myers",
       "affiliations": [
@@ -137,6 +281,21 @@
       ]
     },
     {
+      "orcid": "0000-0003-4401-0430",
+      "name": "David L. Shupe",
+      "affiliations": [
+        {
+          "organization": "Caltech",
+          "city": "Pasadena",
+          "region": "California",
+          "country": "US",
+          "role": "Senior Staff Scientist",
+          "start": "1995-05",
+          "end": null
+        }
+      ]
+    },
+    {
       "orcid": "0009-0004-1061-7802",
       "name": "David Martinez-Delgado",
       "affiliations": [
@@ -160,6 +319,30 @@
       "orcid": "0000-0002-2814-3578",
       "name": "E. Sola",
       "affiliations": []
+    },
+    {
+      "orcid": "0000-0001-8736-1762",
+      "name": "Eero Vaher",
+      "affiliations": [
+        {
+          "organization": "Lund Observatory",
+          "city": "Lund",
+          "region": null,
+          "country": "SE",
+          "role": "PhD student",
+          "start": "2019-09",
+          "end": null
+        },
+        {
+          "organization": "European Space Agency",
+          "city": "Noordwijk",
+          "region": null,
+          "country": "NL",
+          "role": "Young Graduate Trainee",
+          "start": "2018",
+          "end": "2019"
+        }
+      ]
     },
     {
       "orcid": "0000-0001-5996-4072",
@@ -328,9 +511,9 @@
           "end": "1996"
         },
         {
-          "organization": "Caltech/JPL",
+          "organization": "Caltech",
           "city": "Pasadena",
-          "region": "CA",
+          "region": "California",
           "country": "US",
           "role": "Staff Sc",
           "start": "1991",
@@ -407,6 +590,48 @@
       ]
     },
     {
+      "orcid": "0000-0001-9445-1846",
+      "name": "John D. Swinbank",
+      "affiliations": [
+        {
+          "organization": "Netherlands Institute for Radio Astronomy",
+          "city": "Dwingeloo",
+          "region": "Drenthe",
+          "country": "NL",
+          "role": "Senior Technical / Research Programme Manager",
+          "start": "2020-10",
+          "end": null
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "Research Professor",
+          "start": "2017-10",
+          "end": "2020-09"
+        },
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": "Professional Specialist",
+          "start": "2014-10",
+          "end": "2017-09"
+        },
+        {
+          "organization": "University of Amsterdam",
+          "city": "Amsterdam",
+          "region": "North Holland",
+          "country": "NL",
+          "role": null,
+          "start": "2006-10",
+          "end": "2014-09"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0003-1808-1753",
       "name": "Juan Miro-Carretero",
       "affiliations": [
@@ -446,6 +671,30 @@
       ]
     },
     {
+      "orcid": "0000-0002-1821-0650",
+      "name": "Kelle L. Cruz",
+      "affiliations": [
+        {
+          "organization": "Hunter College",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Associate Professor",
+          "start": "2017-09",
+          "end": null
+        },
+        {
+          "organization": "Hunter College",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Assistant Professor",
+          "start": "2010-01",
+          "end": "2017-08"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0001-6584-6144",
       "name": "Kiyan Tavangar",
       "affiliations": [
@@ -466,6 +715,63 @@
           "role": "Guest Researcher",
           "start": "2021-09",
           "end": "2022-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-7908-9284",
+      "name": "Larry Bradley",
+      "affiliations": [
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": null,
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5466-3817",
+      "name": "Lia Corrales",
+      "affiliations": [
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Assistant Professor",
+          "start": "2020-09",
+          "end": null
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "LSA Collegiate Fellow",
+          "start": "2018-09",
+          "end": "2020-08"
+        },
+        {
+          "organization": "University of Wisconsin Madison",
+          "city": "Madison",
+          "region": "WI",
+          "country": "US",
+          "role": "Einstein Fellow",
+          "start": "2016-09",
+          "end": "2018-08"
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Postdoctoral Associate",
+          "start": "2014-07",
+          "end": "2016-08"
         }
       ]
     },
@@ -514,6 +820,21 @@
           "role": "Research Associate (postdoc)",
           "start": "2021-02",
           "end": "2023-08"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5830-8505",
+      "name": "Marten H. van Kerkwijk",
+      "affiliations": [
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "Ontario",
+          "country": "CA",
+          "role": "Professor",
+          "start": "2003-01",
+          "end": null
         }
       ]
     },
@@ -631,7 +952,7 @@
         {
           "organization": "Space Telescope Science Institute",
           "city": "Baltimore",
-          "region": "MD",
+          "region": "Maryland",
           "country": "US",
           "role": null,
           "start": "2007-10",
@@ -742,6 +1063,30 @@
       ]
     },
     {
+      "orcid": "0000-0002-3657-4191",
+      "name": "Simon Conseil",
+      "affiliations": [
+        {
+          "organization": "Université Lyon 1",
+          "city": "Villeurbanne",
+          "region": "Rhône-Alpes",
+          "country": "FR",
+          "role": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Centre de Recherche Astrophysique de Lyon",
+          "city": "Lyon",
+          "region": "Rhône-Alpes",
+          "country": "FR",
+          "role": null,
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
       "orcid": "0009-0003-4675-3622",
       "name": "Sirui Wu",
       "affiliations": [
@@ -753,6 +1098,57 @@
           "role": null,
           "start": null,
           "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-9427-5448",
+      "name": "Timothy E. Pickering",
+      "affiliations": [
+        {
+          "organization": "University of Arizona",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant Staff Scientist",
+          "start": "2017-01",
+          "end": null
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Systems Software Engineer",
+          "start": "2013-08",
+          "end": "2016-12"
+        },
+        {
+          "organization": "Southern African Large Telescope",
+          "city": "Observatory",
+          "region": "Cape Town",
+          "country": "ZA",
+          "role": "SALT Astronomer",
+          "start": "2009-10",
+          "end": "2013-07"
+        },
+        {
+          "organization": "MMT Observatory",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant/Associate Staff Scientist",
+          "start": "2001-08",
+          "end": "2009-09"
+        },
+        {
+          "organization": "University of Arizona",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant Staff Scientist",
+          "start": "2000-09",
+          "end": "2001-08"
         }
       ]
     }

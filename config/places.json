@@ -12,6 +12,11 @@
       "lon": -118.1253,
       "matched": "California Institute of Technology, Moore Walk, Pasadena Council District 7, Pasadena, Los Angeles County, California, 91125, United States"
     },
+    "Caltech": {
+      "lat": 34.137,
+      "lon": -118.1253,
+      "matched": "California Institute of Technology, Broad Walk, Pasadena Council District 7, Pasadena, Los Angeles County, California, 91106, United States"
+    },
     "Caltech/JPL": {
       "lat": 34.2015,
       "lon": -118.173,
@@ -52,6 +57,11 @@
       "lon": -73.9903,
       "matched": "hand-placed: part of the Flatiron Institute, 162 Fifth Ave, New York"
     },
+    "Centre de Recherche Astrophysique de Lyon": {
+      "lat": 45.6936,
+      "lon": 4.7861,
+      "matched": "hand-placed: CRAL, Observatoire de Lyon, Saint-Genis-Laval"
+    },
     "Centro de Estudios de Física del Cosmos de Aragón": {
       "lat": 40.0426,
       "lon": -1.0161,
@@ -66,6 +76,11 @@
       "lat": 48.2596,
       "lon": 11.6713,
       "matched": "Europäische Südsternwarte, 2, Karl-Schwarzschild-Straße, Hochschul- und Forschungszentrum, Garching bei München, Landkreis München, Bayern, 85748, Deutschland"
+    },
+    "European Space Agency": {
+      "lat": 52.2159,
+      "lon": 4.4159,
+      "matched": "ESA ESTEC, Noordwijk (geocoded) — ESA has many sites; ESTEC is the astronomy one"
     },
     "Flatiron Institute": {
       "lat": 40.7397,
@@ -82,6 +97,11 @@
       "lon": -71.1219,
       "matched": "Harvard Graduate School of Education, 13, Appian Way, Old Cambridge, West Cambridge, Cambridge, Middlesex County, Massachusetts, 02138, United States"
     },
+    "Hunter College": {
+      "lat": 40.7683,
+      "lon": -73.9644,
+      "matched": "Hunter College, 695, Park Avenue, Carnegie Hill, Manhattan Community Board 8, Manhattan, New York County, New York, 10065, United States"
+    },
     "Institute for Advanced Study": {
       "lat": 40.3323,
       "lon": -74.6658,
@@ -97,10 +117,30 @@
       "lon": 13.103,
       "matched": "Leibniz-Institut für Astrophysik Potsdam, Allee nach Glienicke, Babelsberg Nord, Potsdam, Brandenburg, 14482, Deutschland"
     },
+    "Lowell Observatory": {
+      "lat": 35.2017,
+      "lon": -111.6653,
+      "matched": "Lowell Observatory, 1400, West Mars Hill Road, Flagstaff Townsite, Flagstaff, Coconino County, Arizona, 86001, United States"
+    },
+    "Lund Observatory": {
+      "lat": 55.7047,
+      "lon": 13.191,
+      "matched": "hand-placed: Lund Observatory, Lund University"
+    },
+    "MMT Observatory": {
+      "lat": 31.6883,
+      "lon": -110.885,
+      "matched": "hand-placed: MMT, Mount Hopkins, Arizona (published site coordinates)"
+    },
     "Massachusetts Institute of Technology": {
       "lat": 42.3583,
       "lon": -71.0966,
       "matched": "Massachusetts Institute of Technology, Ed Walsh's Way, East Cambridge, Cambridge, Middlesex County, Massachusetts, 02142, United States"
+    },
+    "Max Planck Institute for Astronomy": {
+      "lat": 49.3966,
+      "lon": 8.7234,
+      "matched": "Max-Planck-Institut für Astronomie, Stockbrunnenweg, Königstuhl, Altstadt, Heidelberg, Baden-Württemberg, 69117, Deutschland"
     },
     "NASA": {
       "lat": 38.8829,
@@ -111,6 +151,11 @@
       "lat": 32.0566,
       "lon": 118.7741,
       "matched": "南京大学(鼓楼校区), 上海路, 湖南路街道, 鼓楼区, 南京市, 江苏省, 210093, 中国"
+    },
+    "Netherlands Institute for Radio Astronomy": {
+      "lat": 52.8134,
+      "lon": 6.3961,
+      "matched": "ASTRON, Dwingeloo (geocoded)"
     },
     "New York University": {
       "lat": 40.7292,
@@ -142,6 +187,11 @@
       "lon": -73.9909,
       "matched": "hand-placed: 160 Fifth Ave, New York — Nominatim has no entry"
     },
+    "Southern African Large Telescope": {
+      "lat": -32.376,
+      "lon": 20.8107,
+      "matched": "hand-placed: SALT, Sutherland, South Africa (published site coordinates)"
+    },
     "Space Telescope Science Institute": {
       "lat": 39.3366,
       "lon": -76.6303,
@@ -167,6 +217,16 @@
       "lon": -0.133,
       "matched": "University College London, Hallam Street, East Marylebone, Marylebone, City of Westminster, Greater London, England, W1W 6JJ, United Kingdom"
     },
+    "University of Amsterdam": {
+      "lat": 52.3681,
+      "lon": 4.8898,
+      "matched": "Universiteit van Amsterdam, Heiligewegsluis, Centrum, Amsterdam, Noord-Holland, Nederland, 1017 AW, Nederland"
+    },
+    "University of Arizona": {
+      "lat": 32.2357,
+      "lon": -110.9517,
+      "matched": "University of Arizona, North Queen Avenue, Tucson, Pima County, Arizona, 85721, United States"
+    },
     "University of Cambridge": {
       "lat": 52.1955,
       "lon": 0.1302,
@@ -176,6 +236,11 @@
       "lat": 55.6802,
       "lon": 12.5723,
       "matched": "Københavns Universitet, Krystalgade, Nørrevold, Indre By, København, Københavns Kommune, Region Hovedstaden, 1171, Danmark"
+    },
+    "University of Florida": {
+      "lat": 29.6412,
+      "lon": -82.3562,
+      "matched": "University of Florida, Old Archer Road Trail, Gainesville, Alachua County, Florida, 32611, United States"
     },
     "University of Manchester": {
       "lat": 53.466,
@@ -202,15 +267,35 @@
       "lon": -79.3968,
       "matched": "University of Toronto St. George, McCaul Street, University, Downtown, Toronto, Golden Horseshoe, Ontario, M5T 1P7, Canada"
     },
+    "University of Washington": {
+      "lat": 47.6554,
+      "lon": -122.3002,
+      "matched": "University of Washington, 1410, Northeast Campus Parkway, West Campus, University District, Seattle, King County, Washington, 98195, United States"
+    },
+    "University of Wisconsin Madison": {
+      "lat": 43.0803,
+      "lon": -89.431,
+      "matched": "University of Wisconsin-Madison, Speedway Road, Regent, Madison, Dane County, Wisconsin, 53726, United States"
+    },
     "Università di Bologna": {
       "lat": 44.4983,
       "lon": 11.3545,
       "matched": "Università di Bologna, Via dei Bibiena, Ghetto ebraico, Irnerio, Santo Stefano, Bologna, Emilia-Romagna, 40126, Italia"
     },
+    "Universität Bern": {
+      "lat": 46.951,
+      "lon": 7.4387,
+      "matched": "Universität Bern, Falkenplatz, Länggasse, Stadtteil II, Bern, Verwaltungskreis Bern-Mittelland, Verwaltungsregion Bern-Mittelland, Bern/Berne, 3012, Schweiz/Suisse/Svizzera/Svizra"
+    },
     "Universität Innsbruck": {
       "lat": 47.2633,
       "lon": 11.3844,
       "matched": "Universität Innsbruck - Campus Innrain, Christoph-Probst-Platz, Innenstadt, Innsbruck, Tirol, 6020, Österreich"
+    },
+    "Université Lyon 1": {
+      "lat": 45.7809,
+      "lon": 4.8663,
+      "matched": "Université Lyon 1, Avenue Claude Bernard, Tonkin, Villeurbanne, Lyon, Métropole de Lyon, Rhône, Auvergne-Rhône-Alpes, France métropolitaine, 69100, France"
     },
     "Valencian International University": {
       "lat": 39.4715,

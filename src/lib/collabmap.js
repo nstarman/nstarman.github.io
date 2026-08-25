@@ -143,7 +143,10 @@ export function collaboratorMap() {
   for (const person of collaborators.people) {
     const posts = person.affiliations
       .filter((a) => a.start && a.organization && places.places[a.organization])
-      .sort((a, b) => a.start.localeCompare(b.start));
+      // Newest first: what someone is doing now is the more useful fact, and it
+      // is the order every other dated list on this site uses. The trajectory
+      // is a line through the same points either way.
+      .sort((a, b) => b.start.localeCompare(a.start));
     if (posts.length === 0) continue;
 
     const mine = papers.get(person.orcid) ?? [];
