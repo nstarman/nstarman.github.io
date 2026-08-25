@@ -1,7 +1,7 @@
 ---
 // One publication. `brief` is the landing-page variant: year and a single
 // `paper` button stacked in the right-hand column, everything else dropped.
-import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
+import { authors, venueLine, year, links, authorPosition, venueUrl } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
 
@@ -9,6 +9,7 @@ const { item, brief = false, maxAuthors = 8, abstract = false } = Astro.props;
 
 const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
 const venue = venueLine(item);
+const venueHref = venueUrl(item);
 const all = links(item);
 const paper = all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint');
 const trail = brief ? [] : all;
@@ -34,12 +35,16 @@ const pos = authorPosition(item);
             : a.name}</>
       ))}
       {etal && <>, et al.</>}
-      {brief && venue && <> · <span class="venue">{venue}</span></>}
+      {brief && venue && <> · {venueHref
+        ? <a class="venue venuelink" href={venueHref}>{venue}</a>
+        : <span class="venue">{venue}</span>}</>}
     </p>
 
     {!brief && (venue || item.arxiv) && (
       <p class="venueline">
-        {venue && <span class="venue">{venue}</span>}
+        {venue && (venueHref
+          ? <a class="venue venuelink" href={venueHref}>{venue}</a>
+          : <span class="venue">{venue}</span>)}
         {venue && <span class="dot">·</span>}
         {!venue && item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}
         <span class="yr">{year(item)}</span>

@@ -88,6 +88,26 @@ export function authorPosition(item) {
   return i === -1 ? null : i + 1;
 }
 
+/**
+ * The article's page at the journal, or null.
+ *
+ * Only for published work: a submitted paper has no article page, and pointing
+ * its venue at an arXiv DOI would claim otherwise.
+ *
+ * The record's own `paper` link wins over the DOI because it is the curated
+ * one — often the publisher's own reader rather than the doi.org redirect. The
+ * ADS link that `links()` synthesises from a bibcode is deliberately not used:
+ * ADS is a database record about the paper, not the journal's page for it.
+ */
+export function venueUrl(item) {
+  if (item.status !== 'published') return null;
+  const curated = (item.links ?? []).find((l) => l.rel === 'paper' && l.url);
+  if (curated) return curated.url;
+  // 10.48550 is arXiv's own prefix — a preprint DOI, not a journal article.
+  if (item.doi && !item.doi.startsWith('10.48550/')) return `https://doi.org/${item.doi}`;
+  return null;
+}
+
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */
 export const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 
