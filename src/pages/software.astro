@@ -13,15 +13,21 @@ const withPaper = all.filter(softwarePaper).length;
         {/* Direct children of .wrap and ahead of the cards, so the filter is a
             plain sibling selector on :checked — no JavaScript. Clipped rather
             than display:none so they stay focusable and arrow-navigable. */}
-        <input type="radio" name="sw" id="sw-all" class="posradio" checked />
-        <input type="radio" name="sw" id="sw-yes" class="posradio" />
+        <input type="radio" name="sw" id="sw-all" class="posradio" checked
+               aria-label={`All ${all.length} packages`} />
+        {/* The label is a glyph, so the radio carries its own name — a label
+            holding nothing but an aria-hidden icon would leave it unnamed. */}
+        <input type="radio" name="sw" id="sw-yes" class="posradio"
+               aria-label={`Only the ${withPaper} packages with a paper`} />
 
         <div class="h2row">
           <h2>Software</h2>
           <span class="more">
             <span class="pubfilter" data-stops="2">
               <label for="sw-all" title={`All ${all.length} packages`}>All</label>
-              <label for="sw-yes" title={`${withPaper} packages with a paper`}>Paper</label>
+              <label for="sw-yes" title={`${withPaper} packages with a paper`}>
+                <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
+              </label>
             </span>
           </span>
         </div>

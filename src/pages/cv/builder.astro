@@ -157,6 +157,20 @@ const site = buildInfo();
           : want === 'all' ? `All ${on} publications selected.`
           : `${on} publications with author position ${want} or better.`);
       }
+      if (t.dataset.papersel !== undefined) {
+        // Scoped to its own section, exactly as the position cut is.
+        const group = t.closest('.pickgroup');
+        const all = t.dataset.papersel === 'all';
+        let on = 0;
+        for (const b of group.querySelectorAll('.itembox')) {
+          const keep = all || b.dataset.paper !== undefined;
+          b.checked = keep;
+          if (keep) on += 1;
+        }
+        recount();
+        status(all ? `All ${on} packages selected.`
+          : `${on} packages with a paper.`);
+      }
       if (t.dataset.preset) {
         const ids = new Set(MEMBERSHIP[t.dataset.preset] ?? []);
         boxes().forEach((b) => (b.checked = ids.has(b.value)));
