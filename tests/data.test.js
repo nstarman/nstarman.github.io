@@ -7,6 +7,7 @@ import {
   byType,
   resolve,
   authorPosition,
+  venueUrl,
   displayName,
   authors,
   venueLine,
@@ -200,5 +201,43 @@ describe('authorPosition', () => {
   it('is null when the owner is not an author', () => {
     expect(authorPosition({ authors: [{ family: 'Someone' }] })).toBeNull();
     expect(authorPosition({})).toBeNull();
+  });
+});
+
+describe('venueUrl', () => {
+  it('points a published paper at its article', () => {
+    // The curated `paper` link wins: it is the publisher's own reader.
+    expect(venueUrl(resolve('stream-members-only')))
+      .toBe('https://iopscience.iop.org/article/10.3847/1538-4357/ad94f2');
+  });
+
+  it('falls back to the DOI when there is no curated link', () => {
+    expect(venueUrl(resolve('astropy-v5-paper'))).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
+  });
+
+  it('gives a submitted paper no article link, because there is no article', () => {
+    expect(venueUrl(resolve('pinns-mnras'))).toBeNull();
+    expect(venueUrl(resolve('potamides-apj'))).toBeNull();
+  });
+
+  it('never points a venue at an arXiv DOI', () => {
+    // euclid-eggs-pilot carries 10.48550/arXiv.… — a preprint DOI. Linking the
+    // journal name to it would assert a publication that has not happened.
+    const euclid = resolve('euclid-eggs-pilot');
+    expect(euclid.doi).toMatch(/^10\.48550\//);
+    expect(venueUrl(euclid)).toBeNull();
+  });
+
+  it('does not send a venue to ADS, which is a record about the paper', () => {
+    for (const p of byType('publication')) {
+      expect(venueUrl(p) ?? '').not.toContain('adsabs');
+    }
+  });
+
+  it('links every published paper that names a venue', () => {
+    const missing = byType('publication')
+      .filter((p) => p.status === 'published' && (p.venue?.journal || p.venue?.booktitle))
+      .filter((p) => !venueUrl(p));
+    expect(missing.map((p) => p.id)).toEqual([]);
   });
 });

@@ -3,7 +3,8 @@
 // never drift.
 import CvHeader from './CvHeader.astro';
 import { presetNames, preset, resolve, sectionIndex } from '../lib/presets.js';
-import { dateLabel, authors, venueLine, links, REL_ICON, relKey } from '../lib/data.js';
+import { dateLabel, authors, venueLine,
+  venueUrl, links, REL_ICON, relKey } from '../lib/data.js';
 import { spans, detailLines } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
 
@@ -172,7 +173,9 @@ const money = (a) => {
                       : a.name}</>
                 ))}{authors(item, 4).etal && <>, et al</>}
                 {(authors(item, 4).etal || venueLine(item)) && '.'}
-                {venueLine(item) && <> <span class="venue">{venueLine(item)}</span></>}
+                {venueLine(item) && <> {venueUrl(item)
+                  ? <a class="venue venuelink" href={venueUrl(item)}>{venueLine(item)}</a>
+                  : <span class="venue">{venueLine(item)}</span>}</>}
               </>
             )}
             {/* Grants show their figure; awards keep theirs in the record only. */}
