@@ -20,12 +20,24 @@ if (!schemaPath || globs.length === 0) {
   process.exit(2);
 }
 
-// Only the one shape the callers use: a directory and a filename pattern.
+// Only the one shape the callers use: a directory and a single "*" in the
+// filename, as in data/*.json.
 function expand(glob) {
   const dir = path.dirname(glob);
-  const rx = new RegExp(`^${path.basename(glob).replace(/[.]/g, '\\.').replace(/\*/g, '.*')}$`);
+  const base = path.basename(glob);
+  const star = base.indexOf('*');
+  if (star !== base.lastIndexOf('*')) {
+    throw new Error(`Only one "*" is supported: ${glob}`);
+  }
+  const head = star === -1 ? base : base.slice(0, star);
+  const tail = star === -1 ? '' : base.slice(star + 1);
+  const matches = (f) =>
+    star === -1
+      ? f === base
+      : f.length >= head.length + tail.length && f.startsWith(head) && f.endsWith(tail);
+
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter((f) => rx.test(f)).sort().map((f) => path.join(dir, f));
+  return fs.readdirSync(dir).filter(matches).sort().map((f) => path.join(dir, f));
 }
 
 const ajv = new Ajv({ allErrors: true, strict: false });
