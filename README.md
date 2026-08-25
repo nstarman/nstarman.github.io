@@ -39,16 +39,22 @@ npm run build:all  # the site, then the four CV PDFs (needs typst)
 ## Deployment
 
 GitHub Pages via Actions (`.github/workflows/deploy.yml`), not a branch deploy:
-Astro builds to `dist/`, which a branch deploy would mean committing.
+Astro builds to `dist/`, which a branch deploy would mean committing — and
+would publish the repo source instead of the built site.
 
-`public/` carries two files that exist only to survive into the artifact:
+`public/CNAME` ships the custom domain in the artifact so it survives every
+deploy.
 
-- **`CNAME`** — the custom domain, so it is reapplied on every deploy.
-- **`.nojekyll`** — Jekyll strips underscore-prefixed directories, and Astro
-  emits every asset into `_astro/`. Nothing runs Jekyll today, but the failure
-  mode if anything ever did is a site that returns 200 on every page with no
-  CSS and no build failure to notice. `scripts/test-links.mjs` fails the build
-  if the file is missing from `dist/`.
+**Jekyll never runs.** Source "GitHub Actions" serves the uploaded artifact
+verbatim, so Astro's underscore-prefixed `_astro/` is untouched — the live site
+serves it while no `.nojekyll` exists anywhere, which is the proof. A
+`.nojekyll` would also be unshippable: `upload-pages-artifact` strips every
+dotfile from the tarball.
+
+That leaves one thing holding the guarantee up, and it lives in the web UI
+where nothing in the repo can see it change. So `deploy.yml` asserts
+`build_type == workflow` against the API before it builds, and fails with the
+setting to correct rather than publishing a styleless site.
 
 ## History
 
