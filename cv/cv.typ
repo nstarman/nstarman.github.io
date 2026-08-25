@@ -136,42 +136,57 @@
   link(pr.url, [#icon(mark, size: 0.9em, fill: if service == "orcid" { orcid } else { accent }) #label])
 }).join(h(3pt))
 
-#grid(
-  columns: (hdr, auto, 1fr, hdr),
-  column-gutter: 11pt,
-  align: (left + horizon, left + horizon, right + horizon, right + horizon),
+// Who he is. Sets the height the contact column matches.
+#let namecol = {
+  set par(justify: false, leading: 0.3em)
+  text(size: 19pt)[#p.name]
+  linebreak()
+  v(2pt)
+  text(size: 11pt)[#p.titles.join(linebreak())]
+  linebreak()
+  text(size: 11pt)[#p.affiliationShort]
+}
 
-  // Circular, as on the website. `clip` with a 50% radius does the crop, and
-  // `cover` keeps the face centred instead of squashing the photo.
-  box(clip: true, radius: 50%, width: hdr, height: hdr,
-      image("assets/portrait.jpg", width: hdr, height: hdr, fit: "cover")),
-
-  {
-    set par(justify: false, leading: 0.3em)
-    text(size: 19pt)[#p.name]
-    linebreak()
-    v(2pt)
-    text(size: 11pt)[#p.titles.join(linebreak())]
-    linebreak()
-    text(size: 11pt)[#p.affiliationShort]
-  },
-
-  {
-    set par(justify: false, leading: 0.38em)
-    // Every figure in this column is transcription data — street number,
-    // postcode, ORCID iD — so the whole block stays lining.
-    set text(size: 8.9pt, number-type: "lining")
-    p.addressLines.join(linebreak())
-    linebreak()
-    link("mailto:" + p.email)[#icon("email", size: 0.9em) #p.email]
-    h(5pt)
-    link(p.websiteUrl)[#icon("globe", size: 0.9em) #p.website]
-    linebreak()
-    text(size: 8.2pt)[#profiles]
-  },
-
-  link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
+// How to reach him, as separate lines rather than one wrapped paragraph, so
+// they can be distributed rather than merely stacked. Every figure here is
+// transcription data — street number, postcode, ORCID iD — so it stays lining.
+#let contactlines = p.addressLines.map(l => text(size: 8.9pt, l)) + (
+  text(size: 8.9pt)[
+    #link("mailto:" + p.email)[#icon("email", size: 0.9em) #p.email]
+    #h(5pt)
+    #link(p.websiteUrl)[#icon("globe", size: 0.9em) #p.website]
+  ],
+  text(size: 8.2pt)[#profiles],
 )
+
+// Both columns hold four lines but at different sizes, so stacking them left
+// the contact block 8pt shorter than the name block and, being centred in the
+// same row, inset at the top and the bottom both. Measuring the name column and
+// distributing the contact lines over exactly that height makes the two agree
+// at both edges, and keeps agreeing if a title or an address line is added.
+#context {
+  let h = measure(namecol).height
+  grid(
+    columns: (hdr, auto, 1fr, hdr),
+    column-gutter: 11pt,
+    align: (left + horizon, left + horizon, right + horizon, right + horizon),
+
+    // Circular, as on the website. `clip` with a 50% radius does the crop, and
+    // `cover` keeps the face centred instead of squashing the photo.
+    box(clip: true, radius: 50%, width: hdr, height: hdr,
+        image("assets/portrait.jpg", width: hdr, height: hdr, fit: "cover")),
+
+    namecol,
+
+    block(height: h, {
+      set par(justify: false, leading: 0.38em)
+      set text(number-type: "lining")
+      contactlines.join(v(1fr))
+    }),
+
+    link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
+  )
+}
 
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
