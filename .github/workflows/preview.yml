@@ -95,7 +95,7 @@ jobs:
           # Already exists is the normal case and not an error.
           command: >-
             pages project create nstarkman-space
-            --production-branch=master
+            --production-branch=main
         continue-on-error: true
 
       - if: steps.guard.outputs.ready == 'true'
