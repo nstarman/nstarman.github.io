@@ -16,11 +16,11 @@ const onBuilder = current === 'builder';
     <span class="more">
       {onBuilder
         /* Jumping to a fixed-length CV mid-build would discard the selection
-           without warning, so the condensed bar offers Save in that slot
+           without warning, so the condensed bar offers Save Selection in that slot
            instead. The lengths stay in the heading row, which means leaving
            this page is something you scroll back up to do deliberately. */
         ? <span class="cvtoggle cvtoggle--main">
-            <button class="btn" type="button" id="savebar" tabindex="-1">Save</button>
+            <button class="btn" type="button" id="savebar" tabindex="-1">Save Selection</button>
           </span>
         : <span class="cvtoggle cvtoggle--main">
             {presetNames.map((n) => (
