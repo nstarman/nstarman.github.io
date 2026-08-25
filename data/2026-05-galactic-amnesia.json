@@ -20,11 +20,13 @@
     },
     {
       "family": "Folsom",
-      "given": "Dylan"
+      "given": "Dylan",
+      "orcid": "0000-0002-1544-1381"
     },
     {
       "family": "Davies",
-      "given": "Elliot Y."
+      "given": "Elliot Y.",
+      "orcid": "0000-0001-5996-4072"
     },
     {
       "family": "Starkman",
@@ -34,7 +36,8 @@
     },
     {
       "family": "Thoyas",
-      "given": "Andreas"
+      "given": "Andreas",
+      "orcid": "0009-0005-1250-1800"
     }
   ],
   "abstract": "The merger history of a galaxy leaves imprints on its present-day stellar chemodynamics, yet dynamical processes progressively erase this record. We ask: how far back in time, and from which observables, can a galaxy's assembly history still be recovered? We provide a quantitative framework to address this question, using Mutual Information normalized by Shannon entropy to measure how much present-day stellar chemodynamics retains about each past merger's stellar mass $M_\\star$ and infall time $t_{\\rm infall}$. This framework is applied to TNG50 Milky Way -- like galaxies, with comparison to FIRE-2. We find that the gravitational potential and total energy are the most informative and longest-lived tracers of merger properties, highlighting the need for accurately measuring the Milky Way's potential. The information carried by the radial velocity decays to the noise floor within $\\sim$5 Gyr, angular momentum carries low information overall with a mass-dependent decay, and chemical abundances retain a flat, low information floor. Information washout depends on three key factors: (1) radial position -- stars in the inner galaxy lose information faster due to shorter orbital times; (2) infall time -- old mergers are largely phase-mixed; and (3) merger mass -- larger mergers sink to the bottom of the potential well via dynamical friction, inducing violent relaxation that erases dynamical information. At each galactocentric radius, we map the observational horizon in the $(M_\\star,\\; t_{\\rm infall})$ plane beyond which past mergers can no longer be recovered from that observable. By recasting merger reconstruction into this quantitative, observable-by-observable map of what is and is not recoverable, our results provide a foundation for interpreting chemodynamical signatures of past mergers and for guiding surveys and modeling toward the observables that maximize merger information recovery.",

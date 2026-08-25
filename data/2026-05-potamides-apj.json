@@ -16,7 +16,8 @@
   "authors": [
     {
       "family": "Wu",
-      "given": "Sirui"
+      "given": "Sirui",
+      "orcid": "0009-0003-4675-3622"
     },
     {
       "family": "Starkman",
@@ -26,11 +27,13 @@
     },
     {
       "family": "Pearson",
-      "given": "Sarah"
+      "given": "Sarah",
+      "orcid": "0000-0003-0256-5446"
     },
     {
       "family": "Nibauer",
-      "given": "Jacob"
+      "given": "Jacob",
+      "orcid": "0000-0001-8042-5794"
     },
     {
       "family": "Miro-Carretero",

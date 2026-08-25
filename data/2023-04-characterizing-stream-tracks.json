@@ -22,7 +22,8 @@
     },
     {
       "family": "Bovy",
-      "given": "Jo"
+      "given": "Jo",
+      "orcid": "0000-0001-6855-442X"
     },
     {
       "family": "Webb",
@@ -30,11 +31,13 @@
     },
     {
       "family": "Calvetti",
-      "given": "Daniela"
+      "given": "Daniela",
+      "orcid": "0000-0001-5696-718X"
     },
     {
       "family": "Somersalo",
-      "given": "Erkki"
+      "given": "Erkki",
+      "orcid": "0000-0001-5099-3512"
     }
   ],
   "venue": {
