@@ -134,6 +134,13 @@ const background = [...byType('position'), ...byType('education')]
       };
       draw();
       addEventListener('resize', draw);
+      // The header reflows when the web fonts land, which is not a resize
+      // event — so the bitmap kept the size it had under the fallback face and
+      // was stretched over the taller box until something else forced a redraw.
+      // That is the blur on first paint that clears when you nudge the window.
+      document.fonts?.ready.then(draw);
+      // And anything else that moves the box: a longer title, a wrapped line.
+      if ('ResizeObserver' in window) new ResizeObserver(draw).observe(c);
       matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
     }
   </script>
