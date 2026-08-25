@@ -684,6 +684,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
 }
 .cvsec--first .cvsechead{margin-top:1rem}
+/* In the builder the first heading follows a row of controls rather than the
+   page heading, and 1rem is the same gap the list uses internally — so the
+   content ran on from the buttons instead of starting after them. #tree is the
+   builder's own wrapper, so the read-only CV pages keep their spacing. */
+#tree .cvsec--first .cvsechead{margin-top:2rem}
 /* A collapsed section: the whole head is the control, so it takes the pointer
    and the caret, and the count says what is behind it. */
 summary.cvsechead{cursor:pointer; list-style:none}
