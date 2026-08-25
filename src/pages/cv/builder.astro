@@ -45,6 +45,13 @@ const site = buildInfo();
         </div>
 
         <div class="builderbar builderbar--go">
+          {/* Left of Compile, because it is a choice about the thing being
+              compiled rather than a second action. */}
+          <label class="bl" for="style">Style</label>
+          <select class="btn btn--sel" id="style">
+            <option value="default">Default</option>
+            <option value="plain">Default - 🎨</option>
+          </select>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
           <span class="status" id="status">The compiler is ~10 MB and loads on first use.</span>
@@ -324,6 +331,21 @@ const site = buildInfo();
       return typst;
     }
 
+    // A compiled PDF belongs to the style it was compiled with. Changing the
+    // menu retires it — otherwise Download keeps handing over a file that no
+    // longer matches what the menu says, and the preview keeps showing it.
+    $('style').addEventListener('change', () => {
+      const dl = $('download');
+      if (dl.hidden) return;
+      URL.revokeObjectURL(dl.href);
+      dl.hidden = true;
+      dl.removeAttribute('href');
+      const frame = $('preview');
+      frame.hidden = true;
+      frame.removeAttribute('src');
+      status('Style changed — compile again.');
+    });
+
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
       if (!chosen.size) return status('Nothing selected.');
@@ -346,6 +368,9 @@ const site = buildInfo();
           const bytes = new Uint8Array(await (await fetch(url)).arrayBuffer());
           await t.mapShadow(`/assets/${path.split('/').pop()}`, bytes);
         }
+        // The template reads this; absent, it compiles the default. The CLI
+        // never writes it, so the pre-built PDFs cannot drift from this menu.
+        model.style = $('style').value;
         await t.mapShadow('/cv.json', new TextEncoder().encode(JSON.stringify(model)));
         const pdf = await t.pdf({ mainFilePath: '/cv.typ' });
 
@@ -358,6 +383,8 @@ const site = buildInfo();
         frame.src = url;
         $('download').hidden = false;
         $('download').href = url;
+        $('download').download = model.style === 'default'
+          ? 'starkman-cv-custom.pdf' : `starkman-cv-custom-${model.style}.pdf`;
 
         const kb = Math.round(pdf.length / 1024);
         status(`Built ${chosen.size} entries · ${kb} KB.`);
