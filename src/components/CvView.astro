@@ -159,7 +159,11 @@ const money = (a) => {
             {item.event && <>, {item.event}</>}
             {item.type === 'publication' && (
               <> — {authors(item, 4).shown.map((a, i) => (
-                  <>{i > 0 && ', '}{a.me ? <span class="me">{a.name}</span> : a.name}</>
+                  <>{i > 0 && ', '}{a.me
+                    ? <span class="me">{a.name}</span>
+                    : a.url
+                      ? <a class="authorlink" href={a.url}>{a.name}</a>
+                      : a.name}</>
                 ))}{authors(item, 4).etal && <>, et al</>}
                 {(authors(item, 4).etal || venueLine(item)) && '.'}
                 {venueLine(item) && <> <span class="venue">{venueLine(item)}</span></>}

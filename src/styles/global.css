@@ -410,6 +410,12 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
 }
 .tl .recipient{color:var(--ink-mute); font-style:italic}
+
+/* A co-author's name links to their ORCID. Eight accent-coloured names in a row
+   would turn a byline into a wall of links, so it reads as text and only shows
+   itself on hover and focus. */
+.authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
+.authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 .tl{scroll-margin-top:5rem}
 
 

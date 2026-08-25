@@ -86,6 +86,24 @@ describe('authors', () => {
     expect(authors(paper, 2).etal).toBe(true);
     expect(authors(paper, 9).etal).toBe(false);
   });
+
+  it('points a co-author at their ORCID', () => {
+    // Jo Bovy, whose ORCID was confirmed from his own claim on this paper.
+    const bovy = authors(resolve('pal5-gaia-dr2')).shown.find((a) => a.name.endsWith('Bovy'));
+    expect(bovy.url).toBe('https://orcid.org/0000-0001-6855-442X');
+  });
+
+  it('does not self-link the owner', () => {
+    // His ORCID is in the CV header; a self-link in every byline is noise.
+    const me = authors(resolve('pal5-gaia-dr2')).shown.find((a) => a.me);
+    expect(me.url).toBeNull();
+  });
+
+  it('leaves a co-author with no ORCID unlinked rather than guessing', () => {
+    // D. Scott on the Euclid paper: initials too common to identify.
+    const scott = authors(resolve('euclid-eggs-pilot'), 20).shown.find((a) => a.name.endsWith('Scott'));
+    expect(scott.url).toBeNull();
+  });
 });
 
 describe('venueLine', () => {

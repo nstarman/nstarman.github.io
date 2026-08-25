@@ -23,7 +23,11 @@ const pending = item.status !== 'published' ? item.status : null;
     <p class="meta">
       {collaboration && <>{collaboration}, </>}
       {shown.map((a, i) => (
-        <>{i > 0 && ', '}{a.me ? <span class="me">{a.name}</span> : a.name}</>
+        <>{i > 0 && ', '}{a.me
+          ? <span class="me">{a.name}</span>
+          : a.url
+            ? <a class="authorlink" href={a.url}>{a.name}</a>
+            : a.name}</>
       ))}
       {etal && <>, et al.</>}
       {brief && venue && <> · <span class="venue">{venue}</span></>}

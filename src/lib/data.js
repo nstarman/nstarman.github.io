@@ -67,13 +67,24 @@ export function displayName(a) {
   return [initials(a.given), a.family, a.suffix].filter(Boolean).join(' ');
 }
 
+/** Where a co-author's name points. ORCID is the identifier, so it is the link. */
+export const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
+
 /**
  * Authors for display, truncated per preset. The data always holds the full
  * list — truncating there would corrupt the BibTeX — so it happens here.
+ *
+ * `url` is the author's ORCID page, and is null for the owner: this is his own
+ * site, his ORCID is already in the CV header, and a self-link in every byline
+ * would be noise rather than navigation.
  */
 export function authors(item, max = Infinity) {
   const all = item.authors ?? [];
-  const shown = all.slice(0, max).map((a) => ({ name: displayName(a), me: Boolean(a.me) }));
+  const shown = all.slice(0, max).map((a) => ({
+    name: displayName(a),
+    me: Boolean(a.me),
+    url: a.me ? null : orcidUrl(a.orcid),
+  }));
   return { shown, etal: all.length > max, collaboration: item.collaboration };
 }
 
