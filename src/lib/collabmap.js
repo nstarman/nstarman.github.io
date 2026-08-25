@@ -13,8 +13,6 @@ import places from '/config/places.json';
 import world from '../assets/world-equal-earth.json';
 import { byType, venueUrl, links } from './data.js';
 
-export const MAX_PIN_DRIFT = 3;
-
 export const map = { width: world.width, height: world.height, land: world.d };
 
 const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796;
@@ -69,10 +67,28 @@ function papersByAuthor() {
 const covers = (post, date) =>
   Boolean(post.start) && post.start <= date && (!post.end || post.end >= date);
 
-/** How far a pin may be moved from where it actually is, in map units.
- *  One unit is 0.36 degrees of longitude at the equator, so this is a couple of
- *  hundred kilometres at most — enough to separate a stack, not enough to move
- *  a university to another state. */
+/** Kilometres per map unit: the map's height spans 180 degrees of latitude, and
+ *  a degree of latitude is 111 km wherever you stand. */
+export const KM_PER_UNIT = 111 / (map.height / 180);
+
+/**
+ * How far a pin may be moved from the place it stands for.
+ *
+ * Ten miles — city level. Written as a distance rather than a number of units
+ * because the tolerance is a claim about the world, not about the drawing: at
+ * this scale one unit is about 41 km, so three units was seventy-six miles and
+ * put Case Western outside Cleveland.
+ *
+ * A pin is three units across, which is far wider than this, so stacked pins
+ * now overlap almost exactly. That is the honest picture — the picker below the
+ * map is what separates a crowd, not a lie about where people were.
+ */
+// Nine and a half, not ten: coordinates are written to two decimals in the SVG,
+// which is a fifth of a mile of rounding on top of whatever the model decided.
+// The promise is about the pin on the screen, so the rounding comes out of the
+// budget rather than out of the promise.
+export const MAX_DRIFT_MILES = 9.5;
+export const MAX_PIN_DRIFT = (MAX_DRIFT_MILES * 1.609) / KM_PER_UNIT;
 const MAX_DRIFT = MAX_PIN_DRIFT;
 
 /**

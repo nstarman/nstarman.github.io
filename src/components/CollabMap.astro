@@ -32,7 +32,6 @@ const label = (pin) =>
       one person over time
     </span>
     <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
-    <span>Mostly scraped from ORCID, so it may be incomplete.</span>
   </figcaption>
 
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
@@ -43,7 +42,7 @@ const label = (pin) =>
     {/* Trajectories first, so pins sit on top of their own lines. */}
     {trails.map((p) => (
       <polyline class="cmap-trail" data-c={people.indexOf(p)} style={`--h:${p.hue}`}
-                points={p.pins.map((pin) => `${pin.x.toFixed(1)},${pin.y.toFixed(1)}`).join(' ')} />
+                points={p.pins.map((pin) => `${pin.x.toFixed(2)},${pin.y.toFixed(2)}`).join(' ')} />
     ))}
 
     {pins.map((pin) => (
@@ -52,7 +51,7 @@ const label = (pin) =>
         <title>{pin.person.name} — {label(pin)}{pin.papers.length
           ? `; ${pin.papers.length} paper${pin.papers.length > 1 ? 's' : ''} together`
           : ''}</title>
-        <circle cx={pin.x.toFixed(1)} cy={pin.y.toFixed(1)}
+        <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)}
                 r={pin.papers.length ? 4.5 : 3} class={pin.papers.length ? 'is-shared' : ''} />
       </g>
     ))}
@@ -71,6 +70,7 @@ const label = (pin) =>
   <ol class="cmap-list">
     {people.map((p) => (
       <li data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
+        <span class="cmap-partial" title="Built from this person's public ORCID record, which may not list every post">May be incomplete</span>
         <h3>{p.name}</h3>
         <ol hidden>
           {p.pins.map((pin) => (

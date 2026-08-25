@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, project, toXY, map, MAX_PIN_DRIFT } from '../src/lib/collabmap.js';
+import { collaboratorMap, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
+  from '../src/lib/collabmap.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins);
@@ -56,8 +57,9 @@ describe('the collaborator map', () => {
     // is not.
     for (const pin of pins) {
       const [tx, ty] = toXY(pin.lon, pin.lat);
-      const drift = Math.hypot(pin.x - tx, pin.y - ty);
-      expect(drift).toBeLessThanOrEqual(MAX_PIN_DRIFT + 0.1);
+      const miles = (Math.hypot(pin.x - tx, pin.y - ty) * KM_PER_UNIT) / 1.609;
+      // Stated in miles, because that is the promise: city level.
+      expect(miles).toBeLessThanOrEqual(MAX_DRIFT_MILES + 0.01);
     }
   });
 

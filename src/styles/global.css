@@ -901,6 +901,10 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-head{margin-top:2rem}
 .cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
   display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
+/* `display` on the element beats the user agent's [hidden]{display:none}, so a
+   grid that sets one is never hidden by the attribute alone. Both of these are
+   toggled with `hidden`, so both have to say it themselves. */
+.cmap-list[hidden], .cmap-list ol[hidden]{display:none}
 .cmap-list > li{
   border-left:3px solid oklch(.55 .16 var(--h)); padding-left:.7rem;
 }
@@ -939,3 +943,19 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* With one person selected the list is a single record rather than a grid of
    thirty-four, so it should not be laid out as columns. */
 .cmap[data-only]:not([data-only=""]) .cmap-list{grid-template-columns:1fr}
+
+/* Sits on each person's record rather than under the map, because that is
+   where the claim is actually made: this is their career as ORCID has it, not
+   as it was. Orange rather than the site's blue — it is a caveat, not a link. */
+.cmap-partial{
+  float:right; margin:0 0 .2rem .5rem;
+  font-family:var(--mono); font-size:.58rem; letter-spacing:.04em;
+  color:#8a4b00; background:#fff3e0; border:1px solid #f0c98a;
+  border-radius:999px; padding:.05rem .38rem; white-space:nowrap;
+}
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    .cmap-partial{color:#f0b978; background:#3a2a14; border-color:#6b4a1e}
+  }
+}
+:root[data-theme="dark"] .cmap-partial{color:#f0b978; background:#3a2a14; border-color:#6b4a1e}
