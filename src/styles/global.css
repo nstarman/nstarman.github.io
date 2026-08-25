@@ -117,7 +117,11 @@ h2{
 .entry .meta{grid-column:1/-1; margin:0; font-size:.9rem; color:var(--ink-mute)}
 .entry .meta .me{color:var(--ink-2); font-weight:500}
 .entry .venue{font-style:italic}
-.status{
+/* The publication status pill. Named apart from .status, which is the builder's
+   compile message: both were .status, and the later rule was quietly overriding
+   this one's size and colour — the pill asks for .62rem in accent and rendered
+   at .7rem in muted grey. */
+.statustag{
   font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
   color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent-line);
   border-radius:.25rem; padding:.1rem .38rem; vertical-align:.1em; margin-left:.4rem;
