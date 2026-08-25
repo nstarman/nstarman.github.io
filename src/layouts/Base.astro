@@ -38,6 +38,14 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
     </script>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
+    {/* SVG first: it is the only one that follows the tab's colour scheme.
+        The PNG is for browsers that ignore SVG icons, and apple-touch-icon
+        gets paper behind it because iOS composites home-screen icons on
+        black and a transparent monogram would disappear. */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
