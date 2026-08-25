@@ -1,0 +1,15 @@
+{
+  "$comment": "Repositories the contributions list should not show. Forks, anything already rendered as a Software card, and anything under nstarman/ are dropped automatically by scripts/collect-contributions.mjs; this file is for the judgement calls it cannot make \u2014 things that are repositories but not libraries.",
+  "exclude": [
+    "13broderickj/EvolutionaryBiophysics",
+    "GalacticDynamics/.github",
+    "GalacticDynamics/galax-figure-tests",
+    "GalOrrery/stream_mapper-paper",
+    "JAXtronomy/October2024-Meeting",
+    "adrn/galax-apw",
+    "astropy/astropy-project",
+    "astropy/astropy-v5.0-paper",
+    "astropy/astropy-workshop",
+    "xggs-dev/stream_annotation_widget"
+  ]
+}

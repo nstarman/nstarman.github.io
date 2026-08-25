@@ -2,17 +2,32 @@
 // Three tiers, two dividers: the lead package, the headliners as cards, then
 // everything else compactly. Tier comes from the data, not from an id check.
 import { byType, links, softwarePaper } from '../lib/data.js';
+import contributions from '/config/contributions.json';
 import LinkIcons from './LinkIcons.astro';
 
 // The landing page shows the lead and the headliners only; the long tail is
 // what "All software →" is for.
 const { tail = true } = Astro.props;
 
+// The fourth tier: everything else he has a merged pull request in, which is
+// far too many to render as cards and not his to present as his own. Generated
+// by scripts/collect-contributions.mjs, refreshed monthly by a workflow.
+const contributed = tail ? contributions.repos : [];
+const year = (d) => d.slice(0, 4);
+
 const all = byType('software');
 const lead = all.find((s) => s.tier === 'lead');
 const headline = all.filter((s) => s.tier === 'headline');
 const other = (tail ? all.filter((s) => s.tier === 'other') : [])
   .sort((a, b) => a.title.localeCompare(b.title));
+// Fourth tier: things worth having that are not research software. Smaller
+// cards again, because they are useful rather than notable.
+const useful = (tail ? all.filter((s) => s.tier === 'useful') : [])
+  .sort((a, b) => a.title.localeCompare(b.title));
+// If nothing in a tier has a paper, the paper filter empties it — and a
+// divider above an empty grid separates nothing. Marked here rather than in
+// CSS because it is a fact about the data, and it is recomputed every build.
+const usefulEmptied = useful.length > 0 && !useful.some((s) => softwarePaper(s));
 
 const href = (s) => links(s)[0]?.url ?? '#';
 // The paper leads the trail where there is one: it is the citable artefact,
@@ -57,4 +72,37 @@ const hasPaper = (s) => (softwarePaper(s) ? 'yes' : undefined);
       ))}
     </div>
   </>
+)}
+
+{useful.length > 0 && (
+  <>
+    <div class:list={['tierbreak', usefulEmptied && 'tier-nopaper']} role="presentation"></div>
+    <div class:list={['soft', 'soft--tiny', usefulEmptied && 'tier-nopaper']}>
+      {useful.map((s) => (
+        <div class="card card--mini card--tiny" data-paper={hasPaper(s)}>
+          <div class="name"><a href={href(s)}>{s.title}</a></div>
+          <p>{s.summary}</p>
+          <LinkIcons links={trail(s)} />
+        </div>
+      ))}
+    </div>
+  </>
+)}
+
+{contributed.length > 0 && (
+  <details class="contribs">
+    <summary>
+      <span class="contribs-lede">Other Open-Source Contributions</span>
+      <span class="cvcount">{contributed.length}</span>
+    </summary>
+    <ul class="contriblist">
+      {contributed.map((r) => (
+        <li>
+          <a href={r.url}>{r.repo}</a>
+          <span class="contrib-since" title={`First pull request ${r.first}`}>{year(r.first)}</span>
+          {r.description && <span class="contrib-desc">{r.description}</span>}
+        </li>
+      ))}
+    </ul>
+  </details>
 )}
