@@ -194,8 +194,8 @@ h2{
    list down to one card made it stretch the full width while the row beneath
    stayed three-up. auto-fill keeps the tracks, so a card is the same width
    whether it has neighbours or not. */
-.soft{display:grid; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));
-  gap:.9rem; grid-auto-rows:1fr}
+.soft{display:grid; grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));
+  gap:.7rem; grid-auto-rows:1fr}
 .card{
   display:flex; flex-direction:column; gap:.3rem;
   /* A whisper of a squircle — enough to group the cards, not enough to draw a
@@ -276,7 +276,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 /* Software tier 3: the long tail. Same card, three across instead of two, and
    dialled down — smaller type, tighter padding, shorter box. Same aesthetic, a
    quieter voice, so the four headliners still lead. */
-.soft--mini{grid-template-columns:repeat(auto-fill,minmax(13rem,1fr)); gap:.7rem}
+/* No column override: the headline grid and this one share tracks and gap, so
+   a card in either lines up with the card above it. They differed — 15rem/.9rem
+   against 13rem/.7rem — which resolved to two columns over three, and nothing
+   in the two rows ever aligned. The tiers still read apart, by padding, radius
+   and type size on .card--mini rather than by column width. */
 .card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
 .card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
 .card--mini .name .stars{font-size:.66rem}
