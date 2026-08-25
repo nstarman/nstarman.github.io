@@ -21,7 +21,7 @@ const all = byType('publication').filter((p) => p.status !== 'in-prep');
         <div class="h2row">
           <h2>Publications</h2>
           <span class="more pubprofiles">
-            <a href="/publications.bib">BibTeX</a>
+            <a href="/nstarkman_publications.bib">BibTeX</a>
             <span class="sep">|</span>
             {profiles.map((c) => (
               <a class="pill" href={c.url} aria-label={c.label} title={`All publications on ${c.label}`}>
