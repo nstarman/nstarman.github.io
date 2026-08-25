@@ -1,7 +1,7 @@
 ---
 // Three tiers, two dividers: the lead package, the headliners as cards, then
 // everything else compactly. Tier comes from the data, not from an id check.
-import { byType, links } from '../lib/data.js';
+import { byType, links, softwarePaper } from '../lib/data.js';
 import LinkIcons from './LinkIcons.astro';
 
 // The landing page shows the lead and the headliners only; the long tail is
@@ -15,13 +15,19 @@ const other = (tail ? all.filter((s) => s.tier === 'other') : [])
   .sort((a, b) => a.title.localeCompare(b.title));
 
 const href = (s) => links(s)[0]?.url ?? '#';
+// The paper leads the trail where there is one: it is the citable artefact, and
+// a package's own code and docs links sit beside it as they always did.
+const trail = (s) => {
+  const paper = softwarePaper(s);
+  return paper ? [paper, ...links(s)] : links(s);
+};
 ---
 {lead && (
   <div class="lead">
     <div class="name"><a href={href(lead)}>{lead.title}</a></div>
     {lead.role && <div class="role-line">{lead.role}</div>}
     <p>{lead.details ?? lead.summary}</p>
-    <LinkIcons links={links(lead)} />
+    <LinkIcons links={trail(lead)} />
   </div>
 )}
 
@@ -30,7 +36,7 @@ const href = (s) => links(s)[0]?.url ?? '#';
     <div class="card">
       <div class="name"><a href={href(s)}>{s.title}</a></div>
       <p>{s.details ?? s.summary}</p>
-      <LinkIcons links={links(s)} />
+      <LinkIcons links={trail(s)} />
     </div>
   ))}
 </div>
@@ -43,7 +49,7 @@ const href = (s) => links(s)[0]?.url ?? '#';
         <div class="card card--mini">
           <div class="name"><a href={href(s)}>{s.title}</a></div>
           <p>{s.summary}</p>
-          <LinkIcons links={links(s)} />
+          <LinkIcons links={trail(s)} />
         </div>
       ))}
     </div>

@@ -8,6 +8,7 @@ import {
   resolve,
   authorPosition,
   venueUrl,
+  softwarePaper,
   displayName,
   authors,
   venueLine,
@@ -239,5 +240,39 @@ describe('venueUrl', () => {
       .filter((p) => p.status === 'published' && (p.venue?.journal || p.venue?.booktitle))
       .filter((p) => !venueUrl(p));
     expect(missing.map((p) => p.id)).toEqual([]);
+  });
+});
+
+describe('softwarePaper', () => {
+  it('gives every package that has a paper a link to it', () => {
+    const withPaper = byType('software').filter(softwarePaper).map((s) => s.id).sort();
+    expect(withPaper).toEqual(
+      ['astropy', 'macro-lightning-code', 'phasecurvefit', 'trackstream', 'unxt'],
+    );
+  });
+
+  it('prefers the article at the journal over ADS or the preprint', () => {
+    // REL_ORDER ranks `ads` and `preprint` above `paper`, which is right for a
+    // trail of marks and wrong when only one link is being chosen: this used to
+    // send Astropy to ADS and macro_lightning to arXiv.
+    expect(softwarePaper(resolve('astropy')).url).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
+    expect(softwarePaper(resolve('macro-lightning-code')).url).toContain('journals.aps.org');
+  });
+
+  it('falls back to what exists when the paper is not published', () => {
+    const p = softwarePaper(resolve('phasecurvefit'));
+    expect(p.status).toBe('submitted');
+    expect(p.url).toBeTruthy();
+  });
+
+  it('does not call a package published because it refs another package', () => {
+    // coordinax refs unxt — a sibling, not a paper.
+    expect(resolve('coordinax').refs).toContain('unxt');
+    expect(softwarePaper(resolve('coordinax'))).toBeNull();
+  });
+
+  it('is null for a package with no refs at all', () => {
+    expect(softwarePaper(resolve('quax'))).toBeNull();
+    expect(softwarePaper({})).toBeNull();
   });
 });
