@@ -447,6 +447,9 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    record — italic says the date is provisional the way the pill says the
    status is. */
 .tl--unpub .when{font-style:italic}
+/* Same on the publications list and the home page's short list, so a year means
+   the same thing wherever a paper is shown. */
+.entry--unpub .yr{font-style:italic}
 
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
    would turn a byline into a wall of links, so it reads as text and only shows

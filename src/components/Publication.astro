@@ -18,7 +18,8 @@ const pending = item.status !== 'published' ? item.status : null;
 // the outermost element — that is what gets hidden.
 const pos = authorPosition(item);
 ---
-<article class={brief ? 'entry--brief' : 'entry--full'} data-pos={pos ?? undefined}>
+<article class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ' entry--unpub' : ''}`}
+         data-pos={pos ?? undefined}>
   <div class="body">
     <div class="ttl">
       <a href={paper?.url ?? '#'}>{item.title}</a>
