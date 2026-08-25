@@ -1,7 +1,7 @@
 // The saved-selection file for the CV builder.
 //
 // A selection is a list of entry ids plus, per entry, which of its detail lines
-// are kept. That only means something against a particular version of the
+// are kept, and the style it was meant to be compiled in. That only means something against a particular version of the
 // database, so the file records the commit the site was built from: if the ids
 // no longer resolve, `git checkout <commit>` and a local build gets them back.
 //
@@ -18,7 +18,7 @@ const MAX_ITEMS = 5000;
 const MAX_LINES_PER_ITEM = 500;
 
 /** The selection as it is written to disk. */
-export function encode({ items, lines, site = {}, savedAt }) {
+export function encode({ items, lines, style, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -33,6 +33,9 @@ export function encode({ items, lines, site = {}, savedAt }) {
     site: { commit: site.commit ?? null, short: site.short ?? null, dirty: !!site.dirty },
     items: [...new Set(items ?? [])].filter((s) => typeof s === 'string'),
     lines: clean,
+    // Which pre-built style to compile in. Absent means the default, which is
+    // also what every selection saved before styles existed means.
+    style: typeof style === 'string' ? style : null,
   };
 }
 
@@ -44,7 +47,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -83,9 +86,14 @@ export function decode(text) {
   }
 
   const site = raw.site && typeof raw.site === 'object' && !Array.isArray(raw.site) ? raw.site : {};
+  // A name, not a promise that this build has it: a file may have been saved by
+  // a build with styles this one does not. The caller decides what to do about
+  // that, which is why an unknown name is returned rather than rejected.
+  const style = typeof raw.style === 'string' && raw.style.length <= 64 ? raw.style : null;
   return {
     items,
     lines,
+    style,
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

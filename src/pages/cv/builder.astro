@@ -227,7 +227,8 @@ const site = buildInfo();
 
     const saveSelection = () => {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
-      const doc = encode({ items: chosen, lines: currentLines(), site: SITE });
+      const doc = encode({ items: chosen, lines: currentLines(),
+                          style: $('style').value, site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -253,8 +254,23 @@ const site = buildInfo();
       applyDetail();
       recount();
 
+      // The style travels with the selection. Set directly rather than through
+      // a change event: applyDetail and recount have already retired any
+      // compiled PDF, and firing one here would only overwrite the message
+      // below with a less specific one.
+      const menu = $('style');
+      const wanted = sel.style ?? 'default';
+      const haveStyle = [...menu.options].some((o) => o.value === wanted);
+      if (haveStyle) menu.value = wanted;
+
       const restored = sel.items.size - missing.length;
       const parts = [`Loaded ${plural(restored, 'entry', 'entries')}.`];
+      // A style this build does not have is worth saying out loud — the PDF
+      // would silently come out in a different design otherwise.
+      if (!haveStyle) {
+        parts.push(`Its style "${wanted}" is not one this page offers; using Default.`);
+        menu.value = 'default';
+      }
       // The commit is why the file carries one. If entries have gone missing,
       // the fix is mechanical, so say what it is rather than only that it broke.
       const from = sel.site.commit;
