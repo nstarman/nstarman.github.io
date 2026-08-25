@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-adass-software-prize",
+  "type": "award",
+  "tier": "major",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2022"
+  },
+  "title": "ADASS Prize for an Outstanding Contribution to Astronomical Software",
+  "recipient": "the Astropy Project",
+  "details": "Team award, as a core developer of [Astropy](item:astropy).",
+  "funder": "Astronomical Data Analysis Software and Systems",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.adass.org/softwareprize.html"
+    }
+  ],
+  "refs": [
+    "astropy"
+  ],
+  "tags": [
+    "astropy"
+  ]
+}
