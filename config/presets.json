@@ -30,7 +30,6 @@
         },
         "layout": "publications",
         "groupBy": "status",
-        "collapsed": true,
         "page": "/publications/"
       },
       {
@@ -59,7 +58,6 @@
           "type": "software"
         },
         "layout": "grid",
-        "collapsed": true,
         "page": "/software/"
       },
       {
@@ -184,7 +182,6 @@
         },
         "layout": "publications",
         "groupBy": "status",
-        "collapsed": true,
         "page": "/publications/"
       },
       {
@@ -213,7 +210,6 @@
           "type": "software"
         },
         "layout": "grid",
-        "collapsed": true,
         "page": "/software/"
       },
       {
@@ -339,7 +335,6 @@
         "layout": "publications",
         "limit": 10,
         "groupBy": "status",
-        "collapsed": true,
         "page": "/publications/"
       },
       {
@@ -370,7 +365,6 @@
           "type": "software"
         },
         "layout": "grid",
-        "collapsed": true,
         "page": "/software/",
         "limit": 5
       },
@@ -443,7 +437,6 @@
         },
         "layout": "publications",
         "limit": 5,
-        "collapsed": true,
         "page": "/publications/"
       },
       {
@@ -465,7 +458,6 @@
         },
         "limit": 4,
         "layout": "grid",
-        "collapsed": true,
         "page": "/software/"
       }
     ]
