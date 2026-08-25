@@ -472,6 +472,25 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 }
 .posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 
+/* ---------- software: filter by whether a package has a paper ---------- */
+/* The thumb positions reuse .pubfilter; only the hiding differs. `data-paper`
+   is present or absent rather than true/false, so these test the attribute. */
+#sw-all:checked ~ .h2row .pubfilter::before{transform:translateX(0)}
+#sw-yes:checked ~ .h2row .pubfilter::before{transform:translateX(100%)}
+#sw-no:checked  ~ .h2row .pubfilter::before{transform:translateX(200%)}
+#sw-all:checked ~ .h2row .pubfilter label[for="sw-all"],
+#sw-yes:checked ~ .h2row .pubfilter label[for="sw-yes"],
+#sw-no:checked  ~ .h2row .pubfilter label[for="sw-no"]{color:var(--ink)}
+.posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
+
+#sw-yes:checked ~ .lead:not([data-paper]),
+#sw-yes:checked ~ .soft .card:not([data-paper]),
+#sw-no:checked ~ .lead[data-paper],
+#sw-no:checked ~ .soft .card[data-paper]{display:none}
+/* The divider between the headliners and the tail is only meaningful when both
+   are showing. */
+#sw-yes:checked ~ .tierbreak, #sw-no:checked ~ .tierbreak{display:none}
+
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and
    this has to be reachable and arrow-navigable like any other radio group. */
