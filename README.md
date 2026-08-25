@@ -110,6 +110,39 @@ cannot make, such as papers and workshops that happen to be repositories.
 request when something new appears — but only after the schema, build and a11y
 gates pass on the regenerated file.
 
+### Collaborators
+
+`config/collaborators.json` is the other generated file: where each co-author
+has worked, and when, from their public ORCID employment records.
+
+```bash
+node scripts/collect-collaborators.mjs           # rebuild
+node scripts/collect-collaborators.mjs --check   # exit 1 if it is out of date
+```
+
+Only people already named as authors in `data/` are looked up, and only their
+ORCID is sent. ORCID is self-reported: 27 of 32 list any employment at all, and
+an empty history is recorded as empty rather than guessed at.
+
+Two sources answer "where were they when we wrote this", and they are not the
+same claim:
+
+- **`authors[].affiliation` on a publication** is what *that paper printed*.
+  `scripts/fetch-affiliations.mjs` fills it from Crossref, only where it is
+  missing and only where Crossref names one.
+- **the employment history** answers for everyone else, through
+  `affiliationAt(orcid, date)` in `src/lib/data.js`, which returns `null`
+  rather than a guess when nothing covers the date — careers have gaps, and
+  papering over one would invent a fact.
+
+Between them, 35 of 56 co-author entries can say where that person was.
+
+`.github/workflows/refresh-collaborators.yml` rebuilds from ORCID every
+1 September and opens an **issue** when the file would change. An issue rather
+than a pull request, unlike the contributions refresh: that one only adds
+repositories, while this one can rewrite where a person is recorded as having
+worked, which deserves a human reading the diff.
+
 ## Deployment
 
 GitHub Pages via Actions (`.github/workflows/deploy.yml`), not a branch deploy:

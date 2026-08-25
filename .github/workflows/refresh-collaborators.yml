@@ -1,0 +1,102 @@
+name: Refresh collaborators
+
+# People move. config/collaborators.json is a snapshot of what co-authors had
+# published on ORCID when it was last built, and nothing about this repository
+# notices when that goes stale — so once a year, ask.
+#
+# This opens an issue rather than a pull request, unlike refresh-contributions:
+# that one adds repositories, which is additive and safe to merge unread. This
+# one can *change* where a person is recorded as having worked, and a diff that
+# rewrites history deserves a human reading it. The issue carries the diff, so
+# the reading is cheap.
+
+on:
+  schedule:
+    # 1 September, which is when academic posts turn over.
+    - cron: "0 7 1 9 *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - id: refresh
+        name: Rebuild from ORCID
+        run: |
+          cp config/collaborators.json /tmp/before.json
+          node scripts/collect-collaborators.mjs
+          if diff -q /tmp/before.json config/collaborators.json >/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            {
+              echo 'diff<<END_OF_DIFF'
+              diff -u /tmp/before.json config/collaborators.json | head -200
+              echo 'END_OF_DIFF'
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      # An issue nobody can act on is worse than none, so the gates run first:
+      # if the rebuilt database would not pass, the issue says so.
+      - id: gates
+        if: steps.refresh.outputs.changed == 'true'
+        continue-on-error: true
+        run: npm test
+
+      - if: steps.refresh.outputs.changed == 'true'
+        uses: actions/github-script@v8
+        env:
+          DIFF: ${{ steps.refresh.outputs.diff }}
+          GATES: ${{ steps.gates.outcome }}
+        with:
+          script: |
+            const year = new Date().getUTCFullYear();
+            const title = `Collaborator affiliations have changed on ORCID (${year})`;
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'collaborators',
+            });
+            if (existing.data.some((i) => i.title === title)) return;
+            const body = [
+              'Rebuilding `config/collaborators.json` from ORCID produces a different file,',
+              'so at least one co-author has updated their employment record since the last run.',
+              '',
+              `Tests on the rebuilt database: **${process.env.GATES}**.`,
+              '',
+              'To apply:',
+              '',
+              '```bash',
+              'node scripts/collect-collaborators.mjs',
+              'npm test',
+              '```',
+              '',
+              '<details><summary>What changed</summary>',
+              '',
+              '```diff',
+              process.env.DIFF || '(diff unavailable)',
+              '```',
+              '',
+              '</details>',
+              '',
+              'Worth a read rather than a blind apply: this file can *change* where someone is',
+              'recorded as having worked, not just add to it.',
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title, body, labels: ['collaborators'],
+            });
+
+      - if: steps.refresh.outputs.changed != 'true'
+        run: echo "  ORCID says nothing has changed." >> "$GITHUB_STEP_SUMMARY"

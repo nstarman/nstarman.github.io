@@ -608,6 +608,11 @@
         "orcid": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+        },
+        "affiliation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The affiliation this publication printed for the author \u2014 a fact about the paper, not about the person. Filled by scripts/fetch-affiliations.mjs from Crossref. Where it is absent the site falls back to the dated employment history in config/collaborators.json."
         }
       },
       "oneOf": [

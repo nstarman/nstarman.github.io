@@ -23,22 +23,26 @@
     {
       "family": "Bovy",
       "given": "Jo",
-      "orcid": "0000-0001-6855-442X"
+      "orcid": "0000-0001-6855-442X",
+      "affiliation": "David A. Dunlap Department of Astronomy and Astrophysics, University of Toronto , 50 St. George Street, Toronto, Ontario M5S 3H4, Canada"
     },
     {
       "family": "Webb",
       "given": "Jeremy",
-      "orcid": "0000-0003-3613-0854"
+      "orcid": "0000-0003-3613-0854",
+      "affiliation": "David A. Dunlap Department of Astronomy and Astrophysics, University of Toronto , 50 St. George Street, Toronto, Ontario M5S 3H4, Canada"
     },
     {
       "family": "Calvetti",
       "given": "Daniela",
-      "orcid": "0000-0001-5696-718X"
+      "orcid": "0000-0001-5696-718X",
+      "affiliation": "Department of Mathematics, Case Western Reserve University , 2049 Martin Luther King Jr. Drive, Cleveland, OH 44106-7058 , Cleveland, Ohio, USA"
     },
     {
       "family": "Somersalo",
       "given": "Erkki",
-      "orcid": "0000-0001-5099-3512"
+      "orcid": "0000-0001-5099-3512",
+      "affiliation": "Department of Mathematics, Case Western Reserve University , 2049 Martin Luther King Jr. Drive, Cleveland, OH 44106-7058 , Cleveland, Ohio, USA"
     }
   ],
   "venue": {
