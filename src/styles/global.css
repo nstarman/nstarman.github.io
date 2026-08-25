@@ -534,6 +534,10 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   padding:.05rem .4rem; cursor:pointer; line-height:1.5;
 }
 .posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+/* A glyph rather than a word, so the padding is even and the box is square-ish
+   instead of stretched by uppercase letter-spacing that no longer applies. */
+.posbtn--icon{display:inline-flex; align-items:center; padding:.05rem .35rem; letter-spacing:0}
+.posbtn--icon .ico{width:11px; height:11px; fill:currentColor; display:block}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
 /* Two stops, All first and selected: the list's own state is every package, and
@@ -601,6 +605,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   transition:color .18s ease;
 }
 .pubfilter label:hover{color:var(--ink)}
+/* An icon stop. Centred in its segment and given the line-height of the text
+   stops beside it, so the two segments are the same height and the thumb does
+   not have to grow to cover one of them. */
+.pubfilter label:has(> .ico){display:flex; align-items:center; justify-content:center}
+.pubfilter label .ico{width:13px; height:13px; fill:currentColor; display:block}
 
 /* Where the thumb sits, and which label is lit. "All" is first, so the stops
    read left to right as no-limit, then tightening. */

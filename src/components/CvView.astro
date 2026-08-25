@@ -4,7 +4,8 @@
 import CvHeader from './CvHeader.astro';
 import { presetNames, preset, resolve, sectionIndex } from '../lib/presets.js';
 import { dateLabel, authors, venueLine,
-  venueUrl, links, REL_ICON, relKey, authorPosition } from '../lib/data.js';
+  venueUrl, links, REL_ICON, relKey, authorPosition,
+  softwarePaper } from '../lib/data.js';
 import { spans, detailLines } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
 
@@ -14,6 +15,13 @@ import LinkIcons from './LinkIcons.astro';
  * them, is a button that does nothing — with positions 1, 2 and 4 that leaves
  * 1 and 2, and None/All bracket them.
  */
+// Worth offering only when it splits the section: if every package has a
+// paper, or none does, the button would just be a slower "All".
+function paperCut(section) {
+  const withPaper = section.items.filter(softwarePaper).length;
+  return withPaper > 0 && withPaper < section.items.length;
+}
+
 function posStops(section) {
   const positions = section.items
     .filter((i) => i.type === 'publication')
@@ -109,6 +117,18 @@ const money = (a) => {
           <button type="button" class="posbtn" data-possel="all">All</button>
         </span>
       )}
+      {/* Software's version of the same idea. Two stops rather than five,
+          because the only cut worth making here is "has a paper", and shown
+          only when it would actually cut something. */}
+      {selectable && s.id === 'software' && paperCut(s) && (
+        <span class="possel" role="group" aria-label="Select software by whether it has a paper">
+          <button type="button" class="posbtn" data-papersel="all">All</button>
+          <button type="button" class="posbtn posbtn--icon" data-papersel="yes"
+                  aria-label="Only software with a paper" title="Only software with a paper">
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
+          </button>
+        </span>
+      )}
       {selectable && s.items.some((i) => detail(i).length > 0) && (
         <label class="subgrouplab">
           <input type="checkbox" class="subgroup" checked={level === 'full'}
@@ -149,6 +169,7 @@ const money = (a) => {
             <div class="name">
               {pick && (
                 <input type="checkbox" class="itembox" value={item.id}
+                       data-paper={softwarePaper(item) ? 'yes' : undefined}
                        checked={isPicked(item.id)}
                        aria-label={`Include ${item.title}`} />
               )}
