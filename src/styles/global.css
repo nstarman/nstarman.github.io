@@ -7,6 +7,11 @@
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --measure:34rem; --wide:49rem;
+  /* The two sticky bars, as one source of truth. The CV page stacks both — the
+     site nav, and .cvbar which joins it once the page controls scroll past — so
+     an in-page jump has to clear their combined height or it lands the heading
+     underneath them. Declared here because three rules have to agree. */
+  --nav-h:3.25rem; --cvbar-h:2.6rem;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -40,7 +45,7 @@ nav{
   position:sticky; top:0; z-index:10; background:color-mix(in srgb,var(--ground) 88%,transparent);
   backdrop-filter:blur(8px);
 }
-nav .wrap{display:flex; align-items:center; justify-content:space-between; gap:1rem; height:3.25rem;
+nav .wrap{display:flex; align-items:center; justify-content:space-between; gap:1rem; height:var(--nav-h);
   border-bottom:1px solid var(--rule)}
 nav .who{font-family:var(--serif); font-size:1rem; font-weight:500; color:var(--ink)}
 nav ul{display:flex; align-items:center; gap:.35rem; list-style:none; margin:0; padding:0}
@@ -379,7 +384,10 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    49rem of column plus ~13rem of rail and its gap on each side. Below that the
    page is unchanged rather than reflowed. */
 .cvtoc{display:none}
-.cvsection{scroll-margin-top:4.5rem}
+/* Clears both sticky bars, plus a little room so the heading is not flush
+   against the bar's rule. 4.5rem covered only the nav, so every in-page jump
+   landed the heading 22px under .cvbar with 4px of its descenders showing. */
+.cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + 0.75rem)}
 
 @media (min-width:78rem){
   .cvtoc{
@@ -453,7 +461,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 /* The CV's controls, condensed into the header once the originals scroll away.
    Download on the left, length on the right. */
 .cvbar{
-  position:fixed; top:3.25rem; left:0; right:0; z-index:9;
+  position:fixed; top:var(--nav-h); left:0; right:0; z-index:9;
   background:color-mix(in srgb, var(--ground) 92%, transparent);
   backdrop-filter:blur(8px);
   transform:translateY(-110%); opacity:0; pointer-events:none;
@@ -465,7 +473,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
      was giving it .9rem/1.85rem — asymmetric, which pushed the contents 8px
      above centre and overflowed the fixed height. */
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  height:2.6rem; padding-block:0; border-bottom:1px solid var(--rule);
+  height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
 }
 .cvbar .cvtoggle--main a{font-size:.66rem; padding:.16rem .5rem}
 @media (prefers-reduced-motion:reduce){
