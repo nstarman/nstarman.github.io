@@ -21,17 +21,20 @@
     {
       "family": "Lelli",
       "given": "F.",
-      "orcid": "0000-0002-9024-9883"
+      "orcid": "0000-0002-9024-9883",
+      "affiliation": "European Southern Observatory, Karl-Schwarzschield-Strasse 2, D-85748 Garching bei, München, Germany"
     },
     {
       "family": "McGaugh",
       "given": "S. S.",
-      "orcid": "0000-0002-9762-0980"
+      "orcid": "0000-0002-9762-0980",
+      "affiliation": "Departments of Physics and Astronomy, Case Western Reserve University, Euclid Ave, Cleveland, 4410 OH, USA"
     },
     {
       "family": "Schombert",
       "given": "J.",
-      "orcid": "0000-0003-2022-1911"
+      "orcid": "0000-0003-2022-1911",
+      "affiliation": "Department of Physics, University of Oregon, Willamette Hall, Eugene, 9740 OR, USA"
     }
   ],
   "venue": {

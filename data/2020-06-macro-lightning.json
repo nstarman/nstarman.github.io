@@ -22,17 +22,20 @@
     {
       "family": "Sidhu",
       "given": "Jagjit Singh",
-      "orcid": "0000-0002-1956-1305"
+      "orcid": "0000-0002-1956-1305",
+      "affiliation": "Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA"
     },
     {
       "family": "Winch",
       "given": "Harrison",
-      "orcid": "0000-0002-0092-6271"
+      "orcid": "0000-0002-0092-6271",
+      "affiliation": "David A. Dunlap Department of Astronomy and Astrophysics / Dunlap Institute, University of Toronto, Toronto, Ontario M5S, Canada"
     },
     {
       "family": "Starkman",
       "given": "Glenn",
-      "orcid": "0000-0002-5053-1542"
+      "orcid": "0000-0002-5053-1542",
+      "affiliation": "Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA"
     }
   ],
   "venue": {

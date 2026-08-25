@@ -11,6 +11,9 @@
 // JSON at build time instead, and keeps working if the site ever goes SSR.
 const modules = import.meta.glob('/data/*.json', { eager: true });
 
+// Generated from ORCID; see scripts/collect-collaborators.mjs.
+import collaborators from '/config/collaborators.json';
+
 /**
  * Partial dates (YYYY, YYYY-MM, YYYY-MM-DD) compare correctly as strings, so a
  * month orders items inside a year even though only the year is ever shown.
@@ -148,12 +151,45 @@ const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
  * site, his ORCID is already in the CV header, and a self-link in every byline
  * would be noise rather than navigation.
  */
+/**
+ * Where a collaborator was working on a given date, from the dated employment
+ * history in config/collaborators.json.
+ *
+ * Returns null rather than a guess in three cases worth keeping separate in the
+ * caller's mind: the person is not in the database, they list no employment on
+ * ORCID, or nothing they list covers that date. A gap in a career is real —
+ * people leave posts before starting the next — and papering over one would be
+ * inventing a fact.
+ *
+ * `date` is "YYYY" or "YYYY-MM"; the comparisons are string comparisons, which
+ * is why the database stores dates in that order.
+ */
+export function affiliationAt(orcid, date) {
+  if (!orcid || !date) return null;
+  const person = collaborators.people.find((p) => p.orcid === orcid);
+  if (!person) return null;
+  const held = person.affiliations.filter((a) => {
+    if (!a.start) return false;        // undated: cannot claim it covered this date
+    if (a.start > date) return false;
+    return !a.end || a.end >= date;
+  });
+  if (held.length === 0) return null;
+  // Concurrent posts happen; the most recently taken up is the one a paper of
+  // that date would most likely have printed.
+  return held.reduce((best, a) => (a.start > best.start ? a : best));
+}
+
 export function authors(item, max = Infinity) {
   const all = item.authors ?? [];
+  // Where they were at the time. The paper's own printed affiliation wins where
+  // there is one — that is what the paper actually claimed — and the employment
+  // history answers for the rest.
+  const at = item.date?.start ?? null;
   const shown = all.slice(0, max).map((a) => ({
     name: displayName(a),
     me: Boolean(a.me),
     url: a.me ? null : orcidUrl(a.orcid),
+    affiliation: a.me ? null : (a.affiliation ?? affiliationAt(a.orcid, at)?.organization ?? null),
   }));
   return { shown, etal: all.length > max, collaboration: item.collaboration };
 }
