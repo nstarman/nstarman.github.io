@@ -1,0 +1,29 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-iop-top-cited-paper-award",
+  "type": "award",
+  "tier": "major",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-11"
+  },
+  "title": "IOP Publishing Top Cited Paper Award, North America",
+  "recipient": "the Astropy Collaboration",
+  "details": "Team award, as an author of [the v5.0 paper](item:astropy-v5-paper): top 1% most-cited in Astronomy and Astrophysics.",
+  "funder": "IOP Publishing",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://accreditations.ioppublishing.org/9ce7a38e-8ef1-4aa3-86f4-5760022a1574"
+    }
+  ],
+  "refs": [
+    "astropy",
+    "astropy-v5-paper"
+  ],
+  "tags": [
+    "astropy"
+  ]
+}
