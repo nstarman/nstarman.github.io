@@ -12,28 +12,21 @@ import { collaboratorMap, map } from '../lib/collabmap.js';
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
 const trails = people.filter((p) => p.pins.length > 1);
-// One rule per person, so hovering a name anywhere in the figure lifts that
-// person out of the map and pushes everyone else back. Generated rather than
-// scripted: :has() can express it, and a page that needs JavaScript to be
-// readable is not readable.
-const focusRules = people.map((p, i) => `
-.cmap:has([data-c="${i}"]:hover) .cmap-pin:not([data-c="${i}"]),
-.cmap:has([data-c="${i}"]:hover) .cmap-trail:not([data-c="${i}"]),
-.cmap:has([data-c="${i}"]:focus-within) .cmap-pin:not([data-c="${i}"]),
-.cmap:has([data-c="${i}"]:focus-within) .cmap-trail:not([data-c="${i}"]){opacity:.1}
-.cmap:has([data-c="${i}"]:hover) .cmap-list > li:not([data-c="${i}"]),
-.cmap:has([data-c="${i}"]:focus-within) .cmap-list > li:not([data-c="${i}"]){opacity:.4}
-.cmap:has(.cmap-list > li[data-c="${i}"]:hover) [data-c="${i}"] circle,
-.cmap:has(.cmap-list > li[data-c="${i}"]:focus-within) [data-c="${i}"] circle{r:8}`).join('');
-
 const label = (pin) =>
   [pin.organization, pin.place].filter(Boolean).join(' — ')
   + ` (${pin.start}${pin.end ? `–${pin.end}` : '–present'})`;
 ---
 
-<style set:html={focusRules}></style>
-
 <figure class="cmap">
+  <div class="cmap-pick">
+    <label for="cmap-who">Show</label>
+    <select id="cmap-who" class="btn btn--sel">
+      <option value="">Everyone</option>
+      {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
+    </select>
+    <span class="cmap-count" id="cmap-count">{people.length} people · {pins.length} posts</span>
+  </div>
+
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
        aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
                  + `on an Equal Earth projection. The same information is listed below.`}>
@@ -71,20 +64,15 @@ const label = (pin) =>
       one person over time
     </span>
     <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
+    <span>Mostly scraped from ORCID, so it may be incomplete.</span>
   </figcaption>
 
-  <p class="cmap-caveat">
-    <strong>Incomplete by construction.</strong> Every post here comes from what
-    that person chose to publish on ORCID, so someone who keeps no record has no
-    pins, and someone who kept one for a while has gaps. Undated posts are left
-    off entirely rather than guessed at. Read it as a floor, not a census.
-  </p>
 
   <ol class="cmap-list">
     {people.map((p) => (
-      <li data-c={people.indexOf(p)} style={`--h:${p.hue}`} tabindex="0">
+      <li data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
         <h3>{p.name}</h3>
-        <ol>
+        <ol hidden>
           {p.pins.map((pin) => (
             <li>
               <span class="cmap-when">{pin.start}–{pin.end ?? 'present'}</span>
@@ -103,7 +91,7 @@ const label = (pin) =>
           ))}
         </ol>
         {p.unplacedPapers.length > 0 && (
-          <p class="cmap-note">
+          <p class="cmap-note" hidden>
             {p.unplacedPapers.length} more paper{p.unplacedPapers.length > 1 ? 's' : ''} together,
             written when their ORCID record names no post.
           </p>
@@ -112,3 +100,71 @@ const label = (pin) =>
     ))}
   </ol>
 </figure>
+
+<script>
+  // Progressive enhancement, and only that: with no JavaScript every pin, every
+  // trajectory and every name is already on the page, which is the honest
+  // default anyway. What this adds is the ability to pull one person out of
+  // thirty-four.
+  //
+  // It toggles `hidden` rather than a class so the effect is in the DOM rather
+  // than only in the paint — a screen reader is told the same thing the eye is.
+  const fig = document.querySelector('.cmap');
+  const pick = document.getElementById('cmap-who');
+  const count = document.getElementById('cmap-count');
+  if (fig && pick) {
+    const all = (sel) => [...fig.querySelectorAll(sel)];
+    const totals = count.textContent;
+
+    const show = (only) => {
+      const mine = (el) => only === '' || el.dataset.c === only;
+      for (const el of all('.cmap-pin, .cmap-trail')) el.style.display = mine(el) ? '' : 'none';
+      for (const li of all('.cmap-list > li')) {
+        li.hidden = !mine(li);
+        // The posts are the detail; they belong to whoever was asked for.
+        const posts = li.querySelector('ol');
+        const note = li.querySelector('.cmap-note');
+        // Only the person asked for; the others are hidden anyway, and content
+        // inside a hidden element should not be pretending to be visible.
+        const open = only !== '' && mine(li);
+        if (posts) posts.hidden = !open;
+        if (note) note.hidden = !open;
+      }
+      fig.dataset.only = only;
+      if (only === '') { count.textContent = totals; return; }
+      const li = fig.querySelector(`.cmap-list > li[data-c="${only}"]`);
+      const n = li ? li.querySelectorAll('ol > li').length : 0;
+      count.textContent = `${n} post${n === 1 ? '' : 's'}`;
+    };
+
+    pick.addEventListener('change', () => show(pick.value));
+    show('');
+
+    // Hover and keyboard linking between the two halves. The state goes on the
+    // figure rather than being expressed with :has(), because one attribute on
+    // an ancestor is two CSS rules instead of one per person — and because a
+    // pin and its name in the list are in different subtrees, which is exactly
+    // the case :has() is worst at.
+    // Set on the elements rather than expressed as a rule keyed off the figure.
+    // CSS cannot say "this element's data-c matches its ancestor's data-hover"
+    // without one rule per person, and the version that dimmed everything and
+    // lit the match back up did not survive contact with a real browser. This
+    // does one thing and can be checked by reading it back.
+    const dimmable = () => all('.cmap-pin, .cmap-trail, .cmap-list > li');
+    const mark = (el) => {
+      const owner = el?.closest?.('[data-c]');
+      const only = owner?.dataset.c;
+      for (const e of dimmable()) {
+        // Trails carry their own resting opacity, so restoring means clearing
+        // the override rather than writing 1 over the top of it.
+        e.style.opacity = only === undefined || e.dataset.c === only ? '' : '.12';
+      }
+      if (only === undefined) delete fig.dataset.hover;
+      else fig.dataset.hover = only;
+    };
+    fig.addEventListener('pointerover', (e) => mark(e.target));
+    fig.addEventListener('pointerleave', () => mark(null));
+    fig.addEventListener('focusin', (e) => mark(e.target));
+    fig.addEventListener('focusout', () => mark(null));
+  }
+</script>

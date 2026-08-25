@@ -883,8 +883,15 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-key--trail svg{width:22px}
 .cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
 
-/* Everything fades but the person under the cursor. The per-person rules are
-   generated in the component; these are the parts that do not vary. */
+/* Everything recedes but the person under the cursor. Two rules, keyed on an
+   attribute the script puts on the figure — a pin and its name live in
+   different subtrees, so there is nothing a pure-CSS sibling selector could
+   reach across. Without the script nothing fades, which is the honest default. */
+/* The hovered person's pins grow a little. The script dims the others by
+   writing an inline opacity, so "has no inline opacity" is exactly "is the one
+   being pointed at" — expressed here rather than as a second class to keep in
+   step. */
+.cmap[data-hover] .cmap-pin:not([style*="opacity"]) circle{r:7}
 .cmap-pin, .cmap-trail, .cmap-list > li{transition:opacity .15s ease}
 .cmap-list > li{outline-offset:3px}
 @media (prefers-reduced-motion:reduce){
@@ -920,11 +927,16 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 :root[data-theme="dark"] .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
 :root[data-theme="dark"] .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
 
-/* The map's honesty note. Sits between the figure and the list because it
-   qualifies both, and it is the first thing worth knowing about either. */
-.cmap-caveat{
-  margin:.9rem 0 0; padding:.6rem .8rem;
-  font-size:.8rem; line-height:1.55; color:var(--ink-mute);
-  background:var(--sunk); border-radius:8px;
+
+
+/* The map's person picker. */
+.cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:0 0 .7rem}
+.cmap-pick label{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-faint);
 }
-.cmap-caveat strong{color:var(--ink-2); font-weight:600}
+.cmap-count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto}
+
+/* With one person selected the list is a single record rather than a grid of
+   thirty-four, so it should not be laid out as columns. */
+.cmap[data-only]:not([data-only=""]) .cmap-list{grid-template-columns:1fr}
