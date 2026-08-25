@@ -136,6 +136,27 @@ const site = buildInfo();
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
       }
+      if (t.dataset.possel !== undefined) {
+        // Scoped to the section the button sits in, so it can never reach
+        // another section's entries.
+        const group = t.closest('.pickgroup');
+        const want = t.dataset.possel;
+        let on = 0;
+        for (const b of group.querySelectorAll('.itembox')) {
+          const pos = Number(b.dataset.pos);
+          // An entry with no position — no author marked `me` — is not a paper
+          // this cut can speak about, so only "all" and "none" touch it.
+          const keep = want === 'all' ? true
+            : want === 'none' ? false
+            : Number.isFinite(pos) && pos <= Number(want);
+          b.checked = keep;
+          if (keep) on += 1;
+        }
+        recount();
+        status(want === 'none' ? 'Publications cleared.'
+          : want === 'all' ? `All ${on} publications selected.`
+          : `${on} publications with author position ${want} or better.`);
+      }
       if (t.dataset.preset) {
         const ids = new Set(MEMBERSHIP[t.dataset.preset] ?? []);
         boxes().forEach((b) => (b.checked = ids.has(b.value)));

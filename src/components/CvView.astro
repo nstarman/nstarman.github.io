@@ -4,9 +4,30 @@
 import CvHeader from './CvHeader.astro';
 import { presetNames, preset, resolve, sectionIndex } from '../lib/presets.js';
 import { dateLabel, authors, venueLine,
-  venueUrl, links, REL_ICON, relKey } from '../lib/data.js';
+  venueUrl, links, REL_ICON, relKey, authorPosition } from '../lib/data.js';
 import { spans, detailLines } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
+
+/**
+ * Author-position stops for the publications selector, from the section's own
+ * items. A stop that admits the same papers as the one before it, or as all of
+ * them, is a button that does nothing — with positions 1, 2 and 4 that leaves
+ * 1 and 2, and None/All bracket them.
+ */
+function posStops(section) {
+  const positions = section.items
+    .filter((i) => i.type === 'publication')
+    .map(authorPosition)
+    .filter((n) => n != null);
+  if (positions.length === 0) return [];
+  const stops = [];
+  for (let n = 1; n <= 4; n += 1) {
+    const count = positions.filter((p) => p <= n).length;
+    const previous = stops.length ? stops[stops.length - 1].count : 0;
+    if (count > previous && count < positions.length) stops.push({ n, count });
+  }
+  return stops.map((s2) => s2.n);
+}
 
 // `pick` turns the same CV into the builder's picker: every entry keeps its
 // full rendering and gains a checkbox. Reading what you are selecting is the
@@ -74,6 +95,20 @@ const money = (a) => {
       )}
       <h3 class="cvsection" id={s.id}>{s.heading}</h3>
       {collapsed && <span class="cvcount">{s.items.length}</span>}
+      {/* Publications only, and only in the picker. The section checkbox is all
+          or nothing; this is the same author-position cut the publications page
+          offers, so a first-author CV is one click rather than nineteen. Hidden
+          until the heading is hovered or something inside it takes focus, so it
+          does not compete with the headings that have no such control. */}
+      {selectable && s.id === 'publications' && posStops(s).length > 0 && (
+        <span class="possel" role="group" aria-label="Select publications by author position">
+          <button type="button" class="posbtn" data-possel="none">None</button>
+          {posStops(s).map((n) => (
+            <button type="button" class="posbtn" data-possel={n}>{n}</button>
+          ))}
+          <button type="button" class="posbtn" data-possel="all">All</button>
+        </span>
+      )}
       {selectable && s.items.some((i) => detail(i).length > 0) && (
         <label class="subgrouplab">
           <input type="checkbox" class="subgroup" checked={level === 'full'}
@@ -133,6 +168,8 @@ const money = (a) => {
              id={`item-${item.id}`}>
           {pick && (
             <input type="checkbox" class="itembox" value={item.id}
+                   data-pos={item.type === 'publication'
+                     ? (authorPosition(item) ?? undefined) : undefined}
                    checked={isPicked(item.id)}
                    aria-label={`Include ${item.title}`} />
           )}
