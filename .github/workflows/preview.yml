@@ -6,13 +6,14 @@ name: Preview
 # GitHub Pages serves one deployment per repository, which is the production
 # site, so previews go to Cloudflare Pages instead. Setup, once:
 #
-#   1. Cloudflare dashboard -> Workers & Pages -> Create -> Pages ->
-#      "Direct Upload", name the project `nstarkman-space`.
-#   2. My Profile -> API Tokens -> Create Token -> "Edit Cloudflare Workers"
-#      (or a custom token with Account / Cloudflare Pages / Edit).
-#   3. This repo -> Settings -> Secrets and variables -> Actions:
-#        CLOUDFLARE_API_TOKEN    the token from step 2
-#        CLOUDFLARE_ACCOUNT_ID   the ID on the dashboard's right-hand sidebar
+#   1. Cloudflare -> My Profile -> API Tokens -> Create Custom Token, with one
+#      permission: Account / Cloudflare Pages / Edit.
+#   2. This repo -> Settings -> Secrets and variables -> Actions:
+#        CLOUDFLARE_API_TOKEN    the token from step 1
+#        CLOUDFLARE_ACCOUNT_ID   the ID in the dashboard's right-hand sidebar
+#
+# The Pages project itself is created by the job below if it is missing, so
+# there is nothing to set up by hand beyond those two secrets.
 #
 # Until those secrets exist the job skips rather than fails, so this workflow
 # is safe to merge before the account is set up — and it will skip for pull
@@ -77,15 +78,29 @@ jobs:
         run: rm -f dist/CNAME
 
       - if: steps.guard.outputs.ready == 'true'
+        name: Ensure the Pages project exists
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Already exists is the normal case and not an error.
+          command: >-
+            pages project create nstarkman-space
+            --production-branch=master
+        continue-on-error: true
+
+      - if: steps.guard.outputs.ready == 'true'
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # dist/ is untracked, so the checkout always looks dirty to wrangler.
           command: >-
             pages deploy dist
             --project-name=nstarkman-space
             --branch=pr-${{ github.event.number }}
+            --commit-dirty=true
 
       - if: steps.guard.outputs.ready == 'true'
         uses: marocchino/sticky-pull-request-comment@v2
