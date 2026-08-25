@@ -186,10 +186,17 @@ h2{
   margin-bottom:2rem; position:relative;
 }
 /* The divider now sits in the gap below the box rather than inside its tint. */
+/* The lead's underline is the first of the tier dividers, not decoration: it
+   marks the boundary between the lead and the tier below it, and matches
+   .tierbreak's 32% width so a page of them reads as one series. On the home
+   page there are no tiers below — the section stops after the headline grid —
+   so the rule was one hairline floating in a gap, separating the last thing
+   from nothing. */
 .lead::after{
   content:""; position:absolute; bottom:-1.05rem; left:50%; transform:translateX(-50%);
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
+.lead--last::after{content:none}
 .lead .name{font-family:var(--mono); font-size:1.3rem; font-weight:500; letter-spacing:-.01em}
 .lead .role-line{
   font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
