@@ -70,11 +70,7 @@ h1{
   line-height:1.1; margin:0; letter-spacing:-.015em; text-wrap:balance;
 }
 .role{margin:0; color:var(--ink-mute); font-size:1rem}
-.role em{color:var(--ink-2); font-style:normal; font-weight:500}
-/* The post sits a step above the fellowship it is held under, so it is the
-   heavier of the two — but 600 rather than the browser's 700, which at this
-   size reads as shouting next to the 500 beside it. */
-.role strong{color:var(--ink-2); font-weight:600}
+.role em, .role strong{color:var(--ink-2); font-style:normal; font-weight:500}
 
 .pills{display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.5rem; padding:0; list-style:none}
 .pill{
