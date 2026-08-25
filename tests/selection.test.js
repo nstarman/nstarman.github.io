@@ -88,4 +88,27 @@ describe('tolerating the merely odd', () => {
   it('ignores fields it does not know', () => {
     expect(read({ somethingNew: { a: 1 } }).items.size).toBe(0);
   });
+
+  it('carries the style through a round trip', () => {
+    const doc = encode({ items: ['a'], lines: {}, style: 'plain' });
+    expect(doc.style).toBe('plain');
+    expect(decode(JSON.stringify(doc)).style).toBe('plain');
+  });
+
+  it('reads no style as null, so a file saved before styles still loads', () => {
+    // The builder turns null into the default; decode does not decide that.
+    expect(encode({ items: [] }).style).toBeNull();
+    expect(read({}).style).toBeNull();
+    expect(read({ style: 42 }).style).toBeNull();
+  });
+
+  it('returns an unknown style rather than rejecting the file', () => {
+    // A file from a build with a style this one lacks is still a good
+    // selection; the caller says so and falls back.
+    expect(read({ style: 'from-the-future' }).style).toBe('from-the-future');
+  });
+
+  it('refuses an absurdly long style name', () => {
+    expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
+  });
 });
