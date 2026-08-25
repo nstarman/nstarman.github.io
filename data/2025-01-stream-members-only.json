@@ -23,27 +23,33 @@
     },
     {
       "family": "Nibauer",
-      "given": "Jacob"
+      "given": "Jacob",
+      "orcid": "0000-0001-8042-5794"
     },
     {
       "family": "Bovy",
-      "given": "Jo"
+      "given": "Jo",
+      "orcid": "0000-0001-6855-442X"
     },
     {
       "family": "Webb",
-      "given": "Jeremy"
+      "given": "Jeremy",
+      "orcid": "0000-0003-3613-0854"
     },
     {
       "family": "Tavangar",
-      "given": "Kiyan"
+      "given": "Kiyan",
+      "orcid": "0000-0001-6584-6144"
     },
     {
       "family": "Price-Whelan",
-      "given": "Adrian"
+      "given": "Adrian",
+      "orcid": "0000-0003-0872-7098"
     },
     {
       "family": "Bonaca",
-      "given": "Ana"
+      "given": "Ana",
+      "orcid": "0000-0002-7846-9787"
     }
   ],
   "venue": {

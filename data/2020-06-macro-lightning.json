@@ -21,15 +21,18 @@
     },
     {
       "family": "Sidhu",
-      "given": "Jagjit Singh"
+      "given": "Jagjit Singh",
+      "orcid": "0000-0002-1956-1305"
     },
     {
       "family": "Winch",
-      "given": "Harrison"
+      "given": "Harrison",
+      "orcid": "0000-0002-0092-6271"
     },
     {
       "family": "Starkman",
-      "given": "Glenn"
+      "given": "Glenn",
+      "orcid": "0000-0002-5053-1542"
     }
   ],
   "venue": {
