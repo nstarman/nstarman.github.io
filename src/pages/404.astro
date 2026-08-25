@@ -1,0 +1,19 @@
+---
+// Both hosts look for /404.html: GitHub Pages serves it in place of its own
+// generic page, and Cloudflare Pages — which previews run on — answers every
+// unknown path with the homepage at 200 unless this file exists, so without it
+// a broken link in a pull request looks like a working one.
+import Base from '../layouts/Base.astro';
+---
+<Base title="Not found — Nathaniel Starkman" description="That page does not exist.">
+  <main>
+    <section>
+      <div class="wrap">
+        <h2>Not found</h2>
+        <p>That page does not exist. Try <a href="/">the homepage</a>,
+          <a href="/publications/">publications</a>, <a href="/software/">software</a>,
+          or <a href="/cv/">the CV</a>.</p>
+      </div>
+    </section>
+  </main>
+</Base>

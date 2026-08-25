@@ -179,14 +179,28 @@ covered; a talk references the paper it presented. This replaces the LaTeX
 
 ```bash
 npm install          # once
-npm run validate     # every data file against the schema
-npm run test:schema  # the above, plus <date.start>-<id>.json filenames, plus asserts the
-                     # bad fixtures are still rejected
+npm run validate     # every data file against the schema — the quick one
+npm test             # everything CI runs, below
 ```
 
-CI runs `test:schema` on every PR. An invalid item fails the check rather than
+`npm test` is six gates, and CI runs all of them on **every** pull request
+whatever it touched:
+
+| | |
+|---|---|
+| `test:unit` | the loader, preset resolution, the render model, BibTeX escaping |
+| `test:schema` | the schema, `<date.start>-<id>.json` filenames, refs, cross-links, and the bad fixtures still being rejected |
+| `test:bibtex` | one entry per publication, braces balanced, maths in abstracts intact |
+| `build` | the site compiles |
+| `test:a11y` | every heading and link has an accessible name |
+| `test:links` | every internal href, anchor and asset in `dist/` resolves |
+
+CI additionally compiles the four CV PDFs and asserts the one-page CV is one
+page and the two-page CV is two. An invalid item fails the check rather than
 silently vanishing from a render — the failure this whole setup exists to
 prevent.
+
+Every pull request also gets a live preview URL, posted as a comment.
 
 ## 4. Open the PR
 

@@ -1,0 +1,125 @@
+name: Preview
+
+# A live preview URL for every pull request, so a change to the site can be
+# looked at rather than imagined.
+#
+# GitHub Pages serves one deployment per repository, which is the production
+# site, so previews go to Cloudflare Pages instead. Setup, once:
+#
+#   1. Cloudflare -> My Profile -> API Tokens -> Create Custom Token, with one
+#      permission: Account / Cloudflare Pages / Edit.
+#   2. This repo -> Settings -> Secrets and variables -> Actions:
+#        CLOUDFLARE_API_TOKEN    the token from step 1
+#        CLOUDFLARE_ACCOUNT_ID   the ID in the dashboard's right-hand sidebar
+#
+# The Pages project itself is created by the job below if it is missing, so
+# there is nothing to set up by hand beyond those two secrets.
+#
+# Until those secrets exist the job skips rather than fails, so this workflow
+# is safe to merge before the account is set up — and it will skip for pull
+# requests from forks, which cannot read secrets.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: preview
+    runs-on: ubuntu-latest
+    # `secrets` cannot be used in a job-level `if`, so the guard is a step.
+    steps:
+      - id: guard
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Cloudflare secrets are not set — see the comments in this workflow." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/checkout@v5
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm ci
+
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build
+
+      # The CV PDFs are part of the site; a preview without them would 404 on
+      # every Download button.
+      - if: steps.guard.outputs.ready == 'true'
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15.1"
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build:pdf
+
+      # The production domain must not follow the preview: CNAME in the
+      # artifact would try to claim nstarkman.space on Cloudflare too.
+      #
+      # Cloudflare Pages also refuses any file over 25 MiB, and the Typst
+      # compiler wasm the CV builder loads is 27 MiB. GitHub Pages serves it,
+      # so this costs the preview one page — /cv/builder/ says "Compile failed"
+      # there — rather than costing the live site anything. Matched by size,
+      # not by name: the built filename carries a content hash.
+      - if: steps.guard.outputs.ready == 'true'
+        run: |
+          rm -f dist/CNAME
+          find dist -type f -size +25M -printf 'too large for Pages, dropped: %p (%s bytes)\n' -delete \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - if: steps.guard.outputs.ready == 'true'
+        name: Ensure the Pages project exists
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Already exists is the normal case and not an error.
+          command: >-
+            pages project create nstarkman-space
+            --production-branch=master
+        continue-on-error: true
+
+      - if: steps.guard.outputs.ready == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # dist/ is untracked, so the checkout always looks dirty to wrangler.
+          command: >-
+            pages deploy dist
+            --project-name=nstarkman-space
+            --branch=pr-${{ github.event.number }}
+            --commit-dirty=true
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview
+          message: |
+            **Preview:** ${{ steps.deploy.outputs.deployment-url }}
+
+            Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
+            Updated on every push to this pull request.
+
+            `/cv/builder/` cannot compile here — its 27 MiB wasm is over Cloudflare's
+            25 MiB file limit. Every other page is the real build.

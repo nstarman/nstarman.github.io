@@ -129,6 +129,7 @@ export function cvModel(presetName, only, keepLine) {
       heading: s.heading,
       icon: s.icon,
       layout: s.layout,
+      detail: s.detail,
       dropped: s.dropped,
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
