@@ -108,6 +108,35 @@ export function venueUrl(item) {
   return null;
 }
 
+/**
+ * A package's paper, where the record points at one.
+ *
+ * `unxt` refs `unxt-joss`, `astropy` refs the v5 paper, `trackstream` refs the
+ * stream-tracks paper. The software entry itself carries only code and docs
+ * links, so without following the ref a published package looks unpublished.
+ *
+ * `refs` is not a paper field: `coordinax` refs `unxt`, another package. Hence
+ * the type check — it is what stops a package being called published because
+ * it happens to point at a sibling.
+ */
+const CITE_RELS = ['paper', 'preprint', 'doi'];
+export function softwarePaper(sw) {
+  for (const id of sw.refs ?? []) {
+    const ref = resolve(id);
+    if (ref?.type !== 'publication') continue;
+    // The article at the journal first. Taking the first citation link instead
+    // sent Astropy to its ADS record and macro_lightning to its arXiv preprint,
+    // because REL_ORDER ranks `ads` and `preprint` above `paper` — right for a
+    // trail of marks, wrong when only one link is being chosen.
+    const article = venueUrl(ref);
+    if (article) return { rel: 'paper', url: article, label: 'paper', id: ref.id, status: ref.status };
+    // Nothing published yet: a preprint or a review thread is what there is.
+    const cite = links(ref).find((l) => CITE_RELS.includes(l.rel));
+    if (cite) return { rel: 'paper', url: cite.url, label: 'paper', id: ref.id, status: ref.status };
+  }
+  return null;
+}
+
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */
 export const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 

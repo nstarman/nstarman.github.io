@@ -1,7 +1,7 @@
 ---
 // Three tiers, two dividers: the lead package, the headliners as cards, then
 // everything else compactly. Tier comes from the data, not from an id check.
-import { byType, links } from '../lib/data.js';
+import { byType, links, softwarePaper } from '../lib/data.js';
 import LinkIcons from './LinkIcons.astro';
 
 // The landing page shows the lead and the headliners only; the long tail is
@@ -15,22 +15,31 @@ const other = (tail ? all.filter((s) => s.tier === 'other') : [])
   .sort((a, b) => a.title.localeCompare(b.title));
 
 const href = (s) => links(s)[0]?.url ?? '#';
+// The paper leads the trail where there is one: it is the citable artefact,
+// and the package's own code and docs links are already beside it.
+const trail = (s) => {
+  const paper = softwarePaper(s);
+  return paper ? [paper, ...links(s)] : links(s);
+};
+// Marks the card for the filter — present or absent, so the CSS tests for the
+// attribute. An empty string is dropped from the output, hence the value.
+const hasPaper = (s) => (softwarePaper(s) ? 'yes' : undefined);
 ---
 {lead && (
-  <div class="lead">
+  <div class="lead" data-paper={hasPaper(lead)}>
     <div class="name"><a href={href(lead)}>{lead.title}</a></div>
     {lead.role && <div class="role-line">{lead.role}</div>}
     <p>{lead.details ?? lead.summary}</p>
-    <LinkIcons links={links(lead)} />
+    <LinkIcons links={trail(lead)} />
   </div>
 )}
 
 <div class="soft">
   {headline.map((s) => (
-    <div class="card">
+    <div class="card" data-paper={hasPaper(s)}>
       <div class="name"><a href={href(s)}>{s.title}</a></div>
       <p>{s.details ?? s.summary}</p>
-      <LinkIcons links={links(s)} />
+      <LinkIcons links={trail(s)} />
     </div>
   ))}
 </div>
@@ -40,10 +49,10 @@ const href = (s) => links(s)[0]?.url ?? '#';
     <div class="tierbreak" role="presentation"></div>
     <div class="soft soft--mini">
       {other.map((s) => (
-        <div class="card card--mini">
+        <div class="card card--mini" data-paper={hasPaper(s)}>
           <div class="name"><a href={href(s)}>{s.title}</a></div>
           <p>{s.summary}</p>
-          <LinkIcons links={links(s)} />
+          <LinkIcons links={trail(s)} />
         </div>
       ))}
     </div>

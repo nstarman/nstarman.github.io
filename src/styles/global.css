@@ -190,8 +190,12 @@ h2{
   color:var(--accent);
 }
 .lead p{margin:0; font-size:1rem; color:var(--ink-2); line-height:1.55}
-.soft{display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
-  gap:.9rem; grid-auto-rows:1fr}
+/* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
+   list down to one card made it stretch the full width while the row beneath
+   stayed three-up. auto-fill keeps the tracks, so a card is the same width
+   whether it has neighbours or not. */
+.soft{display:grid; grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));
+  gap:.7rem; grid-auto-rows:1fr}
 .card{
   display:flex; flex-direction:column; gap:.3rem;
   /* A whisper of a squircle — enough to group the cards, not enough to draw a
@@ -272,7 +276,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 /* Software tier 3: the long tail. Same card, three across instead of two, and
    dialled down — smaller type, tighter padding, shorter box. Same aesthetic, a
    quieter voice, so the four headliners still lead. */
-.soft--mini{grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:.7rem}
+/* No column override: the headline grid and this one share tracks and gap, so
+   a card in either lines up with the card above it. They differed — 15rem/.9rem
+   against 13rem/.7rem — which resolved to two columns over three, and nothing
+   in the two rows ever aligned. The tiers still read apart, by padding, radius
+   and type size on .card--mini rather than by column width. */
 .card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
 .card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
 .card--mini .name .stars{font-size:.66rem}
@@ -480,6 +488,25 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 }
 .posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 
+/* ---------- software: filter by whether a package has a paper ---------- */
+/* Two stops, All first and selected: the list's own state is every package, and
+   the filter narrows from there. There is no inverse stop — "packages without a
+   paper" is not a thing anyone looks for. The thumb positions reuse .pubfilter;
+   only the hiding differs. `data-paper` is present or absent rather than
+   true/false, so these test the attribute. */
+#sw-all:checked ~ .h2row .pubfilter::before{transform:translateX(0)}
+#sw-yes:checked ~ .h2row .pubfilter::before{transform:translateX(100%)}
+#sw-all:checked ~ .h2row .pubfilter label[for="sw-all"],
+#sw-yes:checked ~ .h2row .pubfilter label[for="sw-yes"]{color:var(--ink)}
+.posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
+
+#sw-yes:checked ~ .lead:not([data-paper]),
+#sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
+/* The tier divider stays. Hiding it took its margins with it — the only thing
+   separating the two grids — so the filtered headline card ran straight into
+   the row beneath. Both tiers keep visible cards under either stop, so the
+   divider is still saying something true. */
+
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and
    this has to be reachable and arrow-navigable like any other radio group. */
@@ -493,9 +520,14 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .poslabel{font-family:var(--mono); font-size:.66rem; color:var(--ink-faint);
   letter-spacing:.02em; margin-right:.4rem; white-space:nowrap}
 
+/* inline-grid with equal auto columns, not flex. flex-basis:0 made every
+   segment the same width whatever it held, so a label needing more than its
+   share overflowed into the next one — "PAPER" wanted 48px of a 42px segment
+   and bled across the thumb. Equal grid columns size to the widest label
+   instead, so the segments fit their contents and still match the thumb. */
 .pubfilter{
-  position:relative; display:inline-flex; isolation:isolate;
-  border-radius:999px; padding:2px; background:var(--sunk);
+  position:relative; display:inline-grid; grid-auto-flow:column; grid-auto-columns:1fr;
+  isolation:isolate; border-radius:999px; padding:2px; background:var(--sunk);
 }
 /* The thumb is one segment wide, so the segments have to be equal — see the
    flex-basis on the labels. A border here as well as on the track read as two
@@ -513,9 +545,8 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .pubfilter[data-stops="5"]{--stops:5}
 
 .pubfilter label{
-  /* basis 0 so every segment is exactly 1/N — "All" is wider than "1", and with
-     natural widths the thumb would never line up with the label it highlights. */
-  flex:1 1 0; text-align:center; min-width:2.3rem; padding:.12rem .45rem;
+  /* The grid makes the columns equal; the label only has to fill its own. */
+  text-align:center; min-width:2.2rem; padding:.12rem .45rem; white-space:nowrap;
   font-family:var(--mono); font-size:.7rem; letter-spacing:.02em;
   color:var(--ink-mute); cursor:pointer; border-radius:999px;
   transition:color .18s ease;

@@ -7,7 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
-import { authors, venueLine, dateLabel, links, resolve as item0, REL_ICON, relKey } from './data.js';
+import { authors, venueLine, dateLabel, links, resolve as item0, softwarePaper, REL_ICON, relKey } from './data.js';
 import { spans, detailLines } from './inline.js';
 
 /**
@@ -70,21 +70,12 @@ function subject(item) {
  * Awards keep their figure in the record but do not print it — a fellowship is
  * not usefully described by its stipend, and a grant is.
  */
-/**
- * A package's paper, where the record points at one. `unxt` refs `unxt-joss`
- * and `astropy` refs the v5 paper, but the software entry carried only its own
- * code and docs links — so a published package looked unpublished.
- */
-const CITE = ['paper', 'preprint', 'doi'];
-function paperOf(sw) {
-  for (const id of sw.refs ?? []) {
-    const ref = item0(id);
-    if (ref?.type !== 'publication') continue;
-    const cite = links(ref).find((l) => CITE.includes(l.rel));
-    if (cite) return { rel: 'paper', url: cite.url, label: 'paper', icon: 'paper' };
-  }
-  return null;
-}
+/** One definition, in lib/data.js, so the PDF and the website cannot disagree
+ *  about which packages have a paper. The template wants an `icon`. */
+const paperOf = (sw) => {
+  const p = softwarePaper(sw);
+  return p ? { ...p, icon: 'paper' } : null;
+};
 
 /** The byline, with the CV's owner bold.
  *

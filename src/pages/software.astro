@@ -1,12 +1,30 @@
 ---
 import Base from '../layouts/Base.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
+import { byType, softwarePaper } from '../lib/data.js';
+
+const all = byType('software');
+const withPaper = all.filter(softwarePaper).length;
 ---
 <Base title="Software — Nathaniel Starkman">
   <main>
     <section>
       <div class="wrap">
-        <h2>Software</h2>
+        {/* Direct children of .wrap and ahead of the cards, so the filter is a
+            plain sibling selector on :checked — no JavaScript. Clipped rather
+            than display:none so they stay focusable and arrow-navigable. */}
+        <input type="radio" name="sw" id="sw-all" class="posradio" checked />
+        <input type="radio" name="sw" id="sw-yes" class="posradio" />
+
+        <div class="h2row">
+          <h2>Software</h2>
+          <span class="more">
+            <span class="pubfilter" data-stops="2">
+              <label for="sw-all" title={`All ${all.length} packages`}>All</label>
+              <label for="sw-yes" title={`${withPaper} packages with a paper`}>Paper</label>
+            </span>
+          </span>
+        </div>
         <SoftwareSection />
       </div>
     </section>
