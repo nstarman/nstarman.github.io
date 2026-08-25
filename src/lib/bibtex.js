@@ -7,25 +7,35 @@
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun',
                 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
+// TeX spells its own dashes; a literal em dash breaks a pdflatex run that has
+// not been told the input is UTF-8.
+const TEX = {
+  "\\": "\\textbackslash{}",
+  "&": "\\&",
+  "%": "\\%",
+  "$": "\\$",
+  "#": "\\#",
+  "_": "\\_",
+  "{": "\\{",
+  "}": "\\}",
+  "~": "\\textasciitilde{}",
+  "^": "\\textasciicircum{}",
+  "—": "---",
+  "–": "--",
+};
+
 /**
  * Escape the characters that are syntax in TeX.
  *
- * The backslash is parked on a sentinel first: replacing it with
- * `\textbackslash{}` up front meant the brace pass then escaped that command's
- * own braces, turning `\star` into `\textbackslash\{\}star`.
+ * One pass, so every character of the input is replaced exactly once and no
+ * replacement can be re-escaped by a later step. The chained version needed a
+ * sentinel to hold the backslash — otherwise the brace pass escaped
+ * `\textbackslash{}`'s own braces and turned `\star` into
+ * `\textbackslash\{\}star` — and that sentinel was itself a hole: a NUL in the
+ * input came back out as a backslash.
  */
 function esc(value) {
-  const SENTINEL = "\u0000";
-  return String(value)
-    .replace(/\\/g, SENTINEL)
-    .replace(/([&%$#_{}])/g, "\\$1")
-    .replace(/~/g, "\\textasciitilde{}")
-    .replace(/\^/g, "\\textasciicircum{}")
-    // TeX spells its own dashes; a literal em dash breaks a pdflatex run that
-    // has not been told the input is UTF-8.
-    .replace(/\u2014/g, "---")
-    .replace(/\u2013/g, "--")
-    .replaceAll(SENTINEL, "\\textbackslash{}");
+  return String(value).replace(/[\\&%$#_{}~^–—]/g, (ch) => TEX[ch]);
 }
 
 /**
