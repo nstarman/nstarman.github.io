@@ -871,7 +871,10 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 @media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
 
 .cmap figcaption{
-  margin:0 0 .7rem; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
+  margin:0 0 .7rem;
+  /* Inset by the map's own corner radius, so the first dot and the last word
+     begin where the squircle stops curving rather than floating past it. */
+  padding:0 12px; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
   display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .9rem;
 }
 /* The legend shows the two pins rather than describing them; a sentence
@@ -964,3 +967,9 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   }
 }
 :root[data-theme="dark"] .cmap-partial{color:#f0b978; background:#3a2a14; border-color:#6b4a1e}
+
+/* ORCID's own green, because it is their mark and a reader recognises it
+   faster than any label would explain it. */
+.cmap-orcid{float:right; margin:0 0 .2rem .5rem; line-height:0; color:#A6CE39}
+.cmap-orcid .ico{width:15px; height:15px; fill:currentColor; display:block}
+.cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}

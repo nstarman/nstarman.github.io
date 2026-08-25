@@ -97,6 +97,11 @@
       "lon": -71.1219,
       "matched": "Harvard Graduate School of Education, 13, Appian Way, Old Cambridge, West Cambridge, Cambridge, Middlesex County, Massachusetts, 02138, United States"
     },
+    "Harvey Mudd College": {
+      "lat": 34.1061,
+      "lon": -117.7087,
+      "matched": "Harvey Mudd College, North Mills Avenue, Claremont, Los Angeles County, California, 91711, United States"
+    },
     "Hunter College": {
       "lat": 40.7683,
       "lon": -73.9644,
@@ -112,10 +117,25 @@
       "lon": 12.5723,
       "matched": "Københavns Universitet, Copenhagen (geocoded) — same place as University of Copenhagen"
     },
+    "Lanzhou University": {
+      "lat": 36.0505,
+      "lon": 103.8545,
+      "matched": "兰州大学, 天水中路, 渭源路街道, 兰州市, 城关区, 兰州市, 甘肃省, 730001, 中国"
+    },
     "Leibniz Institute for Astrophysics Potsdam": {
       "lat": 52.4053,
       "lon": 13.103,
       "matched": "Leibniz-Institut für Astrophysik Potsdam, Allee nach Glienicke, Babelsberg Nord, Potsdam, Brandenburg, 14482, Deutschland"
+    },
+    "Leiden University": {
+      "lat": 52.1686,
+      "lon": 4.4597,
+      "matched": "Universiteit Leiden, Blauwpoortsbrug, Oude Morsch, Binnenstad, Leiden, Zuid-Holland, Nederland, 2312 EL, Nederland"
+    },
+    "Liverpool John Moores University": {
+      "lat": 53.4038,
+      "lon": -2.9727,
+      "matched": "Liverpool John Moores University Mount Pleasant Campus, 80-98, Mount Pleasant, Knowledge Quarter, Edge Hill, Liverpool, Liverpool City Region, England, L3 5UZ, United Kingdom"
     },
     "Lowell Observatory": {
       "lat": 35.2017,
@@ -142,6 +162,11 @@
       "lon": 8.7234,
       "matched": "Max-Planck-Institut für Astronomie, Stockbrunnenweg, Königstuhl, Altstadt, Heidelberg, Baden-Württemberg, 69117, Deutschland"
     },
+    "Mills College": {
+      "lat": 37.7799,
+      "lon": -122.1835,
+      "matched": "Mills College at Northeastern University, 5000, MacArthur Boulevard, Seminary Park, Oakland, Alameda County, California, 94613, United States"
+    },
     "NASA": {
       "lat": 38.8829,
       "lon": -77.0164,
@@ -162,6 +187,16 @@
       "lon": -73.995,
       "matched": "New York University, Sullivan Street, University Village, Manhattan, New York County, New York, 10012, United States"
     },
+    "Northeastern University": {
+      "lat": 42.3351,
+      "lon": -71.0893,
+      "matched": "Northeastern University, 360, Huntington Avenue, Fenway-Kenmore, Boston, Suffolk County, Massachusetts, 02115, United States"
+    },
+    "Oberlin College": {
+      "lat": 41.2957,
+      "lon": -82.2216,
+      "matched": "Oberlin College, Carpenter Court, Oberlin, Lorain County, Ohio, 44074, United States"
+    },
     "Observatories of the Carnegie Institution of Washington": {
       "lat": 34.1563,
       "lon": -118.1334,
@@ -172,6 +207,16 @@
       "lon": -74.6584,
       "matched": "Princeton University, Alexander Street, Princeton, Mercer County, New Jersey, 08540, United States"
     },
+    "Rice University": {
+      "lat": 29.7168,
+      "lon": -95.4048,
+      "matched": "Rice University, 6100, Main Street, University Place, Houston, Harris County, Texas, 77005, United States"
+    },
+    "Ruprecht-Karls-Universität Heidelberg": {
+      "lat": 49.4186,
+      "lon": 8.6692,
+      "matched": "Universität Heidelberg, Handschuhsheimer Landstraße, Handschuhsheim, Heidelberg, Baden-Württemberg, 69121, Deutschland"
+    },
     "Rutgers The State University of New Jersey": {
       "lat": 40.4969,
       "lon": -74.449,
@@ -181,6 +226,11 @@
       "lat": 40.5204,
       "lon": -74.4645,
       "matched": "Rutgers University, Piscataway, NJ (geocoded)"
+    },
+    "Savitribai Phule Pune University": {
+      "lat": 18.5528,
+      "lon": 73.8266,
+      "matched": "Savitribai Phule Pune University, University Road, Model Colony, Pune, Pune City Subdistrict, Pune, Maharashtra, 411007, India"
     },
     "Simons Foundation": {
       "lat": 40.7392,
@@ -197,10 +247,30 @@
       "lon": -76.6303,
       "matched": "Space Telescope Science Institute, West 40th Street, Hampden, Greater Roland Park, Baltimore, Maryland, 21211, United States"
     },
+    "Stanford University": {
+      "lat": 37.4352,
+      "lon": -122.1746,
+      "matched": "Stanford University Hospital Center Heliport, Quarry Road Extension, Palo Alto, Santa Clara County, California, 94305, United States"
+    },
+    "Sun Yat-sen University": {
+      "lat": 23.0996,
+      "lon": 113.2924,
+      "matched": "中山大学(广州校区南校园), 135, 新港西路, 新港街道, 海珠区, 广州市, 广东省, 510275, 中国"
+    },
     "Technical University of Denmark": {
       "lat": 55.7854,
       "lon": 12.5202,
       "matched": "Danmarks Tekniske Universitet, Carlshøjvej, Fuglevad, Lundtofte, Kongens Lyngby, Lyngby-Taarbæk Kommune, Region Hovedstaden, 2800, Danmark"
+    },
+    "The University of Chicago": {
+      "lat": 41.7913,
+      "lon": -87.6008,
+      "matched": "The University of Chicago, 5801, South Ellis Avenue, Hyde Park, Chicago, Hyde Park Township, Cook County, Illinois, 60637, United States"
+    },
+    "The University of Edinburgh": {
+      "lat": 55.9427,
+      "lon": -3.189,
+      "matched": "Edinburgh University Library, 30, George Square, Pleasance, Southside, City of Edinburgh, Alba / Scotland, EH8 9LJ, United Kingdom"
     },
     "Univ. of Oregon": {
       "lat": 44.0444,
@@ -211,6 +281,11 @@
       "lat": 40.4507,
       "lon": -3.7178,
       "matched": "Facultad de Educación, Universidad Complutense de Madrid, Calle del Rector Royo-Villanova, Ciudad Universitaria, Moncloa-Aravaca, Madrid, Comunidad de Madrid, 28040, España"
+    },
+    "Universidad Politecnica": {
+      "lat": 41.2214,
+      "lon": 1.7301,
+      "matched": "Escola Politècnica Superior d''Enginyeria de Vilanova i la Geltrú (EPSEVG), 1, Avinguda de Víctor Balaguer, Barri de Mar, Vilanova i la Geltrú, Garraf, Barcelona, Catalunya, 08800, España"
     },
     "University College London": {
       "lat": 51.5242,
@@ -227,10 +302,30 @@
       "lon": -110.9517,
       "matched": "University of Arizona, North Queen Avenue, Tucson, Pima County, Arizona, 85721, United States"
     },
+    "University of Bologna": {
+      "lat": 44.4983,
+      "lon": 11.3545,
+      "matched": "Università di Bologna, Viale Carlo Berti Pichat, Irnerio, Santo Stefano, Bologna, Emilia-Romagna, 40126, Italia"
+    },
+    "University of California, Berkeley": {
+      "lat": 37.8755,
+      "lon": -122.2391,
+      "matched": "University of California, Berkeley, Dwight Way, Southside, Berkeley, Alameda County, California, 94720, United States"
+    },
     "University of Cambridge": {
       "lat": 52.1955,
       "lon": 0.1302,
       "matched": "University of Cambridge, 82-88, Hills Road, Petersfield, Cambridge, Cambridgeshire, Cambridgeshire and Peterborough, England, CB2 1NF, United Kingdom"
+    },
+    "University of Chicago": {
+      "lat": 41.7881,
+      "lon": -87.6048,
+      "matched": "University of Chicago, 5841, South Maryland Avenue, Hyde Park, Chicago, Hyde Park Township, Cook County, Illinois, 60637, United States"
+    },
+    "University of Colorado": {
+      "lat": 40.0076,
+      "lon": -105.2691,
+      "matched": "University of Colorado, 1100, 18th Street, Boulder, Boulder County, Colorado, 80309, United States"
     },
     "University of Copenhagen": {
       "lat": 55.6802,
@@ -241,6 +336,16 @@
       "lat": 29.6412,
       "lon": -82.3562,
       "matched": "University of Florida, Old Archer Road Trail, Gainesville, Alachua County, Florida, 32611, United States"
+    },
+    "University of Groningen": {
+      "lat": 53.2194,
+      "lon": 6.563,
+      "matched": "Rijksuniversiteit Groningen, Broerplein, Binnenstad-noord, Binnenstad, Centrum, Groningen, Nederland, 9712 CP, Nederland"
+    },
+    "University of Helsinki": {
+      "lat": 60.2267,
+      "lon": 25.0177,
+      "matched": "Helsingin yliopisto, Vallila, Keskinen suurpiiri, Helsinki, Helsingin seutukunta, Uusimaa, Manner-Suomi, 00790, Suomi / Finland"
     },
     "University of Manchester": {
       "lat": 53.466,
@@ -257,10 +362,35 @@
       "lon": -83.71,
       "matched": "University of Michigan, 500, South State Street, Burns Park, Ann Arbor, Washtenaw County, Michigan, 48109, United States"
     },
+    "University of North Carolina at Chapel Hill": {
+      "lat": 35.905,
+      "lon": -79.0478,
+      "matched": "University of North Carolina at Chapel Hill, Locust Court, Downtown, Chapel Hill, Orange County, North Carolina, 27599, United States"
+    },
+    "University of Oxford": {
+      "lat": 51.753,
+      "lon": -1.2914,
+      "matched": "Oxford University Innovation, 3, West Way, Minns Business Park, Botley, Botley and North Hinksey, Oxford, Oxfordshire, England, OX2 0JB, United Kingdom"
+    },
+    "University of Pennsylvania": {
+      "lat": 39.9522,
+      "lon": -75.1956,
+      "matched": "University of Pennsylvania, 1, Chestnut Street, West Philadelphia, Philadelphia, Philadelphia County, Pennsylvania, 19104, United States"
+    },
     "University of Pittsburgh": {
       "lat": 40.4442,
       "lon": -79.9625,
       "matched": "University of Pittsburgh, 4200, Fifth Avenue, Fifth & Forbes, Downtown, Pittsburgh, Allegheny County, Pennsylvania, 15260, United States"
+    },
+    "University of St Andrews": {
+      "lat": 56.3399,
+      "lon": -2.8118,
+      "matched": "University of St Andrews, North Street, Ladyhead, St Andrews, Fife, Alba / Scotland, KY16 9AJ, United Kingdom"
+    },
+    "University of Tartu": {
+      "lat": 58.381,
+      "lon": 26.7196,
+      "matched": "Tartu Ülikool, 18, Ülikooli, Vanalinn, Kesklinn, Tartu linn, Tartu maakond, 50090, Eesti"
     },
     "University of Toronto": {
       "lat": 43.6635,
@@ -297,10 +427,30 @@
       "lon": 4.8663,
       "matched": "Université Lyon 1, Avenue Claude Bernard, Tonkin, Villeurbanne, Lyon, Métropole de Lyon, Rhône, Auvergne-Rhône-Alpes, France métropolitaine, 69100, France"
     },
+    "Universtity of Wisconsin": {
+      "lat": 43.0766,
+      "lon": -89.4125,
+      "matched": "hand-placed: University of Wisconsin-Madison. The name is misspelt on the ORCID record it came from, and is kept as written so the collector still matches it."
+    },
     "Valencian International University": {
       "lat": 39.4715,
       "lon": -0.372,
       "matched": "Universidad Internacional de Valencia (geocoded)"
+    },
+    "Vanderbilt University": {
+      "lat": 36.1438,
+      "lon": -86.8028,
+      "matched": "Vanderbilt University, 2201, West End Avenue, Nashville, Davidson County, Middle Tennessee, Tennessee, 37235, United States"
+    },
+    "Washington University": {
+      "lat": 38.6472,
+      "lon": -90.3084,
+      "matched": "Washington University in St. Louis, 1, Brookings Drive, Wydown Skinker, Saint Louis, Missouri, 63130, United States"
+    },
+    "Yale University": {
+      "lat": 41.3136,
+      "lon": -72.9232,
+      "matched": "Yale University, Trumbull Street, Dixwell, New Haven, South Central Connecticut Planning Region, Connecticut, 06511, United States"
     }
   }
 }

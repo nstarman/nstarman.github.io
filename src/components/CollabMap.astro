@@ -31,7 +31,7 @@ const label = (pin) =>
       <svg viewBox="0 0 24 12" aria-hidden="true"><line x1="1" y1="6" x2="23" y2="6" /></svg>
       one person over time
     </span>
-    <span class="cmap-proj">Equal Earth projection.</span>
+    <span class="cmap-proj">Equal Earth projection</span>
   </figcaption>
 
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
@@ -63,7 +63,8 @@ const label = (pin) =>
       <option value="">Everyone</option>
       {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
     </select>
-    <span class="cmap-partial" title="Built from public ORCID records, which may not list every post">May be incomplete</span>
+    <span class="cmap-partial"
+          title="Mostly scraped from public ORCID records: it shows what each person has chosen to publish there, so posts can be missing, undated, or out of date.">May be incomplete / wrong</span>
   </div>
 
 
@@ -71,6 +72,11 @@ const label = (pin) =>
   <ol class="cmap-list">
     {people.map((p) => (
       <li data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
+        {/* Where the record came from, and the way to check it. */}
+        <a class="cmap-orcid" href={`https://orcid.org/${p.orcid}`}
+           aria-label={`${p.name} on ORCID`} title={`${p.name} on ORCID — ${p.orcid}`}>
+          <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-orcid" /></svg>
+        </a>
         <h3>{p.name}</h3>
         <ol hidden>
           {p.pins.map((pin) => (
