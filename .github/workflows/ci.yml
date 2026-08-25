@@ -24,8 +24,8 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
@@ -49,7 +49,7 @@ jobs:
       - name: Accessibility
         run: npm run test:a11y
 
-      - uses: typst-community/setup-typst@v4
+      - uses: typst-community/setup-typst@v5
         with:
           typst-version: "0.15.1"
 
@@ -61,7 +61,7 @@ jobs:
       - name: Links
         run: npm run test:links
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: site
           path: dist
