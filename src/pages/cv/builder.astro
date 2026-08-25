@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
+import { buildInfo } from '../../lib/buildinfo.js';
 
 // The picker is the complete CV itself, rendered server-side with a checkbox on
 // every entry — so what you tick is what you are about to compile, and the page
@@ -15,6 +16,8 @@ const picked = new Set(memberIds(START));
 const startLevel = preset(START).detail;
 const membership = Object.fromEntries(presetNames.map((n) => [n, memberIds(n)]));
 const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
+// Stamped into a saved selection so it can be taken back to the data it names.
+const site = buildInfo();
 ---
 <Base title="CV builder — Nathaniel Starkman">
   <main>
@@ -33,8 +36,11 @@ const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
           {presetNames.map((n) => (
             <button class="btn" type="button" data-preset={n}>{preset(n).label}</button>
           ))}
-          <span class="bl">·</span>
           <button class="btn" type="button" data-all="0">None</button>
+          <span class="sep">|</span>
+          <button class="btn" type="button" id="load">Load</button>
+          <input type="file" id="loadfile" accept="application/json,.json"
+                 hidden aria-hidden="true" tabindex="-1" />
           <span class="count" id="count">{picked.size} / {total}</span>
         </div>
 
@@ -59,9 +65,11 @@ const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
   <script type="application/json" id="membership" set:html={JSON.stringify(membership)}></script>
   <script type="application/json" id="detaillevels"
           set:html={JSON.stringify(Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])))}></script>
+  <script type="application/json" id="siteinfo" set:html={JSON.stringify(site)}></script>
 
   <script>
     import { cvModel } from '../../lib/cvmodel.js';
+    import { encode, decode } from '../../lib/selection.js';
     import typSource from '../../../cv/cv.typ?raw';
     // cv.typ draws its marks with image("icons/…"), which resolves against the
     // compilation root: cv/icons/ under the CLI, /icons/ here. Bundled at build
@@ -74,6 +82,7 @@ const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
     const boxes = () => [...document.querySelectorAll('.itembox')];
     const subs = () => [...document.querySelectorAll('.subbox')];
     const DETAIL = JSON.parse(document.getElementById('detaillevels').textContent);
+    const SITE = JSON.parse(document.getElementById('siteinfo').textContent);
 
     /** An unticked line greys out in place, so the page keeps showing what it
      *  is about to compile rather than describing it. */
@@ -138,6 +147,92 @@ const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
         recount();
         status(`Selection set from ${t.textContent}.`);
       }
+    });
+
+    // ── save & load ───────────────────────────────────────────────────────
+    // A long selection is real work, and it is only ever one reload from gone.
+
+    const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
+
+    /** What is ticked right now: entries, and which lines of each. */
+    const currentLines = () => {
+      const lines = {};
+      for (const b of subs()) {
+        if (!b.checked) continue;
+        (lines[b.dataset.id] ??= []).push(Number(b.dataset.line));
+      }
+      return lines;
+    };
+
+    const saveSelection = () => {
+      const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
+      const doc = encode({ items: chosen, lines: currentLines(), site: SITE });
+      // Indented: it is small, and a selection you can read and hand-edit in a
+      // text editor is worth more than the bytes saved.
+      const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `starkman-cv-${SITE.short ?? 'selection'}.json`;
+      a.click();
+      // Freed on the next turn: revoking synchronously can beat the download.
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      status(`Saved ${plural(chosen.length, 'entry', 'entries')}${SITE.short ? ` from ${SITE.short}` : ''}.`);
+    };
+
+    /** Tick what the file says, and report anything the current data cannot. */
+    const applySelection = (sel) => {
+      const known = new Set(boxes().map((b) => b.value));
+      const missing = [...sel.items].filter((id) => !known.has(id));
+
+      for (const b of boxes()) b.checked = sel.items.has(b.value);
+      for (const b of subs()) {
+        b.checked = sel.lines.get(b.dataset.id)?.has(Number(b.dataset.line)) ?? false;
+      }
+      applyDetail();
+      recount();
+
+      const restored = sel.items.size - missing.length;
+      const parts = [`Loaded ${plural(restored, 'entry', 'entries')}.`];
+      // The commit is why the file carries one. If entries have gone missing,
+      // the fix is mechanical, so say what it is rather than only that it broke.
+      const from = sel.site.commit;
+      const here = SITE.commit;
+      if (missing.length) {
+        parts.push(`${plural(missing.length, 'entry', 'entries')} no longer ${missing.length === 1 ? 'exists' : 'exist'} here.`);
+        if (from && here && from !== here) {
+          parts.push(`Saved from ${sel.site.short ?? from.slice(0, 7)}; this site is ${SITE.short}.`);
+          parts.push(`git checkout ${from} && npm run build to recover ${missing.length === 1 ? 'it' : 'them'}.`);
+        } else {
+          parts.push('They were removed from the database.');
+        }
+      } else if (from && here && from !== here) {
+        parts.push(`Saved from ${sel.site.short ?? from.slice(0, 7)}; every entry still resolves.`);
+      }
+      if (sel.site.dirty) parts.push('That build had uncommitted changes.');
+      status(parts.join(' '));
+      if (missing.length) console.warn('Entries not present in this build:', missing);
+    };
+
+    const loadFile = async (file) => {
+      if (!file) return;
+      try {
+        applySelection(decode(await file.text()));
+      } catch (err) {
+        status(err?.message ?? 'That file could not be read.');
+      }
+    };
+
+    // Save lives in the condensed bar, which is where the controls are once you
+    // are actually working through the list.
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#savebar')) saveSelection();
+      if (e.target.closest('#load')) $('loadfile').click();
+    });
+    $('loadfile').addEventListener('change', (e) => {
+      loadFile(e.target.files?.[0]);
+      // Cleared so choosing the same file twice fires change again.
+      e.target.value = '';
     });
 
     // The compile controls are one element, not two: when the condensed header

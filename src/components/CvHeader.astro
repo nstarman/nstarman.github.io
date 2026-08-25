@@ -14,11 +14,19 @@ const onBuilder = current === 'builder';
       ? <a class="btn" href={pdf} tabindex="-1">Download PDF</a>
       : <span class="spacer"></span>}
     <span class="more">
-      <span class="cvtoggle cvtoggle--main">
-        {presetNames.map((n) => (
-          <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
-        ))}
-      </span>
+      {onBuilder
+        /* Jumping to a fixed-length CV mid-build would discard the selection
+           without warning, so the condensed bar offers Save in that slot
+           instead. The lengths stay in the heading row, which means leaving
+           this page is something you scroll back up to do deliberately. */
+        ? <span class="cvtoggle cvtoggle--main">
+            <button class="btn" type="button" id="savebar" tabindex="-1">Save</button>
+          </span>
+        : <span class="cvtoggle cvtoggle--main">
+            {presetNames.map((n) => (
+              <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
+            ))}
+          </span>}
       <span class="sep">|</span>
       <span class="cvtoggle cvtoggle--main">
         <a href="/cv/builder/" class={onBuilder ? 'build on' : 'build'} tabindex="-1">Build</a>
@@ -59,7 +67,7 @@ const onBuilder = current === 'builder';
       const on = controls.getBoundingClientRect().bottom < NAV;
       bar.classList.toggle('is-on', on);
       bar.setAttribute('aria-hidden', on ? 'false' : 'true');
-      for (const a of bar.querySelectorAll('a')) a.tabIndex = on ? 0 : -1;
+      for (const el of bar.querySelectorAll('a, button')) el.tabIndex = on ? 0 : -1;
     };
     syncBar();
     addEventListener('scroll', syncBar, { passive: true });
