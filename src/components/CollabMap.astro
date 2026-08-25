@@ -1,0 +1,81 @@
+---
+// Where the people I have written with have worked, and when.
+//
+// Inline SVG on a committed Equal Earth outline — no tiles, so no third party
+// sees a visitor's viewport, and the whole thing works offline. See issue #22.
+//
+// The list underneath is not a fallback: it is the same data in the form a
+// screen reader, a keyboard, or a small phone can actually use, and it is where
+// the paper titles live in full.
+import { collaboratorMap, map } from '../lib/collabmap.js';
+
+const people = collaboratorMap();
+const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
+const trails = people.filter((p) => p.pins.length > 1);
+const label = (pin) =>
+  [pin.organization, pin.place].filter(Boolean).join(' — ')
+  + ` (${pin.start}${pin.end ? `–${pin.end}` : '–present'})`;
+---
+
+<figure class="cmap">
+  <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
+       aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
+                 + `on an Equal Earth projection. The same information is listed below.`}>
+    <path class="cmap-land" d={map.land} />
+
+    {/* Trajectories first, so pins sit on top of their own lines. */}
+    {trails.map((p) => (
+      <polyline class="cmap-trail" style={`--h:${p.hue}`}
+                points={p.pins.map((pin) => `${pin.x.toFixed(1)},${pin.y.toFixed(1)}`).join(' ')} />
+    ))}
+
+    {pins.map((pin) => (
+      <g class="cmap-pin" style={`--h:${pin.person.hue}`}>
+        {/* <title> is the native tooltip and the accessible name at once. */}
+        <title>{pin.person.name} — {label(pin)}{pin.papers.length
+          ? `; ${pin.papers.length} paper${pin.papers.length > 1 ? 's' : ''} together`
+          : ''}</title>
+        <circle cx={pin.x.toFixed(1)} cy={pin.y.toFixed(1)}
+                r={pin.papers.length ? 4.5 : 3} class={pin.papers.length ? 'is-shared' : ''} />
+      </g>
+    ))}
+  </svg>
+
+  <figcaption>
+    Equal Earth projection — equal-area, so no country is drawn larger than it is.
+    A filled pin is somewhere we wrote something together; a hollow one is
+    another post on the way. Dotted lines follow one person through their posts.
+  </figcaption>
+
+  <ol class="cmap-list">
+    {people.map((p) => (
+      <li style={`--h:${p.hue}`}>
+        <h3>{p.name}</h3>
+        <ol>
+          {p.pins.map((pin) => (
+            <li>
+              <span class="cmap-when">{pin.start}–{pin.end ?? 'present'}</span>
+              <span class="cmap-where">{pin.organization}{pin.place && <>, {pin.place}</>}</span>
+              {pin.role && <span class="cmap-role">{pin.role}</span>}
+              {pin.papers.length > 0 && (
+                <ul class="cmap-papers">
+                  {pin.papers.map((paper) => (
+                    <li>{paper.url
+                      ? <a href={paper.url}>{paper.title}</a>
+                      : <span>{paper.title}</span>}</li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+        {p.unplacedPapers.length > 0 && (
+          <p class="cmap-note">
+            {p.unplacedPapers.length} more paper{p.unplacedPapers.length > 1 ? 's' : ''} together,
+            written when their ORCID record names no post.
+          </p>
+        )}
+      </li>
+    ))}
+  </ol>
+</figure>

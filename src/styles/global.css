@@ -834,3 +834,71 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* An unticked line stays readable but recedes — the same bargain the unticked
    entries make, so a selection reads as one picture. */
 .sub.is-off{opacity:.35}
+
+/* ---------- the collaborator map ---------- */
+/* Hue comes from the render model, lightness from here: one number cannot be
+   legible on both paper-white and near-black, so the model picks the hue and
+   each theme picks how light to make it. */
+.cmap{margin:1.4rem 0 0}
+.cmap svg{
+  display:block; width:100%; height:auto;
+  background:var(--sunk); border-radius:12px;
+}
+/* The empty half of the map is the point: it says where the collaborations are
+   not. Equal Earth's 2.05:1 is kept, so areas stay comparable. */
+/* Land wants to be clearly land without competing with the pins on it —
+   --rule was so faint the continents were guesswork. */
+.cmap-land{fill:var(--ink-faint); fill-opacity:.28; stroke:none}
+.cmap-trail{
+  fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
+  stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
+}
+/* Radius lives here rather than in the markup so it can grow as the map
+   shrinks: at phone width the whole 1000-unit map is ~330px, where a 4.5-unit
+   pin is three pixels across and invisible. The `r` attribute stays in the SVG
+   as the value a stylesheet-less render would use. */
+.cmap-pin circle{
+  r:3; fill:var(--ground); stroke:oklch(.55 .16 var(--h)); stroke-width:2;
+  transition:r .12s ease;
+}
+.cmap-pin circle.is-shared{r:4.5; fill:oklch(.55 .16 var(--h))}
+.cmap-pin:hover circle, .cmap-pin:focus-visible circle{r:8}
+@media (max-width:44rem){
+  .cmap-pin circle{r:6; stroke-width:3}
+  .cmap-pin circle.is-shared{r:8}
+  .cmap-trail{stroke-width:3; stroke-dasharray:7 7}
+}
+@media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
+
+.cmap figcaption{
+  margin:.6rem 0 0; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
+}
+
+.cmap-head{margin-top:2rem}
+.cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
+.cmap-list > li{
+  border-left:3px solid oklch(.55 .16 var(--h)); padding-left:.7rem;
+}
+.cmap-list h3{margin:0 0 .35rem; font-size:.92rem}
+.cmap-list ol{list-style:none; margin:0; padding:0; display:grid; gap:.5rem}
+.cmap-list ol li{font-size:.8rem; line-height:1.45}
+.cmap-when{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-right:.4rem}
+.cmap-where{color:var(--ink-2)}
+.cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
+.cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
+.cmap-papers li{font-size:.76rem; margin-top:.15rem}
+.cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
+
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    .cmap-trail{stroke:oklch(.74 .15 var(--h))}
+    .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
+    .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
+    .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
+  }
+}
+:root[data-theme="dark"] .cmap-trail{stroke:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
