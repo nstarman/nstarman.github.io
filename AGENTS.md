@@ -208,6 +208,17 @@ Every pull request also gets a live preview URL, posted as a comment.
 - **One item per PR.** They then never conflict and each is reviewable at a glance.
 - Fill in the pull request template.
 - Title: `Add <type>: <title>`.
+- Milestone: **♾️&➡** by default, for pull requests and issues alike.
+  It is the standing milestone for this repo rather than a release marker, so
+  assign it unless something more specific applies:
+
+  ```bash
+  gh pr edit <number> --milestone "♾️&➡"
+  gh issue edit <number> --milestone "♾️&➡"
+  ```
+
+  Copy the title exactly — it is `U+267E U+FE0F & U+27A1`, and an emoji that
+  merely looks the same will not match.
 
 ## Do not
 
