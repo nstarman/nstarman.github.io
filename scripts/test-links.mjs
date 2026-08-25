@@ -30,6 +30,18 @@ function walk(dir, out = []) {
 const files = new Set(walk(DIST));
 const pages = [...files].filter((f) => f.endsWith('.html'));
 
+// Astro emits every asset into _astro/, and Jekyll deletes underscore-prefixed
+// directories — so if Pages ever processed this artifact the site would come
+// back styleless with no build failure to notice. public/.nojekyll is what
+// stops that, in any Pages mode. It is one empty file that nothing references,
+// which is exactly the kind of thing a tidy-up deletes, so it is asserted here
+// rather than trusted.
+if (!files.has('/.nojekyll')) {
+  console.error('  MISSING        /.nojekyll — restore public/.nojekyll');
+  console.error('                 without it Jekyll may strip _astro/ and unstyle the site');
+  process.exit(1);
+}
+
 /** Does a site-absolute href exist in the build? */
 function exists(href) {
   if (files.has(href)) return true;
