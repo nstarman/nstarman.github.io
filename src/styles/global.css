@@ -881,6 +881,9 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-key circle{stroke:var(--ink-mute); stroke-width:2; fill:var(--ground)}
 .cmap-key--shared circle{fill:var(--ink-mute)}
 .cmap-key--trail svg{width:22px}
+/* Opposite the legend on the same line: it names the drawing, the keys name
+   what is drawn on it. */
+.cmap-proj{margin-left:auto; white-space:nowrap}
 .cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
 
 /* Everything recedes but the person under the cursor. Two rules, keyed on an
@@ -947,11 +950,13 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Sits on each person's record rather than under the map, because that is
    where the claim is actually made: this is their career as ORCID has it, not
    as it was. Orange rather than the site's blue — it is a caveat, not a link. */
+/* The WIP tag's shape and weight, in orange rather than the site's blue —
+   same kind of label, different kind of thing to say. */
 .cmap-partial{
-  margin-left:auto;
-  font-family:var(--mono); font-size:.58rem; letter-spacing:.04em;
+  margin-left:auto; white-space:nowrap;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
   color:#8a4b00; background:#fff3e0; border:1px solid #f0c98a;
-  border-radius:999px; padding:.05rem .38rem; white-space:nowrap;
+  border-radius:.25rem; padding:.1rem .38rem;
 }
 :root:not([data-theme="light"]) {
   @media (prefers-color-scheme: dark) {
