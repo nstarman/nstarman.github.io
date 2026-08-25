@@ -1,7 +1,7 @@
 ---
 // One publication. `brief` is the landing-page variant: year and a single
 // `paper` button stacked in the right-hand column, everything else dropped.
-import { authors, venueLine, year, links } from '../lib/data.js';
+import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
 import LinkIcons from './LinkIcons.astro';
 
 const { item, brief = false, maxAuthors = 8, abstract = false } = Astro.props;
@@ -12,8 +12,11 @@ const all = links(item);
 const paper = all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint');
 const trail = brief ? [] : all;
 const pending = item.status !== 'published' ? item.status : null;
+// The filter on /publications/ is CSS over this attribute, so it has to be on
+// the outermost element — that is what gets hidden.
+const pos = authorPosition(item);
 ---
-<article class={brief ? 'entry--brief' : 'entry--full'}>
+<article class={brief ? 'entry--brief' : 'entry--full'} data-pos={pos ?? undefined}>
   <div class="body">
     <div class="ttl">
       <a href={paper?.url ?? '#'}>{item.title}</a>

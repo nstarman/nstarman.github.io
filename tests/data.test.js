@@ -6,6 +6,7 @@ import {
   items,
   byType,
   resolve,
+  authorPosition,
   displayName,
   authors,
   venueLine,
@@ -166,5 +167,38 @@ describe('byType', () => {
     expect(byType('publication').every((i) => i.type === 'publication')).toBe(true);
     expect(byType('publication', 'software').length)
       .toBe(byType('publication').length + byType('software').length);
+  });
+});
+
+describe('authorPosition', () => {
+  it('derives from where the owner sits in the author list', () => {
+    expect(authorPosition(resolve('pal5-gaia-dr2'))).toBe(1);
+    expect(authorPosition(resolve('pinns-mnras'))).toBe(2);
+    expect(authorPosition(resolve('galactic-amnesia'))).toBe(4);
+  });
+
+  it('counts the Euclid paper as first-author', () => {
+    // The motivating case. It prints as "Euclid Collaboration, N. Starkman, …",
+    // but `collaboration` is its own field and takes no author slot, so the
+    // derivation is right without an override.
+    const euclid = resolve('euclid-eggs-pilot');
+    expect(euclid.collaboration).toBeTruthy();
+    expect(euclid.authorPosition).toBeUndefined();
+    expect(authorPosition(euclid)).toBe(1);
+  });
+
+  it('lets a record override the derivation by name', () => {
+    for (const [name, n] of [['first', 1], ['second', 2], ['third', 3], ['fourth', 4]]) {
+      expect(authorPosition({ authorPosition: name, authors: [{}, {}, { me: true }] })).toBe(n);
+    }
+  });
+
+  it('takes a number beyond the fourth', () => {
+    expect(authorPosition({ authorPosition: 9, authors: [{ me: true }] })).toBe(9);
+  });
+
+  it('is null when the owner is not an author', () => {
+    expect(authorPosition({ authors: [{ family: 'Someone' }] })).toBeNull();
+    expect(authorPosition({})).toBeNull();
   });
 });

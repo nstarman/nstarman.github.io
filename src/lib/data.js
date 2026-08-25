@@ -67,6 +67,27 @@ export function displayName(a) {
   return [initials(a.given), a.family, a.suffix].filter(Boolean).join(' ');
 }
 
+const POSITION_NAMES = { first: 1, second: 2, third: 3, fourth: 4 };
+
+/**
+ * Which author position the owner holds, 1-based, or null if he is not on it.
+ *
+ * Derived from the index of the author marked `me` rather than stored, so it
+ * cannot drift out of step with the author list. `collaboration` is its own
+ * field and takes no slot, which is why the Euclid paper comes out first-author
+ * even though it prints as "Euclid Collaboration, N. Starkman, …".
+ *
+ * A record can still override with `authorPosition` for the case derivation
+ * cannot see: a byline that understates the credit.
+ */
+export function authorPosition(item) {
+  const explicit = item.authorPosition;
+  if (typeof explicit === 'number') return explicit;
+  if (typeof explicit === 'string') return POSITION_NAMES[explicit] ?? null;
+  const i = (item.authors ?? []).findIndex((a) => a.me);
+  return i === -1 ? null : i + 1;
+}
+
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */
 export const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 
