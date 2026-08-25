@@ -17,8 +17,8 @@
         },
         {
           "organization": "Simons Foundation",
-          "city": "NY",
-          "region": "NY",
+          "city": "New York",
+          "region": "New York",
           "country": "US",
           "role": "Flatiron Research Fellow",
           "start": "2019-07",
@@ -87,9 +87,9 @@
           "end": "2005-08"
         },
         {
-          "organization": "Rutgers University ",
+          "organization": "Rutgers University",
           "city": "Pistcataway",
-          "region": null,
+          "region": "NJ",
           "country": "US",
           "role": "Assistant Professor",
           "start": "1997-09",
@@ -253,9 +253,9 @@
       "name": "Glenn Starkman",
       "affiliations": [
         {
-          "organization": "case western reserve university",
-          "city": "CLEVELAND",
-          "region": "oh",
+          "organization": "Case Western Reserve University",
+          "city": "Cleveland",
+          "region": "OH",
           "country": "US",
           "role": "Distinguished University Professor",
           "start": "1995-01",
@@ -297,7 +297,7 @@
         {
           "organization": "University of Toronto",
           "city": "Toronto",
-          "region": null,
+          "region": "Ontario",
           "country": "CA",
           "role": "Assistant Professor, Teaching Stream (Limited Term Appointment)",
           "start": "2024-07",
@@ -450,9 +450,9 @@
       "name": "Kiyan Tavangar",
       "affiliations": [
         {
-          "organization": "Columbia University in the City of New York",
+          "organization": "Columbia University",
           "city": "New York",
-          "region": "New York",
+          "region": "NY",
           "country": "US",
           "role": "PhD Candidate",
           "start": "2022-09",
@@ -499,8 +499,8 @@
       "affiliations": [
         {
           "organization": "University of Toronto",
-          "city": "ON",
-          "region": "ON",
+          "city": "Toronto",
+          "region": "Ontario",
           "country": "CA",
           "role": "Dunlap Fellow",
           "start": "2023-09",
@@ -527,7 +527,7 @@
       "name": "Nicolas Tessore",
       "affiliations": [
         {
-          "organization": "University College, London",
+          "organization": "University College London",
           "city": "London",
           "region": "England",
           "country": "GB",
@@ -538,7 +538,7 @@
         {
           "organization": "University College London",
           "city": "London",
-          "region": null,
+          "region": "England",
           "country": "GB",
           "role": "Senior Research Fellow on the ESA Euclid mission",
           "start": "2021-08",
@@ -547,7 +547,7 @@
         {
           "organization": "University College London",
           "city": "London",
-          "region": null,
+          "region": "England",
           "country": "GB",
           "role": "Research Fellow on the ESA Euclid mission",
           "start": "2020-10",
@@ -556,7 +556,7 @@
         {
           "organization": "University of Manchester",
           "city": "Manchester",
-          "region": null,
+          "region": "England",
           "country": "GB",
           "role": "Research Associate",
           "start": "2016-04",
@@ -574,7 +574,7 @@
         {
           "organization": "University College London",
           "city": "London",
-          "region": null,
+          "region": "England",
           "country": "GB",
           "role": null,
           "start": null,

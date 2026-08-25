@@ -48,6 +48,66 @@ async function orcid(path) {
   return res.json();
 }
 
+// ── normalising what ORCID gives back ──────────────────────────────────────
+// The address fields are free text a person typed years ago, so the same place
+// arrives spelled several ways: "New York" and "NY", "Toronto" and "ON",
+// "University College London" and "University College, London", and one
+// institution with a trailing space. For a map that is three pins where there
+// should be one, so the same institution is made to agree with itself.
+
+const clean = (s) => (typeof s === 'string' ? s.trim() : null) || null;
+
+/** Case, punctuation and spacing removed — two spellings of one name collide. */
+const orgKey = (name) => (name ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/**
+ * One spelling per institution, chosen from the spellings actually present.
+ *
+ * Exact key match handles case, trailing spaces and punctuation. Containment
+ * handles "Columbia University" against "Columbia University in the City of
+ * New York", but only when the country agrees — two unrelated institutions can
+ * share a prefix, and merging those would put a person in the wrong place.
+ * The shorter spelling wins: it is the one a map can label.
+ */
+function canonicalOrganizations(rows) {
+  const byKey = new Map();
+  for (const r of rows) {
+    if (!r.organization) continue;
+    const k = orgKey(r.organization);
+    const seen = byKey.get(k);
+    if (!seen || r.organization.length < seen.name.length) {
+      byKey.set(k, { name: r.organization, country: r.country });
+    }
+  }
+  const keys = [...byKey.keys()].sort((a, b) => a.length - b.length);
+  const canon = new Map();
+  for (const k of keys) {
+    const hit = keys.find((other) => other !== k && other.length < k.length && k.startsWith(other)
+      && byKey.get(other).country === byKey.get(k).country);
+    canon.set(k, byKey.get(hit ?? k).name);
+  }
+  return canon;
+}
+
+/**
+ * One place per institution. A city field holding a state code — "NY" with
+ * region "NY", "ON" with region "ON" — is not a city, so a spelling that
+ * differs from its own region is preferred, and the longest such wins:
+ * "New York" over "NY", "Toronto" over "ON".
+ */
+function canonicalPlaces(rows, canon) {
+  const best = new Map();
+  for (const r of rows) {
+    if (!r.organization) continue;
+    const k = canon.get(orgKey(r.organization));
+    const isCity = r.city && r.city !== r.region;
+    const cur = best.get(k);
+    const score = (isCity ? 1000 : 0) + (r.city?.length ?? 0) + (r.region ? 1 : 0);
+    if (!cur || score > cur.score) best.set(k, { score, city: r.city, region: r.region });
+  }
+  return best;
+}
+
 /** An ORCID fuzzy date -> "YYYY-MM", "YYYY", or null. */
 const when = (d) => {
   if (!d?.year?.value) return null;
@@ -66,11 +126,11 @@ async function history(id) {
       const org = e.organization ?? {};
       const addr = org.address ?? {};
       out.push({
-        organization: org.name ?? null,
-        city: addr.city ?? null,
-        region: addr.region ?? null,
-        country: addr.country ?? null,
-        role: e['role-title'] ?? null,
+        organization: clean(org.name),
+        city: clean(addr.city),
+        region: clean(addr.region),
+        country: clean(addr.country),
+        role: clean(e['role-title']),
         start: when(e['start-date']),
         // Absent end means the post is current, which is a fact worth keeping
         // distinct from "we do not know".
@@ -93,6 +153,22 @@ for (const [id, name] of [...found].sort((a, b) => a[1].localeCompare(b[1]))) {
   }
   people.push({ orcid: id, name, affiliations });
   await new Promise((r) => setTimeout(r, 250));
+}
+
+// Make every institution agree with itself, across everyone's history.
+const rows = people.flatMap((p) => p.affiliations);
+const canonOrg = canonicalOrganizations(rows);
+const canonPlace = canonicalPlaces(rows, canonOrg);
+let tidied = 0;
+for (const r of rows) {
+  if (!r.organization) continue;
+  const name = canonOrg.get(orgKey(r.organization));
+  const place = canonPlace.get(name) ?? {};
+  const before = `${r.organization}|${r.city}|${r.region}`;
+  r.organization = name;
+  r.city = place.city ?? r.city;
+  r.region = place.region ?? r.region;
+  if (before !== `${r.organization}|${r.city}|${r.region}`) tidied += 1;
 }
 
 const doc = {
@@ -121,6 +197,8 @@ fs.writeFileSync(OUT, next);
 const empty = people.filter((p) => p.affiliations.length === 0);
 console.log(`  wrote ${OUT}: ${people.length} collaborators, `
   + `${people.length - empty.length} with a dated history`);
+console.log(`  ${new Set([...canonOrg.values()]).size} institutions after normalising `
+  + `(${tidied} record(s) made to agree with their institution's other entries)`);
 if (empty.length) {
   console.log(`  ${empty.length} list no employment on ORCID: ${empty.map((p) => p.name).join(', ')}`);
 }
