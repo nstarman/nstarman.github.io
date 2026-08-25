@@ -130,9 +130,16 @@ h2{
 .btn{
   font-family:var(--mono); font-size:.7rem; letter-spacing:.04em;
   color:var(--ink-mute); background:var(--surface); border:1px solid var(--rule);
-  border-radius:.3rem; padding:.24rem .55rem; transition:.15s;
+  border-radius:.3rem; padding:.24rem .55rem;
+  /* Named properties, not `all`. A button that draws anything with a
+     background-image — the style menu's arrow does — would otherwise animate
+     its geometry on hover as well as its colour. */
+  transition:color .15s, background-color .15s, border-color .15s;
 }
-.btn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft); text-decoration:none}
+/* background-COLOR, not the shorthand: `background` resets background-image to
+   none and background-position to 0 0, which wiped the style menu's arrow and
+   — being transitioned — flew it to the corner on the way out. */
+.btn:hover{color:var(--accent); border-color:var(--accent-line); background-color:var(--accent-soft); text-decoration:none}
 
 /* --- brief entries: landing page only. Flex with a right-hand gutter for the
    year and the paper button — as a grid row-span the gutter's surplus height
@@ -358,7 +365,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   background-position:right .62rem center, right .45rem center;
   background-size:4px 4px, 4px 4px; background-repeat:no-repeat;
 }
-.btn--go:hover{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+.btn--go:hover{background-color:var(--ink); color:var(--ground); border-color:var(--ink)}
 .btn--go:disabled{opacity:.5; cursor:progress}
 .status{font-family:var(--mono); font-size:.7rem; color:var(--ink-mute)}
 #preview{width:100%; height:min(78vh,900px); border:1px solid var(--rule);
