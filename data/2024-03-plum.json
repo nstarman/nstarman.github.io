@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "plum",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2024-03",
+    "present": true
+  },
+  "title": "plum",
+  "summary": "Multiple dispatch in Python",
+  "details": "Multiple dispatch for Python, with type-hint-driven method resolution — the dispatch layer under quax and unxt.",
+  "repo": "beartype/plum",
+  "role": "maintainer",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/beartype/plum"
+    },
+    {
+      "rel": "docs",
+      "url": "https://beartype.github.io/plum/"
+    }
+  ],
+  "tags": [
+    "open-source"
+  ],
+  "tier": "headline"
+}

@@ -268,6 +268,43 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* Divider between the software tiers — the same 32%, low-alpha rule used
    between publications and under the lead package. */
+/* The fifth software tier: everything with a merged pull request in it, which
+   is dozens of repositories. A list rather than cards, closed by
+   default — it is a record of contribution, not a shelf of things to look at.
+   <details> so it needs no script and keeps working with JavaScript off. */
+.contribs{margin-top:1.6rem; border-top:1px solid var(--rule); padding-top:.9rem}
+.contribs summary{
+  cursor:pointer; display:flex; align-items:center; gap:.5rem; list-style:none;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.contribs summary::-webkit-details-marker{display:none}
+.contribs summary::before{content:"\25B8"; color:var(--ink-faint); transition:transform .15s ease}
+.contribs[open] summary::before{transform:rotate(90deg)}
+.contribs summary:hover{color:var(--ink)}
+
+/* The grid is applied only when open. A closed <details> hides its non-summary
+   children with a UA `display:none`, and an author `display` on a direct child
+   beats it — so declaring the grid unconditionally left the list showing with
+   the disclosure shut, at full height, open or closed. */
+.contriblist{list-style:none; margin:.8rem 0 0; padding:0}
+.contribs[open] .contriblist{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:.15rem .9rem;
+}
+.contriblist li{display:flex; align-items:baseline; gap:.4rem; padding:.16rem 0; font-size:.82rem}
+/* The name is the identifier and must not break across lines; the description
+   is the part that gives way, and it truncates. */
+.contriblist a{color:var(--ink-2); font-family:var(--mono); font-size:.76rem;
+  white-space:nowrap; flex:none}
+.contriblist a:hover{color:var(--accent)}
+/* Tabular so the years form a column rather than jittering with the names. */
+.contrib-since{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint);
+  font-variant-numeric:tabular-nums; flex:none}
+.contrib-desc{
+  color:var(--ink-mute); font-size:.76rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
+}
+
 .tierbreak{
   height:1px; width:32%; margin:1.4rem auto 1.2rem;
   background:var(--ink-faint); opacity:.24;
@@ -287,6 +324,16 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .card--mini p{font-size:.78rem; line-height:1.45}
 .card--mini .btns{padding-top:.45rem; gap:.25rem}
 .card--mini .btn{font-size:.64rem; padding:.18rem .42rem}
+
+/* Fourth tier: useful, not notable. Smaller again than .card--mini — same
+   columns, less of everything else, so it reads as a footnote to the tiers
+   above rather than a fourth thing competing with them. Ordered after
+   .card--mini deliberately: same specificity, so this has to come later to
+   win. */
+.card--tiny{padding:.5rem .6rem .55rem; border-radius:10px; gap:.15rem}
+.card--tiny .name{font-size:.76rem}
+.card--tiny p{font-size:.72rem; line-height:1.4}
+.card--tiny .btns{padding-top:.35rem; gap:.2rem}
 
 /* CV builder */
 .builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
@@ -502,10 +549,12 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 #sw-yes:checked ~ .lead:not([data-paper]),
 #sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
-/* The tier divider stays. Hiding it took its margins with it — the only thing
-   separating the two grids — so the filtered headline card ran straight into
-   the row beneath. Both tiers keep visible cards under either stop, so the
-   divider is still saying something true. */
+/* The dividers between tiers 1-3 stay. Hiding one took its margins with it —
+   the only thing separating those grids — so the filtered headline card ran
+   straight into the row beneath, and all three keep visible cards under either
+   stop anyway. A tier the filter empties completely is the other case: its
+   divider would separate nothing, so it goes with the grid. */
+#sw-yes:checked ~ .tier-nopaper{display:none}
 
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and

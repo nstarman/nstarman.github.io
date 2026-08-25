@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "preamble",
+  "type": "software",
+  "cvs": [],
+  "date": {
+    "start": "2026-07",
+    "present": true
+  },
+  "title": "preamble",
+  "summary": "A LaTeX preamble worth reusing",
+  "repo": "nstarman/preamble",
+  "role": "author",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/nstarman/preamble"
+    }
+  ],
+  "tier": "useful"
+}

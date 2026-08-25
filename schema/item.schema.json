@@ -222,11 +222,12 @@
         ],
         "properties": {
           "tier": {
-            "description": "Prominence on the website's software listing. Exactly one item should be `lead`. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
+            "description": "Prominence on the website's software listing. Exactly one item should be `lead`. `useful` is the small-card tier below the rest \u2014 things worth having but not research software. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
             "enum": [
               "lead",
               "headline",
-              "other"
+              "other",
+              "useful"
             ]
           },
           "repo": {

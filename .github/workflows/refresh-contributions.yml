@@ -1,0 +1,95 @@
+name: Refresh contributions
+
+# The fourth software tier is discovered, not written: every repository with a
+# merged pull request in it. New ones appear whenever he contributes somewhere
+# new, so this looks once a month and opens a pull request when the list has
+# moved. It never pushes to the default branch — the list is data on the site
+# and gets reviewed like any other change.
+
+on:
+  schedule:
+    # 06:00 UTC on the 1st. Nothing here is time-critical; monthly is enough for
+    # a list that changes a few times a year.
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-contributions
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-contributions
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # Rewrites config/contributions.json. Takes a few minutes: the search API
+      # allows 30 requests a minute and the query is partitioned to stay under
+      # its 1000-result ceiling.
+      - name: Collect
+        run: node scripts/collect-contributions.mjs
+
+      # The list feeds the software page, so a change to it has to still build
+      # and still pass the gates before anyone is asked to look at a PR.
+      - name: Verify the site still builds
+        run: |
+          npm run test:schema
+          npm run build
+          npm run test:a11y
+
+      - name: Open a pull request if the list moved
+        run: |
+          if git diff --quiet -- config/contributions.json; then
+            echo "No new repositories." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # What actually changed, for the PR body rather than a bare diff.
+          added=$(git diff -U0 -- config/contributions.json \
+                  | grep -E '^\+ *"repo"' | sed -E 's/.*: "(.*)",?/\1/' | sort)
+          gone=$(git diff -U0 -- config/contributions.json \
+                  | grep -E '^\- *"repo"' | sed -E 's/.*: "(.*)",?/\1/' | sort)
+          new_only=$(comm -23 <(echo "$added") <(echo "$gone"))
+          count=$(python3 -c "import json;print(len(json.load(open('config/contributions.json'))['repos']))")
+
+          repo=${{ github.repository }}
+          base=$(git rev-parse HEAD)
+
+          # Committing through the contents API rather than `git push`: those
+          # commits are signed by GitHub, which the branch ruleset requires.
+          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
+            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
+
+          sha=$(gh api "repos/$repo/contents/config/contributions.json?ref=$BRANCH" -q .sha 2>/dev/null || true)
+          gh api -X PUT "repos/$repo/contents/config/contributions.json" \
+            -f message="Refresh the contributions list" \
+            -f branch="$BRANCH" \
+            -f content="$(base64 < config/contributions.json | tr -d '\n')" \
+            ${sha:+-f sha="$sha"} --silent
+
+          body=$'Found by `scripts/collect-contributions.mjs`, run monthly by `.github/workflows/refresh-contributions.yml`.\n\n'
+          if [ -n "$new_only" ]; then
+            body+=$'**New:**\n'
+            body+=$(echo "$new_only" | sed 's/^/- /')
+            body+=$'\n\n'
+          fi
+          body+="The list now holds $count repositories."$'\n\n'
+          body+=$'To drop one, add it to `config/contributions-exclude.json` — do not edit the generated file.'
+
+          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
+            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+                 --title "Refresh the contributions list" --body "$body"
