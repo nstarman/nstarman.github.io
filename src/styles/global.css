@@ -395,6 +395,20 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    landed the heading 22px under .cvbar with 4px of its descenders showing. */
 .cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + 0.75rem)}
 
+/* The last section gets a viewport's worth of room so its heading can be
+   scrolled to the top like every other one. Without it the page bottoms out
+   with the final sections stranded mid-screen and the contents rail can never
+   mark the last of them. min-height rather than a trailing spacer, so a long
+   final section adds nothing and only a short one leaves any blank. */
+.cvsec--last{
+  min-height:calc(100vh - var(--nav-h) - var(--cvbar-h));
+  min-height:calc(100svh - var(--nav-h) - var(--cvbar-h));
+}
+/* Applies to a collapsed last section too. .cvsec carries no background or
+   border, so a tall closed <details> is indistinguishable from a spacer — and
+   exempting it put /cv/1page/, whose last section is the collapsed Software,
+   straight back to being unable to scroll its final heading to the top. */
+
 @media (min-width:78rem){
   .cvtoc{
     display:block; position:fixed; top:6.5rem;

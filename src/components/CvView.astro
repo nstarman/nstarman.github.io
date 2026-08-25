@@ -64,7 +64,7 @@ const money = (a) => {
   const Head = collapsed ? 'summary' : 'div';
   const selectable = pick && s.items.length > 0;
   return (
-  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${selectable ? ' pickgroup' : ''}`}>
+  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}`}>
     <Head class="cvsechead">
       {selectable && (
         <input type="checkbox" class="groupbox"
@@ -255,13 +255,8 @@ const money = (a) => {
     // happens to be intersecting: sections here vary from one row to thirty-five,
     // so "is visible" is true of several at once.
     const update = () => {
-      // At the foot of the page the last sections can never reach the top, so
-      // the final one would never become current. Snap to it once the scroll
-      // has bottomed out.
-      if (innerHeight + scrollY >= document.body.scrollHeight - 4) {
-        mark(heads[heads.length - 1].id);
-        return;
-      }
+      // No bottom-out special case: .cvsec--last is tall enough for the final
+      // heading to reach the top like any other, so the same rule decides it.
       let best = heads[0];
       for (const h of heads) {
         if (h.getBoundingClientRect().top - 90 <= 0) best = h;
