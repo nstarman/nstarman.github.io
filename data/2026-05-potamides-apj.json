@@ -37,11 +37,13 @@
     },
     {
       "family": "Miro-Carretero",
-      "given": "Juan"
+      "given": "Juan",
+      "orcid": "0000-0003-1808-1753"
     },
     {
       "family": "Martinez-Delgado",
-      "given": "David"
+      "given": "David",
+      "orcid": "0009-0004-1061-7802"
     }
   ],
   "venue": {
