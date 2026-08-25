@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "xmmutablemap",
   "type": "software",
-  "tier": "other",
+  "tier": "useful",
   "cvs": [],
   "date": {
     "start": "2024",
