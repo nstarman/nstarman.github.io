@@ -42,6 +42,12 @@ let broken = 0;
 let checked = 0;
 let anchors = 0;
 
+// The CV pages link to PDFs that a separate step compiles. If none were built
+// the links cannot be checked — say so rather than reporting them missing, and
+// rather than passing in silence.
+const pdfsBuilt = [...files].some((f) => f.endsWith('.pdf'));
+let unbuilt = 0;
+
 for (const page of pages) {
   const html = fs.readFileSync(path.join(DIST, page.slice(1)), 'utf8');
   const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
@@ -63,6 +69,10 @@ for (const page of pages) {
     const [target, hash] = href.split('#');
     checked += 1;
     if (!exists(target)) {
+      if (target.endsWith('.pdf') && !pdfsBuilt) {
+        unbuilt += 1;
+        continue;
+      }
       console.log(`  MISSING        ${page} -> ${href}`);
       broken += 1;
       continue;
@@ -95,9 +105,12 @@ for (const rec of records.slice(0, 5)) {
   }
 }
 
+if (unbuilt > 0) {
+  console.log(`  skipped  ${unbuilt} PDF link(s) — run npm run build:pdf to check them`);
+}
 console.log(
   broken === 0
-    ? `  ok       ${checked} internal link(s) and ${anchors} anchor(s) across ${pages.length} pages`
+    ? `  ok       ${checked - unbuilt} internal link(s) and ${anchors} anchor(s) across ${pages.length} pages`
     : `  ${broken} broken link(s)`,
 );
 process.exit(broken ? 1 : 0);
