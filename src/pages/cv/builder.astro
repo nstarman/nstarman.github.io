@@ -94,6 +94,7 @@ const site = buildInfo();
     /** An unticked line greys out in place, so the page keeps showing what it
      *  is about to compile rather than describing it. */
     const applyDetail = () => {
+      retire('Selection changed — compile again.');
       for (const b of subs()) b.closest('.sub').classList.toggle('is-off', !b.checked);
       // a section's control reflects its lines rather than driving them
       for (const g of document.querySelectorAll('.pickgroup')) {
@@ -107,7 +108,25 @@ const site = buildInfo();
     };
     const status = (msg) => { $('status').textContent = msg; };
 
+    /** A compiled PDF is only good for the selection, the detail and the style
+     *  it was compiled from. Anything that changes one of those retires it:
+     *  otherwise Download hands over a file that no longer matches the page,
+     *  and the preview goes on showing it. Silent when there is nothing
+     *  compiled, which is why the init call below costs nothing. */
+    const retire = (why) => {
+      const dl = $('download');
+      if (dl.hidden) return;
+      URL.revokeObjectURL(dl.href);
+      dl.hidden = true;
+      dl.removeAttribute('href');
+      const frame = $('preview');
+      frame.hidden = true;
+      frame.removeAttribute('src');
+      status(why);
+    };
+
     const recount = () => {
+      retire('Selection changed — compile again.');
       const on = boxes().filter((b) => b.checked).length;
       $('count').textContent = `${on} / ${boxes().length}`;
       // a group box reflects its children rather than driving them
@@ -334,17 +353,7 @@ const site = buildInfo();
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
-    $('style').addEventListener('change', () => {
-      const dl = $('download');
-      if (dl.hidden) return;
-      URL.revokeObjectURL(dl.href);
-      dl.hidden = true;
-      dl.removeAttribute('href');
-      const frame = $('preview');
-      frame.hidden = true;
-      frame.removeAttribute('src');
-      status('Style changed — compile again.');
-    });
+    $('style').addEventListener('change', () => retire('Style changed — compile again.'));
 
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
