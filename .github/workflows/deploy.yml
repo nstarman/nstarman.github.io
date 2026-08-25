@@ -1,11 +1,12 @@
 name: Deploy site
 
-# Astro builds to dist/, so a branch deploy would require committing build
-# output; the Pages Source is "GitHub Actions" and the repo holds no Jekyll.
-# public/.nojekyll backs that up rather than relying on the setting staying
-# put: Jekyll strips underscore-prefixed directories, which would take Astro's
-# whole _astro/ asset tree with it and unstyle the site without failing a
-# build. scripts/test-links.mjs asserts the file is in every artifact.
+# Astro builds to dist/, so a branch deploy would mean committing build output
+# — and would serve the repo source rather than the built site. The Pages
+# Source is "GitHub Actions", which serves the artifact verbatim and never
+# invokes Jekyll, so Astro's underscore-prefixed _astro/ survives. A .nojekyll
+# would be redundant, and could not ship anyway: upload-pages-artifact strips
+# every dotfile from the tarball. The build_type check below is what actually
+# holds that guarantee in place.
 #
 # Deployment only. Pull requests are gated by ci.yml, which runs the same build
 # plus the tests; this workflow exists to publish what lands on main.
@@ -49,6 +50,23 @@ jobs:
           typst-version: "0.15.1"
       # one PDF per preset, compiled from the models Astro just emitted
       - run: npm run build:pdf
+
+      # The one setting this all rests on, and it lives in the web UI where
+      # nothing else can see it drift. Flipped to "Deploy from a branch", Pages
+      # would build the repo root with Jekyll — which strips _astro/ — and the
+      # site would go out styleless. Checked before the artifact is built
+      # rather than discovered afterwards by looking at it.
+      - name: Pages must still build from Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bt=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type)
+          [ "$bt" = workflow ] || {
+            echo "::error::Pages build_type is '$bt', expected 'workflow'." \
+                 "Settings -> Pages -> Source must be GitHub Actions."
+            exit 1
+          }
+          echo "  Pages build_type=$bt"
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
