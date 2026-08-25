@@ -5,14 +5,14 @@ name: Deploy site
 # asset directory. So the Pages Source must be "GitHub Actions".
 #
 # Deployment only. Pull requests are gated by ci.yml, which runs the same build
-# plus the tests; this workflow exists to publish what lands on master.
+# plus the tests; this workflow exists to publish what lands on main.
 #
 # withastro/action is deliberately not used: it builds and uploads in one step,
 # and the CV PDFs have to be compiled into dist/ in between.
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -54,7 +54,7 @@ jobs:
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     environment:
       name: github-pages
