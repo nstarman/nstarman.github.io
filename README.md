@@ -5,7 +5,7 @@ database, and the tooling that renders one into the other.
 
 Everything comes out of `data/`. One JSON file per item, and the same database
 renders the website, the [profile README][profile], the CV PDFs, and
-[publications.bib](https://nstarkman.space/publications.bib). Adding a paper or
+[nstarkman_publications.bib](https://nstarkman.space/nstarkman_publications.bib). Adding a paper or
 a conference is one small file.
 
 **Adding something? Read [AGENTS.md](AGENTS.md).**
