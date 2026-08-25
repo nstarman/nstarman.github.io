@@ -5,7 +5,7 @@
   "tier": "other",
   "cvs": [],
   "date": {
-    "start": "2023"
+    "start": "2023-01"
   },
   "title": "cosmology.api",
   "summary": "A standard interface for cosmology libraries",
