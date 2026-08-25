@@ -452,6 +452,26 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .baremark .ico{width:17px; height:17px; fill:currentColor; display:block}
 .baremark:hover, .baremark:focus-visible{color:var(--accent)}
 
+/* The builder's per-publication selector. Out of the way until the heading is
+   hovered — or something inside it takes focus, which is what keeps it
+   reachable by keyboard: pointer-events go with the opacity, so an invisible
+   button is never clickable, but tabbing to it reveals it. */
+/* Left, following the heading — not pushed to the right-hand cluster, which is
+   where `detail` lives. The gap is the heading row's own, so it clears the
+   title rather than sitting against it. */
+.possel{display:inline-flex; gap:.15rem;
+  opacity:0; pointer-events:none; transition:opacity .15s ease}
+.cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
+@media (prefers-reduced-motion:reduce){ .possel{transition:none} }
+
+.posbtn{
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-mute); background:var(--surface);
+  border:1px solid var(--rule-strong); border-radius:999px;
+  padding:.05rem .4rem; cursor:pointer; line-height:1.5;
+}
+.posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and
    this has to be reachable and arrow-navigable like any other radio group. */
@@ -538,7 +558,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* Section head carries the rule, so the heading and its toggle sit on one line. */
 .cvsechead{
-  display:flex; align-items:baseline; justify-content:flex-start; gap:1rem;
+  /* Centred, not baseline. The row mixes a heading with a checkbox, a pill
+     group and a small label, none of which share a text baseline — under
+     `baseline` they sat at three different heights, spread over 3.2px, with
+     `detail` riding highest and the selector lowest. */
+  display:flex; align-items:center; justify-content:flex-start; gap:1rem;
   margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
 }
 .cvsec--first .cvsechead{margin-top:1rem}
