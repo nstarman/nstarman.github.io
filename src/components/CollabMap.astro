@@ -63,6 +63,7 @@ const label = (pin) =>
       <option value="">Everyone</option>
       {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
     </select>
+    <span class="cmap-partial" title="Built from public ORCID records, which may not list every post">May be incomplete</span>
   </div>
 
 
@@ -70,7 +71,6 @@ const label = (pin) =>
   <ol class="cmap-list">
     {people.map((p) => (
       <li data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
-        <span class="cmap-partial" title="Built from this person's public ORCID record, which may not list every post">May be incomplete</span>
         <h3>{p.name}</h3>
         <ol hidden>
           {p.pins.map((pin) => (

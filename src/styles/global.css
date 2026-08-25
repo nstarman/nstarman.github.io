@@ -948,7 +948,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
    where the claim is actually made: this is their career as ORCID has it, not
    as it was. Orange rather than the site's blue — it is a caveat, not a link. */
 .cmap-partial{
-  float:right; margin:0 0 .2rem .5rem;
+  margin-left:auto;
   font-family:var(--mono); font-size:.58rem; letter-spacing:.04em;
   color:#8a4b00; background:#fff3e0; border:1px solid #f0c98a;
   border-radius:999px; padding:.05rem .38rem; white-space:nowrap;
