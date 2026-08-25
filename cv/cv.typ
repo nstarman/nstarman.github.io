@@ -152,17 +152,13 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none, note: none) = {
+#let section(title, mark: none) = {
   v(if tight { 6pt } else { 9.2pt })
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
     #text(size: 15.6pt)[
       #if mark != none [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
       #smallcaps(title)
-    ]
-    #if note != none [
-      #h(1fr)
-      #text(size: 8.6pt, fill: faint)[#note]
     ]
     #v(4.5pt)
     #line(length: 100%, stroke: 0.4pt + ink)
@@ -316,7 +312,6 @@
   section(
     s.heading,
     mark: s.at("icon", default: none),
-    note: if s.dropped > 0 { [#s.dropped more not shown.] } else { none },
   )
   if "layout" in s and s.layout == "list" {
     plainlist(s.entries)
