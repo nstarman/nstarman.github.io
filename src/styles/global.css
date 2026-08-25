@@ -872,6 +872,23 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 .cmap figcaption{
   margin:.6rem 0 0; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
+  display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .9rem;
+}
+/* The legend shows the two pins rather than describing them; a sentence
+   explaining a shape the reader can simply be shown is a sentence too many. */
+.cmap-key{display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap}
+.cmap-key svg{width:11px; height:11px; background:none; border-radius:0; flex:none}
+.cmap-key circle{stroke:var(--ink-mute); stroke-width:2; fill:var(--ground)}
+.cmap-key--shared circle{fill:var(--ink-mute)}
+.cmap-key--trail svg{width:22px}
+.cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
+
+/* Everything fades but the person under the cursor. The per-person rules are
+   generated in the component; these are the parts that do not vary. */
+.cmap-pin, .cmap-trail, .cmap-list > li{transition:opacity .15s ease}
+.cmap-list > li{outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .cmap-pin, .cmap-trail, .cmap-list > li{transition:none}
 }
 
 .cmap-head{margin-top:2rem}

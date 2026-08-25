@@ -12,10 +12,26 @@ import { collaboratorMap, map } from '../lib/collabmap.js';
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
 const trails = people.filter((p) => p.pins.length > 1);
+// One rule per person, so hovering a name anywhere in the figure lifts that
+// person out of the map and pushes everyone else back. Generated rather than
+// scripted: :has() can express it, and a page that needs JavaScript to be
+// readable is not readable.
+const focusRules = people.map((p, i) => `
+.cmap:has([data-c="${i}"]:hover) .cmap-pin:not([data-c="${i}"]),
+.cmap:has([data-c="${i}"]:hover) .cmap-trail:not([data-c="${i}"]),
+.cmap:has([data-c="${i}"]:focus-within) .cmap-pin:not([data-c="${i}"]),
+.cmap:has([data-c="${i}"]:focus-within) .cmap-trail:not([data-c="${i}"]){opacity:.1}
+.cmap:has([data-c="${i}"]:hover) .cmap-list > li:not([data-c="${i}"]),
+.cmap:has([data-c="${i}"]:focus-within) .cmap-list > li:not([data-c="${i}"]){opacity:.4}
+.cmap:has(.cmap-list > li[data-c="${i}"]:hover) [data-c="${i}"] circle,
+.cmap:has(.cmap-list > li[data-c="${i}"]:focus-within) [data-c="${i}"] circle{r:8}`).join('');
+
 const label = (pin) =>
   [pin.organization, pin.place].filter(Boolean).join(' — ')
   + ` (${pin.start}${pin.end ? `–${pin.end}` : '–present'})`;
 ---
+
+<style set:html={focusRules}></style>
 
 <figure class="cmap">
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
@@ -25,12 +41,12 @@ const label = (pin) =>
 
     {/* Trajectories first, so pins sit on top of their own lines. */}
     {trails.map((p) => (
-      <polyline class="cmap-trail" style={`--h:${p.hue}`}
+      <polyline class="cmap-trail" data-c={people.indexOf(p)} style={`--h:${p.hue}`}
                 points={p.pins.map((pin) => `${pin.x.toFixed(1)},${pin.y.toFixed(1)}`).join(' ')} />
     ))}
 
     {pins.map((pin) => (
-      <g class="cmap-pin" style={`--h:${pin.person.hue}`}>
+      <g class="cmap-pin" data-c={people.indexOf(pin.person)} style={`--h:${pin.person.hue}`}>
         {/* <title> is the native tooltip and the accessible name at once. */}
         <title>{pin.person.name} — {label(pin)}{pin.papers.length
           ? `; ${pin.papers.length} paper${pin.papers.length > 1 ? 's' : ''} together`
@@ -42,14 +58,24 @@ const label = (pin) =>
   </svg>
 
   <figcaption>
-    Equal Earth projection — equal-area, so no country is drawn larger than it is.
-    A filled pin is somewhere we wrote something together; a hollow one is
-    another post on the way. Dotted lines follow one person through their posts.
+    <span class="cmap-key cmap-key--shared">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
+      wrote something together
+    </span>
+    <span class="cmap-key">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
+      another post
+    </span>
+    <span class="cmap-key cmap-key--trail">
+      <svg viewBox="0 0 24 12" aria-hidden="true"><line x1="1" y1="6" x2="23" y2="6" /></svg>
+      one person over time
+    </span>
+    <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
   </figcaption>
 
   <ol class="cmap-list">
     {people.map((p) => (
-      <li style={`--h:${p.hue}`}>
+      <li data-c={people.indexOf(p)} style={`--h:${p.hue}`} tabindex="0">
         <h3>{p.name}</h3>
         <ol>
           {p.pins.map((pin) => (
