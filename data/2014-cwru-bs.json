@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-bs",
+  "type": "education",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2014",
+    "end": "2018"
+  },
+  "title": "B.S. in Mathematical Physics and Astronomy",
+  "institution": "Case Western Reserve University",
+  "location": "Cleveland, OH, USA",
+  "degree": "B.S.",
+  "supervisors": [
+    "Stacy McGaugh"
+  ],
+  "details": "Summa Cum Laude, GPA 4.0.",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://physics.case.edu"
+    }
+  ]
+}

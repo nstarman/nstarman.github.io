@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "grader-honors-mechanics",
+  "type": "teaching",
+  "cvs": [],
+  "date": {
+    "start": "2015"
+  },
+  "title": "Grader: Honors Mechanics",
+  "institution": "CWRU",
+  "details": "Graded assignments and exams"
+}

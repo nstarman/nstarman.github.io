@@ -1,0 +1,11 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "phi-beta-kappa-academic-award",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2016-04"
+  },
+  "title": "Phi Beta Kappa Academic Award",
+  "tier": "major"
+}

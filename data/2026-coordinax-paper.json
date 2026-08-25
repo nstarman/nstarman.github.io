@@ -1,0 +1,32 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "coordinax-paper",
+  "type": "publication",
+  "cvs": [],
+  "date": {
+    "start": "2026"
+  },
+  "title": "Coordinax: an extended framework for coordinates and differential geometry in JAX",
+  "status": "in-prep",
+  "entryType": "unpublished",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Price-Whelan",
+      "given": "Adrian"
+    }
+  ],
+  "refs": [
+    "coordinax"
+  ],
+  "tags": [
+    "jax",
+    "coordinates"
+  ],
+  "citekey": "Starkman+Price-Whelan:2026:coordinax"
+}

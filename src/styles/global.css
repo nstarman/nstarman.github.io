@@ -1,0 +1,569 @@
+:root{
+  --ground:#FFFFFF; --surface:#F5F7FA; --sunk:#EFF2F7;
+  --ink:#12161C; --ink-2:#2A313C; --ink-mute:#5A6472; --ink-faint:#8A93A1;
+  --rule:#E2E6EC; --rule-strong:#CFD6E0;
+  --accent:#2A5DA8; --accent-soft:#EAF0F9; --accent-line:#7FA6D9;
+  --serif:"Newsreader",ui-serif,Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --measure:34rem; --wide:49rem;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B0E14; --surface:#131923; --sunk:#0F141D;
+    --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
+    --rule:#222A37; --rule-strong:#313B4B;
+    --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B0E14; --surface:#131923; --sunk:#0F141D;
+  --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
+  --rule:#222A37; --rule-strong:#313B4B;
+  --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline; text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+
+.wrap{max-width:var(--wide); margin-inline:auto; padding-inline:1.5rem}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky; top:0; z-index:10; background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(8px);
+}
+nav .wrap{display:flex; align-items:center; justify-content:space-between; gap:1rem; height:3.25rem;
+  border-bottom:1px solid var(--rule)}
+nav .who{font-family:var(--serif); font-size:1rem; font-weight:500; color:var(--ink)}
+nav ul{display:flex; align-items:center; gap:.35rem; list-style:none; margin:0; padding:0}
+nav ul a{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-mute);
+}
+nav ul a:hover{color:var(--accent); text-decoration:none}
+
+/* ---------- hero ---------- */
+header{position:relative; overflow:hidden}
+#stream{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+header .wrap{position:relative; display:flex; gap:1.75rem; align-items:flex-start;
+  padding-block:2.75rem 1.35rem; flex-wrap:wrap}
+.portrait{
+  width:112px; height:112px; border-radius:50%; object-fit:cover; flex:none;
+  border:1px solid var(--rule-strong); background:var(--surface);
+}
+.ident{display:flex; flex-direction:column; gap:.55rem; min-width:15rem; flex:1}
+h1{
+  font-family:var(--serif); font-weight:500; font-size:clamp(2rem,5vw,2.6rem);
+  line-height:1.1; margin:0; letter-spacing:-.015em; text-wrap:balance;
+}
+.role{margin:0; color:var(--ink-mute); font-size:1rem}
+.role em{color:var(--ink-2); font-style:normal; font-weight:500}
+
+.pills{display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.5rem; padding:0; list-style:none}
+.pill{
+  width:2.15rem; height:2.15rem; padding:0; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--ink-mute); border:1px solid var(--rule-strong);
+  background:var(--ground); transition:.15s;
+}
+.pill .ico{width:15px; height:15px; fill:currentColor; display:block}
+.pill:hover,.pill:focus-visible{
+  color:var(--ground); background:var(--ink); border-color:var(--ink);
+  text-decoration:none;
+}
+
+/* ---------- sections ---------- */
+main .wrap{padding-block:.9rem 1.85rem}
+section + section > .wrap{border-top:1px solid var(--rule)}
+.lede{font-size:1.04rem; color:var(--ink-2); margin:0 0 .7rem}
+.lede + .lede{margin-top:0}
+h2{
+  font-family:var(--serif); font-weight:500; font-size:1.28rem; margin:0 0 .95rem;
+  letter-spacing:-.01em;
+}
+.h2row{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin-bottom:.95rem}
+.h2row h2{margin:0}
+.more{font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase}
+
+/* ---------- entries ---------- */
+.entries{display:flex; flex-direction:column; gap:1.15rem}
+.entry{display:grid; grid-template-columns:1fr auto; gap:.15rem 1rem; align-items:baseline}
+.entry .ttl{font-size:.99rem; font-weight:500; color:var(--ink); line-height:1.4; text-wrap:balance}
+.entry .ttl a{color:var(--ink)}
+.entry .ttl a:hover{color:var(--accent)}
+.entry .yr{
+  font-family:var(--mono); font-size:.8rem; color:var(--ink-faint);
+  font-variant-numeric:tabular-nums; justify-self:end;
+}
+.entry .meta{grid-column:1/-1; margin:0; font-size:.9rem; color:var(--ink-mute)}
+.entry .meta .me{color:var(--ink-2); font-weight:500}
+.entry .venue{font-style:italic}
+.status{
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent-line);
+  border-radius:.25rem; padding:.1rem .38rem; vertical-align:.1em; margin-left:.4rem;
+}
+.btns{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:.3rem; margin:.38rem 0 0; padding:0; list-style:none}
+.btn{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.04em;
+  color:var(--ink-mute); background:var(--surface); border:1px solid var(--rule);
+  border-radius:.3rem; padding:.24rem .55rem; transition:.15s;
+}
+.btn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft); text-decoration:none}
+
+/* --- brief entries: landing page only. Flex with a right-hand gutter for the
+   year and the paper button — as a grid row-span the gutter's surplus height
+   was distributed across the rows and pushed the title off the authors. --- */
+.entries--brief{gap:0}
+.entry--brief{
+  display:flex; align-items:flex-start; gap:1.4rem;
+  position:relative; padding-block:.85rem;
+}
+.entry--brief .body{flex:1; min-width:0}
+.entry--brief:first-child{padding-top:0}
+.entry--brief .side{
+  flex:none; display:flex; flex-direction:column;
+  align-items:flex-end; gap:.42rem;
+}
+.entry--brief .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
+  line-height:1.4; text-wrap:balance}
+.entry--brief .ttl a{color:var(--ink)}
+.entry--brief .ttl a:hover{color:var(--accent)}
+.entry--brief .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
+.entry--brief .meta .me{color:var(--ink-2); font-weight:500}
+.entry--brief + .entry--brief::before{
+  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:32%; height:1px; background:var(--ink-faint); opacity:.24;
+}
+
+/* ---------- background ---------- */
+.timeline{display:flex; flex-direction:column; gap:.7rem}
+.tl{display:grid; grid-template-columns:5.1rem 1fr; gap:.8rem; align-items:baseline}  /* just wide enough for "2018 – 2024"; it was 6.75rem and stranded the text */
+.tl .when{font-family:var(--mono); font-size:.76rem; color:var(--ink-faint);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.tl .what{font-size:.95rem; color:var(--ink-2)}
+.tl .what strong{color:var(--ink); font-weight:500}
+.tl .sub{display:block; font-size:.85rem; color:var(--ink-mute); margin-top:.05rem}
+
+/* ---------- software ---------- */
+.lead{
+  display:flex; flex-direction:column; gap:.4rem;
+  /* The lead is a package too, so it gets the card's squircle — at half the
+     tint, so it reads as the same family without competing with the grid. */
+  background:color-mix(in srgb, var(--ink) 1.2%, transparent);
+  border-radius:20px;
+  padding:1.15rem 1.2rem 1.25rem;
+  margin-bottom:2rem; position:relative;
+}
+/* The divider now sits in the gap below the box rather than inside its tint. */
+.lead::after{
+  content:""; position:absolute; bottom:-1.05rem; left:50%; transform:translateX(-50%);
+  width:32%; height:1px; background:var(--ink-faint); opacity:.24;
+}
+.lead .name{font-family:var(--mono); font-size:1.3rem; font-weight:500; letter-spacing:-.01em}
+.lead .name .stars{font-size:.8rem}
+.lead .role-line{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent);
+}
+.lead p{margin:0; font-size:1rem; color:var(--ink-2); line-height:1.55}
+.soft{display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+  gap:.9rem; grid-auto-rows:1fr}
+.card{
+  display:flex; flex-direction:column; gap:.3rem;
+  /* A whisper of a squircle — enough to group the cards, not enough to draw a
+     box. Tinted from --ink, so it lifts on the dark theme instead of darkening. */
+  background:color-mix(in srgb, var(--ink) 2.5%, transparent);
+  border-radius:16px;
+  padding:.95rem 1.05rem 1rem;
+}
+.card .btns{margin-top:auto; padding-top:.6rem}
+.card .name{font-family:var(--mono); font-size:.95rem; font-weight:500; color:var(--ink)}
+.card .name a{color:var(--ink)}
+.card .name a:hover{color:var(--accent)}
+.card .stars{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:.4rem;
+  font-variant-numeric:tabular-nums}
+.card p{margin:0; font-size:.88rem; color:var(--ink-mute); line-height:1.5}
+
+/* ---------- page break marker (mockup only) ---------- */
+.pagebreak{
+  border-top:1px dashed var(--rule-strong); margin-top:1rem;
+  padding:1.7rem 0 .4rem; text-align:center;
+}
+.pagebreak span{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-faint); background:var(--ground); padding:0 .75rem;
+}
+.grouplabel{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 1rem;
+}
+.entries + .grouplabel{margin-top:1.6rem}
+
+footer{margin-top:1rem}
+footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; gap:1rem;
+  flex-wrap:wrap; font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
+  border-top:1px solid var(--rule)}
+
+@media (max-width:34rem){
+  nav ul{gap:.9rem}
+  .entry--brief{flex-direction:column; gap:.4rem}
+  .entry--brief .side{flex-direction:row; align-items:center; order:-1}
+  .tl{grid-template-columns:1fr; gap:.05rem}
+  header .wrap{padding-block:2.5rem 2.25rem}
+  .entry{grid-template-columns:1fr}
+  .entry .yr{justify-self:start; order:-1}
+}
+
+
+.dropped{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin:.5rem 0 0}
+.tl .btns{margin-top:.3rem}
+/* A publication's links sit in their own gutter, stacked, as on the
+   publications page — `.btns` otherwise spans every column and drops a row. */
+.tl--pub{grid-template-columns:5.1rem 1fr auto}
+.tl--pub > .btns--icon{grid-column:3; align-self:start; justify-content:flex-end;
+  gap:.3rem; margin:0; width:calc(3 * 1.45rem + 2 * .3rem)}
+@media (max-width:34rem){
+  .tl--pub{grid-template-columns:5.1rem 1fr}
+  .tl--pub > .btns--icon{grid-column:2; flex-direction:row; margin-top:.3rem}
+}
+.tl .me{color:var(--ink-2); font-weight:600}
+
+/* CV page: section headings mirror the PDF's ruled headings rather than the
+   small mono labels used for publication status groups. */
+.cvsection{
+  font-family:var(--serif); font-weight:500; font-size:1.05rem; color:var(--ink);
+  margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
+}
+.cvsection:first-of-type{margin-top:1rem}
+.pdfrow{display:flex; align-items:center; justify-content:flex-end; gap:.7rem;
+  flex-wrap:wrap; margin:0 0 .4rem}
+
+/* Divider between the software tiers — the same 32%, low-alpha rule used
+   between publications and under the lead package. */
+.tierbreak{
+  height:1px; width:32%; margin:1.4rem auto 1.2rem;
+  background:var(--ink-faint); opacity:.24;
+}
+
+/* Software tier 3: the long tail. Same card, three across instead of two, and
+   dialled down — smaller type, tighter padding, shorter box. Same aesthetic, a
+   quieter voice, so the four headliners still lead. */
+.soft--mini{grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:.7rem}
+.card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
+.card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
+.card--mini .name .stars{font-size:.66rem}
+.card--mini p{font-size:.78rem; line-height:1.45}
+.card--mini .btns{padding-top:.45rem; gap:.25rem}
+.card--mini .btn{font-size:.64rem; padding:.18rem .42rem}
+
+/* CV builder */
+.builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
+.builderbar--go{margin-top:.2rem}
+.builderbar .bl{font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-faint); margin-right:.2rem}
+.builderbar .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto;
+  font-variant-numeric:tabular-nums}
+.btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
+  font-size:.75rem; padding:.35rem .8rem}
+.btn--go:hover{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+.btn--go:disabled{opacity:.5; cursor:progress}
+.status{font-family:var(--mono); font-size:.7rem; color:var(--ink-mute)}
+#preview{width:100%; height:min(78vh,900px); border:1px solid var(--rule);
+  border-radius:8px; margin:.4rem 0 1rem; background:var(--surface)}
+/* The builder sits on the preset row but is a different kind of action — a
+   divider and a touch of weight keep it from reading as a fifth preset. */
+.more .sep{color:var(--rule-strong); margin:0 .5rem}
+
+/* Publications page: abstract in full, and icon buttons rather than text ones.
+   Deliberately larger than the reference site's — they are the main way into
+   the paper, the code and the data, so they should be easy to hit. */
+.abstract{
+  grid-column:1/-1; margin:.5rem 0 0; font-size:.88rem; line-height:1.6;
+  color:var(--ink-mute); max-width:60ch;
+}
+.btns--icon{gap:.4rem; margin-top:.6rem}
+.iconbtn{
+  width:1.9rem; height:1.9rem; border-radius:.45rem;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--ink-mute); border:1px solid var(--rule-strong);
+  background:var(--surface); transition:.15s;
+}
+.iconbtn .ico{width:15px; height:15px; fill:currentColor; display:block}
+/* Dense contexts — CV rows, the software long tail — take a smaller mark. */
+.tl .iconbtn,.card--mini .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
+.tl .iconbtn .ico,.card--mini .iconbtn .ico{width:12px; height:12px}
+.iconbtn:hover,.iconbtn:focus-visible{
+  color:var(--ground); background:var(--ink); border-color:var(--ink);
+  text-decoration:none;
+}
+
+/* Full publication entries. Flex, not grid: when the button column spanned
+   grid rows and was taller than the text, the browser distributed its extra
+   height across those rows and opened gaps between the title, the authors and
+   the venue. A flex gutter cannot do that. */
+.entry--full{
+  display:flex; align-items:flex-start; gap:1.6rem;
+  position:relative; padding-block:1.15rem;
+}
+.entry--full .body{flex:1; min-width:0}
+.entry--full:first-child{padding-top:.9rem}
+.entry--full + .entry--full::before{
+  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:32%; height:1px; background:var(--ink-faint); opacity:.24;
+}
+.entry--full .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
+  line-height:1.4; text-wrap:balance}
+.entry--full .ttl a{color:var(--ink)}
+.entry--full .ttl a:hover{color:var(--accent)}
+.entry--full .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
+.entry--full .meta .me{color:var(--ink-2); font-weight:500}
+.entry--full .venueline{margin:.1rem 0 0; font-size:.88rem; color:var(--ink-mute)}
+.entry--full .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
+.entry--full .venueline .yr{font-family:var(--mono); font-size:.8rem;
+  font-variant-numeric:tabular-nums}
+.entry--full .abstract{max-width:none; margin:.55rem 0 0}
+.entry--full .btns--icon{flex:none; flex-direction:column; gap:.35rem; margin:.15rem 0 0}
+
+@media (max-width:34rem){
+  .entry--full{flex-direction:column; gap:.6rem}
+  .entry--full .btns--icon{flex-direction:row}
+}
+/* ADS and arXiv on the publications page, same pills as the home page. */
+.pubprofiles{display:flex; align-items:center; gap:.5rem}
+.pubprofiles .pill{width:1.75rem; height:1.75rem}
+.pubprofiles .pill .ico{width:13px; height:13px}
+
+/* The year in the landing gutter reads as the Background section's date column
+   does — same face, size and weight, because they are the same kind of thing.
+   (It had lost its styling entirely when .entry stopped being a class here.) */
+.entry--brief .side .yr{
+  font-family:var(--mono); font-size:.76rem; color:var(--ink-faint);
+  font-variant-numeric:tabular-nums; line-height:1.4;
+}
+
+/* Publications page hierarchy. Four levels rather than two: the title carries
+   the weight, the authors recede, the journal is italic and mid-toned so it
+   separates from the authors above it, and the abstract comes back up to body
+   colour because it is the substance of the entry, not an aside. */
+.entry--full .ttl{font-size:1.04rem}
+.entry--full .meta{color:var(--ink-mute)}
+.entry--full .venueline .venue{font-style:italic; color:var(--ink-2)}
+.entry--full .abstract{color:var(--ink-2)}
+
+/* The institution's own site sits in the date gutter, under the years — it
+   belongs to the row as a whole, not alongside a paper or a dataset. */
+.tl .when{display:flex; flex-direction:column; align-items:flex-start; gap:.3rem}
+.gutterlinks{display:flex; flex-wrap:wrap; gap:.3rem}
+.homelink{
+  display:inline-flex; width:1.2rem; height:1.2rem; align-items:center;
+  justify-content:center; border-radius:.25rem; color:var(--ink-faint);
+  border:1px solid var(--rule); transition:.15s;
+}
+.homelink .ico{width:11px; height:11px; fill:currentColor; display:block}
+.homelink:hover{color:var(--ground); background:var(--ink); border-color:var(--ink)}
+/* detail-line links read as links, not as decoration */
+.tl .sub a{color:var(--accent)}
+.tl .sub a:hover{text-decoration:underline; text-underline-offset:2px}
+
+/* CV contents rail. Hidden by default and shown only when the viewport is wide
+   enough to hold it in the left margin without moving the content column:
+   49rem of column plus ~13rem of rail and its gap on each side. Below that the
+   page is unchanged rather than reflowed. */
+.cvtoc{display:none}
+.cvsection{scroll-margin-top:4.5rem}
+
+@media (min-width:78rem){
+  .cvtoc{
+    display:block; position:fixed; top:6.5rem;
+    right:calc(50% + 24.5rem + 2rem); width:12.5rem;
+    max-height:calc(100vh - 9rem); overflow-y:auto;
+  }
+  .cvtoc ol{list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:.32rem}
+  /* The rail sits in the left margin, but its rule runs down the right edge and
+     the labels are right-aligned — so the marker and the text both point at the
+     content column they belong to. */
+  .cvtoc{text-align:right}
+  .cvtoc a{
+    display:block; font-size:.78rem; line-height:1.3; color:var(--ink-faint);
+    border-right:2px solid var(--rule); padding:.1rem .6rem .1rem 0;
+    transition:color .15s, border-color .15s;
+  }
+  .cvtoc a:hover{color:var(--ink-2); text-decoration:none; border-color:var(--rule-strong)}
+  .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
+}
+.tl .recipient{color:var(--ink-mute); font-style:italic}
+.tl{scroll-margin-top:5rem}
+
+
+/* Section head carries the rule, so the heading and its toggle sit on one line. */
+.cvsechead{
+  display:flex; align-items:baseline; justify-content:flex-start; gap:1rem;
+  margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
+}
+.cvsec--first .cvsechead{margin-top:1rem}
+/* A collapsed section: the whole head is the control, so it takes the pointer
+   and the caret, and the count says what is behind it. */
+summary.cvsechead{cursor:pointer; list-style:none}
+summary.cvsechead::-webkit-details-marker{display:none}
+summary.cvsechead .cvsection::after{
+  content:"\203A"; display:inline-block; margin-left:.5rem;
+  color:var(--ink-faint); font-weight:400; transition:transform .15s;
+}
+details[open] > summary.cvsechead .cvsection::after{transform:rotate(90deg)}
+summary.cvsechead:hover .cvsection{color:var(--accent)}
+.cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
+.cvsechead .cvtoggle{margin-left:auto}
+.seclink{color:var(--ink-faint); margin-left:.5rem; transition:color .15s}
+.seclink:hover{color:var(--accent); text-decoration:none}
+.cvsechead .cvsection{margin:0; padding:0; border:0}
+
+/* Segmented length control. Each segment is its own pill; the active one is
+   outlined in the accent rather than filled, so nothing on the page competes
+   with the content for weight. */
+.cvtoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
+.cvtoggle a{
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
+  padding:.14rem .5rem; line-height:1.4; transition:.15s;
+}
+.cvtoggle a:hover{color:var(--ink); border-color:var(--rule-strong); text-decoration:none}
+.cvtoggle a.on{
+  color:var(--accent); border-color:var(--accent-line); font-weight:500;
+  background:transparent;
+}
+.cvtoggle a.on:hover{color:var(--accent); border-color:var(--accent)}
+
+/* Per-section: quiet until you look for it. */
+.cvsechead .cvtoggle{opacity:.45; transition:opacity .15s}
+.cvsechead:hover .cvtoggle, .cvsechead .cvtoggle:focus-within{opacity:1}
+
+/* The one at the top of the page is the primary control, so it stays legible. */
+.cvtoggle--main a{font-size:.72rem; padding:.2rem .6rem}
+
+/* The CV's controls, condensed into the header once the originals scroll away.
+   Download on the left, length on the right. */
+.cvbar{
+  position:fixed; top:3.25rem; left:0; right:0; z-index:9;
+  background:color-mix(in srgb, var(--ground) 92%, transparent);
+  backdrop-filter:blur(8px);
+  transform:translateY(-110%); opacity:0; pointer-events:none;
+  transition:transform .18s ease, opacity .18s ease;
+}
+.cvbar.is-on{transform:none; opacity:1; pointer-events:auto}
+.cvbar .wrap{
+  /* padding-block:0 because this .wrap sits inside <main>, so `main .wrap`
+     was giving it .9rem/1.85rem — asymmetric, which pushed the contents 8px
+     above centre and overflowed the fixed height. */
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  height:2.6rem; padding-block:0; border-bottom:1px solid var(--rule);
+}
+.cvbar .cvtoggle--main a{font-size:.66rem; padding:.16rem .5rem}
+@media (prefers-reduced-motion:reduce){
+  .cvbar{transition:opacity .18s ease}
+}
+
+/* Which part of the site you are in — the same outlined pill the CV length
+   toggle uses, so "you are here" reads the same way everywhere. Sticky nav, so
+   it stays visible once the page title has scrolled away. */
+nav ul a{border:1px solid transparent; border-radius:2rem; padding:.18rem .55rem}
+nav ul a.on{color:var(--accent); border-color:var(--accent-line)}
+nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
+/* The builder has no download, so the toggle still sits right. */
+.cvbar .spacer{flex:1}
+
+/* "Build custom" is a different kind of action, so it keeps the accent even
+   when inactive — but it is a toggle segment like the rest, so its size,
+   padding and pill come from .cvtoggle and cannot drift from them. */
+.cvtoggle a.build{color:var(--accent)}
+.cvtoggle a.build:hover{color:var(--accent); border-color:var(--accent)}
+
+/* Source link. Every CV entry is one record in data/, and the mark in the right
+   margin opens it. Hidden below the width that can hold it outside the column,
+   the same bargain the contents rail makes on the left. */
+.srclink{display:none}
+.card--mini{position:relative}
+@media (min-width:56rem){
+  .tl{position:relative}
+  .srclink{
+    display:block; font-family:var(--mono); font-size:.68rem; line-height:1;
+    color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
+  }
+  .tl > .srclink{position:absolute; left:100%; top:50%; transform:translateY(-50%);
+    margin-left:1.5rem}
+  /* A grid cell has no margin of its own, so its mark sits in the corner. */
+  .card--mini > .srclink{position:absolute; right:.7rem; top:.7rem}
+  .srclink:hover,.srclink:focus-visible{opacity:1; color:var(--accent); text-decoration:none}
+}
+
+/* A list section — refereeing venues, review panels. No dates, so no gutter:
+   the entries line up under the heading like the prose they are. */
+.plainlist{margin:.1rem 0 0; padding:0 0 0 1.1rem; list-style:disc}
+.plainlist li{font-size:.95rem; color:var(--ink-2); line-height:1.55; margin:.15rem 0}
+.plainlist li::marker{color:var(--ink-faint)}
+
+/* The builder's compile controls, once they have moved into the condensed
+   header: the same buttons, sized for the bar, and without the status line
+   that has no room there. */
+.cvbar .builderbar--go{margin:0; flex:1; gap:.35rem}
+.cvbar .builderbar--go .btn{font-size:.66rem; padding:.16rem .5rem}
+.cvbar .builderbar--go .status{display:none}
+
+/* The builder renders the complete CV with a checkbox on every entry. The row
+   gains a column for it rather than squeezing it into the date gutter, so the
+   dates still line up with the ones on the CV proper. */
+.tl--pick{grid-template-columns:1.3rem 5.1rem 1fr}
+.tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr auto}
+.tl--pick.tl--pub > .btns--icon{grid-column:4}
+.tl--pick > .itembox{align-self:start; margin:.28rem 0 0}
+.cvsechead .groupbox{margin:0 .1rem 0 0; align-self:center}
+.card--mini .name{display:flex; align-items:center; gap:.45rem}
+.card--mini .name .itembox{margin:0}
+.itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
+/* Unticked entries stay legible but recede, so the shape of the selection is
+   visible without reading every checkbox. */
+.tl--pick:has(> .itembox:not(:checked)),
+.card--mini:has(> .itembox:not(:checked)){opacity:.42}
+@media (max-width:34rem){
+  .tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr}
+  .tl--pick.tl--pub > .btns--icon{grid-column:3}
+}
+
+/* Theme toggle. One mark, a half-filled circle, sitting quietly at the end of
+   the nav — it turns over rather than swapping to a different icon, so nothing
+   jumps under the cursor. */
+.themetoggle{
+  display:flex; align-items:center; justify-content:center;
+  width:1.5rem; height:1.5rem; margin-left:.15rem; padding:0;
+  background:none; border:0; border-radius:50%; cursor:pointer;
+  color:var(--ink-faint); transition:color .15s, transform .35s ease;
+}
+.themetoggle .ico{width:14px; height:14px; fill:currentColor; display:block}
+.themetoggle:hover{color:var(--accent)}
+:root[data-theme="dark"] .themetoggle{transform:rotate(180deg)}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .themetoggle{transform:rotate(180deg)}
+}
+
+/* Detail ticks. Every elaboration line is its own inclusion, and the section
+   head carries one that sets them together. */
+.subbox{accent-color:var(--accent); margin:0 .4rem 0 0; vertical-align:.02em; cursor:pointer}
+.subgrouplab{
+  margin-left:auto; display:flex; align-items:center; gap:.35rem; cursor:pointer;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.subgrouplab:hover{color:var(--ink-2)}
+.subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
+/* An unticked line stays readable but recedes — the same bargain the unticked
+   entries make, so a selection reads as one picture. */
+.sub.is-off{opacity:.35}

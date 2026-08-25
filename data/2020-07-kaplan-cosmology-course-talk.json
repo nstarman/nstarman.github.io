@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "kaplan-cosmology-course-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2020-07"
+  },
+  "title": "Kaplan cosmology course (Talk)",
+  "kind": "contributed",
+  "details": "Paid lecturer in Kaplan Cosmology course at Case Western Reserve University"
+}

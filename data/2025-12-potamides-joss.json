@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "potamides-joss",
+  "type": "publication",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-12"
+  },
+  "title": "Potamides: JAX tools for curvature-based inference from stellar streams",
+  "status": "submitted",
+  "entryType": "misc",
+  "authors": [
+    {
+      "family": "Wu",
+      "given": "Sirui",
+      "orcid": "0009-0003-4675-3622"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob",
+      "orcid": "0000-0001-8042-5794"
+    },
+    {
+      "family": "Pearson",
+      "given": "Sarah",
+      "orcid": "0000-0003-0256-5446"
+    }
+  ],
+  "venue": {
+    "journal": "Journal of Open Source Software"
+  },
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://github.com/openjournals/joss-reviews/issues/10712",
+      "label": "JOSS review"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/xggs-dev/potamides"
+    }
+  ],
+  "tags": [
+    "streams",
+    "open-source"
+  ],
+  "citekey": "Wu+:2026:potamides-joss",
+  "abstract": "Potamides is a Python package for inferring the mass distribution of galaxies from the projected shapes of stellar streams in imaging data. Stellar streams are elongated structures produced when star clusters or dwarf galaxies are tidally disrupted by their host. Because their projected tracks carry information about the host's gravitational field, the local curvature of a stream can constrain the underlying potential. The package implements and extends the curvature-based likelihood framework of. Rather than generating a full dynamical realization of a stellar stream for each trial model, Potamides represents observed stream tracks with JAX-based splines. It evaluates gravitational accelerations in candidate potentials and compares them directly to the local stream geometry. This provides a lower-cost inference workflow that complements traditional forward-modeling approaches. Potamides supports the complete analysis pipeline for a galaxy, from annotating stream ridge-lines to evaluating likelihoods across many potential models."
+}

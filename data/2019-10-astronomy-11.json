@@ -1,0 +1,19 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astronomy-11",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2019-10"
+  },
+  "title": "Astronomy 11",
+  "kind": "organizer",
+  "location": "TO, CA",
+  "details": "Role: Local Organizing Committee member and lead workshop on scientific plotting",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://dotastronomy.com/events/eleven/"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "connor-mckeigan-astronomy-uoft-with-prof-ting-li-uoft",
+  "type": "mentoring",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023",
+    "end": "2025"
+  },
+  "title": "Connor McKeigan (Astronomy, UofT) with Prof. Ting Li (UofT)",
+  "details": "Undergraduate thesis project: “Characterizing the stellar streams of S5”",
+  "student": "Connor McKeigan (Astronomy, UofT) with Prof. Ting Li (UofT)"
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2021",
+    "present": true
+  },
+  "title": "Astropy",
+  "summary": "Astronomy in Python",
+  "details": "The community core package for astronomy in Python. The collaboration received the 2025 AAS Lancelot M. Berkeley Prize.",
+  "repo": "astropy/astropy",
+  "role": "Core developer · Coordination Committee · Strategic Planning",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/astropy/astropy"
+    },
+    {
+      "rel": "docs",
+      "url": "https://www.astropy.org"
+    }
+  ],
+  "refs": [
+    "astropy-v5-paper"
+  ],
+  "tags": [
+    "astropy",
+    "open-source"
+  ],
+  "tier": "lead"
+}

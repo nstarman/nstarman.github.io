@@ -1,0 +1,11 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "summa-cum-laude",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2018-05"
+  },
+  "title": "Summa Cum Laude",
+  "tier": "major"
+}

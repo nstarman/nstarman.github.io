@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "collaboration-meeting-grant",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2023-06"
+  },
+  "title": "Collaboration Meeting Grant",
+  "tier": "minor",
+  "details": "To visit the Center for Computational Astrophysics and collaborate on the paper"
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "5th-gaia-challenge-conference-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2019-09"
+  },
+  "title": "5th Gaia Challenge Conference (Talk)",
+  "kind": "contributed",
+  "details": "Extending the Pal5 Stream Detection Limits"
+}

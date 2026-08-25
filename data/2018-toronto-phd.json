@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "toronto-phd",
+  "type": "education",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2018",
+    "end": "2024"
+  },
+  "title": "PhD in Astronomy & Astrophysics",
+  "institution": "University of Toronto",
+  "location": "Toronto, ON, Canada",
+  "degree": "PhD",
+  "thesis": "Charting Stellar Streams of the Milky Way",
+  "supervisors": [
+    "Jo Bovy",
+    "Jeremy Webb"
+  ],
+  "details": "[NSERC CGS-D Fellow](https://www.nserc-crsng.gc.ca/Students-Etudiants/PG-CS/CGSD-BESCD_eng.asp) 2020–2023. [NSERC CGS-M Fellow](https://www.nserc-crsng.gc.ca/Students-Etudiants/PG-CS/CGSM-BESCM_eng.asp) 2019–2020.",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.utoronto.ca"
+    }
+  ]
+}

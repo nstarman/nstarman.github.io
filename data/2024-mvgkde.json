@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "mvgkde",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "mvgkde",
+  "summary": "Multivariate Gaussian KDE",
+  "repo": "nstarman/mvgkde",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/nstarman/mvgkde"
+    }
+  ],
+  "details": "Kernel density estimation in JAX — differentiable, vectorized, bandwidth-tunable."
+}

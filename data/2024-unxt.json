@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "unxt",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "unxt",
+  "summary": "Units in JAX",
+  "details": "Unit-aware quantities that survive jit, grad and vmap.",
+  "repo": "GalacticDynamics/unxt",
+  "role": "lead developer",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/unxt"
+    },
+    {
+      "rel": "docs",
+      "url": "https://unxt.readthedocs.io/en/stable/"
+    }
+  ],
+  "tags": [
+    "jax",
+    "units"
+  ],
+  "tier": "headline",
+  "refs": [
+    "unxt-joss"
+  ]
+}

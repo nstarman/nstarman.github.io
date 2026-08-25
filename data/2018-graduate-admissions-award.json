@@ -1,0 +1,16 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "graduate-admissions-award",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2018"
+  },
+  "title": "Graduate Admissions Award",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 5000
+  },
+  "details": "UofT Faculty of Arts & Science"
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "the-jcr-a-massey-podcast-chatgpt-friend-or-foe",
+  "type": "media",
+  "cvs": [],
+  "date": {
+    "start": "2023"
+  },
+  "title": "The JCR: A Massey Podcast - ChatGPT: Friend or Foe",
+  "details": "Panelist for a public podcast interviewing researchers on how generative AI is used in various scientific fields",
+  "outlet": "The JCR: A Massey Podcast - ChatGPT: Friend or Foe",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://the-jcr-a.blubrry.net/2023/05/05/chatgpt-friend-or-foe-move-fast-and-break-things/"
+    }
+  ]
+}

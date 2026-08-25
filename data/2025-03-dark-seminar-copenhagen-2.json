@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dark-seminar-copenhagen-2",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-03"
+  },
+  "title": "DARK seminar (Copenhagen)",
+  "kind": "invited",
+  "details": "Bayesian models for detecting streams in LSST data"
+}

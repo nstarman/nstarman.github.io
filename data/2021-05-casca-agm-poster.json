@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "casca-agm-poster",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-05"
+  },
+  "title": "CASCA AGM (Poster)",
+  "kind": "contributed",
+  "details": "Stellar Stream Track Reconstruction, with Errors"
+}

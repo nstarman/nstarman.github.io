@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "potamides-apj",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2026-05"
+  },
+  "title": "Potamides: Mapping Dark Matter Halo Shapes from Stellar Stream Tracks in the Local Universe",
+  "status": "submitted",
+  "entryType": "misc",
+  "authors": [
+    {
+      "family": "Wu",
+      "given": "Sirui"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    }
+  ],
+  "venue": {
+    "journal": "The Astrophysical Journal"
+  },
+  "arxiv": "2605.07809",
+  "bibcode": "2026arXiv260507809W",
+  "tags": [
+    "streams",
+    "dark-matter"
+  ],
+  "internal": "CV lists 'et al.'; the remaining authors are still to be imported from ADS.",
+  "citekey": "Wu+:2026:potamides-halo-shapes",
+  "abstract": "Stellar streams trace the gravitational potential of their host galaxies and offer a direct probe of dark matter halo geometry. Cosmological simulations predict that halo shapes depend on both baryonic physics and the nature of dark matter, yet observational constraints on halo flattening and orientation remain limited, especially for individual galaxies. We present Potamides, which utilizes the curvature of extragalactic stellar streams to derive constraints on halo shapes. We apply Potamides to 15 stellar streams from the Stellar Stream Legacy Survey to infer the projected axis ratios and orientation of their host halos. We find that some streams in our sample exclude large regions of halo flattenings and halo orientations. Systems with edge-on wrapping loops or sharp turning points yield the strongest constraints, whereas great circle-like streams remain largely uninformative. All streams in our sample support a spherical halo for a given flattening direction. These results demonstrate that stream morphology can provide halo shape constraints for individual external galaxies. With upcoming surveys (such as Euclid, Rubin, Roman, and ARRAKIHS) expected to discover large numbers of stellar streams, this curvature-based technique will enable rapid statistical tests of dark matter and baryonic physics through the shapes and alignments of halos and disks across cosmic time."
+}

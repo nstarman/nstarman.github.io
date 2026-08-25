@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "pinns-neurips",
+  "type": "publication",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-12"
+  },
+  "title": "Physics-Informed Neural Networks for Modeling Galactic Gravitational Potentials",
+  "status": "published",
+  "entryType": "inproceedings",
+  "authors": [
+    {
+      "family": "Myers",
+      "given": "Charlotte"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Necib",
+      "given": "Lina"
+    }
+  ],
+  "venue": {
+    "booktitle": "Advances in Neural Information Processing Systems (NeurIPS 2025)"
+  },
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://openreview.net/forum?id=JJQAd9eKwq",
+      "label": "OpenReview"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/charlottemyers/galactoPINNs"
+    }
+  ],
+  "tags": [
+    "machine-learning",
+    "dynamics"
+  ],
+  "citekey": "Myers+:2025:galactic-pinns-neurips",
+  "abstract": "We introduce a physics-informed neural framework for modeling static and time-dependent galactic gravitational potentials. The method combines data-driven learning with embedded physical constraints to capture complex, small-scale features while preserving global physical consistency. We quantify predictive uncertainty through a Bayesian framework, and model time evolution using a neural ODE approach. Applied to mock systems of varying complexity, the model achieves reconstruction errors at the sub-percent level (0.14\\% mean acceleration error) and improves dynamical consistency compared to analytic baselines. This method complements existing analytic methods, enabling physics-informed baseline potentials to be combined with neural residual fields to achieve both interpretable and accurate potential models."
+}

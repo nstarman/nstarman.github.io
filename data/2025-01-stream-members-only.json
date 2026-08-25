@@ -1,0 +1,75 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "stream-members-only",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2025-01"
+  },
+  "title": "Stream Members Only: Data-Driven Characterization of Stellar Streams with Mixture Density Networks",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob"
+    },
+    {
+      "family": "Bovy",
+      "given": "Jo"
+    },
+    {
+      "family": "Webb",
+      "given": "Jeremy"
+    },
+    {
+      "family": "Tavangar",
+      "given": "Kiyan"
+    },
+    {
+      "family": "Price-Whelan",
+      "given": "Adrian"
+    },
+    {
+      "family": "Bonaca",
+      "given": "Ana"
+    }
+  ],
+  "venue": {
+    "journal": "The Astrophysical Journal",
+    "volume": "980",
+    "pages": "253"
+  },
+  "doi": "10.3847/1538-4357/ad94f2",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://iopscience.iop.org/article/10.3847/1538-4357/ad94f2"
+    },
+    {
+      "rel": "repo",
+      "url": "https://github.com/nstarman/stellar_stream_density_ml_paper"
+    },
+    {
+      "rel": "data",
+      "url": "https://zenodo.org/records/10211410"
+    }
+  ],
+  "tags": [
+    "streams",
+    "machine-learning"
+  ],
+  "citekey": "Starkman+:2025:stream-members",
+  "abstract": "Stellar streams are sensitive probes of the Milky Way’s gravitational potential. The mean track of a stream constrains global properties of the potential, while its fine-grained surface density constrains galactic substructure. A precise characterization of streams from potentially noisy data marks a crucial step in inferring galactic structure, including the dark matter, across orders of magnitude in mass scales. Here we present a new method for constructing a smooth probability density model of stellar streams using all of the available astrometric and photometric data. To characterize a stream’s morphology and kinematics, we utilize mixture density networks to represent its on-sky track, width, stellar number density, and kinematic distribution. We model the photometry for each stream as a single-stellar population, with a distance track that is simultaneously estimated from the stream’s inferred distance modulus (using photometry) and parallax distribution (using astrometry). We use normalizing flows to characterize the distribution of background stars. We apply the method to the stream GD-1, and the tidal tails of Palomar 5. For both streams we obtain a catalog of stellar membership probabilities that are made publicly available. Importantly, our model is capable of handling data with incomplete phase-space observations, making our method applicable to the growing census of Milky Way stellar streams."
+}

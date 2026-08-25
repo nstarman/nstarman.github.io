@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astrotours-toronto-outreach-volunteer",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018",
+    "end": "2021"
+  },
+  "title": "AstroTours Toronto Outreach Volunteer"
+}

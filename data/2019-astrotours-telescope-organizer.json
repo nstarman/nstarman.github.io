@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astrotours-telescope-organizer",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2021"
+  },
+  "title": "AstroTours Telescope Organizer",
+  "details": "Organizer for all telescope outreach in Dunlap's public event",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "http://astro.utoronto.ca/~gasa/astrotours/"
+    }
+  ]
+}

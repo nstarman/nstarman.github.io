@@ -1,0 +1,17 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "summer-research-at-case-western-reserve-university-cwru",
+  "type": "position",
+  "cvs": [],
+  "date": {
+    "start": "2015"
+  },
+  "title": "Summer Researcher",
+  "institution": "Case Western Reserve University",
+  "location": "Cleveland, OH, USA",
+  "details": [
+    "Advisor: [John Ruhl](https://physics.case.edu/faculty/john-ruhl/) (CWRU Physics).",
+    "Funding: federal grants awarded to Prof. Ruhl.",
+    "Project: Markov Chain Monte Carlo programs predicting how well South Pole Telescope detectors can distinguish B-modes from noise."
+  ]
+}

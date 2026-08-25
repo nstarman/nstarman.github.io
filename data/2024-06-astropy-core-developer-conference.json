@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-core-developer-conference",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-06"
+  },
+  "title": "Astropy Core Developer Conference",
+  "kind": "attended"
+}

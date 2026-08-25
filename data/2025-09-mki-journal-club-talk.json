@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "mki-journal-club-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-09"
+  },
+  "title": "MKI Journal Club (Talk)",
+  "kind": "contributed",
+  "details": "Euclid: The Geometry of Dark Matter Halos from Extragalactic Streams"
+}

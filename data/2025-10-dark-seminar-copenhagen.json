@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dark-seminar-copenhagen",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-10"
+  },
+  "title": "DARK seminar (Copenhagen)",
+  "kind": "invited",
+  "details": "The Geometry of Dark Matter Halos from Extragalactic Streams"
+}

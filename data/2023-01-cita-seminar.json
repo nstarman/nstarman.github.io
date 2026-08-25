@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cita-seminar",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2023-01"
+  },
+  "title": "CITA Seminar",
+  "kind": "invited",
+  "details": "Astropy Cosmology: the Present and the Expanding Future"
+}

@@ -1,14 +1,25 @@
-# Ignore the contents of the _site directory and other cache directories
-_site/
-.sass-cache/
+node_modules/
+dist/
+.astro/
 
-# Ignore the directory for local files during development
-local/
+# Claude's working notebook for this rebuild — local only, deliberately untracked.
+Notes.md
 
-# Ignore the Gemfile that is generated
-Gemfile.lock
-
-# Ingore files created by npm
-node_modules
-package-lock.json
 .DS_Store
+.env
+.env.production
+
+# cv.typ reads this; it is copied in per preset by scripts/build-cv-pdfs.sh
+cv/cv.json
+
+# local dev-server config
+.claude/
+
+# The compiler wasm and fonts are vendored for the CV builder route only.
+
+# generated from data/ and schema/ by scripts/publish-data.mjs
+public/records/
+
+# built by scripts/build-cv-pdfs.sh
+public/cv/
+public/files/

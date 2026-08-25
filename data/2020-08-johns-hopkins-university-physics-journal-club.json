@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "johns-hopkins-university-physics-journal-club",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2020-08"
+  },
+  "title": "Johns Hopkins University Physics Journal Club",
+  "kind": "invited",
+  "details": "Straight Lightning as a Signature of Macroscopic Dark Matter"
+}

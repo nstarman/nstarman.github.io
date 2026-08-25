@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "donald-a-glaser-award",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2018-05"
+  },
+  "title": "Donald A. Glaser Award",
+  "tier": "major",
+  "details": "To an outstanding Mathematics and Physics Senior"
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "near-field-cosmology-in-the-era-of-big-data-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-07"
+  },
+  "title": "Near Field Cosmology in the Era of Big Data (Talk)",
+  "kind": "contributed",
+  "details": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos",
+  "links": [
+    {
+      "rel": "event",
+      "url": "http://www.fields.utoronto.ca/activities/26-27/Nearfieldcosmology"
+    }
+  ]
+}

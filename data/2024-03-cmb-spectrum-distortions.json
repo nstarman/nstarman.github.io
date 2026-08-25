@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cmb-spectrum-distortions",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2024-03"
+  },
+  "title": "Angular Correlations of Cosmic Microwave Background Spectrum Distortions from Photon Diffusion",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Kosowsky",
+      "given": "Arthur"
+    },
+    {
+      "family": "Starkman",
+      "given": "Glenn"
+    }
+  ],
+  "venue": {
+    "journal": "Monthly Notices of the Royal Astronomical Society",
+    "volume": "529",
+    "pages": "2274"
+  },
+  "doi": "10.1093/mnras/stae665",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://academic.oup.com/mnras/article/529/3/2274/7630233"
+    },
+    {
+      "rel": "repo",
+      "url": "https://github.com/nstarman/Temperature-Diffusion-Spectral-Distortion-Paper"
+    },
+    {
+      "rel": "data",
+      "url": "https://zenodo.org/record/8400583"
+    }
+  ],
+  "tags": [
+    "cmb",
+    "cosmology"
+  ],
+  "citekey": "Starkman+:2024:cmb-spectral-distortions",
+  "abstract": "During cosmic recombination, charged particles bind into neutral atoms and the mean free path of photons rapidly increases, resulting in the familiar diffusion damping of primordial radiation temperature variations. An additional effect is a small photon spectrum distortion, because photons arriving from a particular sky direction were originally in thermal equilibrium at various spatial locations with different temperatures; the combination of these different blackbody temperature distributions results in a spectrum with a Compton y-distortion. Using the approximation that photons had zero mean free path prior to their second-to-last scattering, we derive an expression for the resulting y-distortion, and compute the angular correlation function of the diffusion y-distortion and its cross-correlation with the square of the photon temperature fluctuation. Detection of the cross-correlation is within reach of existing arcminute-resolution microwave background experiments such as the Atacama Cosmology Telescope and the South Pole Telescope."
+}

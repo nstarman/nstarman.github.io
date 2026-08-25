@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "reinhardt-travel-award",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2019-12"
+  },
+  "title": "Reinhardt Travel Award",
+  "tier": "minor",
+  "details": "To present at the 30th Texas Symposium on Relativistic Astrophysics"
+}

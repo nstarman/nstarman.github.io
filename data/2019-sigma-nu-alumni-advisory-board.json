@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "sigma-nu-alumni-advisory-board",
+  "type": "service",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2020"
+  },
+  "title": "Sigma Nu Alumni Advisory Board",
+  "details": "Role: Member of the Sustainability and Chapter Operations committees"
+}

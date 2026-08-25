@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "quax-blocks",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "quax-blocks",
+  "summary": "Building blocks for quax classes",
+  "repo": "GalacticDynamics/quax-blocks",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/quax-blocks"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "Mixins for arithmetic, comparison and array protocols, so a new array type is a few lines."
+}

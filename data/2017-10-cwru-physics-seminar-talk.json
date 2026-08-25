@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-physics-seminar-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2017-10"
+  },
+  "title": "CWRU Physics Seminar (Talk)",
+  "kind": "contributed",
+  "details": "Understanding the Dark Matter distribution in galaxies using maximal disks"
+}

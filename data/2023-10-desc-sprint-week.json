@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "desc-sprint-week",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-10"
+  },
+  "title": "DESC sprint week",
+  "kind": "contributed"
+}

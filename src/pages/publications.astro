@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import Publication from '../components/Publication.astro';
+import { byType } from '../lib/data.js';
+import person from '/config/person.json';
+
+// In-preparation papers stay out of the public list — they still appear in the
+// full CV, which has its own In Preparation section.
+// In-preparation papers stay out of the public list — they still appear in the
+// full CV, which has its own In Preparation section.
+// No status grouping: every unpublished entry already carries a status pill, so
+// "Submitted" / "Published" headings would say it twice. One list, newest first.
+// the same ADS and arXiv profile links the home page carries
+const profiles = person.contacts.filter((c) => ['ads', 'arxiv'].includes(c.icon));
+const all = byType('publication').filter((p) => p.status !== 'in-prep');
+---
+<Base title="Publications — Nathaniel Starkman">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="h2row">
+          <h2>Publications</h2>
+          <span class="more pubprofiles">
+            <a href="/publications.bib">BibTeX</a>
+            <span class="sep">|</span>
+            {profiles.map((c) => (
+              <a class="pill" href={c.url} aria-label={c.label} title={`All publications on ${c.label}`}>
+                <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${c.icon}`} /></svg>
+              </a>
+            ))}
+          </span>
+        </div>
+        <div class="entries">
+          {all.map((item) => <Publication item={item} abstract />)}
+        </div>
+
+      </div>
+    </section>
+  </main>
+</Base>

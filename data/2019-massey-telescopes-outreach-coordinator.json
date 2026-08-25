@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-telescopes-outreach-coordinator",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2022"
+  },
+  "title": "Massey Telescopes Outreach Coordinator",
+  "details": "Organizing committee member for astronomy outreach and appreciation at Massey College"
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "galax",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2024-03",
+    "present": true
+  },
+  "title": "galax",
+  "summary": "Galactic dynamics in JAX",
+  "details": "Orbit integration, potentials and stream generation — GPU-accelerated and fully differentiable.",
+  "repo": "GalacticDynamics/galax",
+  "role": "lead developer",
+  "doi": "10.5281/zenodo.11553485",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Price-Whelan",
+      "given": "Adrian"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob"
+    }
+  ],
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/galax"
+    },
+    {
+      "rel": "docs",
+      "url": "https://galax.readthedocs.io"
+    },
+    {
+      "rel": "data",
+      "url": "https://doi.org/10.5281/zenodo.11553485"
+    }
+  ],
+  "tags": [
+    "jax",
+    "dynamics"
+  ],
+  "tier": "headline"
+}

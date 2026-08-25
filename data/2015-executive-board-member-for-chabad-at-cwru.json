@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "executive-board-member-for-chabad-at-cwru",
+  "type": "service",
+  "cvs": [],
+  "date": {
+    "start": "2015",
+    "end": "2017"
+  },
+  "title": "Executive Board Member for Chabad at CWRU",
+  "details": "Organized events on campus: dinners, holidays, charity events, and outreach programs Role: General Executive Board Member (2016-2017) Role: Chief financial officer (2015 -2016)"
+}

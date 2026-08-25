@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dunlap-student-training-grant-2",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2022-09"
+  },
+  "title": "Dunlap Student Training Grant",
+  "tier": "minor",
+  "details": "To attend Streams22: the Community Atlas of Tidal Streams workshop",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://stellarstreams.org/streams22/"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "pacific-postdoc-program",
+  "type": "award",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-10"
+  },
+  "title": "Pacific Postdoc Program",
+  "tier": "major",
+  "details": "A one-month fellowship at at the University of Washington in Seattle",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://sites.google.com/uw.edu/dusc/events/pacific-postdoc-program"
+    }
+  ]
+}

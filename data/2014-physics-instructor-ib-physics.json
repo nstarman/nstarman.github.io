@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "physics-instructor-ib-physics",
+  "type": "teaching",
+  "cvs": [],
+  "date": {
+    "start": "2014",
+    "end": "2015"
+  },
+  "title": "Physics Instructor for IB Physics",
+  "institution": "Montessori High School, Cleveland",
+  "details": "Prepared and tutored IB physics class, assigning and grading homework, for IB exam"
+}

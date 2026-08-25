@@ -1,0 +1,64 @@
+name: Deploy site
+
+# Astro builds to dist/, and a branch deploy would (a) require committing build
+# output and (b) run the artifact through Jekyll, which strips Astro's _astro/
+# asset directory. So the Pages Source must be "GitHub Actions".
+#
+# The build job also runs on redesign, so breakage surfaces before it reaches
+# master; only master deploys.
+#
+# withastro/action is deliberately not used: it builds and uploads in one step,
+# and the CV PDFs have to be compiled into dist/ in between.
+
+on:
+  push:
+    branches: [master, redesign]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # schema + bibtex, so a bad item never reaches a deploy
+      - run: npm test
+
+      - run: npm run build
+
+      - uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15.1"
+      # one PDF per preset, compiled from the models Astro just emitted
+      - run: npm run build:pdf
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

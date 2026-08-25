@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import CvView from '../../components/CvView.astro';
+import { resolve } from '../../lib/presets.js';
+const cv = resolve('np');
+---
+<Base title="CV — Nathaniel Starkman">
+  <main><section><div class="wrap"><CvView cv={cv} /></div></section></main>
+</Base>

@@ -1,0 +1,17 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "lead-observer-ast101-325",
+  "type": "teaching",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2020"
+  },
+  "title": "Lead Observer: AST101-325",
+  "institution": "University of Toronto",
+  "details": [
+    "Role: Trained and liaised with TAs and students in all courses using the campus telescope facilities."
+  ]
+}

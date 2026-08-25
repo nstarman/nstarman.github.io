@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "galactic-dynamics-interoperability",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "galactic_dynamics_interoperability",
+  "summary": "Interoperability between galactic dynamics libraries",
+  "repo": "GalacticDynamics/galactic_dynamics_interoperability",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/galactic_dynamics_interoperability"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

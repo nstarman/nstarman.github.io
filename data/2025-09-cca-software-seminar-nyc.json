@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cca-software-seminar-nyc",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-09"
+  },
+  "title": "CCA Software seminar (NYC)",
+  "kind": "invited",
+  "details": "unxt, coordinax, and software development in JAX"
+}

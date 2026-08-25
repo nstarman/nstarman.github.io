@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nstarkman.space/schema/list.schema.json",
+  "title": "List",
+  "description": "A bare enumeration — refereeing venues, review panels. These are not items: they have no date, no links of their own and no presets, so making each entry a file in data/ would be absurd. Each entry is one line of prose which may carry [text](url) links, exactly as an item's `long` does.",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "required": ["id", "entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "description": "Matches the filename stem, and is what a preset section's `list` names.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

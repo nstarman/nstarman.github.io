@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "pinns-mnras",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2026-06"
+  },
+  "title": "Physics-Informed Neural Networks for Modeling Galactic Gravitational Potentials",
+  "status": "submitted",
+  "entryType": "misc",
+  "authors": [
+    {
+      "family": "Myers",
+      "given": "Charlotte"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Necib",
+      "given": "Lina"
+    }
+  ],
+  "venue": {
+    "journal": "Monthly Notices of the Royal Astronomical Society"
+  },
+  "arxiv": "2606.18386",
+  "bibcode": "2026arXiv260618386M",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/charlottemyers/galactoPINNs"
+    }
+  ],
+  "tags": [
+    "machine-learning",
+    "dynamics"
+  ],
+  "citekey": "Myers+:2026:galactic-pinns",
+  "abstract": "The gravitational potential of a galaxy encodes its mass distribution, formation history, and dark matter halo structure. Accurate potential models are therefore critical for interpreting stellar kinematics, orbital dynamics, and the influence of satellite systems like the Large Magellanic Cloud. Analytic potential models offer interpretability and efficiency but struggle to capture complex, non-axisymmetric structure and time-dependent perturbations. Neural network-based methods can capture this complexity but offer little interpretability. We introduce a physics-informed neural network (PINN) framework that combines data-driven learning with embedded physical constraints, available as the open-source package GalactoPINNS. Trained on acceleration measurements, the framework captures complex, small-scale features while preserving global physical consistency. We test on systems of increasing complexity, from controlled analytic halos to cosmological simulations of Milky Way-like galaxies, achieving sub-percent acceleration errors with orbit reconstruction that consistently outperforms analytic baselines. Additionally, we implement a Bayesian neural network to provide spatially calibrated uncertainty estimates, and a time-dependent extension to capture smooth temporal evolution. By treating an analytic model as a structured prior and learning corrections on top of it, the method retains physical interpretability while gaining the flexibility to represent realistic galactic potentials, making it well suited for Milky Way modeling and dynamical inference in the era of current and upcoming large-scale surveys."
+}

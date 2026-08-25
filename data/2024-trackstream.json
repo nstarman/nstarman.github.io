@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "trackstream",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "trackstream",
+  "summary": "Stellar stream tracks",
+  "repo": "nstarman/trackstream",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/nstarman/trackstream"
+    }
+  ],
+  "details": "Characterize a stream's track with minimal prior knowledge. Astropy-powered.",
+  "refs": [
+    "characterizing-stream-tracks"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "aas-2023-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-01"
+  },
+  "title": "AAS 2023 (Talk)",
+  "kind": "contributed",
+  "details": "Astropy Tutorials on Units & Constants"
+}

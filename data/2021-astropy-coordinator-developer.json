@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-coordinator-developer",
+  "type": "position",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2021",
+    "present": true
+  },
+  "title": "Coordinator & Core Developer",
+  "details": [
+    "Role: Member, Core Developer Team; lead maintainer for Cosmology, co-maintainer of Units.",
+    "2025–2028: Coordination Committee (executive committee).",
+    "2025–2026: Strategic Planning and Organizing Committee.",
+    "Funding: [Astropy Cycle III — Cosmology](item:astropy-cycle-iii-funding-grant) and [Quantity 2.0](item:astropy-cycle-iii-funding-grants).",
+    "Team award: [2025 AAS Lancelot M. Berkeley–New York Community Trust Prize](item:astropy-berkeley-prize)."
+  ],
+  "institution": "Astropy",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.astropy.org"
+    }
+  ],
+  "refs": [
+    "astropy",
+    "astropy-cycle-iii-funding-grant",
+    "astropy-cycle-iii-funding-grants",
+    "astropy-berkeley-prize"
+  ]
+}

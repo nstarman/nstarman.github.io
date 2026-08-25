@@ -1,0 +1,29 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "brinson-prize-fellowship",
+  "type": "award",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2024-02"
+  },
+  "title": "Brinson Prize Fellowship",
+  "tier": "major",
+  "amount": {
+    "currency": "USD",
+    "value": 360000
+  },
+  "details": "“to support early-career astrophysicists and cosmologists who are committed to chasing bold ideas with creative, nimble, and innovative research.\"",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://brinsonfoundation.org/scientific-research/brinson-prize-fellowship-program/"
+    }
+  ],
+  "refs": [
+    "mit-postdoc"
+  ]
+}

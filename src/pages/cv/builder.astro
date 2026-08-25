@@ -1,0 +1,245 @@
+---
+import Base from '../../layouts/Base.astro';
+import CvHeader from '../../components/CvHeader.astro';
+import CvView from '../../components/CvView.astro';
+import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
+
+// The picker is the complete CV itself, rendered server-side with a checkbox on
+// every entry — so what you tick is what you are about to compile, and the page
+// is readable and linkable without JavaScript. Only the compile step needs the
+// client.
+const cv = resolve('complete');
+// The CV people actually want is the normal one; start there and trim.
+const START = 'np';
+const picked = new Set(memberIds(START));
+const startLevel = preset(START).detail;
+const membership = Object.fromEntries(presetNames.map((n) => [n, memberIds(n)]));
+const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
+---
+<Base title="CV builder — Nathaniel Starkman">
+  <main>
+    <section>
+      <div class="wrap">
+        <CvHeader current="builder" />
+
+        <p class="lede">
+          Tick what you want and compile a PDF in your browser. Nothing is sent anywhere —
+          the Typst compiler runs locally as WebAssembly, from the same template and the
+          same data as the pre-built versions.
+        </p>
+
+        <div class="builderbar">
+          <span class="bl">Start from</span>
+          {presetNames.map((n) => (
+            <button class="btn" type="button" data-preset={n}>{preset(n).label}</button>
+          ))}
+          <span class="bl">·</span>
+          <button class="btn" type="button" data-all="0">None</button>
+          <span class="count" id="count">{picked.size} / {total}</span>
+        </div>
+
+        <div class="builderbar builderbar--go">
+          <button class="btn btn--go" type="button" id="build">Compile PDF</button>
+          <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
+          <span class="status" id="status">The compiler is ~10 MB and loads on first use.</span>
+        </div>
+
+        <iframe id="preview" title="CV preview" hidden></iframe>
+
+        <div id="tree">
+          <CvView cv={cv} pick picked={picked} level={startLevel} />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- A JSON data island rather than define:vars: combined with set:html, Astro
+       wrapped the script in an IIFE and the global assignment never ran, so every
+       preset button silently selected nothing. -->
+  <script type="application/json" id="membership" set:html={JSON.stringify(membership)}></script>
+  <script type="application/json" id="detaillevels"
+          set:html={JSON.stringify(Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])))}></script>
+
+  <script>
+    import { cvModel } from '../../lib/cvmodel.js';
+    import typSource from '../../../cv/cv.typ?raw';
+    // cv.typ draws its marks with image("icons/…"), which resolves against the
+    // compilation root: cv/icons/ under the CLI, /icons/ here. Bundled at build
+    // time rather than fetched, so compiling stays one round trip.
+    // The header's portrait and QR are binary and live beside the marks.
+    const ASSETS = import.meta.glob('/cv/assets/*', { eager: true, query: '?url', import: 'default' });
+
+    const $ = (id) => document.getElementById(id);
+    const MEMBERSHIP = JSON.parse(document.getElementById('membership').textContent);
+    const boxes = () => [...document.querySelectorAll('.itembox')];
+    const subs = () => [...document.querySelectorAll('.subbox')];
+    const DETAIL = JSON.parse(document.getElementById('detaillevels').textContent);
+
+    /** An unticked line greys out in place, so the page keeps showing what it
+     *  is about to compile rather than describing it. */
+    const applyDetail = () => {
+      for (const b of subs()) b.closest('.sub').classList.toggle('is-off', !b.checked);
+      // a section's control reflects its lines rather than driving them
+      for (const g of document.querySelectorAll('.pickgroup')) {
+        const head = g.querySelector('.subgroup');
+        if (!head) continue;
+        const kids = [...g.querySelectorAll('.subbox')];
+        const on = kids.filter((k) => k.checked).length;
+        head.checked = on === kids.length;
+        head.indeterminate = on > 0 && on < kids.length;
+      }
+    };
+    const status = (msg) => { $('status').textContent = msg; };
+
+    const recount = () => {
+      const on = boxes().filter((b) => b.checked).length;
+      $('count').textContent = `${on} / ${boxes().length}`;
+      // a group box reflects its children rather than driving them
+      for (const g of document.querySelectorAll('.pickgroup')) {
+        const kids = [...g.querySelectorAll('.itembox')];
+        const head = g.querySelector('.groupbox');
+        const n = kids.filter((k) => k.checked).length;
+        head.checked = n === kids.length;
+        head.indeterminate = n > 0 && n < kids.length;
+      }
+    };
+
+    document.addEventListener('change', (e) => {
+      const t = e.target;
+      if (t.classList?.contains('subgroup')) {
+        t.closest('.pickgroup').querySelectorAll('.subbox')
+          .forEach((b) => (b.checked = t.checked));
+        applyDetail();
+        return;
+      }
+      if (t.classList?.contains('subbox')) { applyDetail(); return; }
+      if (t.classList?.contains('groupbox')) {
+        const on = t.checked;
+        t.closest('.pickgroup').querySelectorAll('.itembox').forEach((b) => (b.checked = on));
+      }
+      recount();
+    });
+
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('button');
+      if (!t) return;
+      if (t.dataset.all !== undefined) {
+        boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
+        recount();
+      }
+      if (t.dataset.preset) {
+        const ids = new Set(MEMBERSHIP[t.dataset.preset] ?? []);
+        boxes().forEach((b) => (b.checked = ids.has(b.value)));
+        // A preset is not only which entries appear but how much each says, so
+        // the detail controls move with it.
+        const full = (DETAIL[t.dataset.preset] ?? 'full') === 'full';
+        subs().forEach((b) => (b.checked = full));
+        applyDetail();
+        recount();
+        status(`Selection set from ${t.textContent}.`);
+      }
+    });
+
+    // The compile controls are one element, not two: when the condensed header
+    // takes over they move into it and move back when it goes, so there is no
+    // second button whose label, status and download link could drift.
+    const bar = document.querySelector('.cvbar');
+    const go = document.querySelector('.builderbar--go');
+    if (bar && go) {
+      const spacer = bar.querySelector('.spacer');
+      const slot = bar.querySelector('.wrap');
+      const home = document.createComment('compile controls');
+      go.parentNode.insertBefore(home, go);
+      const place = () => {
+        const on = bar.classList.contains('is-on');
+        if (on === (go.parentNode === slot)) return;
+        if (on) slot.insertBefore(go, spacer);
+        else home.parentNode.insertBefore(go, home);
+        if (spacer) spacer.hidden = on;
+      };
+      place();
+      addEventListener('scroll', place, { passive: true });
+      addEventListener('resize', place, { passive: true });
+    }
+
+    let typst = null;
+
+    async function loadCompiler() {
+      if (typst) return typst;
+      status('Loading the Typst compiler…');
+      // Dynamic, so the ~10 MB of wasm never touches any other route.
+      const [{ $typst }, { preloadRemoteFonts }, wasm] = await Promise.all([
+        import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs'),
+        import('@myriaddreamin/typst.ts'),
+        import('@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url'),
+      ]);
+      $typst.setCompilerInitOptions({
+        getModule: () => wasm.default,
+        // Self-hosted, and the same faces the CI build uses — otherwise the
+        // browser PDF would quietly differ from the downloadable one.
+        beforeBuild: [
+          preloadRemoteFonts([
+            '/fonts/NewCM10-Regular.otf',
+            '/fonts/NewCM10-Bold.otf',
+            '/fonts/NewCM10-Italic.otf',
+            '/fonts/NewCM10-BoldItalic.otf',
+            // the marks: same three the LaTeX CV set
+            '/fonts/FontAwesome5Free-Solid-900.otf',
+            '/fonts/FontAwesome5Brands-Regular-400.otf',
+            '/fonts/academicons.otf',
+          ]),
+        ],
+      });
+      typst = $typst;
+      return typst;
+    }
+
+    $('build').addEventListener('click', async () => {
+      const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
+      if (!chosen.size) return status('Nothing selected.');
+      $('build').disabled = true;
+      try {
+        const t = await loadCompiler();
+        status('Compiling…');
+        // Same resolver as the site and the CI PDFs — "complete" is the widest
+        // section set, then the tick-boxes narrow it.
+        // id -> the line indices still ticked
+        const keep = new Map();
+        for (const b of subs()) {
+          if (!b.checked) continue;
+          (keep.get(b.dataset.id) ?? keep.set(b.dataset.id, new Set()).get(b.dataset.id))
+            .add(Number(b.dataset.line));
+        }
+        const model = cvModel('complete', chosen, (id, i) => keep.get(id)?.has(i) ?? false);
+        await t.addSource('/cv.typ', typSource);
+        for (const [path, url] of Object.entries(ASSETS)) {
+          const bytes = new Uint8Array(await (await fetch(url)).arrayBuffer());
+          await t.mapShadow(`/assets/${path.split('/').pop()}`, bytes);
+        }
+        await t.mapShadow('/cv.json', new TextEncoder().encode(JSON.stringify(model)));
+        const pdf = await t.pdf({ mainFilePath: '/cv.typ' });
+
+        const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
+
+        // Preview in place as well as downloading — a CV you cannot see before
+        // saving is a CV you save several times.
+        const frame = $('preview');
+        frame.hidden = false;
+        frame.src = url;
+        $('download').hidden = false;
+        $('download').href = url;
+
+        const kb = Math.round(pdf.length / 1024);
+        status(`Built ${chosen.size} entries · ${kb} KB.`);
+      } catch (err) {
+        console.error(err);
+        status(`Compile failed: ${err?.message ?? err}`);
+      } finally {
+        $('build').disabled = false;
+      }
+    });
+
+    recount();
+    applyDetail();
+  </script>
+</Base>

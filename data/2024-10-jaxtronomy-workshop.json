@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "jaxtronomy-workshop",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-10"
+  },
+  "title": "JAXtronomy Workshop",
+  "kind": "organizer",
+  "location": "NYC, USA",
+  "details": "Role: SOC",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://www.simonsfoundation.org/event/jaxtronomy/"
+    }
+  ]
+}

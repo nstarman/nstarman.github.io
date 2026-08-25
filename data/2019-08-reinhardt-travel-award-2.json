@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "reinhardt-travel-award-2",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2019-08"
+  },
+  "title": "Reinhardt Travel Award",
+  "tier": "minor",
+  "details": "To present at the Great Lakes Cosmology Workshop"
+}

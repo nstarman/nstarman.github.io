@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "comscicon-canada-travel-award",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2019-07"
+  },
+  "title": "ComSciCon Canada Travel Award",
+  "tier": "minor",
+  "details": "To attend the first Canadian Science Communication Conference, ComSciConCAN"
+}

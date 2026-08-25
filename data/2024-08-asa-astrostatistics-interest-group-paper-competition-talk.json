@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "asa-astrostatistics-interest-group-paper-competition-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-08"
+  },
+  "title": "ASA: Astrostatistics Interest Group Paper Competition (Talk)",
+  "kind": "contributed",
+  "details": "Stream Members Only: Data-Driven Characterization of Stellar Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://astrostat.org"
+    }
+  ]
+}

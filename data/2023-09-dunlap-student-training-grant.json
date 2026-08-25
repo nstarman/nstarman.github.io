@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dunlap-student-training-grant",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2023-09"
+  },
+  "title": "Dunlap Student Training Grant",
+  "tier": "minor",
+  "details": "To attend the DESC sprint week"
+}

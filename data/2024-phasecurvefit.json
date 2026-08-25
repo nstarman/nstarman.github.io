@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "phasecurvefit",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "phasecurvefit",
+  "summary": "Paths through phase space",
+  "repo": "GalacticDynamics/phasecurvefit",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/phasecurvefit"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "Fit a curve through phase-space points — streams, orbits, trajectories.",
+  "refs": [
+    "phasecurvefit-joss"
+  ]
+}

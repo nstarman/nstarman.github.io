@@ -1,0 +1,26 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "stream-convexity-rate",
+  "type": "publication",
+  "cvs": [],
+  "date": {
+    "start": "2026"
+  },
+  "title": "Convex Stellar Stream Segments Constrain Dark Matter Nature and Halo Geometry",
+  "status": "in-prep",
+  "entryType": "unpublished",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    }
+  ],
+  "tags": [
+    "streams",
+    "dark-matter"
+  ],
+  "internal": "CV lists 'et al.'; the remaining authors are still to be imported from ADS.",
+  "citekey": "Starkman+:2026:stream-convexity-rate"
+}

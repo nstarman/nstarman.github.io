@@ -1,0 +1,26 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "nserc-cgs-d",
+  "type": "award",
+  "cvs": [
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2020",
+    "end": "2023"
+  },
+  "title": "NSERC - CGS D",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 105000
+  },
+  "details": "Alexander Graham Bell Canada Graduate Scholarship-Doctoral Award (Natural Sciences and Engineering Research Council of Canada)",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.nserc-crsng.gc.ca/Students-Etudiants/PG-CS/CGSD-BESCD_eng.asp"
+    }
+  ]
+}

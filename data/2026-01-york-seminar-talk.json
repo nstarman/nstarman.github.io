@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "york-seminar-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-01"
+  },
+  "title": "York Seminar (Talk)",
+  "kind": "contributed",
+  "details": "Euclid: The Geometry of Dark Matter Halos from Extragalactic Streams"
+}

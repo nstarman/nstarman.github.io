@@ -1,0 +1,31 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-berkeley-prize",
+  "type": "award",
+  "tier": "major",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2025-01"
+  },
+  "title": "AAS Lancelot M. Berkeley–New York Community Trust Prize",
+  "recipient": "the Astropy Collaboration",
+  "details": "Team award, as a core developer and Coordination Committee member of [Astropy](item:astropy).",
+  "funder": "American Astronomical Society",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://aas.org/press/astropy-collaboration-receive-2025-berkeley-prize"
+    }
+  ],
+  "refs": [
+    "astropy",
+    "astropy-coordinator-developer"
+  ],
+  "tags": [
+    "astropy"
+  ]
+}

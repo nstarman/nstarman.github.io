@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-junior-fellow",
+  "type": "service",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "present": true
+  },
+  "title": "Massey Junior Fellow",
+  "organization": "Massey College",
+  "details": "University of Toronto's graduate college for those showing exceptional promise and engagement within academia and the world beyond it."
+}

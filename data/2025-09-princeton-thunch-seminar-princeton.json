@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "princeton-thunch-seminar-princeton",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-09"
+  },
+  "title": "Princeton Thunch Seminar (Princeton)",
+  "kind": "invited",
+  "details": "Euclid: The Geometry of Dark Matter Halos from Extragalactic Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://web.astro.princeton.edu/Thunch"
+    }
+  ]
+}

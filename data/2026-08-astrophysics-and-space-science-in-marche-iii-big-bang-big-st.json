@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astrophysics-and-space-science-in-marche-iii-big-bang-big-st",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-08"
+  },
+  "title": "Astrophysics and Space Science in Marche III: Big Bang, Big Stars, Big Computers",
+  "kind": "organizer",
+  "location": "Jesi, Italy",
+  "details": "Role: SOC"
+}

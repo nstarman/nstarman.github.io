@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "origins-science-scholars-lecture-series",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-10"
+  },
+  "title": "Origins Science Scholars Lecture Series",
+  "kind": "invited",
+  "details": "Science of Origins: Dark Matter and the Milky Way"
+}

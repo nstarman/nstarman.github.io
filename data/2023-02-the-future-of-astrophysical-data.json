@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "the-future-of-astrophysical-data",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-02"
+  },
+  "title": "The Future of Astrophysical Data",
+  "kind": "attended",
+  "details": "Infrastructure & NYC, USA",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://indico.flatironinstitute.org/event/3466/"
+    }
+  ]
+}

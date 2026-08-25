@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "casca-agm-poster-2",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-05"
+  },
+  "title": "CASCA AGM (Poster)",
+  "kind": "contributed",
+  "details": "Straight Lightning as a Signature of Macroscopic Dark Matter"
+}

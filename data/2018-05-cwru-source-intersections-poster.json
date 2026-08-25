@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-source-intersections-poster",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2018-05"
+  },
+  "title": "CWRU SOURCE Intersections (Poster)",
+  "kind": "contributed",
+  "details": "A new algorithm to quantify maximal disks"
+}

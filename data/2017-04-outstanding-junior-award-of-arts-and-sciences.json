@@ -1,0 +1,11 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "outstanding-junior-award-of-arts-and-sciences",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2017-04"
+  },
+  "title": "Outstanding Junior Award of Arts and Sciences",
+  "tier": "major"
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "goldwater-scholarship-honorable-mention-2",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2016-03"
+  },
+  "title": "Goldwater Scholarship Honorable Mention",
+  "tier": "major"
+}

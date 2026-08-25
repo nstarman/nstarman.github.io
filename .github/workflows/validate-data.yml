@@ -1,0 +1,28 @@
+name: Validate data
+
+# The database is the source of truth for the website, the profile README and
+# the CV PDFs. An item that does not match the schema would silently vanish from
+# a render, so it fails here instead — on the PR, before merge.
+
+on:
+  pull_request:
+    paths: ["data/**", "schema/**", "src/lib/**", "scripts/**", "package.json"]
+  push:
+    branches: [master, redesign]
+    paths: ["data/**", "schema/**", "src/lib/**", "scripts/**", "package.json"]
+  workflow_dispatch:
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      # schema: data validates, ids match filenames, refs resolve, bad fixtures rejected
+      # bibtex: entries are well-formed TeX with correct name and entry types
+      # a11y:   every link and heading in dist/ has an accessible name
+      - run: npm test

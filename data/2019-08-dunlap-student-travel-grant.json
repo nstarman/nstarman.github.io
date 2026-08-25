@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dunlap-student-travel-grant",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2019-08"
+  },
+  "title": "Dunlap Student Travel Grant",
+  "tier": "minor",
+  "details": "To present at the 5th Gaia Challenge Workshop (Value: $2,075)"
+}

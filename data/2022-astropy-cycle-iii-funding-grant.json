@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-cycle-iii-funding-grant",
+  "type": "grant",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2022"
+  },
+  "title": "Astropy Cycle III Funding Grant",
+  "tier": "major",
+  "details": "USD 12,000 NASA ROSES and Moore Foundation funding to Astropy Lead: “Cosmology in Astropy\"",
+  "amount": {
+    "currency": "USD",
+    "value": 12000
+  },
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://github.com/astropy/astropy-project/blob/main/finance/proposal-calls/cycle3/Starkman-Cosmology.md"
+    }
+  ]
+}

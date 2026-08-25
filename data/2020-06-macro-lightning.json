@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "macro-lightning",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2020-06"
+  },
+  "title": "Straight Lightning as a Signature of Macroscopic Dark Matter",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Sidhu",
+      "given": "Jagjit Singh"
+    },
+    {
+      "family": "Winch",
+      "given": "Harrison"
+    },
+    {
+      "family": "Starkman",
+      "given": "Glenn"
+    }
+  ],
+  "venue": {
+    "journal": "Physical Review D",
+    "volume": "103",
+    "pages": "063024"
+  },
+  "doi": "10.1103/PhysRevD.103.063024",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://journals.aps.org/prd/abstract/10.1103/PhysRevD.103.063024"
+    },
+    {
+      "rel": "code",
+      "url": "https://pypi.org/project/macro-lightning/"
+    },
+    {
+      "rel": "docs",
+      "url": "https://macro-lightning.readthedocs.io/en/latest/"
+    },
+    {
+      "rel": "data",
+      "url": "https://zenodo.org/record/4558581"
+    }
+  ],
+  "refs": [
+    "macro-lightning-code"
+  ],
+  "tags": [
+    "dark-matter"
+  ],
+  "internal": "CV says (2020); PRD volume 103 is 2021. Year taken from the CV — confirm.",
+  "citekey": "Starkman+:2020:macro-lightning",
+  "arxiv": "2006.16272",
+  "primaryClass": "astro-ph.HE",
+  "abstract": "Macroscopic dark matter (macros) is a broad class of alternative candidates to particle dark matter. These candidates would transfer energy to matter primarily through elastic scattering. A sufficiently large macro passing through the atmosphere would produce a straight channel of ionized plasma. If the cross-section of the macro is σ_x 6 10^-9 cm^2, then under atmospheric conditions conducive to lightning (eg. a thunderstorm) the plasma channel would be sufficient to seed a lightning strike with a single leader. This is entirely unlike ordinary bolt lightning in which a long sequence of hundreds or thousands of few-meter-long leaders are strung together. This macro-induced lightning would be extremely straight, and thus highly distinctive. Neither wind shear nor magnetohydrodynamic instabilities would markedly spoil its straightness. The only photographically documented case of a straight lightning bolt is probably not straight enough to have been macro-induced. We estimate the region of macro parameter space that could be probed by a search for straight lightning from the number of thunderstorms happening on Earth at any time. We also estimate the parameter space that can be probed by carefully monitoring Jupiter, e.g. using the Hubble Space Telescope. All code and data is available at https://github.com/cwru-pat/macro_lightning."
+}

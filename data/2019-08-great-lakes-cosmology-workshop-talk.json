@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "great-lakes-cosmology-workshop-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2019-08"
+  },
+  "title": "Great Lakes Cosmology Workshop (Talk)",
+  "kind": "contributed",
+  "details": "Parameterizing the recombination visibility function"
+}

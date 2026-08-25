@@ -1,0 +1,19 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "comscicon-canada-2019",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2019-07"
+  },
+  "title": "ComSciCon Canada 2019",
+  "kind": "attended",
+  "location": "Hamilton, CA",
+  "details": "Selected participant at Canada’s first national science communication workshop for graduate students",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://comscicon.com/comscicon-can-2019"
+    }
+  ]
+}

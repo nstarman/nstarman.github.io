@@ -1,0 +1,68 @@
+---
+// The CV pages' heading row, and the condensed copy that joins the header once
+// it scrolls away. Shared by /cv/<preset>/ and /cv/builder/ so the builder is
+// visibly the same document at a different length, not a separate tool.
+import { presetNames, preset } from '../lib/presets.js';
+
+const { current, pdf = null } = Astro.props;
+const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
+const onBuilder = current === 'builder';
+---
+<div class="cvbar" aria-hidden="true">
+  <div class="wrap">
+    {pdf
+      ? <a class="btn" href={pdf} tabindex="-1">Download PDF</a>
+      : <span class="spacer"></span>}
+    <span class="more">
+      <span class="cvtoggle cvtoggle--main">
+        {presetNames.map((n) => (
+          <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
+        ))}
+      </span>
+      <span class="sep">|</span>
+      <span class="cvtoggle cvtoggle--main">
+        <a href="/cv/builder/" class={onBuilder ? 'build on' : 'build'} tabindex="-1">Build</a>
+      </span>
+    </span>
+  </div>
+</div>
+
+<div class="h2row">
+  <h2>Curriculum Vitae</h2>
+  <span class="more">
+    <span class="cvtoggle cvtoggle--main" role="group" aria-label="CV length">
+      {presetNames.map((n) => (
+        <a href={href(n)} class={n === current ? 'on' : ''}
+           aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
+      ))}
+    </span>
+    <span class="sep">|</span>
+    <span class="cvtoggle cvtoggle--main">
+      <a href="/cv/builder/" class={onBuilder ? 'build on' : 'build'}
+         aria-current={onBuilder ? 'page' : undefined}>Build</a>
+    </span>
+  </span>
+</div>
+
+<script>
+  // The condensed bar joins the header once the real controls have scrolled
+  // past, so the length toggle, the download and the builder stay reachable
+  // without scrolling back up.
+  const bar = document.querySelector('.cvbar');
+  // The builder has no download row, so fall back to the heading itself.
+  const rows = document.querySelectorAll('.pdfrow, .h2row');
+  const controls = rows[rows.length - 1];
+
+  if (bar && controls) {
+    const NAV = 52; // the sticky nav's height
+    const syncBar = () => {
+      const on = controls.getBoundingClientRect().bottom < NAV;
+      bar.classList.toggle('is-on', on);
+      bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+      for (const a of bar.querySelectorAll('a')) a.tabIndex = on ? 0 : -1;
+    };
+    syncBar();
+    addEventListener('scroll', syncBar, { passive: true });
+    addEventListener('resize', syncBar, { passive: true });
+  }
+</script>

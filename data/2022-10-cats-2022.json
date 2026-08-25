@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cats-2022",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2022-10"
+  },
+  "title": "CATS-2022",
+  "kind": "contributed",
+  "details": "Streams22: A workshop for assembling a Community Atlas of Tidal Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://stellarstreams.org/streams22/"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "characterizing-stream-tracks",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2023-04"
+  },
+  "title": "On the fast track: Rapid construction of stellar stream paths",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Bovy",
+      "given": "Jo"
+    },
+    {
+      "family": "Webb",
+      "given": "Jeremy"
+    },
+    {
+      "family": "Calvetti",
+      "given": "Daniela"
+    },
+    {
+      "family": "Somersalo",
+      "given": "Erkki"
+    }
+  ],
+  "venue": {
+    "journal": "Monthly Notices of the Royal Astronomical Society",
+    "volume": "522",
+    "pages": "5022"
+  },
+  "doi": "10.1093/mnras/stad1166",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://doi.org/10.1093/mnras/stad1166"
+    },
+    {
+      "rel": "repo",
+      "url": "https://github.com/nstarman/trackstream_paper"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/nstarman/trackstream"
+    },
+    {
+      "rel": "docs",
+      "url": "https://trackstream.readthedocs.io/en/latest/"
+    },
+    {
+      "rel": "data",
+      "url": "https://zenodo.org/record/7265571"
+    }
+  ],
+  "tags": [
+    "streams"
+  ],
+  "citekey": "Starkman+:2023:stream-tracks",
+  "abstract": "Stellar streams are sensitive probes of the Galactic potential. The likelihood of a stream model given stream data is often assessed using simulations. However, comparing to simulations is challenging when even the stream paths can be hard to quantify. Here we present a novel application of self-organizing maps and first-order Kalman filters to reconstruct a stream’s path, propagating measurement errors and data sparsity into the stream path uncertainty. The technique is Galactic-model independent, non-parametric, and works on phase-wrapped streams. With this technique, we can uniformly analyse and compare data with simulations, enabling both comparison of simulation techniques and ensemble analysis with stream tracks of many stellar streams. Our method is implemented in the public Python package TrackStream, available at https://github.com/nstarman/trackstream."
+}

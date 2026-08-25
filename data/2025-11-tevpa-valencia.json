@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "tevpa-valencia",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-11"
+  },
+  "title": "TevPA (Valencia)",
+  "kind": "invited",
+  "details": "The Geometry of Dark Matter Halos from Extragalactic Streams"
+}

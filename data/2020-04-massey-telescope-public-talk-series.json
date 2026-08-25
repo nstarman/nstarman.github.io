@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-telescope-public-talk-series",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2020-04"
+  },
+  "title": "Massey Telescope Public Talk Series",
+  "kind": "organizer",
+  "location": "TO, CA",
+  "details": "Role: Co-host and gave talk on Ojibwe (First Nation) constellations"
+}

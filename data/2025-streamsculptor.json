@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "streamsculptor",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025"
+  },
+  "title": "StreamSculptor: Hamiltonian Perturbation Theory for Stellar Streams in Flexible Potentials with Differentiable Simulations",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Nibauer",
+      "given": "Jacob"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Johnston",
+      "given": "K."
+    }
+  ],
+  "venue": {
+    "journal": "The Astrophysical Journal"
+  },
+  "arxiv": "2410.21174",
+  "bibcode": "2024arXiv241021174N",
+  "tags": [
+    "streams",
+    "dynamics"
+  ],
+  "internal": "Long CV says 'Submitted to ApJ' but files it under Published; the 2-page CV lists it as published. Recorded as published — confirm. Middle authors elided in the CV ('...') and still to import.",
+  "citekey": "Nibauer+:2025:streamsculptor",
+  "abstract": "Stellar streams retain a memory of their gravitational interactions with small-scale perturbations. While perturbative models for streams have been formulated in action-angle coordinates, a direct transformation to these coordinates is only available for static and typically axisymmetric models for the galaxy. The real Milky Way potential is in a state of disequilibrium, complicating the application of perturbative methods around an equilibrium system. Here, we utilize a combination of differentiable simulations and Hamiltonian perturbation theory to model the leading-order effect of dark matter subhalos on stream observables. To obtain a perturbative description of streams, we develop a direct and efficient forward mode differentiation of Hamilton's equations of motion. Our model operates in observable coordinates, allowing us to treat the effects of arbitrary subhalo potentials on streams perturbatively, while simultaneously capturing non-linear effects due to other substructures like the infalling LMC or the rotating bar. The model predicts the velocity dispersion of streams as a function of subhalo statistics, allowing us to constrain the low-mass range of subhalos down to 10^5~M_. We forecast the velocity dispersion of the GD-1 stream, and find that observations are in agreement with a CDM subhalo population, with a slight preference for more dense subhalos. The method provides a new approach to characterize streams in the presence of substructure, with significantly more modeling flexibility compared to previous works."
+}

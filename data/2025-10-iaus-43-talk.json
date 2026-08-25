@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "iaus-43-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-10"
+  },
+  "title": "IAUS 43 (Talk)",
+  "kind": "contributed",
+  "details": "Euclid: The Geometry of Dark Matter Halos from Extragalactic Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://www.iausymposium403.com"
+    }
+  ]
+}

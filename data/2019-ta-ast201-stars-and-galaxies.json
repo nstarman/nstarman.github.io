@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "ta-ast201-stars-and-galaxies",
+  "type": "teaching",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2024"
+  },
+  "title": "TA, AST 201: Stars and Galaxies",
+  "institution": "University of Toronto",
+  "details": [
+    "Role: Designed and ran weekly course tutorial sections, created exam questions, proctored exams, and graded course projects.",
+    "2019, 2021–2024."
+  ]
+}

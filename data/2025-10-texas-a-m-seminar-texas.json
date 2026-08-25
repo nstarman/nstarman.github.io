@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "texas-a-m-seminar-texas",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025-10"
+  },
+  "title": "Texas A&M Seminar (Texas)",
+  "kind": "invited",
+  "details": "The Geometry of Dark Matter Halos from Extragalactic Streams"
+}

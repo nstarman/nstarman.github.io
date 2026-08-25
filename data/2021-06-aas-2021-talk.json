@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "aas-2021-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-06"
+  },
+  "title": "AAS 2021 (Talk)",
+  "kind": "contributed",
+  "details": "Astropy Tutorials on Units & Constants, Coordinates, and Cosmology"
+}

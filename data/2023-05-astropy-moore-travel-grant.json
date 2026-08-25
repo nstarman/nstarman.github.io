@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-moore-travel-grant",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2023-05"
+  },
+  "title": "Astropy Moore Travel Grant",
+  "tier": "minor",
+  "details": "To participate in the 2023 Astropy Coordination meeting"
+}

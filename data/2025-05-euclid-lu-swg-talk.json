@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "euclid-lu-swg-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-05"
+  },
+  "title": "Euclid LU-SWG (Talk)",
+  "kind": "contributed",
+  "details": "Extra-Galactic Gravity using Streams (EGGS) from Euclid's Zoo(niverse)"
+}

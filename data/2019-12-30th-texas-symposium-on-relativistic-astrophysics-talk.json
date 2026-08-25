@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "30th-texas-symposium-on-relativistic-astrophysics-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2019-12"
+  },
+  "title": "30th Texas Symposium On Relativistic Astrophysics (Talk)",
+  "kind": "contributed",
+  "details": "Resolving the Recombination Visibility Function Width Tension Awarded best graduate student presentation"
+}

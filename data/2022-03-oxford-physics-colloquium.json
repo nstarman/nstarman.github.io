@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "oxford-physics-colloquium",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2022-03"
+  },
+  "title": "Oxford Physics Colloquium",
+  "kind": "invited",
+  "details": "Straight Lightning as a Signature of Macroscopic Dark Matter (Invited Colloquium Talk)"
+}

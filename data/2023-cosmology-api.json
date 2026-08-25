@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cosmology-api",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2023"
+  },
+  "title": "cosmology.api",
+  "summary": "A standard interface for cosmology libraries",
+  "repo": "cosmology-api/cosmology.api",
+  "role": "lead developer",
+  "doi": "10.5281/zenodo.8331505",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Tessore",
+      "given": "Nicolas"
+    }
+  ],
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://pypi.org/project/cosmology.api/"
+    },
+    {
+      "rel": "docs",
+      "url": "https://cosmology.readthedocs.io/en/latest/"
+    },
+    {
+      "rel": "data",
+      "url": "https://doi.org/10.5281/zenodo.8331505"
+    }
+  ],
+  "tags": [
+    "cosmology"
+  ]
+}

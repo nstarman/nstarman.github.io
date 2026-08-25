@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-house-committee",
+  "type": "service",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2022",
+    "end": "2023"
+  },
+  "title": "Massey House Committee",
+  "details": "Junior Fellow governance committee at Massey college."
+}

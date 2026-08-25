@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+import IconSprite from '../components/IconSprite.astro';
+
+const { title, description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.' } = Astro.props;
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/software/', label: 'Software' },
+  { href: '/cv/', label: 'CV' },
+];
+// Which nav entry the current URL belongs to. Prefix matching, so /cv/2page/
+// and /cv/builder/ still mark CV; "/" has to be exact or it would match all.
+const here = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrent = (href) => {
+  const base = href.replace(/\/+$/, '') || '/';
+  return base === '/' ? here === '/' : here === base || here.startsWith(`${base}/`);
+};
+
+const built = new Date();
+const updated = built.toISOString().slice(0, 10);
+const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <script is:inline>
+      // Blocking and first, so a stored choice is applied before anything is
+      // painted. Without a stored choice the attribute stays off and the CSS
+      // follows prefers-color-scheme, which is the right default.
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <IconSprite />
+
+    <nav>
+      <div class="wrap">
+        <a class="who" href="/">Nathaniel Starkman</a>
+        <ul>
+          {nav.map((n) => (
+            <li>
+              <a href={n.href}
+                 class={isCurrent(n.href) ? 'on' : ''}
+                 aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
+            </li>
+          ))}
+          {/* Hidden until the script that gives it meaning has run — without
+              JavaScript there is nothing behind it, and a dead control is
+              worse than none. */}
+          <li>
+            <button class="themetoggle" type="button" hidden aria-label="Switch theme">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-contrast" /></svg>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer>
+      <div class="wrap">
+        <span>&copy; {built.getFullYear()} Nathaniel Starkman</span>
+        <span>Last updated <time datetime={updated}>{updatedLabel}</time></span>
+      </div>
+    </footer>
+
+    <script>
+      // Two states, starting from whatever the system already resolved to, so
+      // the first click always does the visible thing. No stored choice means
+      // "follow the system", which is why nothing is written until you click.
+      const root = document.documentElement;
+      const btn = document.querySelector('.themetoggle');
+      const dark = () =>
+        root.dataset.theme
+          ? root.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+
+      const label = () => {
+        btn.setAttribute('aria-label', dark() ? 'Switch to the light theme' : 'Switch to the dark theme');
+        btn.title = btn.getAttribute('aria-label');
+      };
+
+      btn.hidden = false;
+      label();
+      btn.addEventListener('click', () => {
+        const next = dark() ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch (e) {}
+        label();
+      });
+    </script>
+  </body>
+</html>

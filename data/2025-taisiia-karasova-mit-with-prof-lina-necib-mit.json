@@ -1,0 +1,16 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "taisiia-karasova-mit-with-prof-lina-necib-mit",
+  "type": "mentoring",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025",
+    "end": "2026"
+  },
+  "title": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)",
+  "details": "Machine Learning Galaxy intrinsic sizes",
+  "student": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)"
+}

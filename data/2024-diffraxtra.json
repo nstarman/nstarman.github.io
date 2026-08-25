@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "diffraxtra",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "diffraxtra",
+  "summary": "Extras for Diffrax",
+  "repo": "GalacticDynamics/diffraxtra",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/diffraxtra"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "OOP interfaces and vectorization for Diffrax."
+}

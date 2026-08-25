@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "the-new-scientist",
+  "type": "media",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023"
+  },
+  "title": "The New Scientist",
+  "details": "Featured in article on various strategies to detect dark matter, including the method from my paper",
+  "outlet": "The New Scientist",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.newscientist.com/article/mg25734254-700-the-hunt-for-dark-matter-the-universes-mysterious-gravitational-glue/"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "goldwater-scholarship-honorable-mention",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2017-03"
+  },
+  "title": "Goldwater Scholarship Honorable Mention",
+  "tier": "major",
+  "details": "“For exceptional promise of becoming this nation’s next generation of research leaders”"
+}

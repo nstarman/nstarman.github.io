@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-dialogue-science-and-aesthetics",
+  "type": "media",
+  "cvs": [],
+  "date": {
+    "start": "2022"
+  },
+  "title": "Massey Dialogue: Science and Aesthetics",
+  "details": "Panelist for interdisciplinary salon discussion series",
+  "outlet": "Massey Dialogue: Science and Aesthetics",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.youtube.com/watch?v=nQGQsoW4K4g"
+    }
+  ]
+}

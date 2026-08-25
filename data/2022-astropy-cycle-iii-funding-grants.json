@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-cycle-iii-funding-grants",
+  "type": "grant",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2022"
+  },
+  "title": "Astropy Cycle III Funding Grants",
+  "tier": "major",
+  "details": "USD 8,000 NASA ROSES and Moore Foundation funding to Astropy Lead: “Quantity 2.0: unitful calculations beyond NumPy\"",
+  "amount": {
+    "currency": "USD",
+    "value": 8000
+  },
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://github.com/astropy/astropy-project/blob/main/finance/proposal-calls/cycle3/Starkman_%26_Foreman-Mackey-Units.md"
+    }
+  ]
+}

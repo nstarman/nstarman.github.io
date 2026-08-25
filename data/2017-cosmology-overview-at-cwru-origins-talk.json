@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cosmology-overview-at-cwru-origins-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2017"
+  },
+  "title": "Cosmology Overview at CWRU Origins (Talk)",
+  "kind": "invited",
+  "details": "The Universe: A Brief History"
+}

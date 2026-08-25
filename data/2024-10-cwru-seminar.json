@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-seminar",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2024-10"
+  },
+  "title": "CWRU Seminar",
+  "kind": "invited",
+  "details": "Stream Members Only: Data-Driven Characterization of Stellar Streams for Inference on the Galactic Potential",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://physics.case.edu/events/nathaniel-starkman-mit/"
+    }
+  ]
+}

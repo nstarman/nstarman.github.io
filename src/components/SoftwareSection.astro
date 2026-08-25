@@ -1,0 +1,51 @@
+---
+// Three tiers, two dividers: the lead package, the headliners as cards, then
+// everything else compactly. Tier comes from the data, not from an id check.
+import { byType, links } from '../lib/data.js';
+import LinkIcons from './LinkIcons.astro';
+
+// The landing page shows the lead and the headliners only; the long tail is
+// what "All software →" is for.
+const { tail = true } = Astro.props;
+
+const all = byType('software');
+const lead = all.find((s) => s.tier === 'lead');
+const headline = all.filter((s) => s.tier === 'headline');
+const other = (tail ? all.filter((s) => s.tier === 'other') : [])
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const href = (s) => links(s)[0]?.url ?? '#';
+---
+{lead && (
+  <div class="lead">
+    <div class="name"><a href={href(lead)}>{lead.title}</a></div>
+    {lead.role && <div class="role-line">{lead.role}</div>}
+    <p>{lead.details ?? lead.summary}</p>
+    <LinkIcons links={links(lead)} />
+  </div>
+)}
+
+<div class="soft">
+  {headline.map((s) => (
+    <div class="card">
+      <div class="name"><a href={href(s)}>{s.title}</a></div>
+      <p>{s.details ?? s.summary}</p>
+      <LinkIcons links={links(s)} />
+    </div>
+  ))}
+</div>
+
+{other.length > 0 && (
+  <>
+    <div class="tierbreak" role="presentation"></div>
+    <div class="soft soft--mini">
+      {other.map((s) => (
+        <div class="card card--mini">
+          <div class="name"><a href={href(s)}>{s.title}</a></div>
+          <p>{s.summary}</p>
+          <LinkIcons links={links(s)} />
+        </div>
+      ))}
+    </div>
+  </>
+)}

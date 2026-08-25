@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "masseyscope-committee-member",
+  "type": "service",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "present": true
+  },
+  "title": "MasseyScope Committee Member",
+  "organization": "Massey College",
+  "details": "Organizing astronomy outreach with a focus on underprivileged communities"
+}

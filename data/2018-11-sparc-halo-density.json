@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "sparc-halo-density",
+  "type": "publication",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018-11"
+  },
+  "title": "A constant characteristic volume density of dark matter haloes from SPARC rotation curve fits",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Li",
+      "given": "P."
+    },
+    {
+      "family": "Lelli",
+      "given": "F."
+    },
+    {
+      "family": "McGaugh",
+      "given": "S. S."
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Schombert",
+      "given": "J. M."
+    }
+  ],
+  "venue": {
+    "journal": "Monthly Notices of the Royal Astronomical Society"
+  },
+  "arxiv": "1811.00553",
+  "doi": "10.1093/mnras/sty2968",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://doi.org/10.1093/mnras/sty2968"
+    }
+  ],
+  "tags": [
+    "dark-matter",
+    "galaxies"
+  ],
+  "citekey": "Li+:2018:sparc-halo-density",
+  "abstract": "We study the scaling relations between dark matter (DM) haloes and galaxy discs using 175 galaxies from the SPARC database. We explore two cosmologically motivated DM halo profiles: the Einasto profile from DM-only simulations and the DC14 profile from hydrodynamic simulations. We fit the observed rotation curves using a Markov Chain Monte Carlo method and break the disc-halo degeneracy using near-infrared photometry and ΛCDM-motivated priors. We find that the characteristic volume density ρ_ s of DM haloes is nearly constant over 5 decades in galaxy luminosity. The scale radius r_s and the characteristic surface density ρ_s r_s, instead, correlate with galaxy luminosity. These scaling relations provide an empirical benchmark to cosmological simulations of galaxy formation."
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-dialogue-techplomacy-with-consul-general-rana-sarkar",
+  "type": "media",
+  "cvs": [],
+  "date": {
+    "start": "2021"
+  },
+  "title": "Massey Dialogue: Techplomacy with Consul General Rana Sarkar",
+  "details": "Panelist and co-organizer for a salon discussion on the Future of regulating Big Tech",
+  "outlet": "Massey Dialogue: Techplomacy with Consul General Rana Sarkar",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.youtube.com/watch?v=fUFJn2EZk4Qgle"
+    }
+  ]
+}

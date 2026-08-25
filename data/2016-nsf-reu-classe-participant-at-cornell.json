@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "nsf-reu-classe-participant-at-cornell",
+  "type": "position",
+  "cvs": [],
+  "date": {
+    "start": "2016"
+  },
+  "title": "NSF-REU Participant",
+  "institution": "Cornell Laboratory for Accelerator-based Sciences and Education (CLASSE)",
+  "location": "Ithaca, NY, USA",
+  "details": [
+    "Mentor: [Ira Wasserman](https://astro.cornell.edu/ira-wasserman) (Cornell Astronomy).",
+    "Role: summer research position at [CLASSE](https://www.classe.cornell.edu/StudentOpportunities/ReuProgram.html).",
+    "Funding: NSF [Research Experiences for Undergraduates](https://www.nsf.gov/crssprgm/reu/).",
+    "Project: whether monopolar neutron-star magnetospheres can produce coherent curvature radiation. Coherent radiation near the light-cylinder boundary is a candidate source of FRB-like signals."
+  ]
+}

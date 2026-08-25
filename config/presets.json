@@ -1,0 +1,473 @@
+{
+  "$comment": "CV presets. Each names its sections, in order, and how each one selects items. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in.",
+  "complete": {
+    "label": "Complete",
+    "detail": "full",
+    "includeAll": true,
+    "sections": [
+      {
+        "id": "education",
+        "heading": "Education",
+        "icon": "education",
+        "match": {
+          "type": "education"
+        }
+      },
+      {
+        "id": "positions",
+        "heading": "Professional Appointments",
+        "icon": "positions",
+        "match": {
+          "type": "position"
+        }
+      },
+      {
+        "id": "publications",
+        "heading": "Publications",
+        "icon": "publications",
+        "match": {
+          "type": "publication"
+        },
+        "layout": "publications",
+        "groupBy": "status",
+        "collapsed": true,
+        "page": "/publications/"
+      },
+      {
+        "id": "awards-major",
+        "heading": "Fellowships & Awards",
+        "icon": "awards",
+        "match": {
+          "type": "award",
+          "tier": "major"
+        }
+      },
+      {
+        "id": "grants-major",
+        "heading": "Major Grants",
+        "icon": "grants",
+        "match": {
+          "type": "grant",
+          "tier": "major"
+        }
+      },
+      {
+        "id": "software",
+        "heading": "Software",
+        "icon": "code",
+        "match": {
+          "type": "software"
+        },
+        "layout": "grid",
+        "collapsed": true,
+        "page": "/software/"
+      },
+      {
+        "id": "talks-invited",
+        "heading": "Invited Talks",
+        "icon": "talks",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "invited",
+            "seminar"
+          ]
+        }
+      },
+      {
+        "id": "talks-contributed",
+        "heading": "Presentations",
+        "icon": "talks",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "contributed",
+            "poster"
+          ]
+        }
+      },
+      {
+        "id": "conferences",
+        "heading": "Conferences & Workshops",
+        "icon": "conferences",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "organizer",
+            "attended"
+          ]
+        }
+      },
+      {
+        "id": "mentoring",
+        "heading": "Mentoring",
+        "icon": "mentoring",
+        "match": {
+          "type": "mentoring"
+        }
+      },
+      {
+        "id": "teaching",
+        "heading": "Teaching",
+        "icon": "teaching",
+        "match": {
+          "type": "teaching"
+        }
+      },
+      {
+        "id": "peer-review",
+        "heading": "Peer Review",
+        "icon": "publications",
+        "list": "peer-review"
+      },
+      {
+        "id": "service",
+        "heading": "Professional Service",
+        "icon": "service",
+        "match": {
+          "type": "service"
+        }
+      },
+      {
+        "id": "outreach",
+        "heading": "Outreach",
+        "icon": "outreach",
+        "match": {
+          "type": "outreach"
+        }
+      },
+      {
+        "id": "grants-minor",
+        "heading": "Small Grants",
+        "icon": "grants",
+        "match": {
+          "type": "grant",
+          "tier": "minor"
+        }
+      },
+      {
+        "id": "media",
+        "heading": "Media",
+        "icon": "media",
+        "match": {
+          "type": "media"
+        }
+      }
+    ]
+  },
+  "np": {
+    "label": "NP",
+    "detail": "full",
+    "sections": [
+      {
+        "id": "education",
+        "heading": "Education",
+        "icon": "education",
+        "match": {
+          "type": "education"
+        }
+      },
+      {
+        "id": "positions",
+        "heading": "Professional Appointments",
+        "icon": "positions",
+        "match": {
+          "type": "position"
+        }
+      },
+      {
+        "id": "publications",
+        "heading": "Publications",
+        "icon": "publications",
+        "match": {
+          "type": "publication"
+        },
+        "layout": "publications",
+        "groupBy": "status",
+        "collapsed": true,
+        "page": "/publications/"
+      },
+      {
+        "id": "awards-major",
+        "heading": "Fellowships & Awards",
+        "icon": "awards",
+        "match": {
+          "type": "award",
+          "tier": "major"
+        }
+      },
+      {
+        "id": "grants-major",
+        "heading": "Major Grants",
+        "icon": "grants",
+        "match": {
+          "type": "grant",
+          "tier": "major"
+        }
+      },
+      {
+        "id": "software",
+        "heading": "Software",
+        "icon": "code",
+        "match": {
+          "type": "software"
+        },
+        "layout": "grid",
+        "collapsed": true,
+        "page": "/software/"
+      },
+      {
+        "id": "talks-invited",
+        "heading": "Invited Talks",
+        "icon": "talks",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "invited",
+            "seminar"
+          ]
+        }
+      },
+      {
+        "id": "talks-contributed",
+        "heading": "Presentations",
+        "icon": "talks",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "contributed",
+            "poster"
+          ]
+        }
+      },
+      {
+        "id": "conferences",
+        "heading": "Conferences & Workshops",
+        "icon": "conferences",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "organizer",
+            "attended"
+          ]
+        }
+      },
+      {
+        "id": "mentoring",
+        "heading": "Mentoring",
+        "icon": "mentoring",
+        "match": {
+          "type": "mentoring"
+        }
+      },
+      {
+        "id": "teaching",
+        "heading": "Teaching",
+        "icon": "teaching",
+        "match": {
+          "type": "teaching"
+        }
+      },
+      {
+        "id": "peer-review",
+        "heading": "Peer Review",
+        "icon": "publications",
+        "list": "peer-review"
+      },
+      {
+        "id": "service",
+        "heading": "Professional Service",
+        "icon": "service",
+        "match": {
+          "type": "service"
+        }
+      },
+      {
+        "id": "outreach",
+        "heading": "Outreach",
+        "icon": "outreach",
+        "match": {
+          "type": "outreach"
+        }
+      },
+      {
+        "id": "grants-minor",
+        "heading": "Small Grants",
+        "icon": "grants",
+        "match": {
+          "type": "grant",
+          "tier": "minor"
+        }
+      },
+      {
+        "id": "media",
+        "heading": "Media",
+        "icon": "media",
+        "match": {
+          "type": "media"
+        }
+      }
+    ]
+  },
+  "2page": {
+    "label": "2P",
+    "detail": "summary",
+    "sections": [
+      {
+        "id": "education",
+        "heading": "Education",
+        "icon": "education",
+        "match": {
+          "type": "education"
+        }
+      },
+      {
+        "id": "positions",
+        "heading": "Professional Appointments",
+        "icon": "positions",
+        "match": {
+          "type": "position"
+        }
+      },
+      {
+        "id": "publications",
+        "heading": "Publications",
+        "icon": "publications",
+        "match": {
+          "type": "publication"
+        },
+        "layout": "publications",
+        "limit": 10,
+        "groupBy": "status",
+        "collapsed": true,
+        "page": "/publications/"
+      },
+      {
+        "id": "awards-major",
+        "heading": "Fellowships & Awards",
+        "icon": "awards",
+        "match": {
+          "type": "award",
+          "tier": "major"
+        },
+        "limit": 6
+      },
+      {
+        "id": "grants-major",
+        "heading": "Major Grants",
+        "icon": "grants",
+        "match": {
+          "type": "grant",
+          "tier": "major"
+        },
+        "limit": 2
+      },
+      {
+        "id": "software",
+        "heading": "Software",
+        "icon": "code",
+        "match": {
+          "type": "software"
+        },
+        "layout": "grid",
+        "collapsed": true,
+        "page": "/software/",
+        "limit": 5
+      },
+      {
+        "id": "talks-invited",
+        "heading": "Invited Talks",
+        "icon": "talks",
+        "match": {
+          "type": "presentation",
+          "kind": [
+            "invited",
+            "seminar"
+          ]
+        },
+        "limit": 8,
+        "detail": "full"
+      },
+      {
+        "id": "mentoring",
+        "heading": "Mentoring",
+        "icon": "mentoring",
+        "match": {
+          "type": "mentoring"
+        },
+        "limit": 5,
+        "detail": "full"
+      },
+      {
+        "id": "peer-review",
+        "heading": "Peer Review",
+        "icon": "publications",
+        "list": "peer-review"
+      },
+      {
+        "id": "service",
+        "heading": "Professional Service",
+        "icon": "service",
+        "match": {
+          "type": "service"
+        }
+      }
+    ]
+  },
+  "1page": {
+    "label": "1P",
+    "detail": "summary",
+    "sections": [
+      {
+        "id": "education",
+        "heading": "Education",
+        "icon": "education",
+        "match": {
+          "type": "education"
+        }
+      },
+      {
+        "id": "positions",
+        "heading": "Professional Appointments",
+        "icon": "positions",
+        "match": {
+          "type": "position"
+        }
+      },
+      {
+        "id": "publications",
+        "heading": "Publications",
+        "icon": "publications",
+        "match": {
+          "type": "publication"
+        },
+        "layout": "publications",
+        "limit": 5,
+        "collapsed": true,
+        "page": "/publications/"
+      },
+      {
+        "id": "awards-major",
+        "heading": "Fellowships & Awards",
+        "icon": "awards",
+        "match": {
+          "type": "award",
+          "tier": "major"
+        },
+        "limit": 4
+      },
+      {
+        "id": "software",
+        "heading": "Software",
+        "icon": "code",
+        "match": {
+          "type": "software"
+        },
+        "limit": 4,
+        "layout": "grid",
+        "collapsed": true,
+        "page": "/software/"
+      }
+    ]
+  }
+}

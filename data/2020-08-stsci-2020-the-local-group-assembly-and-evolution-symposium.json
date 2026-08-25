@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "stsci-2020-the-local-group-assembly-and-evolution-symposium",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2020-08"
+  },
+  "title": "STScI 2020 The Local Group: Assembly and Evolution Symposium (Poster)",
+  "kind": "contributed",
+  "details": "Constraints on Milky Way Halo Triaxiality from Palomar 5"
+}

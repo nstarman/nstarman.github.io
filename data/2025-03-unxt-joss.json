@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "unxt-joss",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2025-03"
+  },
+  "title": "unxt: A Python package for unit-aware computing with JAX",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    }
+  ],
+  "venue": {
+    "journal": "Journal of Open Source Software",
+    "volume": "10",
+    "number": "107",
+    "pages": "7771"
+  },
+  "doi": "10.21105/joss.07771",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://doi.org/10.21105/joss.07771"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/unxt"
+    },
+    {
+      "rel": "docs",
+      "url": "https://unxt.readthedocs.io/en/stable/"
+    }
+  ],
+  "refs": [
+    "unxt"
+  ],
+  "tags": [
+    "jax",
+    "units",
+    "open-source"
+  ],
+  "internal": "Co-author list still to import from JOSS.",
+  "citekey": "Starkman+:2025:unxt",
+  "abstract": "unxt is a Python package for unit-aware computing with JAX. unxt is built on top of quax, which provides a framework for building array-like objects that can be used with JAX. unxt extends quax to provide support for unit-aware computing using the astropy.units package as a units backend. unxt provides seamless integration of physical units into high performance numerical computations, significantly enhancing the capabilities of JAX for scientific applications."
+}

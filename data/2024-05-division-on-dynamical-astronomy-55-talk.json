@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "division-on-dynamical-astronomy-55-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-05"
+  },
+  "title": "Division on Dynamical Astronomy #55 (Talk)",
+  "kind": "contributed",
+  "details": "Stream Members Only: Data-Driven Characterization of Stellar Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://dda.aas.org/meetings/2024"
+    }
+  ]
+}

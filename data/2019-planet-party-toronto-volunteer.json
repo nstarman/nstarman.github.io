@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "planet-party-toronto-volunteer",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019"
+  },
+  "title": "Planet Party Toronto Volunteer"
+}

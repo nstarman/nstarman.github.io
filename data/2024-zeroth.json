@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "zeroth",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "zeroth",
+  "summary": "Efficiently get the index-0 element of any iterable",
+  "repo": "GalacticDynamics/zeroth",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/zeroth"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

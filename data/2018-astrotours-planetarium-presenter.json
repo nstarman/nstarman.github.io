@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astrotours-planetarium-presenter",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018",
+    "end": "2019"
+  },
+  "title": "AstroTours Planetarium Presenter",
+  "details": "Regular planetarium show designer and presenter for Dunlap's AstroTours public outreach"
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "quaxed",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "quaxed",
+  "summary": "Pre-quaxed libraries",
+  "repo": "GalacticDynamics/quaxed",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/quaxed"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "Drop-in jax.numpy and friends, already wrapped for dispatch over abstract array types."
+}

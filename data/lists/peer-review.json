@@ -1,0 +1,8 @@
+{
+  "$schema": "../../schema/list.schema.json",
+  "id": "peer-review",
+  "entries": [
+    "Journals — Astronomy & Astrophysics · The Astrophysical Journal · European Physical Journal C · Journal of Open Source Software ([commensurability: a Python package for classifying astronomical orbits based on their toroid volume](https://joss.theoj.org/papers/10.21105/joss.07009))",
+    "Panels — National Science Foundation project funding panel"
+  ]
+}

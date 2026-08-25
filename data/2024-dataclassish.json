@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dataclassish",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "dataclassish",
+  "summary": "dataclasses, for everything",
+  "repo": "GalacticDynamics/dataclassish",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/dataclassish"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "replace, fields and asdict, generalized to any object rather than just dataclasses."
+}

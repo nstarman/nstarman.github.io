@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astronomy-on-tap-toronto-volunteer",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018",
+    "end": "2020"
+  },
+  "title": "Astronomy on Tap Toronto Volunteer"
+}

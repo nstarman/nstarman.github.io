@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "smithsonian-feature-article",
+  "type": "media",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2021"
+  },
+  "title": "Smithsonian Feature Article",
+  "details": "Interviewed for feature article about my paper",
+  "outlet": "Smithsonian Feature Article",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.smithsonianmag.com/science-nature/search-elusive-completely-straight-lightning-bolt-180977665/"
+    }
+  ]
+}

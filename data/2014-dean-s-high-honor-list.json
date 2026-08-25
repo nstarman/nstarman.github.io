@@ -1,0 +1,13 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dean-s-high-honor-list",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2014",
+    "end": "2018"
+  },
+  "title": "Dean’s High Honor List",
+  "tier": "major",
+  "details": "To the students with the best academic record. Awarded semesterly"
+}

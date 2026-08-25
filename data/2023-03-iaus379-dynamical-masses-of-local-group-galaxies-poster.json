@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "iaus379-dynamical-masses-of-local-group-galaxies-poster",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-03"
+  },
+  "title": "IAUS379: Dynamical Masses of Local Group Galaxies (Poster)",
+  "kind": "contributed",
+  "details": "Stellar Stream Track Reconstruction, with Errors",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://iaus379.aip.de"
+    },
+    {
+      "rel": "event",
+      "url": "https://doi.org/10.5281/zenodo.8378003"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "nserc-pdf",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2024-02"
+  },
+  "title": "NSERC PDF",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 90000
+  },
+  "details": "Postdoctoral Fellowships program (Natural Sciences and Engineering Research Council of Canada). Declined",
+  "declined": true,
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.nserc-crsng.gc.ca/Students-Etudiants/PD-NP/PDF-BP_eng.asp"
+    }
+  ]
+}

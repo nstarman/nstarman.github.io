@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "division-of-dynamical-astronomy-56",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-05"
+  },
+  "title": "Division of Dynamical Astronomy #56",
+  "kind": "organizer",
+  "location": "GIT, USA",
+  "details": "Role: SOC",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://dda.aas.org/meetings/56th%20Annual%20Meeting%20-%20Atlanta%2C%20Georgia%2C%20USA"
+    },
+    {
+      "rel": "event",
+      "url": "https://www.gatech.edu/"
+    }
+  ]
+}

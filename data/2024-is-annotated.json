@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "is-annotated",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "is_annotated",
+  "summary": "Check whether a type hint is Annotated",
+  "repo": "GalacticDynamics/is_annotated",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/is_annotated"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

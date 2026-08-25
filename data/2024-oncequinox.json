@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "oncequinox",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "oncequinox",
+  "summary": "Singletons for Equinox",
+  "repo": "GalacticDynamics/oncequinox",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/oncequinox"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

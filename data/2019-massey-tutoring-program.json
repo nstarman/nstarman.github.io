@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "massey-tutoring-program",
+  "type": "mentoring",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2022"
+  },
+  "title": "Massey Tutoring Program",
+  "details": [
+    "Volunteer math and physics tutor to prospective first-generation college students",
+    "2019, 2020 and 2022."
+  ],
+  "student": "Massey Tutoring Program"
+}

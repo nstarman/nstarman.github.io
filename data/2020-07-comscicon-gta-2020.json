@@ -1,0 +1,19 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "comscicon-gta-2020",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2020-07"
+  },
+  "title": "ComSciCon GTA 2020",
+  "kind": "organizer",
+  "location": "Online",
+  "details": "Role: Organizing Committee member for Toronto’s first ComSciCon",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://comscicon.com/comscicon-can-2020"
+    }
+  ]
+}

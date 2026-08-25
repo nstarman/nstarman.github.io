@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "xmmutablemap",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "xmmutablemap",
+  "summary": "An immutable mapping, JAX-compatible",
+  "repo": "GalacticDynamics/xmmutablemap",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/xmmutablemap"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

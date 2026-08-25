@@ -1,0 +1,271 @@
+---
+// Renders a resolved preset. Shared by /cv/ and /cv/<preset>/ so the two can
+// never drift.
+import CvHeader from './CvHeader.astro';
+import { presetNames, preset, resolve, sectionIndex } from '../lib/presets.js';
+import { dateLabel, authors, venueLine, links, REL_ICON, relKey } from '../lib/data.js';
+import { spans, detailLines } from '../lib/inline.js';
+import LinkIcons from './LinkIcons.astro';
+
+// `pick` turns the same CV into the builder's picker: every entry keeps its
+// full rendering and gains a checkbox. Reading what you are selecting is the
+// point — a list of bare titles is not the CV you are about to compile.
+// `picked` is the starting selection, so the server renders the right ticks
+// rather than the client unticking 155 boxes after paint.
+const { cv, pick = false, picked = null, level = 'full' } = Astro.props;
+const isPicked = (id) => !picked || picked.has(id);
+// Elaboration is a list of lines, and in the builder each one is its own
+// choice — inclusion is a tick, not a level.
+const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i) : []);
+const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
+
+// Every preset that renders this section, so the toggle offers exactly the
+// variants where it exists.
+const INDEX = sectionIndex();
+const url = (n, id) => (n === 'np' ? `/cv/#${id}` : `/cv/${n}/#${id}`);
+const variantsFor = (id) => presetNames.filter((n) => INDEX.get(n)?.has(id));
+
+// What rides in the left date gutter rather than under the text: an
+// institution's homepage anywhere, and a talk's whole trail — a presentation's
+// only link is the event, and it belongs beside the date it happened on.
+const inGutter = (item, l) => l.rel === 'homepage' || item.type === 'presentation';
+const gutterLinks = (item) => links(item).filter((l) => inGutter(item, l));
+const bodyLinks = (item) => links(item).filter((l) => !inGutter(item, l));
+
+const money = (a) => {
+  if (!a) return '';
+  const n = (v) => v.toLocaleString('en-US');
+  const span = a.valueMax ? `${n(a.value)}\u2013${n(a.valueMax)}` : n(a.value);
+  return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
+};
+---
+{!pick && <CvHeader current={cv.name} pdf={`/cv/starkman-cv-${cv.name}.pdf`} />}
+
+{!pick && (
+  <p class="pdfrow">
+    <a class="btn" href={`/cv/starkman-cv-${cv.name}.pdf`}>Download PDF</a>
+  </p>
+)}
+
+<nav class="cvtoc" aria-label="CV sections">
+  <ol>
+    {cv.sections.map((s) => (
+      <li><a href={`#${s.id}`} data-sec={s.id}>{s.heading}</a></li>
+    ))}
+  </ol>
+</nav>
+
+{cv.sections.map((s, i) => {
+  // A collapsed section is a <details>: the disclosure is native, so it needs
+  // no script and keeps working with JavaScript off. Every section takes the
+  // same wrapper either way, so the spacing rules see one shape.
+  const collapsed = s.collapsed && !pick;
+  const Wrap = collapsed ? 'details' : 'div';
+  const Head = collapsed ? 'summary' : 'div';
+  const selectable = pick && s.items.length > 0;
+  return (
+  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${selectable ? ' pickgroup' : ''}`}>
+    <Head class="cvsechead">
+      {selectable && (
+        <input type="checkbox" class="groupbox"
+               checked={s.items.every((i) => isPicked(i.id))}
+               aria-label={`Include every ${s.heading} entry`} />
+      )}
+      <h3 class="cvsection" id={s.id}>{s.heading}</h3>
+      {collapsed && <span class="cvcount">{s.items.length}</span>}
+      {selectable && s.items.some((i) => detail(i).length > 0) && (
+        <label class="subgrouplab">
+          <input type="checkbox" class="subgroup" checked={level === 'full'}
+                 aria-label={`Include every detail line under ${s.heading}`} />
+          detail
+        </label>
+      )}
+      {s.page && !pick && (
+        <a class="more seclink" href={s.page}>All {s.page.replaceAll('/', '')} &rarr;</a>
+      )}
+      {variantsFor(s.id).length > 1 && !pick && (
+        <span class="cvtoggle" role="group" aria-label={`Detail level for ${s.heading}`}>
+          {variantsFor(s.id).map((n) => (
+            <a href={url(n, s.id)} class={n === cv.name ? 'on' : ''}
+               data-section={s.id}
+               aria-current={n === cv.name ? 'true' : undefined}
+               title={`${preset(n).label} CV`}>{preset(n).label}</a>
+          ))}
+        </span>
+      )}
+    </Head>
+
+    {s.layout === 'list' ? (
+      <ul class="plainlist">
+        {s.entries.map((e) => (
+          <li>{spans(e).map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}</li>
+        ))}
+      </ul>
+    ) : s.layout === 'grid' ? (
+      /* Software: the same mini cards the site's software page ends with. The
+         packages carry no dates worth a gutter, and the published-vs-other
+         split lived on the papers, which the publication list already holds. */
+      <div class="soft soft--mini">
+        {s.items.map((item) => (
+          <div class="card card--mini" id={`item-${item.id}`}>
+            <a class="srclink" href={`/records/${item.id}.json`}
+               aria-label={`${item.title} — JSON source`} title="JSON source">{'}'}</a>
+            <div class="name">
+              {pick && (
+                <input type="checkbox" class="itembox" value={item.id}
+                       checked={isPicked(item.id)}
+                       aria-label={`Include ${item.title}`} />
+              )}
+              {links(item)[0]
+                ? <a href={links(item)[0].url}>{item.title}</a>
+                : item.title}
+            </div>
+            {item.summary && <p>{item.summary}</p>}
+            <LinkIcons links={links(item)} />
+          </div>
+        ))}
+      </div>
+    ) : (
+    <div class="timeline">
+      {s.items.map((item) => (
+        <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}`}
+             id={`item-${item.id}`}>
+          {pick && (
+            <input type="checkbox" class="itembox" value={item.id}
+                   checked={isPicked(item.id)}
+                   aria-label={`Include ${item.title}`} />
+          )}
+          <a class="srclink" href={`/records/${item.id}.json`}
+             aria-label={`${item.title} — JSON source`} title="JSON source">{'}'}</a>
+          <span class="when">
+            {dateLabel(item)}
+            {gutterLinks(item).length > 0 && (
+              <span class="gutterlinks">
+            {gutterLinks(item).map((l) => (
+              <a class="homelink" href={l.url}
+                 aria-label={`${item.event ?? item.institution ?? item.organization ?? item.title} ${l.label ?? l.rel}`}
+                 title={l.label ?? l.rel}>
+                <svg class="ico" aria-hidden="true" focusable="false">
+                  <use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} />
+                </svg>
+              </a>
+            ))}
+              </span>
+            )}
+          </span>
+          <span class="what">
+            <strong>{item.title}</strong>
+            {item.institution && <>, {item.institution}</>}
+            {item.event && <>, {item.event}</>}
+            {item.type === 'publication' && (
+              <> — {authors(item, 4).shown.map((a, i) => (
+                  <>{i > 0 && ', '}{a.me ? <span class="me">{a.name}</span> : a.name}</>
+                ))}{authors(item, 4).etal && <>, et al</>}
+                {(authors(item, 4).etal || venueLine(item)) && '.'}
+                {venueLine(item) && <> <span class="venue">{venueLine(item)}</span></>}
+              </>
+            )}
+            {/* Grants show their figure; awards keep theirs in the record only. */}
+            {item.amount && item.type !== 'award' && (
+              <> — {money(item.amount)}{item.declined && ' (declined)'}</>
+            )}
+            {item.declined && item.type === 'award' && <> (declined)</>}
+            {item.recipient && <span class="recipient"> — to {item.recipient}</span>}
+            {detail(item).map((line, i) => (
+              <span class="sub">
+                {pick && (
+                  <input type="checkbox" class="subbox" data-id={item.id} data-line={i}
+                         checked={level === 'full'}
+                         aria-label={`Include this line under ${item.title}`} />
+                )}
+                {line.map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}
+              </span>
+            ))}
+            {/* publications keep their trail in a gutter of its own, as on the
+                publications page; everything else that is not in the date
+                gutter sits under the text */}
+            {item.type !== 'publication' && <LinkIcons links={bodyLinks(item)} />}
+          </span>
+          {item.type === 'publication' && <LinkIcons links={bodyLinks(item)} />}
+        </div>
+      ))}
+    </div>
+    )}
+    {s.dropped > 0 && <p class="dropped">{s.dropped} more not shown.</p>}
+  </Wrap>
+  );
+})}
+
+<script>
+  // Switching detail level should not throw you to the top of the section.
+  // The href carries the anchor so it still works without JavaScript; with it,
+  // we remember where the heading sat in the viewport and put it back there on
+  // the other page, so the switch reads as the list changing under a fixed
+  // heading rather than as a jump.
+  const KEY = 'cv:anchor';
+
+  for (const a of document.querySelectorAll('.cvtoggle a[data-section]')) {
+    a.addEventListener('click', (e) => {
+      if (a.classList.contains('on')) { e.preventDefault(); return; }
+      const head = document.getElementById(a.dataset.section);
+      if (!head) return;
+      sessionStorage.setItem(KEY, JSON.stringify({
+        id: a.dataset.section,
+        top: Math.round(head.getBoundingClientRect().top),
+      }));
+      // Navigate without the fragment, or the browser jumps before we can.
+      e.preventDefault();
+      location.href = a.getAttribute('href').split('#')[0];
+    });
+  }
+
+  const saved = sessionStorage.getItem(KEY);
+  if (saved) {
+    sessionStorage.removeItem(KEY);
+    try {
+      const { id, top } = JSON.parse(saved);
+      const head = document.getElementById(id);
+      if (head) {
+        const y = head.getBoundingClientRect().top + scrollY - top;
+        scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+      }
+    } catch {}
+  }
+
+  // Scroll-spy for the CV contents rail. The rail itself is shown by a media
+  // query — this only tracks position, so it costs nothing when it is hidden.
+  const links = new Map(
+    [...document.querySelectorAll('.cvtoc a')].map((a) => [a.dataset.sec, a]),
+  );
+  const heads = [...document.querySelectorAll('.cvsection')];
+
+  if (links.size && heads.length) {
+    let current = null;
+    const mark = (id) => {
+      if (id === current) return;
+      current = id;
+      for (const [key, a] of links) a.classList.toggle('is-current', key === id);
+    };
+
+    // Track the heading nearest the top of the viewport rather than whichever
+    // happens to be intersecting: sections here vary from one row to thirty-five,
+    // so "is visible" is true of several at once.
+    const update = () => {
+      // At the foot of the page the last sections can never reach the top, so
+      // the final one would never become current. Snap to it once the scroll
+      // has bottomed out.
+      if (innerHeight + scrollY >= document.body.scrollHeight - 4) {
+        mark(heads[heads.length - 1].id);
+        return;
+      }
+      let best = heads[0];
+      for (const h of heads) {
+        if (h.getBoundingClientRect().top - 90 <= 0) best = h;
+      }
+      mark(best.id);
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+  }
+</script>

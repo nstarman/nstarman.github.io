@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "canadian-astronomical-society-casca",
+  "type": "service",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018",
+    "present": true
+  },
+  "title": "Canadian Astronomical Society (CASCA)",
+  "organization": "Canadian Astronomical Society"
+}

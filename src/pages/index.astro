@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import Publication from '../components/Publication.astro';
+import SoftwareSection from '../components/SoftwareSection.astro';
+import { byType, featured, dateLabel } from '../lib/data.js';
+import { lines as longLines } from '../lib/inline.js';
+import { portrait } from '../lib/portrait.js';
+import person from '/config/person.json';
+
+const pubs = featured('publication').slice(0, 5);
+
+
+// Background is a summary, not a listing: the same items the two-page CV keeps,
+// so undergraduate summer positions stay on the CV where they belong.
+const background = [...byType('position'), ...byType('education')]
+  .filter((i) => (i.cvs ?? []).includes('2page'));
+
+---
+<Base title="Nathaniel Starkman">
+  <header>
+    <canvas id="stream" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <img class="portrait" src={portrait} alt="Nathaniel Starkman" width="112" height="112" />
+      <div class="ident">
+        <h1>{person.name}</h1>
+        <p class="role">
+          <em>{person.role}</em> · {person.institution}
+        </p>
+        <ul class="pills">
+          {person.contacts.map((c) => (
+            <li>
+              <a class="pill" href={c.url} aria-label={c.label} title={c.label}>
+                <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${c.icon}`} /></svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="research">
+      <div class="wrap">
+        {person.bio.map((para) => <p class="lede">{para}</p>)}
+      </div>
+    </section>
+
+    <section id="pubs">
+      <div class="wrap">
+        <div class="h2row">
+          <h2>Selected publications</h2>
+          <a class="more" href="/publications/">All publications →</a>
+        </div>
+        <div class="entries entries--brief">
+          {pubs.map((item) => <Publication item={item} brief />)}
+        </div>
+      </div>
+    </section>
+
+    <section id="background">
+      <div class="wrap">
+        <h2>Background</h2>
+        <div class="timeline">
+          {background.map((item) => (
+            <div class="tl">
+              <span class="when">{dateLabel(item)}</span>
+              <span class="what">
+                <strong>{item.title}</strong>{item.institution && <>, {item.institution}</>}
+                {item.details &&
+                  /* spans, like the CV — otherwise an array joins with no
+                     separator and [text](url) prints as its own markup */
+                  longLines(item.details, '/cv/').map((line) => (
+                    <span class="sub">
+                      {line.map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}
+                    </span>
+                  ))}
+                {item.thesis && <span class="sub">Thesis: {item.thesis}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="software">
+      <div class="wrap">
+        <div class="h2row">
+          <h2>Software</h2>
+          <a class="more" href="/software/">All software →</a>
+        </div>
+
+        <SoftwareSection tail={false} />
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Ambient backdrop: a stellar stream — points scattered along a curved
+    // track, the thing the research is actually about.
+    const c = document.getElementById('stream');
+    if (c instanceof HTMLCanvasElement) {
+      const x = c.getContext('2d');
+      const build = (w, h) => {
+        const a = [];
+        for (let i = 0; i < 620; i++) {
+          const t = i / 619;
+          const dens = Math.sin(Math.PI * t);
+          const s = (Math.random() + Math.random() + Math.random() - 1.5) * h * 0.085 * (1.5 - dens);
+          a.push({
+            x: -0.05 * w + t * 1.12 * w,
+            y: h * (0.86 - 0.6 * t + 0.42 * t * t) + s,
+            r: 0.5 + Math.random() * 1.25,
+            a: 0.1 + dens * 0.42 * Math.random(),
+          });
+        }
+        return a;
+      };
+      const draw = () => {
+        const d = window.devicePixelRatio || 1;
+        const w = c.clientWidth, h = c.clientHeight;
+        if (!w || !h || !x) return;
+        c.width = w * d; c.height = h * d;
+        x.setTransform(d, 0, 0, d, 0, 0);
+        x.clearRect(0, 0, w, h);
+        x.fillStyle =
+          getComputedStyle(document.documentElement).getPropertyValue('--accent-line').trim() || '#7FA6D9';
+        for (const p of build(w, h)) {
+          x.globalAlpha = p.a * 0.5;
+          x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.2832); x.fill();
+        }
+        x.globalAlpha = 1;
+      };
+      draw();
+      addEventListener('resize', draw);
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+    }
+  </script>
+</Base>

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "jackman-massey-bursary",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2022-05"
+  },
+  "title": "Jackman Massey Bursary",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 2900
+  }
+}

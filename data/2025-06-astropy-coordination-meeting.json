@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-coordination-meeting",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-06"
+  },
+  "title": "Astropy Coordination Meeting",
+  "kind": "organizer",
+  "location": "Santa Cruz, USA",
+  "details": "Role: SOC",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://www.github.com/astropy/astropy"
+    }
+  ]
+}

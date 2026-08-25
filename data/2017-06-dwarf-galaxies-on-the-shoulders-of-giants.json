@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dwarf-galaxies-on-the-shoulders-of-giants",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2017-06"
+  },
+  "title": "Dwarf Galaxies on the Shoulders of Giants",
+  "kind": "contributed",
+  "details": "Workshop on topics related to dwarf galaxies and the dark matter problem Conference Volunteer"
+}

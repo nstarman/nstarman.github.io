@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "john-schoff-millis-award",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2018-05"
+  },
+  "title": "John Schoff Millis Award",
+  "tier": "major",
+  "details": "To the senior with the best academic record in the College of Arts and Sciences"
+}

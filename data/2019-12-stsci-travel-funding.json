@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "stsci-travel-funding",
+  "type": "grant",
+  "cvs": [],
+  "date": {
+    "start": "2019-12"
+  },
+  "title": "STScI Travel Funding",
+  "tier": "minor",
+  "details": "To attend STScI 2020 The Local Group: Assembly and Evolution Symposium"
+}

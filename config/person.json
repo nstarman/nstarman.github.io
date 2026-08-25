@@ -1,0 +1,84 @@
+{
+  "name": "Nathaniel Starkman",
+  "affiliation": "Kavli Institute for Astrophysics and Space Research, Massachusetts Institute of Technology",
+  "titles": [
+    "Postdoctoral Associate",
+    "Brinson Prize Fellow"
+  ],
+  "affiliationShort": "@ MIT Kavli",
+  "address": "77 Massachusetts Avenue, Cambridge, MA 02139, USA",
+  "addressLines": [
+    "77 Massachusetts Avenue",
+    "Cambridge, MA 02139, USA"
+  ],
+  "email": "starkman@mit.edu",
+  "website": "nstarkman.space",
+  "websiteUrl": "https://nstarkman.space",
+  "orcid": "0000-0003-3954-3291",
+  "profiles": [
+    {
+      "label": "Publications",
+      "service": "ADS",
+      "url": "https://ui.adsabs.harvard.edu/search/q=author%3A%22Starkman%2C%20Nathaniel%22&sort=date%20desc"
+    },
+    {
+      "label": "arXiv",
+      "service": "arXiv",
+      "url": "https://arxiv.org/a/starkman_n_1"
+    },
+    {
+      "label": "Zenodo",
+      "service": "Zenodo",
+      "url": "https://zenodo.org/search?q=%22Starkman%2C%20Nathaniel%22"
+    },
+    {
+      "label": "ORCID",
+      "service": "ORCID",
+      "url": "https://orcid.org/0000-0003-3954-3291"
+    }
+  ],
+  "role": "Brinson Prize Fellow",
+  "institution": "MIT Kavli Institute for Astrophysics and Space Research",
+  "github": "nstarman",
+  "bio": [
+    "I am a computational astrophysicist researching dark matter — what it is, and how it shapes galaxies — mostly by using stellar streams to constrain their gravitational potentials, in the Milky Way and far beyond it with large-scale surveys.",
+    "When a star cluster is torn apart by its host galaxy, the debris can trace a long, thin stream. Properties of the stream — its path, shape, width, etc — are all sensitive to properties of the host, including its dark matter. I develop and apply novel methods to study these streams and learn about the dark matter; I also build much of the software powering these methods and analyses. I am also a core developer of Astropy, helping to power all of astronomy."
+  ],
+  "contacts": [
+    {
+      "icon": "email",
+      "label": "Email",
+      "url": "mailto:starkman@mit.edu"
+    },
+    {
+      "icon": "github",
+      "label": "GitHub",
+      "url": "https://github.com/nstarman"
+    },
+    {
+      "icon": "ads",
+      "label": "ADS",
+      "url": "https://ui.adsabs.harvard.edu/search/q=author%3A%22Starkman%2C%20Nathaniel%22&sort=date%20desc"
+    },
+    {
+      "icon": "arxiv",
+      "label": "arXiv",
+      "url": "https://arxiv.org/a/starkman_n_1"
+    },
+    {
+      "icon": "orcid",
+      "label": "ORCID",
+      "url": "https://orcid.org/0000-0003-3954-3291"
+    },
+    {
+      "icon": "zenodo",
+      "label": "Zenodo",
+      "url": "https://zenodo.org/search?q=%22Starkman%2C%20Nathaniel%22"
+    },
+    {
+      "icon": "google-scholar",
+      "label": "Google Scholar",
+      "url": "https://scholar.google.com/citations?user=WxfvklgAAAAJ"
+    }
+  ]
+}

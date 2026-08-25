@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "plotting-backends",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "plotting_backends",
+  "summary": "Dispatch over plotting backends",
+  "repo": "GalacticDynamics/plotting_backends",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/plotting_backends"
+    }
+  ],
+  "tags": [
+    "jax"
+  ]
+}

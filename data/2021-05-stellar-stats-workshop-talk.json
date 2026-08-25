@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "stellar-stats-workshop-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-05"
+  },
+  "title": "Stellar Stats Workshop (Talk)",
+  "kind": "contributed",
+  "details": "Stellar Stream Track Reconstruction, with Errors"
+}

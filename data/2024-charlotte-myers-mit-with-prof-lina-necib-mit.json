@@ -1,0 +1,22 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "charlotte-myers-mit-with-prof-lina-necib-mit",
+  "type": "mentoring",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2024",
+    "end": "2026"
+  },
+  "title": "Charlotte Myers (MIT) with Prof. Lina Necib (MIT)",
+  "details": [
+    "Physics-Informed Neural Networks for Modeling Galactic Gravitational Potentials",
+    "[NeurIPS Paper](item:pinns-neurips)"
+  ],
+  "student": "Charlotte Myers (MIT) with Prof. Lina Necib (MIT)",
+  "refs": [
+    "pinns-neurips"
+  ]
+}

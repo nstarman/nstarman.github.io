@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "sigma-nu-fraternity",
+  "type": "service",
+  "cvs": [],
+  "date": {
+    "start": "2015",
+    "end": "2018"
+  },
+  "title": "Sigma Nu Fraternity",
+  "details": "Member in good standing. Served as webmaster (2016-2018) in charge of the fraternity webpage for news, programmed events, and intra-fraternal governance"
+}

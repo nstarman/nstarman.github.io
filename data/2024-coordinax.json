@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "coordinax",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "coordinax",
+  "summary": "Coordinates in JAX",
+  "details": "Vectors, frames and transformations — differentiable, and unit-aware via unxt.",
+  "repo": "GalacticDynamics/coordinax",
+  "role": "lead developer",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/coordinax"
+    },
+    {
+      "rel": "docs",
+      "url": "https://coordinax.readthedocs.io"
+    }
+  ],
+  "refs": [
+    "unxt"
+  ],
+  "tags": [
+    "jax",
+    "coordinates"
+  ],
+  "tier": "headline"
+}

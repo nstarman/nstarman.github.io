@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-seminar-cleveland",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2026-02"
+  },
+  "title": "CWRU Seminar (Cleveland)",
+  "kind": "invited",
+  "details": "Computationally Unscrambling EGGS (Extra-Galactic Gravity from Streams)"
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "dark-seminar-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-06"
+  },
+  "title": "DARK Seminar (Talk)",
+  "kind": "contributed",
+  "details": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos"
+}

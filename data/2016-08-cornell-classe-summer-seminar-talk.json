@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cornell-classe-summer-seminar-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2016-08"
+  },
+  "title": "Cornell CLASSE Summer Seminar (Talk)",
+  "kind": "contributed",
+  "details": "Coherent curvature radiation in a neutron star’s monopolar magnetic field"
+}

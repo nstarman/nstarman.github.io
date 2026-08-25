@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "jaxmore",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "jaxmore",
+  "summary": "There's more to JAX",
+  "repo": "GalacticDynamics/jaxmore",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/jaxmore"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "The utilities you keep re-writing, collected in one place."
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-core-developer-conference-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2022-03"
+  },
+  "title": "Astropy Core Developer Conference (Talk)",
+  "kind": "attended",
+  "location": "Boston, USA",
+  "details": "The future of interoperability with Python's Protocols Role: Core developer, maintainer for Astropy Cosmology and Units"
+}

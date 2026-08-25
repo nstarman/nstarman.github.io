@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "marche-iii-big-bang-big-stars-big-computers-jesi",
+  "type": "presentation",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2026-08"
+  },
+  "title": "Marche III: Big Bang, Big Stars, Big Computers (Jesi)",
+  "kind": "invited",
+  "details": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos"
+}

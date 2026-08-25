@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "from-jax-to-galax",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-05"
+  },
+  "title": "From JAX to Galax",
+  "kind": "attended",
+  "location": "TO, CA",
+  "details": "Workshop at Globular Clusters and Their Tidal Tails",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://physics.mcmaster.ca/~reinacam/gcandtidaltails24/"
+    }
+  ]
+}

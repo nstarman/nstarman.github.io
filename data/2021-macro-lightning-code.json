@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "macro-lightning-code",
+  "type": "software",
+  "cvs": [],
+  "date": {
+    "start": "2021"
+  },
+  "title": "macro_lightning",
+  "summary": "Constrain macroscopic dark matter with lightning",
+  "details": "Constraints on macroscopic dark matter from lightning, on Earth and Jupiter. Released with the PRD paper.",
+  "repo": "nstarman/macro_lightning",
+  "role": "lead developer",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://pypi.org/project/macro-lightning/"
+    },
+    {
+      "rel": "docs",
+      "url": "https://macro-lightning.readthedocs.io/en/latest/"
+    },
+    {
+      "rel": "data",
+      "url": "https://zenodo.org/record/4558581"
+    }
+  ],
+  "refs": [
+    "macro-lightning"
+  ],
+  "tags": [
+    "dark-matter"
+  ],
+  "tier": "other"
+}

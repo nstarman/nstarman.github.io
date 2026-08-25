@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "reem-hamraz-google-summer-of-code-for-astropy",
+  "type": "mentoring",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2026"
+  },
+  "title": "Reem Hamraz Google Summer of Code for Astropy",
+  "details": "Hardening Astropy’s core stability",
+  "student": "Reem Hamraz Google Summer of Code for Astropy",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://openastronomy.org/gsoc/gsoc2026/"
+    }
+  ]
+}

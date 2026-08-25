@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "the-standard-model-at-50-years",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2018-06"
+  },
+  "title": "The Standard Model at 50 Years",
+  "kind": "contributed",
+  "details": "A Celebratory Symposium for the Standard Model Conference Volunteer",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://artsci.case.edu/smat50/"
+    }
+  ]
+}

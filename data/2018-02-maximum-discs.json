@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "maximum-discs",
+  "type": "publication",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2018-02"
+  },
+  "title": "A new algorithm to quantify maximum discs in galaxies",
+  "status": "published",
+  "entryType": "article",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Lelli",
+      "given": "F."
+    },
+    {
+      "family": "McGaugh",
+      "given": "S. S."
+    },
+    {
+      "family": "Schombert",
+      "given": "J."
+    }
+  ],
+  "venue": {
+    "journal": "Monthly Notices of the Royal Astronomical Society",
+    "volume": "480",
+    "pages": "2292"
+  },
+  "arxiv": "1802.09967",
+  "doi": "10.1093/mnras/sty2011",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://academic.oup.com/mnras/article/480/2/2292/5060779"
+    }
+  ],
+  "tags": [
+    "dark-matter",
+    "galaxies"
+  ],
+  "citekey": "Starkman+:2018:maximum-discs",
+  "abstract": "Maximum disc decompositions of rotation curves place a dynamical upper limit to the mass attributable to stars in galaxies. The precise definition of this term, however, can be vague and varies in usage. We develop an algorithm to robustly quantify maximum-disc mass models and apply it to 153 galaxies from the SPARC database. Our automatic procedure recovers classic results from manual decompositions. High-mass, high-surface-brightness galaxies have mean maximum-disc mass-to-light ratios of 0.7 \\;M_/L_ in the Spitzer 3.6 μm band, which are close to the expectations from stellar population models, suggesting that these galaxies are nearly maximal. Low-mass, low-surface-brightness galaxies have very high maximum-disc mass-to-light ratios (up to 10 M_/L_), which are unphysical for standard stellar population models, confirming they are sub-maximal. The maximum-disc mass-to-light ratios are more closely correlated with surface brightness than luminosity. The mean ratio between baryonic and observed velocity at the peak of the baryonic contribution is V_bar/V_p 0.88, but correlates with surface brightness, so it is unwise to use this mean value to define the maximum disc concept. Our algorithm requires no manual intervention and could be applied to large galaxy samples from future HI surveys with Apertif, Askap, and SKA."
+}

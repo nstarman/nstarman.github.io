@@ -1,0 +1,710 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nstarkman.space/schema/item.schema.json",
+  "title": "CV / site item",
+  "description": "One item in the database. Every item is its own file, named data/<date.start>-<id>.json — the start date first so the directory lists chronologically, then the id, which is the identity everything else points at. A year-only date gives 2019-<id>.json; a dated one gives 2026-10-<id>.json. Two additions never conflict, and the filename cannot disagree with the record: npm run test:schema rejects it. Rendered into the website, the profile README, and the CV PDFs.",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "required": [
+    "id",
+    "type",
+    "date",
+    "title"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "description": "Globally unique slug, and the second half of the filename (<date.start>-<id>.json). Never change it once merged — refs, cross-links and the published /records/<id>.json URL all point at it.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "type": {
+      "description": "Drives which extra fields apply and which CV section the item lands in.",
+      "enum": [
+        "publication",
+        "software",
+        "education",
+        "position",
+        "award",
+        "grant",
+        "presentation",
+        "mentoring",
+        "teaching",
+        "service",
+        "media",
+        "outreach"
+      ]
+    },
+    "cvs": {
+      "description": "Which CV presets include this item, by the names in config/presets.json. Omit or leave empty for none — the complete CV takes everything regardless. This replaced the `% SKIP: (*)` markers the LaTeX CV used.",
+      "type": "array",
+      "items": {
+        "enum": [
+          "np",
+          "2page",
+          "1page"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "featured": {
+      "description": "Surface on the website landing page rather than only the full listing.",
+      "type": "boolean",
+      "default": false
+    },
+    "date": {
+      "$ref": "#/$defs/dateRange",
+      "description": "`start` also prefixes the filename, so correcting it renames the file."
+    },
+    "title": {
+      "description": "The headline. For a publication, the paper title; for an award, its name.",
+      "type": "string",
+      "minLength": 2
+    },
+    "summary": {
+      "description": "The one line. Always rendered, including in the two-page CV.",
+      "type": "string"
+    },
+    "details": {
+      "description": "Elaboration, as a string or one string per line. Rendered by the website and the long CVs; the short presets drop it. May carry [text](url) and [text](item:some-id) links.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/link"
+      },
+      "uniqueItems": true
+    },
+    "refs": {
+      "description": "Other items this one points at, by bare id (was \\hyperref). A media entry cites the paper it covered.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "internal": {
+      "description": "Maintainer note. Never rendered anywhere. (Not BibTeX `note` — that is derived from `status`.)",
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "publication"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "authors",
+          "status",
+          "entryType"
+        ],
+        "properties": {
+          "authors": {
+            "$ref": "#/$defs/authors",
+            "description": "The FULL author list, in order. Renderers truncate per preset — never pre-truncate here, or the BibTeX is wrong."
+          },
+          "editors": {
+            "$ref": "#/$defs/authors"
+          },
+          "collaboration": {
+            "description": "Leading collaboration byline, e.g. \"Euclid Collaboration\", when the full list runs to hundreds.",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "in-prep",
+              "submitted",
+              "accepted",
+              "published"
+            ]
+          },
+          "entryType": {
+            "description": "BibTeX entry type. Not derivable from `status` alone — a published conference paper is @inproceedings, a preprint is @misc.",
+            "enum": [
+              "article",
+              "inproceedings",
+              "incollection",
+              "book",
+              "phdthesis",
+              "techreport",
+              "misc",
+              "unpublished"
+            ]
+          },
+          "citekey": {
+            "description": "BibTeX key. House format: <FirstAuthor>:<year>:<short> for a sole author, <First>+<Second>:... for two, <First>+:... for three or more, and <Collaboration>+<First>+:... when a collaboration leads the byline. Defaults to `id` if omitted.",
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_:+.-]*$"
+          },
+          "venue": {
+            "$ref": "#/$defs/venue"
+          },
+          "abstract": {
+            "description": "The paper abstract, verbatim. Shown on the website and emitted into BibTeX; never in the CV.",
+            "type": "string"
+          },
+          "arxiv": {
+            "type": "string",
+            "pattern": "^\\d{4}\\.\\d{4,5}(v\\d+)?$"
+          },
+          "primaryClass": {
+            "description": "arXiv primary category, e.g. astro-ph.GA. Emitted as BibTeX primaryClass alongside eprint.",
+            "type": "string",
+            "pattern": "^[a-z-]+(\\.[A-Za-z-]+)?$"
+          },
+          "bibcode": {
+            "$ref": "#/$defs/bibcode"
+          },
+          "doi": {
+            "$ref": "#/$defs/doi"
+          },
+          "citations": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "software"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "tier"
+        ],
+        "properties": {
+          "tier": {
+            "description": "Prominence on the website's software listing. Exactly one item should be `lead`. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
+            "enum": [
+              "lead",
+              "headline",
+              "other"
+            ]
+          },
+          "repo": {
+            "type": "string",
+            "pattern": "^[\\w.-]+/[\\w.-]+$",
+            "description": "owner/name on GitHub. Drives the star count."
+          },
+          "authors": {
+            "$ref": "#/$defs/authors"
+          },
+          "version": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "doi": {
+            "$ref": "#/$defs/doi"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "education"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "institution"
+        ],
+        "properties": {
+          "institution": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "thesis": {
+            "type": "string"
+          },
+          "supervisors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "position"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "institution"
+        ],
+        "properties": {
+          "institution": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "award",
+              "grant"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "tier"
+        ],
+        "properties": {
+          "tier": {
+            "description": "Your CV separates Major Fellowships & Awards and Major Grants from Small Grants and Travel Awards. type x tier gives those four buckets; presets.json maps each to a heading.",
+            "enum": [
+              "major",
+              "minor"
+            ]
+          },
+          "amount": {
+            "$ref": "#/$defs/amount"
+          },
+          "declined": {
+            "type": "boolean",
+            "default": false
+          },
+          "funder": {
+            "type": "string"
+          },
+          "recipient": {
+            "description": "Who received it, when that is not the CV's owner — a team award belongs on the CV but must not read as a personal one.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "presentation"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "description": "Separates invited talks from contributed ones, posters, organising, and plain attendance — the distinction the CV's separate sections used to carry.",
+            "enum": [
+              "invited",
+              "contributed",
+              "poster",
+              "seminar",
+              "organizer",
+              "attended"
+            ]
+          },
+          "event": {
+            "type": "string",
+            "description": "The meeting, workshop or seminar series."
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "mentoring"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "student"
+        ],
+        "properties": {
+          "student": {
+            "type": "string"
+          },
+          "institution": {
+            "type": "string"
+          },
+          "coSupervisors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What the student produced — talks, posters, papers."
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "teaching"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "institution": {
+            "type": "string"
+          },
+          "course": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "service",
+              "outreach"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "organization": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "media"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "outlet"
+        ],
+        "properties": {
+          "outlet": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "partialDate": {
+      "description": "YYYY, YYYY-MM or YYYY-MM-DD. Use the coarsest form you actually know.",
+      "type": "string",
+      "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$"
+    },
+    "dateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/partialDate"
+        },
+        "end": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/partialDate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "present": {
+          "type": "boolean",
+          "default": false,
+          "description": "Renders as \"2024 –\". Cannot be combined with `end`."
+        }
+      },
+      "not": {
+        "required": [
+          "end",
+          "present"
+        ]
+      }
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rel",
+        "url"
+      ],
+      "properties": {
+        "rel": {
+          "description": "Closed vocabulary. Drives the README icon trail, the website buttons, and the CV glyphs from one definition — do not invent new values without adding them here.",
+          "enum": [
+            "paper",
+            "preprint",
+            "doi",
+            "repo",
+            "code",
+            "docs",
+            "data",
+            "slides",
+            "event",
+            "homepage"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://"
+        },
+        "label": {
+          "type": "string",
+          "description": "Overrides the default text."
+        }
+      }
+    },
+    "author": {
+      "description": "A person as `family` + `given`, so BibTeX gets \"Family, Given\" and the site gets \"G. Family\" from one entry. Use `literal` only for a non-person byline such as a collaboration, where BibTeX needs the braces preserved.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "given": {
+          "type": "string",
+          "minLength": 1
+        },
+        "literal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suffix": {
+          "type": "string",
+          "description": "Jr., III — kept out of `family` so sorting stays right."
+        },
+        "me": {
+          "type": "boolean",
+          "default": false,
+          "description": "Bolds the name. Set on exactly one author."
+        },
+        "orcid": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "family",
+            "given"
+          ],
+          "not": {
+            "required": [
+              "literal"
+            ]
+          }
+        },
+        {
+          "required": [
+            "literal"
+          ]
+        }
+      ]
+    },
+    "authors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/author"
+      }
+    },
+    "venue": {
+      "description": "BibTeX-native field names, so the mapping to a .bib entry is direct rather than translated.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "journal": {
+          "type": "string"
+        },
+        "booktitle": {
+          "type": "string",
+          "description": "For @inproceedings / @incollection."
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string",
+          "description": "For @phdthesis."
+        },
+        "series": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string",
+          "description": "Issue number — BibTeX calls it `number`."
+        },
+        "pages": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      }
+    },
+    "amount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "value"
+      ],
+      "properties": {
+        "currency": {
+          "enum": [
+            "USD",
+            "CAD",
+            "EUR",
+            "GBP"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "valueMax": {
+          "description": "Upper bound, for an award quoted as a range. `value` is then the lower bound.",
+          "type": "number",
+          "minimum": 0
+        },
+        "perAnnum": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "doi": {
+      "type": "string",
+      "pattern": "^10\\.\\d{4,9}/\\S+$",
+      "description": "Bare DOI, no https://doi.org/ prefix."
+    },
+    "bibcode": {
+      "type": "string",
+      "pattern": "^\\d{4}[A-Za-z0-9.&+]{15}$",
+      "description": "The 19-character ADS bibcode, e.g. 2022ApJ...935..167A. Omit until the paper is on ADS. The ADS URL derives from it, so no link entry is needed."
+    }
+  }
+}

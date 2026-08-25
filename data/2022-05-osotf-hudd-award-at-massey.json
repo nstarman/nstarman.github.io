@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "osotf-hudd-award-at-massey",
+  "type": "award",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2022-05"
+  },
+  "title": "OSOTF HUDD Award at Massey",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 5000
+  },
+  "details": "Ontario Student Opportunity Trust Fund",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.masseycollege.ca/junior-fellows-bursaries/"
+    }
+  ],
+  "funder": "Massey College"
+}

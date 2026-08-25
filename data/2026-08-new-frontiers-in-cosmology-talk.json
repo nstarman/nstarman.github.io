@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "new-frontiers-in-cosmology-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-08"
+  },
+  "title": "New Frontiers in Cosmology (Talk)",
+  "kind": "contributed",
+  "details": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos"
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "quax",
+  "type": "software",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2023-06",
+    "present": true
+  },
+  "title": "quax",
+  "summary": "Multiple dispatch in JAX",
+  "details": "Custom array-ish types that work with JAX primitives — the substrate the rest of the stack builds on.",
+  "repo": "nstarman/quax",
+  "role": "maintainer",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/nstarman/quax"
+    },
+    {
+      "rel": "docs",
+      "url": "https://nstarman.github.io/quax/"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "tier": "headline"
+}

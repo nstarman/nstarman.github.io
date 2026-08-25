@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "university-of-toronto-graduate-fellowship-per-annum",
+  "type": "award",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2018",
+    "end": "2024"
+  },
+  "title": "University of Toronto Graduate Fellowship",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 23000,
+    "valueMax": 32000,
+    "perAnnum": true
+  },
+  "funder": "University of Toronto"
+}

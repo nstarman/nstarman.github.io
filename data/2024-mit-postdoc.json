@@ -1,0 +1,29 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "mit-postdoc",
+  "type": "position",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2024",
+    "end": "2027"
+  },
+  "title": "Postdoctoral Associate",
+  "institution": "MIT Kavli Institute for Astrophysics and Space Research",
+  "location": "Cambridge, MA, USA",
+  "details": [
+    "[Brinson Prize Fellowship](item:brinson-prize-fellowship) (2024–2027)."
+  ],
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.space.mit.edu/people/nathaniel-starkman/"
+    }
+  ],
+  "refs": [
+    "brinson-prize-fellowship"
+  ]
+}

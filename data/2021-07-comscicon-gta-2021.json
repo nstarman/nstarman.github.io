@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "comscicon-gta-2021",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2021-07"
+  },
+  "title": "ComSciCon GTA 2021",
+  "kind": "organizer",
+  "details": "& Online Role: Organizing Committee member for the Toronto ComSciCon – a workshop series for graduate students on science communication skills",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://comscicon.com/comsciconcan-2021"
+    }
+  ]
+}

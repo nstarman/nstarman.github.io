@@ -1,0 +1,20 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "tevpa-talk",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2025-11"
+  },
+  "title": "TeVPA (Talk)",
+  "kind": "contributed",
+  "details": "Euclid: The Geometry of Dark Matter Halos from Extragalactic Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://indico.ific.uv.es/event/7986/"
+    }
+  ]
+}

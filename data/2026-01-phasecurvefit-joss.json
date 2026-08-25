@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "phasecurvefit-joss",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2026-01"
+  },
+  "title": "phasecurvefit: A High-Performance JAX Framework for Phase-Space Walks with Pluggable Metrics and Strategies",
+  "status": "submitted",
+  "entryType": "misc",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob",
+      "orcid": "0000-0001-8042-5794"
+    }
+  ],
+  "venue": {
+    "journal": "Journal of Open Source Software"
+  },
+  "details": "Submitted to JOSS and pyOpenSci.",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://github.com/pyOpenSci/software-submission/issues/285",
+      "label": "pyOpenSci review"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/GalacticDynamics/phasecurvefit"
+    }
+  ],
+  "tags": [
+    "open-source"
+  ],
+  "citekey": "Starkman+Nibauer:2026:phasecurvefit",
+  "abstract": "Filamentary structures are ubiquitous in the physical sciences, ranging from coherent streams of stars called stellar streams to elongated structures in turbulent fluids, plasmas, and the interstellar medium. In the context of stellar streams, a common preprocessing step is ordering observational or simulation data to derive the mean path of the stream's trajectory through phase-space. phasecurvefit is an open-source Python package for constructing such orderings and paths by walking along the local phase-space flow using JAX. There are two core components: the first is walk_local_flow which builds an approximate ordering and trajectory but which might miss some of the data; and the second is a fast-to-train autoencoder that imputes the full ordering and trajectory. walk_local_flow is very modular and can be customized to use any: 1. distance metric that scores candidate next steps in phase space, and 2. query strategy, like brute-force or KD-trees, that proposes which candidates to consider. This design makes the Nearest Neighbors with Momentum (NN+p) method from one particular configuration (via phasecurvefit.metrics.AlignedMomentumDistanceMetric), while enabling alternative metrics and search strategies better matched to different data scenarios and performance constraints. In addition to the walk itself, phasecurvefit packages a neural-network gap-filling component which assigns a continuous ordering parameter to data skipped during the walk and reconstructs the spatial mean path of the structure. This encoder develops upon the one in: speeding up different components of training by between 1 and 3 orders of magnitude; adding an intermediate decoder-only training that quarters the epochs necessary for training the full autoencoder, halving the overall training time; and adding stabilization of the loss function across training phases."
+}

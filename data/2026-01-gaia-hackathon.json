@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "gaia-hackathon",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-01"
+  },
+  "title": "Gaia Hackathon",
+  "kind": "organizer",
+  "location": "MIT, USA",
+  "details": "Role: LOC",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://gaiadr3hack.mit.edu"
+    }
+  ]
+}

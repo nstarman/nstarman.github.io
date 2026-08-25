@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "nserc-cgs-m",
+  "type": "award",
+  "cvs": [
+    "2page"
+  ],
+  "date": {
+    "start": "2019",
+    "end": "2020"
+  },
+  "title": "NSERC - CGS M",
+  "tier": "major",
+  "amount": {
+    "currency": "CAD",
+    "value": 17500
+  },
+  "details": "Canada Graduate Scholarships 1st Year Program (Natural Sciences and Engineering Research Council of Canada)",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.nserc-crsng.gc.ca/Students-Etudiants/PG-CS/CGSM-BESCM_eng.asp"
+    }
+  ]
+}

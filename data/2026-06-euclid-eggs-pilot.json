@@ -1,0 +1,84 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "euclid-eggs-pilot",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "featured": true,
+  "date": {
+    "start": "2026-06"
+  },
+  "title": "Euclid Quick Data Release (Q1): The geometry of dark matter halos from extragalactic streams",
+  "status": "submitted",
+  "entryType": "misc",
+  "collaboration": "Euclid Collaboration",
+  "authors": [
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob"
+    },
+    {
+      "family": "Pearson",
+      "given": "S."
+    },
+    {
+      "family": "Wu",
+      "given": "Sirui"
+    },
+    {
+      "family": "Walmsley",
+      "given": "M."
+    },
+    {
+      "family": "Necib",
+      "given": "Lina"
+    },
+    {
+      "family": "Bovy",
+      "given": "Jo"
+    },
+    {
+      "family": "Marleau",
+      "given": "F. R."
+    },
+    {
+      "family": "Sola",
+      "given": "E."
+    },
+    {
+      "family": "Scott",
+      "given": "D."
+    }
+  ],
+  "venue": {
+    "journal": "Astronomy & Astrophysics"
+  },
+  "arxiv": "2606.21774",
+  "primaryClass": "astro-ph.GA",
+  "bibcode": "2026arXiv260621774E",
+  "links": [
+    {
+      "rel": "preprint",
+      "url": "https://arxiv.org/abs/2606.21774",
+      "label": "arXiv:2606.21774"
+    }
+  ],
+  "tags": [
+    "streams",
+    "euclid",
+    "dark-matter"
+  ],
+  "abstract": "Wide-field surveys like Euclid mark a new era of extragalactic stellar stream studies. With a large number of streams, it is now possible to constrain the dark matter halos of galaxies in a cosmological volume and draw comparisons to theoretical expectations for the geometry of dark matter halos. This study combines Euclid imaging with visual detection and segmentation annotations to analyse streams. We use projected stream morphologies to constrain the shape and centre-of-mass position (CoM) of each host galaxy's potential, jointly probing baryonic and dark matter distributions. These inferences complement weak lensing methods, with sensitivity to halo profile and geometry on sub-virial scales. The method enables both stacked, population-level constraints on halo flattening and CoM position, and constraints on these quantities for individual halos. We also present a novel method for transforming segmentation maps of stellar streams into smooth, curvature-preserving tracks optimised for fast and robust dynamical inference. This approach enables rapid modelling of stream morphology, supports a statistically rigorous combination of constraints across multiple streams within a single galaxy, and enables joint inference across galactic hosts. From our study of 13 galaxies with prominent tidal streams, we find agreement with spherical halos, albeit a mild preference for flattening with q = 0.95^{+0.05}_{-0.10} at 68% confidence. This is promising early agreement with LCDM predictions. With thousands more discovered streams expected across Euclid's mission, our programme will enable precise measurements of halo shapes and CoM positions across large samples and redshifts, offering constraints on the geometry of dark matter halos.",
+  "doi": "10.48550/arXiv.2606.21774",
+  "internal": "Corrected against arXiv:2606.21774 on 2026-08-24. The CV title (\"...from Extragalactic Streams - a Pilot Study\") does not match the paper; the CV should be updated too. Ten named authors recorded; the record lists 1,179 further Euclid Collaboration authors.",
+  "citekey": "Euclid+Starkman+:2026:stream-halo-geometry"
+}

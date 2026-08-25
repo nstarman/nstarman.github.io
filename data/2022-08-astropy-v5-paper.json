@@ -1,0 +1,75 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-v5-paper",
+  "type": "publication",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2022-08"
+  },
+  "title": "The Astropy Project: Sustaining and Growing a Community-oriented Open-source Project and the Latest Major Release (v5.0) of the Core Package",
+  "status": "published",
+  "entryType": "article",
+  "collaboration": "The Astropy Collaboration",
+  "authors": [
+    {
+      "family": "Price-Whelan",
+      "given": "Adrian M."
+    },
+    {
+      "family": "Lim",
+      "given": "Pey Lian"
+    },
+    {
+      "family": "Earl",
+      "given": "Nicholas"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true,
+      "orcid": "0000-0003-3954-3291"
+    }
+  ],
+  "venue": {
+    "journal": "The Astrophysical Journal",
+    "volume": "935",
+    "number": "2",
+    "pages": "167"
+  },
+  "arxiv": "2206.14220",
+  "primaryClass": "astro-ph.IM",
+  "bibcode": "2022ApJ...935..167A",
+  "citations": 2200,
+  "links": [
+    {
+      "rel": "repo",
+      "url": "https://github.com/astropy/astropy-v5.0-paper"
+    },
+    {
+      "rel": "code",
+      "url": "https://github.com/astropy/astropy"
+    },
+    {
+      "rel": "docs",
+      "url": "https://www.astropy.org"
+    },
+    {
+      "rel": "data",
+      "url": "https://doi.org/10.5281/zenodo.8325470"
+    }
+  ],
+  "refs": [
+    "astropy"
+  ],
+  "tags": [
+    "astropy",
+    "open-source"
+  ],
+  "internal": "Author list truncated to the leading four; full list to be imported from ADS.",
+  "details": "Co-wrote the Highlighted Feature Development, New and Planned Features, Precision, Accuracy & Reproducibility, and Performance sections.",
+  "citekey": "Astropy+Price-Whelan+:2022:astropy-v5",
+  "abstract": "The Astropy Project supports and fosters the development of open-source and openly-developed Python packages that provide commonly needed functionality to the astronomical community. A key element of the Astropy Project is the core package astropy, which serves as the foundation for more specialized projects and packages. In this article, we summarize key features in the core package as of the recent major release, version 5.0, and provide major updates for the Project. We then discuss supporting a broader ecosystem of interoperable packages, including connections with several astronomical observatories and missions. We also revisit the future outlook of the Astropy Project and the current status of Learn Astropy. We conclude by raising and discussing the current and future challenges facing the Project."
+}

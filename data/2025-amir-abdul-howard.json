@@ -1,0 +1,21 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "amir-abdul-howard",
+  "type": "mentoring",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2025",
+    "end": "2026"
+  },
+  "title": "Amir Abdul (Howard)",
+  "details": [
+    "Baryon Modeling in External Galaxies with Stellar Streams",
+    "Leadership Alliance National Symposium, July 23–25, 2025",
+    "2025 NSBP-NSHP Joint Annual Conference, November 19–23, 2025",
+    "2026 APS Global Physics Summit, March 14–20, 2026"
+  ],
+  "student": "Amir Abdul (Howard)"
+}

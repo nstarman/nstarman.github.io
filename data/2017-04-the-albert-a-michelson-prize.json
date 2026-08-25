@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "the-albert-a-michelson-prize",
+  "type": "award",
+  "cvs": [],
+  "date": {
+    "start": "2017-04"
+  },
+  "title": "The Albert A. Michelson Prize",
+  "tier": "major",
+  "details": "“To a [3rd year] physics major who has demonstrated superior performance”"
+}
