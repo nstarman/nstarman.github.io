@@ -29,11 +29,20 @@
 // a printer that renders symbol fonts badly, or simply a preference. Only the
 // browser builder sets it, so the CLI PDFs are always the default and their
 // page-count contracts are unaffected.
-#let plain = cv.at("style", default: "default") == "plain"
+#let style = cv.at("style", default: "default")
+#let plain = style == "plain"
+// A close mimic of adrn/cv — Adrian Price-Whelan's LaTeX CV. Lato rather than
+// a serif, steel-blue headings over a light rule, no portrait and no date
+// gutter. Values below are taken from apw-cv.cls, not eyeballed from the PDF.
+#let adrn = style == "adrn"
 
-#let ink = rgb("#111111")
-#let accent = rgb("#003399") // linkcolour: rgb(0, 0.2, 0.6)
-#let faint = rgb("#808080") // \grayhref: gray 0.5
+#let ink = if adrn { rgb("#000000") } else { rgb("#111111") }
+// apw-cv.cls: sections and links are one colour, #3086b4.
+#let accent = if adrn { rgb("#3086b4") } else { rgb("#003399") } // linkcolour: rgb(0, 0.2, 0.6)
+#let faint = if adrn { rgb("#666666") } else { rgb("#808080") } // \grayhref: gray 0.5
+// The hairline under a section heading. Black in the LaTeX original; adrn's
+// rules are their own light grey, which is most of why that design reads airy.
+#let rulecol = if adrn { rgb("#cccccc") } else { ink }
 #let orcid = rgb("#A6CE39") // orcidlogocol
 // The publication status pill, same two tints the website uses.
 #let accentsoft = rgb("#EAF0F9")
@@ -46,16 +55,43 @@
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
+// adrn is US Letter with 1in margins (geometry left=1in, right=1in,
+// body 6.5in x 9.0in), and carries a running head and a dated foot on every
+// page but the first — \thispagestyle{empty} covers page one there.
 #set page(
-  paper: "a4",
-  margin: if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
+  paper: if adrn { "us-letter" } else { "a4" },
+  margin: if adrn { (x: 1in, y: 1in) }
+          else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
           else { (x: 1.05cm, top: 1.19cm, bottom: 1.78cm) },
+  header: if not adrn { none } else {
+    context if counter(page).get().first() > 1 {
+      set text(size: 9.5pt, fill: faint)
+      grid(columns: (1fr, auto, 1fr), align: (left, center, right),
+           p.name, [Curriculum Vitae], [#counter(page).display()])
+    }
+  },
+  footer: if not adrn { none } else {
+    context if counter(page).get().first() > 1 {
+      // The compiler supplies the date, so nothing has to be threaded through
+      // the model — and the browser build is dated the day it is compiled,
+      // which for a CV you generate yourself is the honest answer.
+      align(center, text(size: 9.5pt, fill: faint)[
+        Last updated: #datetime.today().display("[year]-[month]-[day]")
+      ])
+    }
+  },
 )
 // New Computer Modern is Typst's own, so CI and the browser both have it — and
 // it is Latin Modern's successor, the face the LaTeX CV was already set in.
 #set text(
-  font: "New Computer Modern",
+  font: if adrn { "Lato" } else { "New Computer Modern" },
+  // 12pt in apw-cv.cls, but on Letter with 1in margins rather than A4 with
+  // 10.5mm, so the measure is narrower and 12pt overruns. 11pt keeps the
+  // colour of the page while fitting the same lines.
   size: 11pt,
+  // Lato Light is the body face; apw-cv.cls maps \textbf to Lato Regular
+  // rather than to a bold, which is why that CV emphasises so gently.
+  weight: if adrn { 300 } else { 400 },
   fill: ink,
   lang: "en",
   // A CV is mostly numbers set inside sentences — years, volumes, pages. Lining
@@ -63,8 +99,12 @@
   // interrupting the line. Old-style figures carry ascenders and descenders and
   // sit in the text the way lowercase does. Columns of digits want the opposite
   // treatment and get it back individually below; #tnum is the helper.
-  number-type: "old-style",
+  // Lato has no old-style figures, and the reference sets lining throughout.
+  number-type: if adrn { "lining" } else { "old-style" },
 )
+// 300 -> 400: strong is Lato Regular against Lato Light, matching
+// `BoldFont=Lato-Reg`. The default style keeps a real bold.
+#show strong: set text(weight: if adrn { 400 } else { 700 })
 
 // Lining and tabular: equal-width, cap-height digits, for the places where
 // figures form a column and have to align down the page rather than read as
@@ -187,7 +227,34 @@
 // same row, inset at the top and the bottom both. Measuring the name column and
 // distributing the contact lines over exactly that height makes the two agree
 // at both edges, and keeps agreeing if a title or an address line is added.
-#context {
+#let adrnheader = {
+  set par(justify: false)
+  text(size: 20pt)[
+    #text(weight: 400, fill: ink)[#p.name]
+    #text(fill: rulecol)[ --- ]
+    #text(fill: accent)[Curriculum Vitae]
+  ]
+  v(6pt)
+  // apw-cv.cls sets every block in a bullet-less list with leftmargin 2em, so
+  // everything below a heading is indented and the headings alone sit flush.
+  block(inset: (left: 2em), {
+    set par(justify: false, leading: 0.5em)
+    set text(size: 10pt)
+    for t in p.titles { strong(t); linebreak() }
+    p.affiliationShort
+    linebreak()
+    p.addressLines.join(linebreak())
+    v(3pt)
+    link("mailto:" + p.email)[#marked("email", p.email, size: 0.9em)]
+    h(9pt)
+    link(p.websiteUrl)[#marked("globe", p.website, size: 0.9em)]
+    h(9pt)
+    profiles
+  })
+  v(4pt)
+}
+
+#if adrn { adrnheader } else { context {
   let h = measure(namecol).height
   // `outset`, not `inset`: the wash is drawn around the grid without taking
   // any space, so the header's geometry — and the page counts that depend on
@@ -214,7 +281,7 @@
 
     link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
   ))
-}
+} }
 // The header is a block of its own, so it needs more clearance than two
 // sections need from each other.
 #v(if tight { 3pt } else { 6pt })
@@ -226,17 +293,25 @@
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
-  v(if tight { 8pt } else { 15pt })
+  v(if adrn { 17pt } else if tight { 8pt } else { 15pt })
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
-    #text(size: 15.6pt)[
-      #if mark != none and not plain [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
-      #smallcaps(title)
+    #if adrn {
+      // titlesec: Lato-Bol 14pt in the section colour, ragged right, then a
+      // 0.2pt rule. \scshape is in the class but Lato has no small caps, so
+      // the reference renders sentence case — copy what it does, not what it
+      // asks for.
+      text(size: 14pt, weight: 700, fill: accent)[#title]
+    } else [
+      #text(size: 15.6pt)[
+        #if mark != none and not plain [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
+        #smallcaps(title)
+      ]
     ]
-    #v(4.5pt)
-    #line(length: 100%, stroke: 0.4pt + ink)
+    #v(if adrn { 2pt } else { 4.5pt })
+    #line(length: 100%, stroke: (if adrn { 0.2pt } else { 0.4pt }) + rulecol)
   ]
-  v(if tight { 4pt } else { 7pt })
+  v(if adrn { 10pt } else if tight { 4pt } else { 7pt })
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
@@ -274,11 +349,14 @@
 // ── one entry ─────────────────────────────────────────────────────────────
 // Title and subject share a line — "**Institution**, Role" — which is what
 // keeps an entry to two lines rather than three.
-#let entrybody(it) = {
+#let entrybody(it, tail: none) = {
   strong(it.title)
   if it.subject.len() > 0 [, #bolded(it.subject)]
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
   if it.links.len() > 0 [ #trail(it.links)]
+  // Styles with no right-hand column hand the location in here, so it ends the
+  // entry's own line instead of trailing the last detail line.
+  if tail != none { tail }
   if it.recipient != none {
     linebreak()
     text(size: 10.1pt)[#emph[to #it.recipient]]
@@ -291,7 +369,22 @@
 
 // One grid for the whole section, so the date column finds a single width and
 // every entry lines up — the LaTeX CV gets this from one tabularx per section.
+#let entriesadrn(items) = {
+  set par(justify: false)
+  for it in items {
+    // parskip is a full \baselineskip in apw-cv.cls, which is what gives that
+    // CV its air; 10pt is that at this size.
+    block(inset: (left: 2em), below: 10pt, {
+      if it.when != none and str(it.when).len() > 0 [#it.when, ]
+      entrybody(it, tail: if it.trailing != none and str(it.trailing).len() > 0 {
+        text(fill: faint)[ — #it.trailing]
+      })
+    })
+  }
+}
+
 #let entries(items) = {
+  if adrn { return entriesadrn(items) }
   set par(justify: false)
   grid(
     columns: (auto, 1fr, auto),
