@@ -28,6 +28,9 @@
 #let accent = rgb("#003399") // linkcolour: rgb(0, 0.2, 0.6)
 #let faint = rgb("#808080") // \grayhref: gray 0.5
 #let orcid = rgb("#A6CE39") // orcidlogocol
+// The publication status pill, same two tints the website uses.
+#let accentsoft = rgb("#EAF0F9")
+#let accentline = rgb("#7FA6D9")
 // The header sits on this. Barely there by intent — enough to read as one
 // block rather than four columns that happen to be adjacent, not enough to
 // look like a filled panel, and light enough to survive an office printer
@@ -197,12 +200,18 @@
     link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
   ))
 }
+// The header is a block of its own, so it needs more clearance than two
+// sections need from each other.
+#v(if tight { 3pt } else { 6pt })
 
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
 #let section(title, mark: none) = {
-  v(if tight { 6pt } else { 9.2pt })
+  // Above is the gap between two sections, below only between a heading and
+  // its own first entry, so they should not be equal: 9.2pt each way left a
+  // heading sitting almost on the entry above it.
+  v(if tight { 8pt } else { 15pt })
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
     #text(size: 15.6pt)[
@@ -212,18 +221,24 @@
     #v(4.5pt)
     #line(length: 100%, stroke: 0.4pt + ink)
   ]
-  v(if tight { 5pt } else { 9.2pt })
-}
-
-// Stock \subsection: \large\bfseries, no rule.
-#let subsection(title) = {
-  v(if tight { 6pt } else { 15.4pt })
-  block(sticky: true)[#text(size: 12.8pt, weight: "bold")[#title]]
-  v(if tight { 3pt } else { 7.2pt })
+  v(if tight { 4pt } else { 7pt })
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
 // Emphasis and links arrive as spans, not markup — a literal "*" would print.
+// Submitted / in prep, as the website marks them. Replaces the Submitted and
+// Published subsection headings: the status belongs to the paper, not to a
+// bracket of the list, and one flat numbered run reads as the bibliography it
+// is rather than three short lists.
+#let statuspill(status) = box(
+  fill: accentsoft,
+  stroke: 0.4pt + accentline,
+  radius: 1.6pt,
+  inset: (x: 2.6pt, y: 1.2pt),
+  outset: (y: 1.4pt),
+  text(size: 6.2pt, fill: accent, tracking: 0.4pt, weight: "medium", upper(status)),
+)
+
 #let bolded(sp) = sp.map(s => if s.b { strong(s.t) } else { s.t }).join()
 #let linked(sp) = sp.map(s => if "url" in s and not s.url.starts-with("#") {
   link(s.url)[#s.t]
@@ -275,7 +290,7 @@
 // ── publications ──────────────────────────────────────────────────────────
 // Numbered, and the count runs through the Submitted / Accepted / Published
 // subsections rather than restarting — enumerate[resume] in the LaTeX CV.
-#let publication(n, it, showstatus: true) = {
+#let publication(n, it) = {
   grid(
     columns: (1.6em, 1fr),
     column-gutter: 4pt,
@@ -285,7 +300,7 @@
       if it.byline.len() > 0 [#bolded(it.byline). ]
       emph(it.title)
       if it.venue != none [. #it.venue]
-      if showstatus and it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
+      if it.status != none [ #statuspill(it.status)]
       // The article and preprint marks belong with the citation; the code and
       // data marks are secondary, so they go grey at the end.
       let cite = it.links.filter(l => l.icon in ("ads", "arxiv", "paper", "doi"))
@@ -310,10 +325,9 @@
   }
   for g in groups {
     let picked = section.items.filter(i => i.id in g.ids)
-    for (i, it) in picked.enumerate() {
+    for it in picked {
       n += 1
-      if i == 0 and g.label != none { subsection(g.label) }
-      publication(n, it, showstatus: g.label == none)
+      publication(n, it)
       v(if tight { 3pt } else { 6.6pt })
     }
   }
