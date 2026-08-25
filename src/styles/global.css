@@ -456,8 +456,13 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    hovered — or something inside it takes focus, which is what keeps it
    reachable by keyboard: pointer-events go with the opacity, so an invisible
    button is never clickable, but tabbing to it reveals it. */
-.possel{display:inline-flex; gap:.15rem; margin-left:.5rem;
+/* margin-left:auto puts it in the right-hand cluster with `detail`, rather
+   than immediately after the heading where it crowded the title. When `detail`
+   is also present it follows this, so the two read as one group of controls. */
+.possel{display:inline-flex; gap:.15rem; margin-left:auto;
   opacity:0; pointer-events:none; transition:opacity .15s ease}
+/* Once .possel has taken the auto margin, `detail` must not also claim it. */
+.possel ~ .subgrouplab{margin-left:0}
 .cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
 @media (prefers-reduced-motion:reduce){ .possel{transition:none} }
 
