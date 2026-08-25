@@ -344,6 +344,20 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   font-variant-numeric:tabular-nums}
 .btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
   font-size:.75rem; padding:.35rem .8rem}
+
+/* The style menu. A real <select>, so it gets the platform's own popup and
+   keyboard handling for free; .btn gives it the shape of the buttons beside it
+   and this only undoes the parts a select does not want. */
+.btn--sel{
+  appearance:none; cursor:pointer;
+  /* Matched to .btn--go's height rather than .btn's: those two sit side by side
+     and a control strip of two heights reads as a mistake. */
+  padding:.35rem 1.4rem .35rem .55rem;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),
+                   linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:right .62rem center, right .45rem center;
+  background-size:4px 4px, 4px 4px; background-repeat:no-repeat;
+}
 .btn--go:hover{background:var(--ink); color:var(--ground); border-color:var(--ink)}
 .btn--go:disabled{opacity:.5; cursor:progress}
 .status{font-family:var(--mono); font-size:.7rem; color:var(--ink-mute)}

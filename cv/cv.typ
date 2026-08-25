@@ -24,6 +24,13 @@
 // the top and two-thirds empty at the bottom.
 #let tight = cv.preset == "1page"
 
+// Which pre-built style. "default" draws the marks; "plain" spells them out in
+// words instead, for anywhere a row of glyphs is unwelcome — a plain-text ATS,
+// a printer that renders symbol fonts badly, or simply a preference. Only the
+// browser builder sets it, so the CLI PDFs are always the default and their
+// page-count contracts are unaffected.
+#let plain = cv.at("style", default: "default") == "plain"
+
 #let ink = rgb("#111111")
 #let accent = rgb("#003399") // linkcolour: rgb(0, 0.2, 0.6)
 #let faint = rgb("#808080") // \grayhref: gray 0.5
@@ -129,6 +136,13 @@
   icon(name, size: size, fill: fill),
 )
 
+// A mark with words beside it — or, in the plain style, the words on their own.
+// Every call site that pairs the two goes through this, so switching styles is
+// one branch rather than one per mark.
+#let marked(name, body, size: 1em, fill: accent) = if plain { body } else {
+  [#icon(name, size: size, fill: fill) #body]
+}
+
 // ── header ────────────────────────────────────────────────────────────────
 // Four columns across the full measure rather than five centred lines: a QR to
 // the website, the portrait, who he is, and how to reach him. Same information,
@@ -141,7 +155,8 @@
   let service = lower(pr.at("service", default: pr.label))
   let mark = service
   let label = if service == "orcid" { p.orcid } else { pr.label }
-  link(pr.url, [#icon(mark, size: 0.9em, fill: if service == "orcid" { orcid } else { accent }) #label])
+  link(pr.url, marked(mark, label, size: 0.9em,
+                      fill: if service == "orcid" { orcid } else { accent }))
 }).join(h(3pt))
 
 // Who he is. Sets the height the contact column matches.
@@ -160,9 +175,9 @@
 // transcription data — street number, postcode, ORCID iD — so it stays lining.
 #let contactlines = p.addressLines.map(l => text(size: 8.9pt, l)) + (
   text(size: 8.9pt)[
-    #link("mailto:" + p.email)[#icon("email", size: 0.9em) #p.email]
+    #link("mailto:" + p.email)[#marked("email", p.email, size: 0.9em)]
     #h(5pt)
-    #link(p.websiteUrl)[#icon("globe", size: 0.9em) #p.website]
+    #link(p.websiteUrl)[#marked("globe", p.website, size: 0.9em)]
   ],
   text(size: 8.2pt)[#profiles],
 )
@@ -215,7 +230,7 @@
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
     #text(size: 15.6pt)[
-      #if mark != none [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
+      #if mark != none and not plain [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
       #smallcaps(title)
     ]
     #v(4.5pt)
@@ -247,7 +262,13 @@
 // The resource trail: marks, not words, so it costs the end of a line instead
 // of a line of its own.
 #let trail(links, tint: accent, size: 1em) = {
-  links.map(l => iconlink(l.url, l.icon, size: size, fill: tint)).join(h(3pt))
+  if plain {
+    // Nothing left to carry the meaning, so the words do it — and they are the
+    // words the model already holds: code, docs, data, repo.
+    links.map(l => link(l.url, text(size: size * 0.86, fill: tint, l.label))).join([, ])
+  } else {
+    links.map(l => iconlink(l.url, l.icon, size: size, fill: tint)).join(h(3pt))
+  }
 }
 
 // ── one entry ─────────────────────────────────────────────────────────────
@@ -307,9 +328,11 @@
       let rest = it.links.filter(l => not (l.icon in ("ads", "arxiv", "paper", "doi")))
       let cited = cite
         .map(l => if l.label == l.rel {
-          link(l.url, icon(l.icon, size: 0.9em))
+          // The label is the bare rel — "paper", "repo" — which is a word the
+          // mark was standing in for, so it serves when the mark is gone.
+          link(l.url, if plain { text(size: 0.9em, l.label) } else { icon(l.icon, size: 0.9em) })
         } else {
-          link(l.url, [#icon(l.icon, size: 0.9em) #lnum(l.label)])
+          link(l.url, marked(l.icon, lnum(l.label), size: 0.9em))
         })
         .join(h(5pt))
       if cite.len() > 0 [ #cited]
