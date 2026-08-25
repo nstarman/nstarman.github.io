@@ -86,7 +86,12 @@ function paperOf(sw) {
   return null;
 }
 
-/** The byline, with the CV's owner bold. */
+/** The byline, with the CV's owner bold.
+ *
+ * Deliberately carries no ORCID link. The author model has one, but the PDF is
+ * the only consumer of this byline and it stays unlinked — so the span never
+ * gets a `url` key that cv.typ would have to decide what to do with.
+ */
 function byline(item) {
   const { shown, etal, collaboration } = authors(item, 6);
   const out = [];
