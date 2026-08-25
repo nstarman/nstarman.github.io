@@ -106,19 +106,6 @@ export function resolve(name, only) {
   };
 }
 
-/** Every item that could appear in any preset, grouped by the complete CV's
- *  sections. This is the universe the builder's checkbox tree draws from. */
-export function candidates(name = 'complete') {
-  const spec = preset(name);
-  return spec.sections
-    .filter((section) => section.match)
-    .map((section) => ({
-      heading: section.heading,
-      items: items.filter((i) => matches(i, section.match)),
-    }))
-    .filter((s) => s.items.length > 0);
-}
-
 /**
  * The ids a preset actually renders — resolved, so per-section `limit`s apply.
  * Filtering on `cvs` alone would let the builder pre-check 23 items for a preset
