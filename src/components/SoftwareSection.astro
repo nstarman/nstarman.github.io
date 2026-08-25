@@ -41,7 +41,7 @@ const trail = (s) => {
 const hasPaper = (s) => (softwarePaper(s) ? 'yes' : undefined);
 ---
 {lead && (
-  <div class="lead" data-paper={hasPaper(lead)}>
+  <div class:list={['lead', !tail && 'lead--last']} data-paper={hasPaper(lead)}>
     <div class="name"><a href={href(lead)}>{lead.title}</a></div>
     {lead.role && <div class="role-line">{lead.role}</div>}
     <p>{lead.details ?? lead.summary}</p>
