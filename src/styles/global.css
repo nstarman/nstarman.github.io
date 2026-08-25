@@ -443,6 +443,11 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 }
 .tl .recipient{color:var(--ink-mute); font-style:italic}
 
+/* An unpublished paper's year is the year it was submitted, not the year of
+   record — italic says the date is provisional the way the pill says the
+   status is. */
+.tl--unpub .when{font-style:italic}
+
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
    would turn a byline into a wall of links, so it reads as text and only shows
    itself on hover and focus. */

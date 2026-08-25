@@ -164,7 +164,7 @@ const money = (a) => {
     ) : (
     <div class="timeline">
       {s.items.map((item) => (
-        <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}`}
+        <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
              id={`item-${item.id}`}>
           {pick && (
             <input type="checkbox" class="itembox" value={item.id}
@@ -193,12 +193,6 @@ const money = (a) => {
           </span>
           <span class="what">
             <strong>{item.title}</strong>
-            {/* The same pill the publications page uses. The CV page does not
-                group by status the way the PDF does, so without it a submitted
-                paper is indistinguishable from a published one. */}
-            {item.status && item.status !== 'published' && (
-              <span class="statustag">{item.status}</span>
-            )}
             {item.institution && <>, {item.institution}</>}
             {item.event && <>, {item.event}</>}
             {item.type === 'publication' && (
@@ -221,6 +215,13 @@ const money = (a) => {
             )}
             {item.declined && item.type === 'award' && <> (declined)</>}
             {item.recipient && <span class="recipient"> — to {item.recipient}</span>}
+            {/* Last on the line, after the venue. The CV page does not group by
+                status the way the PDF does, so without it a submitted paper is
+                indistinguishable from a published one — but it qualifies the
+                whole citation, not the title, so it reads at the end. */}
+            {item.status && item.status !== 'published' && (
+              <span class="statustag">{item.status}</span>
+            )}
             {detail(item).map((line, i) => (
               <span class="sub">
                 {pick && (
