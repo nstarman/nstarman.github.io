@@ -17,7 +17,7 @@
     "2025–2028: Coordination Committee (executive committee).",
     "2025–2026: Strategic Planning and Organizing Committee.",
     "Funding: [Astropy Cycle III — Cosmology](item:astropy-cycle-iii-funding-grant) and [Quantity 2.0](item:astropy-cycle-iii-funding-grants).",
-    "Team award: [2025 AAS Lancelot M. Berkeley–New York Community Trust Prize](item:astropy-berkeley-prize)."
+    "Team awards: [2025 AAS Lancelot M. Berkeley–New York Community Trust Prize](item:astropy-berkeley-prize) and the [2023 IOP Publishing Top Cited Paper Award](item:astropy-iop-top-cited-paper-award)."
   ],
   "institution": "Astropy",
   "links": [
@@ -30,6 +30,7 @@
     "astropy",
     "astropy-cycle-iii-funding-grant",
     "astropy-cycle-iii-funding-grants",
-    "astropy-berkeley-prize"
+    "astropy-berkeley-prize",
+    "astropy-iop-top-cited-paper-award"
   ]
 }
