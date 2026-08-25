@@ -8,37 +8,17 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-AJV=(./node_modules/.bin/ajv validate -s schema/item.schema.json
-     --spec=draft2020 -c ajv-formats --strict=false -d)
+AJV=(node scripts/validate.mjs schema/item.schema.json)
 
 fails=0
 
 echo "positive — data/ must validate"
-# One ajv process over the whole glob: at ~170 items, a process per file took
-# minutes. Only fall back to per-file when something is actually wrong, so the
-# failure still names the file.
-if "${AJV[@]}" "data/*.json" >/dev/null 2>&1; then
-  echo "  ok       all $(ls data/*.json | wc -l | tr -d ' ') items validate"
-else
-  for f in data/*.json; do
-    if ! "${AJV[@]}" "$f" >/dev/null 2>&1; then
-      echo "  FAILED   $f"
-      "${AJV[@]}" "$f" 2>&1 | sed 's/^/           /' | tail -3
-      fails=$((fails + 1))
-    fi
-  done
-fi
+"${AJV[@]}" "data/*.json" || fails=$((fails + 1))
 
 echo
 echo "lists — data/lists/ must validate against schema/list.schema.json"
-LIST_AJV=(./node_modules/.bin/ajv validate -s schema/list.schema.json
-          --spec=draft2020 -c ajv-formats --strict=false -d)
-if "${LIST_AJV[@]}" "data/lists/*.json" >/dev/null 2>&1; then
-  echo "  ok       all $(ls data/lists/*.json | wc -l | tr -d ' ') lists validate"
-else
-  "${LIST_AJV[@]}" "data/lists/*.json" 2>&1 | sed 's/^/  /' | tail -5
-  fails=$((fails + 1))
-fi
+node scripts/validate.mjs schema/list.schema.json "data/lists/*.json" \
+  || fails=$((fails + 1))
 
 echo
 echo "identity — filename must be <date.start>-<id>.json"
