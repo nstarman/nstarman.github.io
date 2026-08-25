@@ -38,10 +38,17 @@ npm run build:all  # the site, then the four CV PDFs (needs typst)
 
 ## Deployment
 
-GitHub Pages via Actions (`.github/workflows/deploy.yml`), not a branch deploy —
-Astro emits assets into `_astro/`, and a branch deploy pipes the artifact
-through Jekyll, which strips underscore-prefixed directories. `public/CNAME`
-ships the custom domain in the artifact so it survives every deploy.
+GitHub Pages via Actions (`.github/workflows/deploy.yml`), not a branch deploy:
+Astro builds to `dist/`, which a branch deploy would mean committing.
+
+`public/` carries two files that exist only to survive into the artifact:
+
+- **`CNAME`** — the custom domain, so it is reapplied on every deploy.
+- **`.nojekyll`** — Jekyll strips underscore-prefixed directories, and Astro
+  emits every asset into `_astro/`. Nothing runs Jekyll today, but the failure
+  mode if anything ever did is a site that returns 200 on every page with no
+  CSS and no build failure to notice. `scripts/test-links.mjs` fails the build
+  if the file is missing from `dist/`.
 
 ## History
 
