@@ -138,7 +138,7 @@ export function softwarePaper(sw) {
 }
 
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */
-export const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
+const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 
 /**
  * Authors for display, truncated per preset. The data always holds the full

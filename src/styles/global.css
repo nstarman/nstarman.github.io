@@ -191,7 +191,6 @@ h2{
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
 .lead .name{font-family:var(--mono); font-size:1.3rem; font-weight:500; letter-spacing:-.01em}
-.lead .name .stars{font-size:.8rem}
 .lead .role-line{
   font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
   color:var(--accent);
@@ -215,24 +214,9 @@ h2{
 .card .name{font-family:var(--mono); font-size:.95rem; font-weight:500; color:var(--ink)}
 .card .name a{color:var(--ink)}
 .card .name a:hover{color:var(--accent)}
-.card .stars{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:.4rem;
-  font-variant-numeric:tabular-nums}
 .card p{margin:0; font-size:.88rem; color:var(--ink-mute); line-height:1.5}
 
 /* ---------- page break marker (mockup only) ---------- */
-.pagebreak{
-  border-top:1px dashed var(--rule-strong); margin-top:1rem;
-  padding:1.7rem 0 .4rem; text-align:center;
-}
-.pagebreak span{
-  font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--ink-faint); background:var(--ground); padding:0 .75rem;
-}
-.grouplabel{
-  font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--ink-faint); margin:0 0 1rem;
-}
-.entries + .grouplabel{margin-top:1.6rem}
 
 footer{margin-top:1rem}
 footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; gap:1rem;
@@ -248,7 +232,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   .entry{grid-template-columns:1fr}
   .entry .yr{justify-self:start; order:-1}
 }
-
 
 .dropped{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin:.5rem 0 0}
 .tl .btns{margin-top:.3rem}
@@ -327,10 +310,8 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    and type size on .card--mini rather than by column width. */
 .card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
 .card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
-.card--mini .name .stars{font-size:.66rem}
 .card--mini p{font-size:.78rem; line-height:1.45}
 .card--mini .btns{padding-top:.45rem; gap:.25rem}
-.card--mini .btn{font-size:.64rem; padding:.18rem .42rem}
 
 /* Fourth tier: useful, not notable. Smaller again than .card--mini — same
    columns, less of everything else, so it reads as a footnote to the tiers
@@ -663,7 +644,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   display:none;
 }
 
-
 /* The venue, linked to the article at the journal. Same restraint as an author
    link: it reads as the citation it is, and shows it is a link on hover. */
 .venuelink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
@@ -672,7 +652,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 .tl{scroll-margin-top:5rem}
-
 
 /* Section head carries the rule, so the heading and its toggle sit on one line. */
 .cvsechead{

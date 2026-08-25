@@ -15,6 +15,9 @@ cv/cv.json
 # local dev-server config
 .claude/
 
+# python bytecode from the scripts in scripts/
+__pycache__/
+
 # The compiler wasm and fonts are vendored for the CV builder route only.
 
 # generated from data/ and schema/ by scripts/publish-data.mjs
