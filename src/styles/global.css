@@ -494,9 +494,10 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 #sw-yes:checked ~ .lead:not([data-paper]),
 #sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
-/* The divider between the headliners and the tail is only meaningful when both
-   are showing. */
-#sw-yes:checked ~ .tierbreak{display:none}
+/* The tier divider stays. Hiding it took its margins with it — the only thing
+   separating the two grids — so the filtered headline card ran straight into
+   the row beneath. Both tiers keep visible cards under either stop, so the
+   divider is still saying something true. */
 
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and
