@@ -12,6 +12,9 @@ on:
     paths: ["data/**", "schema/**", "src/lib/**", "scripts/**", "package.json"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   schema:
     runs-on: ubuntu-latest
