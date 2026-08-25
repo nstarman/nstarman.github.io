@@ -244,6 +244,10 @@ const money = (a) => {
   const heads = [...document.querySelectorAll('.cvsection')];
 
   if (links.size && heads.length) {
+    // The same offset the headings are scrolled to, read from the CSS rather
+    // than restated here: a hardcoded 90 against a 94px bar left the final
+    // section unmarked even once it could reach the top.
+    const topGap = parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96;
     let current = null;
     const mark = (id) => {
       if (id === current) return;
@@ -259,7 +263,7 @@ const money = (a) => {
       // heading to reach the top like any other, so the same rule decides it.
       let best = heads[0];
       for (const h of heads) {
-        if (h.getBoundingClientRect().top - 90 <= 0) best = h;
+        if (h.getBoundingClientRect().top - topGap <= 0) best = h;
       }
       mark(best.id);
     };

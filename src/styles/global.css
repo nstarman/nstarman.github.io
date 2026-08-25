@@ -395,14 +395,22 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    landed the heading 22px under .cvbar with 4px of its descenders showing. */
 .cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + 0.75rem)}
 
-/* The last section gets a viewport's worth of room so its heading can be
-   scrolled to the top like every other one. Without it the page bottoms out
-   with the final sections stranded mid-screen and the contents rail can never
-   mark the last of them. min-height rather than a trailing spacer, so a long
-   final section adds nothing and only a short one leaves any blank. */
+/* The last section gets enough room for its heading to be scrolled to the top
+   like every other one. Without it the page bottoms out with the final sections
+   stranded mid-screen and the contents rail can never mark the last of them.
+   min-height rather than a trailing spacer, so a long final section adds no
+   blank at all and only a short one leaves any.
+
+   --cv-tail is what the page already puts below the last section — the wrap's
+   bottom padding, the footer's top margin, and the footer itself. Leaving it
+   out was scrolling a further 112px past the point where the heading reaches
+   the top, which read as a screen of dead space. Getting it slightly wrong
+   only means the last heading stops a few pixels high or low, not that the
+   page breaks. */
 .cvsec--last{
-  min-height:calc(100vh - var(--nav-h) - var(--cvbar-h));
-  min-height:calc(100svh - var(--nav-h) - var(--cvbar-h));
+  --cv-tail:7rem;
+  min-height:calc(100vh - var(--nav-h) - var(--cvbar-h) - var(--cv-tail));
+  min-height:calc(100svh - var(--nav-h) - var(--cvbar-h) - var(--cv-tail));
 }
 /* Applies to a collapsed last section too. .cvsec carries no background or
    border, so a tall closed <details> is indistinguishable from a spacer — and
