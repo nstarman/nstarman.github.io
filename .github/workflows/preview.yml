@@ -74,8 +74,17 @@ jobs:
 
       # The production domain must not follow the preview: CNAME in the
       # artifact would try to claim nstarkman.space on Cloudflare too.
+      #
+      # Cloudflare Pages also refuses any file over 25 MiB, and the Typst
+      # compiler wasm the CV builder loads is 27 MiB. GitHub Pages serves it,
+      # so this costs the preview one page — /cv/builder/ says "Compile failed"
+      # there — rather than costing the live site anything. Matched by size,
+      # not by name: the built filename carries a content hash.
       - if: steps.guard.outputs.ready == 'true'
-        run: rm -f dist/CNAME
+        run: |
+          rm -f dist/CNAME
+          find dist -type f -size +25M -printf 'too large for Pages, dropped: %p (%s bytes)\n' -delete \
+            | tee -a "$GITHUB_STEP_SUMMARY"
 
       - if: steps.guard.outputs.ready == 'true'
         name: Ensure the Pages project exists
@@ -111,3 +120,6 @@ jobs:
 
             Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
             Updated on every push to this pull request.
+
+            `/cv/builder/` cannot compile here — its 27 MiB wasm is over Cloudflare's
+            25 MiB file limit. Every other page is the real build.
