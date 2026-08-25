@@ -173,8 +173,10 @@
   let h = measure(namecol).height
   // `outset`, not `inset`: the wash is drawn around the grid without taking
   // any space, so the header's geometry — and the page counts that depend on
-  // it — are exactly as they were.
-  block(fill: headerwash, radius: 8pt, outset: (x: 9pt, y: 8pt), grid(
+  // it — are exactly as they were. Tighter vertically than horizontally: the
+  // portrait and the QR already sit at the block's full height, so the same
+  // gap top and bottom as at the sides reads as a margin rather than a hug.
+  block(fill: headerwash, radius: 8pt, outset: (x: 9pt, y: 5pt), grid(
     columns: (hdr, auto, 1fr, hdr),
     column-gutter: 11pt,
     align: (left + horizon, left + horizon, right + horizon, right + horizon),
