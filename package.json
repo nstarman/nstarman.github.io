@@ -2,7 +2,7 @@
   "name": "nstarkman-space",
   "version": "0.0.0",
   "private": true,
-  "description": "nstarkman.space \u2014 website, CV database, and the CV builder.",
+  "description": "nstarkman.space — website, CV database, and the CV builder.",
   "type": "module",
   "scripts": {
     "predev": "node scripts/publish-data.mjs",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1",
+    "temml": "^0.13.4",
     "vitest": "^4.1.11"
   },
   "dependencies": {

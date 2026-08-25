@@ -2,6 +2,7 @@
 // One publication. `brief` is the landing-page variant: year and a single
 // `paper` button stacked in the right-hand column, everything else dropped.
 import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
+import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
 
 const { item, brief = false, maxAuthors = 8, abstract = false } = Astro.props;
@@ -45,7 +46,14 @@ const pos = authorPosition(item);
       </p>
     )}
 
-    {abstract && item.abstract && <p class="abstract">{item.abstract}</p>}
+    {abstract && item.abstract && (
+      <p class="abstract">
+        {/* Only the MathML Temml produced is set as HTML; the surrounding prose
+            stays ordinary text and is escaped as usual. */}
+        {mathParts(item.abstract).map((part) =>
+          part.maths ? <Fragment set:html={part.html} /> : part.text)}
+      </p>
+    )}
   </div>
 
   {brief && (
