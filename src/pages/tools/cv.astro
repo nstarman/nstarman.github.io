@@ -45,7 +45,7 @@ const builderData = {
   site,
   // Each PDF style's heading variants, its usual one first.
   headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
-  fonts: fs.readdirSync('public/fonts').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/${f}`),
+  fonts: fs.readdirSync('public/fonts').filter((f) => /\.(otf|ttf)$/.test(f)).sort().map((f) => `/fonts/${f}`),
 };
 ---
 <Base title="CV Builder — Nathaniel Starkman">

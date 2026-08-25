@@ -12,5 +12,12 @@
       "rule": { "label": "Underlined", "underline": true },
       "title": { "label": "Title" }
     }
+  },
+  "adrn": {
+    "label": "adrn",
+    "headings": {
+      "rule": { "label": "Underlined", "underline": true },
+      "title": { "label": "Title" }
+    }
   }
 }
