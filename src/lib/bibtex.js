@@ -94,7 +94,9 @@ export function toBibtex(item) {
     ['abstract', item.abstract && escAbstract(item.abstract)],
     // `status` is the only place "submitted"/"in prep" is recorded, so it has
     // to reach the reader somehow; note is where BibTeX puts that.
-    ['note', item.status !== 'published' ? item.status.replace('-', ' ') : null],
+    ['note', item.status && item.status !== 'published'
+      ? item.status.replace('-', ' ')
+      : null],
   ].filter(([, value]) => value !== null && value !== undefined && value !== '');
 
   const width = Math.max(...fields.map(([k]) => k.length));

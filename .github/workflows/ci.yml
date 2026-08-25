@@ -1,0 +1,68 @@
+name: CI
+
+# Every pull request, whatever it touched.
+#
+# This replaces a path-filtered data check that let most changes through
+# ungated: a PR touching src/, cv/ or a workflow ran nothing at all, so a
+# broken build or a CV template that would not compile went green.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # unit tests over src/lib: the database loader, preset resolution, the
+      # render model both the site and cv.typ read, and BibTeX escaping
+      - name: Unit tests
+        run: npm run test:unit
+
+      # schema, filenames, refs, cross-links, and the invalid fixtures
+      - name: Data and BibTeX
+        run: |
+          npm run test:schema
+          npm run test:bibtex
+
+      - name: Build the site
+        run: npm run build
+
+      # every heading and link on every page has an accessible name
+      - name: Accessibility
+        run: npm run test:a11y
+
+      # every internal href, anchor and asset the built site references
+      - name: Links
+        run: npm run test:links
+
+      - uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15.1"
+
+      # compiles all four presets and asserts 1P is one page and 2P is two
+      - name: CV PDFs
+        run: npm run build:pdf
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          retention-days: 7

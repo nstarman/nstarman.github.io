@@ -4,15 +4,15 @@ name: Deploy site
 # output and (b) run the artifact through Jekyll, which strips Astro's _astro/
 # asset directory. So the Pages Source must be "GitHub Actions".
 #
-# The build job also runs on redesign, so breakage surfaces before it reaches
-# master; only master deploys.
+# Deployment only. Pull requests are gated by ci.yml, which runs the same build
+# plus the tests; this workflow exists to publish what lands on master.
 #
 # withastro/action is deliberately not used: it builds and uploads in one step,
 # and the CV PDFs have to be compiled into dist/ in between.
 
 on:
   push:
-    branches: [master, redesign]
+    branches: [master]
   workflow_dispatch:
 
 permissions:

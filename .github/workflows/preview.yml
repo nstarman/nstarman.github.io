@@ -1,0 +1,98 @@
+name: Preview
+
+# A live preview URL for every pull request, so a change to the site can be
+# looked at rather than imagined.
+#
+# GitHub Pages serves one deployment per repository, which is the production
+# site, so previews go to Cloudflare Pages instead. Setup, once:
+#
+#   1. Cloudflare dashboard -> Workers & Pages -> Create -> Pages ->
+#      "Direct Upload", name the project `nstarkman-space`.
+#   2. My Profile -> API Tokens -> Create Token -> "Edit Cloudflare Workers"
+#      (or a custom token with Account / Cloudflare Pages / Edit).
+#   3. This repo -> Settings -> Secrets and variables -> Actions:
+#        CLOUDFLARE_API_TOKEN    the token from step 2
+#        CLOUDFLARE_ACCOUNT_ID   the ID on the dashboard's right-hand sidebar
+#
+# Until those secrets exist the job skips rather than fails, so this workflow
+# is safe to merge before the account is set up — and it will skip for pull
+# requests from forks, which cannot read secrets.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: preview
+    runs-on: ubuntu-latest
+    # `secrets` cannot be used in a job-level `if`, so the guard is a step.
+    steps:
+      - id: guard
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Cloudflare secrets are not set — see the comments in this workflow." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/checkout@v5
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm ci
+
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build
+
+      # The CV PDFs are part of the site; a preview without them would 404 on
+      # every Download button.
+      - if: steps.guard.outputs.ready == 'true'
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15.1"
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build:pdf
+
+      # The production domain must not follow the preview: CNAME in the
+      # artifact would try to claim nstarkman.space on Cloudflare too.
+      - if: steps.guard.outputs.ready == 'true'
+        run: rm -f dist/CNAME
+
+      - if: steps.guard.outputs.ready == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy dist
+            --project-name=nstarkman-space
+            --branch=pr-${{ github.event.number }}
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview
+          message: |
+            **Preview:** ${{ steps.deploy.outputs.deployment-url }}
+
+            Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
+            Updated on every push to this pull request.

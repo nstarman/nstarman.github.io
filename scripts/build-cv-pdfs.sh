@@ -60,3 +60,25 @@ if command -v pdffonts >/dev/null; then
   fi
   echo "  fonts                        all from public/fonts/"
 fi
+
+# The one-page and two-page CVs are contracts, not aspirations: their whole
+# reason to exist is the length. Content or spacing has pushed them over more
+# than once, and nothing else notices.
+pages() {
+  python3 -c "import re,sys; d=open(sys.argv[1],'rb').read(); \
+print(max(int(m) for m in re.findall(rb'/Count (\d+)', d)))" "$1"
+}
+over=0
+for spec in "1page:1" "2page:2"; do
+  preset="${spec%%:*}"; want="${spec##*:}"
+  pdf="dist/cv/starkman-cv-$preset.pdf"
+  [ -f "$pdf" ] || continue
+  got="$(pages "$pdf")"
+  if [ "$got" != "$want" ]; then
+    echo "  $preset is $got page(s), must be $want"
+    over=1
+  else
+    echo "  $preset                        $got page — as required"
+  fi
+done
+[ "$over" -eq 0 ] || exit 1

@@ -2,7 +2,7 @@
   "name": "nstarkman-space",
   "version": "0.0.0",
   "private": true,
-  "description": "nstarkman.space — website, CV database, and the CV builder.",
+  "description": "nstarkman.space \u2014 website, CV database, and the CV builder.",
   "type": "module",
   "scripts": {
     "predev": "node scripts/publish-data.mjs",
@@ -13,14 +13,17 @@
     "validate": "node scripts/validate.mjs schema/item.schema.json \"data/*.json\"",
     "test:schema": "bash scripts/test-schema.sh",
     "test:bibtex": "node scripts/test-bibtex.mjs",
-    "test": "npm run test:schema && npm run test:bibtex && npm run build && npm run test:a11y",
+    "test": "npm run test:unit && npm run test:schema && npm run test:bibtex && npm run build && npm run test:a11y && npm run test:links",
     "build:pdf": "bash scripts/build-cv-pdfs.sh",
     "build:all": "npm run build && npm run build:pdf",
-    "test:a11y": "node scripts/test-a11y.mjs"
+    "test:a11y": "node scripts/test-a11y.mjs",
+    "test:unit": "vitest run",
+    "test:links": "node scripts/test-links.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
-    "ajv-formats": "^2.1.1"
+    "ajv-formats": "^2.1.1",
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",
