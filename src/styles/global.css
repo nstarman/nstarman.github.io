@@ -414,6 +414,86 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
    would turn a byline into a wall of links, so it reads as text and only shows
    itself on hover and focus. */
+/* A mark with no button around it. The profile pills are places to go; this is
+   a file to take, so it reads as a glyph rather than another destination. */
+.baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
+.baremark .ico{width:17px; height:17px; fill:currentColor; display:block}
+.baremark:hover, .baremark:focus-visible{color:var(--accent)}
+
+/* ---------- publications: filter by author position ---------- */
+/* Clipped rather than display:none — a display:none radio is not focusable, and
+   this has to be reachable and arrow-navigable like any other radio group. */
+.posradio{position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0}
+
+/* One control, not three buttons: a single track with a thumb that slides
+   between the stops. The thumb is the track's own ::before, so there is nothing
+   to keep in sync — the checked radio moves it. */
+/* Says what the numbers mean. Without it "2" is a guess. */
+.poslabel{font-family:var(--mono); font-size:.66rem; color:var(--ink-faint);
+  letter-spacing:.02em; margin-right:.4rem; white-space:nowrap}
+
+.pubfilter{
+  position:relative; display:inline-flex; isolation:isolate;
+  border-radius:999px; padding:2px; background:var(--sunk);
+}
+/* The thumb is one segment wide, so the segments have to be equal — see the
+   flex-basis on the labels. A border here as well as on the track read as two
+   rings around one control, so the thumb is a plain fill. */
+.pubfilter::before{
+  content:""; position:absolute; z-index:-1; top:2px; bottom:2px; left:2px;
+  width:calc((100% - 4px) / var(--stops)); border-radius:999px;
+  background:var(--ground); box-shadow:0 1px 2px rgb(0 0 0 / .12);
+  transition:transform .18s cubic-bezier(.4,0,.2,1);
+}
+@media (prefers-reduced-motion:reduce){ .pubfilter::before{transition:none} }
+.pubfilter[data-stops="2"]{--stops:2}
+.pubfilter[data-stops="3"]{--stops:3}
+.pubfilter[data-stops="4"]{--stops:4}
+.pubfilter[data-stops="5"]{--stops:5}
+
+.pubfilter label{
+  /* basis 0 so every segment is exactly 1/N — "All" is wider than "1", and with
+     natural widths the thumb would never line up with the label it highlights. */
+  flex:1 1 0; text-align:center; min-width:2.3rem; padding:.12rem .45rem;
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.02em;
+  color:var(--ink-mute); cursor:pointer; border-radius:999px;
+  transition:color .18s ease;
+}
+.pubfilter label:hover{color:var(--ink)}
+
+/* Where the thumb sits, and which label is lit. "All" is first, so the stops
+   read left to right as no-limit, then tightening. */
+/* Stops ascend left to right and "All" sits at the far end, so the control
+   reads as one scale: each step to the right admits strictly more papers. */
+#pos-1:checked ~ .h2row .pubfilter::before{transform:translateX(0)}
+#pos-2:checked ~ .h2row .pubfilter::before{transform:translateX(100%)}
+#pos-3:checked ~ .h2row .pubfilter::before{transform:translateX(200%)}
+#pos-4:checked ~ .h2row .pubfilter::before{transform:translateX(300%)}
+/* All is last, so where it lands depends on how many stops there are. */
+#pos-all:checked ~ .h2row .pubfilter[data-stops="2"]::before{transform:translateX(100%)}
+#pos-all:checked ~ .h2row .pubfilter[data-stops="3"]::before{transform:translateX(200%)}
+#pos-all:checked ~ .h2row .pubfilter[data-stops="4"]::before{transform:translateX(300%)}
+#pos-all:checked ~ .h2row .pubfilter[data-stops="5"]::before{transform:translateX(400%)}
+
+#pos-all:checked ~ .h2row .pubfilter label[for="pos-all"],
+#pos-1:checked ~ .h2row .pubfilter label[for="pos-1"],
+#pos-2:checked   ~ .h2row .pubfilter label[for="pos-2"],
+#pos-3:checked   ~ .h2row .pubfilter label[for="pos-3"],
+#pos-4:checked   ~ .h2row .pubfilter label[for="pos-4"]{color:var(--ink)}
+
+.posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
+
+/* The filter itself. A paper with no position — no author marked `me` — carries
+   no data-pos and hides under any stop, which is what the question means. */
+#pos-1:checked ~ .entries .entry--full:not([data-pos="1"]),
+#pos-2:checked ~ .entries .entry--full:not([data-pos="1"]):not([data-pos="2"]),
+#pos-3:checked ~ .entries .entry--full:not([data-pos="1"]):not([data-pos="2"]):not([data-pos="3"]),
+#pos-4:checked ~ .entries .entry--full:not([data-pos="1"]):not([data-pos="2"]):not([data-pos="3"]):not([data-pos="4"]){
+  display:none;
+}
+
+
 .authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 .tl{scroll-margin-top:5rem}

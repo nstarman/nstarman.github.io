@@ -143,6 +143,13 @@
             "description": "Leading collaboration byline, e.g. \"Euclid Collaboration\", when the full list runs to hundreds.",
             "type": "string"
           },
+          "authorPosition": {
+            "description": "Credit position, when it differs from where the owner sits in `authors`. Normally omitted — the position is derived from the index of the author marked `me`, which is correct for every record so far, Euclid included: `collaboration` is a separate field and so takes no author slot. Set this only where the byline understates the credit. Named for the first four; a plain number beyond.",
+            "oneOf": [
+              { "enum": ["first", "second", "third", "fourth"] },
+              { "type": "integer", "minimum": 5 }
+            ]
+          },
           "status": {
             "enum": [
               "in-prep",

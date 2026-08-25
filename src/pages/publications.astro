@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
-import { byType } from '../lib/data.js';
+import { byType, authorPosition } from '../lib/data.js';
 import person from '/config/person.json';
 
 // In-preparation papers stay out of the public list — they still appear in the
@@ -13,21 +13,56 @@ import person from '/config/person.json';
 // the same ADS and arXiv profile links the home page carries
 const profiles = person.contacts.filter((c) => ['ads', 'arxiv'].includes(c.icon));
 const all = byType('publication').filter((p) => p.status !== 'in-prep');
+
+// Stops for the author-position filter, built from the data rather than fixed:
+// a stop that selects the same papers as the one before it, or as "All", is a
+// stop that does nothing. Today that leaves All / 1st / 2nd.
+const positions = all.map(authorPosition).filter((n) => n != null);
+const stops = [];
+for (let n = 1; n <= 4; n += 1) {
+  const count = positions.filter((p) => p <= n).length;
+  const previous = stops.length ? stops[stops.length - 1].count : 0;
+  if (count > previous && count < positions.length) stops.push({ n, count });
+}
 ---
 <Base title="Publications — Nathaniel Starkman">
   <main>
     <section>
       <div class="wrap">
+        {/* Direct children of .wrap and ahead of .entries, so both the filtering
+            and the slider's own position are plain sibling selectors on
+            :checked — no :has(), and no JavaScript at all. Clipped rather than
+            display:none so they stay focusable and arrow-navigable. */}
+        {stops.map((s2) => <input type="radio" name="pos" id={`pos-${s2.n}`} class="posradio" />)}
+        <input type="radio" name="pos" id="pos-all" class="posradio" checked />
+
         <div class="h2row">
           <h2>Publications</h2>
           <span class="more pubprofiles">
-            <a href="/nstarkman_publications.bib">BibTeX</a>
+            <span class="poslabel" aria-hidden="true">author&nbsp;# ≤</span>
+            <span class="pubfilter" data-stops={stops.length + 1}>
+              {stops.map((s2) => (
+                <label for={`pos-${s2.n}`}
+                       title={s2.n === 1
+                         ? `${s2.count} papers where I am first author`
+                         : `${s2.count} papers where I am among the first ${s2.n} authors`}>
+                  {s2.n}
+                </label>
+              ))}
+              <label for="pos-all" title={`All ${all.length} publications, any author position`}>All</label>
+            </span>
             <span class="sep">|</span>
             {profiles.map((c) => (
               <a class="pill" href={c.url} aria-label={c.label} title={`All publications on ${c.label}`}>
                 <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${c.icon}`} /></svg>
               </a>
             ))}
+            {/* The brace alone, no button around it — the profiles are places to
+                go, this is a file to take. */}
+            <a class="baremark" href="/nstarkman_publications.bib"
+               aria-label="BibTeX" title="Every publication as BibTeX">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-bibtex" /></svg>
+            </a>
           </span>
         </div>
         <div class="entries">
