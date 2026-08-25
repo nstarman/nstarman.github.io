@@ -871,7 +871,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 @media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
 
 .cmap figcaption{
-  margin:.6rem 0 0; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
+  margin:0 0 .7rem; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
   display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .9rem;
 }
 /* The legend shows the two pins rather than describing them; a sentence
@@ -930,12 +930,11 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 
 /* The map's person picker. */
-.cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:0 0 .7rem}
+.cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.8rem 0 0}
 .cmap-pick label{
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
   text-transform:uppercase; color:var(--ink-faint);
 }
-.cmap-count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto}
 
 /* With one person selected the list is a single record rather than a grid of
    thirty-four, so it should not be laid out as columns. */

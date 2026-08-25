@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, project, toXY, map } from '../src/lib/collabmap.js';
+import { collaboratorMap, project, toXY, map, MAX_PIN_DRIFT } from '../src/lib/collabmap.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins);
@@ -48,16 +48,33 @@ describe('the collaborator map', () => {
     expect(out).toEqual([]);
   });
 
-  it('leaves no two pins on top of each other', () => {
-    // Harvard and MIT are a few units apart and would render as one dot;
-    // separating them is the whole reason spread() exists.
-    let closest = Infinity;
-    for (let i = 0; i < pins.length; i += 1) {
-      for (let j = i + 1; j < pins.length; j += 1) {
-        closest = Math.min(closest, Math.hypot(pins[i].x - pins[j].x, pins[i].y - pins[j].y));
-      }
+  it('never draws a pin far from where the place actually is', () => {
+    // The property that matters, and the one an earlier version broke: it
+    // relaxed pins apart until nothing overlapped, which moved them a median
+    // of ten units and a maximum of twenty-five — nine degrees of longitude.
+    // Columbia University came out in Ohio. Overlap is honest; misplacement
+    // is not.
+    for (const pin of pins) {
+      const [tx, ty] = toXY(pin.lon, pin.lat);
+      const drift = Math.hypot(pin.x - tx, pin.y - ty);
+      expect(drift).toBeLessThanOrEqual(MAX_PIN_DRIFT + 0.1);
     }
-    expect(closest).toBeGreaterThan(4.5);   // the largest pin radius
+  });
+
+  it('still separates pins that share a coordinate exactly', () => {
+    // Otherwise one pin hides the four other people who worked there.
+    const stacked = new Map();
+    for (const pin of pins) {
+      const key = `${pin.lat},${pin.lon}`;
+      stacked.set(key, (stacked.get(key) ?? 0) + 1);
+    }
+    const shared = [...stacked.entries()].filter(([, n]) => n > 1);
+    expect(shared.length).toBeGreaterThan(0);        // the case exists
+    for (const [key] of shared) {
+      const here = pins.filter((p) => `${p.lat},${p.lon}` === key);
+      const seen = new Set(here.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`));
+      expect(seen.size).toBe(here.length);
+    }
   });
 
   it('gives every collaborator a different hue', () => {

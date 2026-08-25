@@ -13,6 +13,8 @@ import places from '/config/places.json';
 import world from '../assets/world-equal-earth.json';
 import { byType, venueUrl, links } from './data.js';
 
+export const MAX_PIN_DRIFT = 3;
+
 export const map = { width: world.width, height: world.height, land: world.d };
 
 const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796;
@@ -67,63 +69,44 @@ function papersByAuthor() {
 const covers = (post, date) =>
   Boolean(post.start) && post.start <= date && (!post.end || post.end >= date);
 
-/**
- * Fan out pins that would land on top of each other.
- *
- * Not just exact coincidence: Harvard and MIT are different coordinates a few
- * projected units apart, as are Princeton and the Institute for Advanced Study,
- * the Simons Foundation and the Flatiron Institute, and CITA and CIFAR. At this
- * scale those are the same dot. So pins are clustered by distance and each
- * cluster is fanned around its own centre, which also guarantees no two members
- * end up in the same place — the first attempt offset each group from its own
- * coordinate and simply moved the collisions somewhere else.
- */
-function spread(pins, minGap = 9) {
-  const clusters = [];
-  for (const pin of pins) {
-    const near = clusters.find((c) => Math.hypot(c.x - pin.x, c.y - pin.y) < minGap);
-    if (near) {
-      near.members.push(pin);
-      near.x = near.members.reduce((t, m) => t + m.x, 0) / near.members.length;
-      near.y = near.members.reduce((t, m) => t + m.y, 0) / near.members.length;
-    } else {
-      clusters.push({ x: pin.x, y: pin.y, members: [pin] });
-    }
-  }
-  for (const c of clusters) {
-    if (c.members.length === 1) continue;
-    const r = minGap * 0.55 * Math.max(1, Math.sqrt(c.members.length / 3));
-    c.members.forEach((m, i) => {
-      const a = (2 * Math.PI * i) / c.members.length - Math.PI / 2;
-      m.x = c.x + r * Math.cos(a);
-      m.y = c.y + r * Math.sin(a);
-    });
-  }
+/** How far a pin may be moved from where it actually is, in map units.
+ *  One unit is 0.36 degrees of longitude at the equator, so this is a couple of
+ *  hundred kilometres at most — enough to separate a stack, not enough to move
+ *  a university to another state. */
+const MAX_DRIFT = MAX_PIN_DRIFT;
 
-  // Clustering is greedy and a cluster's centre moves as members join it, so
-  // two fans can still finish next to each other. A few relaxation passes push
-  // any remaining close pair apart. Bounded and deterministic: the same input
-  // gives the same map every build, which matters for a committed page.
-  const apart = minGap * 0.7;
-  for (let pass = 0; pass < 60; pass += 1) {
-    let worst = 0;
-    for (let i = 0; i < pins.length; i += 1) {
-      for (let j = i + 1; j < pins.length; j += 1) {
-        const a = pins[i], b = pins[j];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const d = Math.hypot(dx, dy);
-        if (d >= apart) continue;
-        worst = Math.max(worst, apart - d);
-        // A pair exactly on top of each other has no direction to separate
-        // along, so give it one rather than dividing by zero.
-        const ux = d === 0 ? Math.cos(i) : dx / d;
-        const uy = d === 0 ? Math.sin(i) : dy / d;
-        const push = (apart - d) / 2;
-        a.x -= ux * push; a.y -= uy * push;
-        b.x += ux * push; b.y += uy * push;
-      }
-    }
-    if (worst < 0.05) break;
+/**
+ * Separate pins that share a coordinate, and no more than that.
+ *
+ * An earlier version clustered by proximity and then relaxed everything apart
+ * until nothing touched. It produced a tidy map and a false one: pins drifted a
+ * median of ten units and a maximum of twenty-five, which is nine degrees of
+ * longitude — Columbia University came out somewhere in Ohio, and Case Western
+ * left Cleveland. Overlapping pins are honest; misplaced ones are not, and a
+ * map's first duty is to put things where they are.
+ *
+ * So only exact co-location is fixed, by fanning the stack into a small rosette
+ * inside MAX_DRIFT. Institutions that are genuinely near each other — Harvard
+ * and MIT, Princeton and the IAS — are drawn near each other, because they are.
+ * The picker is what separates a crowd now.
+ */
+function spread(pins) {
+  const at = new Map();
+  for (const pin of pins) {
+    const key = `${pin.x.toFixed(2)},${pin.y.toFixed(2)}`;
+    if (!at.has(key)) at.set(key, []);
+    at.get(key).push(pin);
+  }
+  for (const group of at.values()) {
+    if (group.length === 1) continue;
+    // Every member the same distance out, so the stack reads as a rosette
+    // rather than one pin with satellites.
+    const r = Math.min(MAX_DRIFT, 1.2 + group.length * 0.35);
+    group.forEach((pin, i) => {
+      const a = (2 * Math.PI * i) / group.length - Math.PI / 2;
+      pin.x += r * Math.cos(a);
+      pin.y += r * Math.sin(a);
+    });
   }
 }
 

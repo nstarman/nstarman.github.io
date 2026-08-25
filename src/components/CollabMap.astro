@@ -18,14 +18,22 @@ const label = (pin) =>
 ---
 
 <figure class="cmap">
-  <div class="cmap-pick">
-    <label for="cmap-who">Show</label>
-    <select id="cmap-who" class="btn btn--sel">
-      <option value="">Everyone</option>
-      {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
-    </select>
-    <span class="cmap-count" id="cmap-count">{people.length} people · {pins.length} posts</span>
-  </div>
+  <figcaption>
+    <span class="cmap-key cmap-key--shared">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
+      wrote something together
+    </span>
+    <span class="cmap-key">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
+      another post
+    </span>
+    <span class="cmap-key cmap-key--trail">
+      <svg viewBox="0 0 24 12" aria-hidden="true"><line x1="1" y1="6" x2="23" y2="6" /></svg>
+      one person over time
+    </span>
+    <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
+    <span>Mostly scraped from ORCID, so it may be incomplete.</span>
+  </figcaption>
 
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
        aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
@@ -50,22 +58,14 @@ const label = (pin) =>
     ))}
   </svg>
 
-  <figcaption>
-    <span class="cmap-key cmap-key--shared">
-      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
-      wrote something together
-    </span>
-    <span class="cmap-key">
-      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
-      another post
-    </span>
-    <span class="cmap-key cmap-key--trail">
-      <svg viewBox="0 0 24 12" aria-hidden="true"><line x1="1" y1="6" x2="23" y2="6" /></svg>
-      one person over time
-    </span>
-    <span>Equal Earth — equal-area, so no country is drawn larger than it is.</span>
-    <span>Mostly scraped from ORCID, so it may be incomplete.</span>
-  </figcaption>
+  <div class="cmap-pick">
+    <label for="cmap-who">Show</label>
+    <select id="cmap-who" class="btn btn--sel">
+      <option value="">Everyone</option>
+      {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
+    </select>
+  </div>
+
 
 
   <ol class="cmap-list">
@@ -111,14 +111,16 @@ const label = (pin) =>
   // than only in the paint — a screen reader is told the same thing the eye is.
   const fig = document.querySelector('.cmap');
   const pick = document.getElementById('cmap-who');
-  const count = document.getElementById('cmap-count');
   if (fig && pick) {
     const all = (sel) => [...fig.querySelectorAll(sel)];
-    const totals = count.textContent;
+    const list = fig.querySelector('.cmap-list');
 
     const show = (only) => {
       const mine = (el) => only === '' || el.dataset.c === only;
       for (const el of all('.cmap-pin, .cmap-trail')) el.style.display = mine(el) ? '' : 'none';
+      // Everyone means the map, and only the map: a roster of thirty-four names
+      // under it is the wall of text the picker exists to avoid.
+      list.hidden = only === '';
       for (const li of all('.cmap-list > li')) {
         li.hidden = !mine(li);
         // The posts are the detail; they belong to whoever was asked for.
@@ -131,10 +133,6 @@ const label = (pin) =>
         if (note) note.hidden = !open;
       }
       fig.dataset.only = only;
-      if (only === '') { count.textContent = totals; return; }
-      const li = fig.querySelector(`.cmap-list > li[data-c="${only}"]`);
-      const n = li ? li.querySelectorAll('ol > li').length : 0;
-      count.textContent = `${n} post${n === 1 ? '' : 's'}`;
     };
 
     pick.addEventListener('change', () => show(pick.value));
