@@ -38,7 +38,29 @@
 )
 // New Computer Modern is Typst's own, so CI and the browser both have it — and
 // it is Latin Modern's successor, the face the LaTeX CV was already set in.
-#set text(font: "New Computer Modern", size: 11pt, fill: ink, lang: "en")
+#set text(
+  font: "New Computer Modern",
+  size: 11pt,
+  fill: ink,
+  lang: "en",
+  // A CV is mostly numbers set inside sentences — years, volumes, pages. Lining
+  // figures are cap-height, so each one reads as a small block of capitals
+  // interrupting the line. Old-style figures carry ascenders and descenders and
+  // sit in the text the way lowercase does. Columns of digits want the opposite
+  // treatment and get it back individually below; #tnum is the helper.
+  number-type: "old-style",
+)
+
+// Lining and tabular: equal-width, cap-height digits, for the places where
+// figures form a column and have to align down the page rather than read as
+// part of a sentence.
+#let tnum(body) = text(number-type: "lining", number-width: "tabular", body)
+
+// Lining but proportional, for identifiers rather than columns. An ORCID iD, an
+// arXiv number or a postcode is transcribed digit by digit rather than read as
+// a quantity, and old-style figures — which vary in height by design — make
+// that harder for no gain.
+#let lnum(body) = text(number-type: "lining", body)
 #set par(
   justify: true,
   spacing: 0pt,
@@ -136,7 +158,9 @@
 
   {
     set par(justify: false, leading: 0.38em)
-    set text(size: 8.9pt)
+    // Every figure in this column is transcription data — street number,
+    // postcode, ORCID iD — so the whole block stays lining.
+    set text(size: 8.9pt, number-type: "lining")
     p.addressLines.join(linebreak())
     linebreak()
     link("mailto:" + p.email)[#icon("email", size: 0.9em) #p.email]
@@ -219,9 +243,9 @@
     align: (left + top, left + top, right + top),
     ..items
       .map(it => (
-        text(size: 10.1pt)[#it.when],
+        tnum(text(size: 10.1pt)[#it.when]),
         entrybody(it),
-        text(size: 10.1pt)[#it.trailing],
+        tnum(text(size: 10.1pt)[#it.trailing]),
       ))
       .flatten(),
   )
@@ -235,7 +259,7 @@
     columns: (1.6em, 1fr),
     column-gutter: 4pt,
     align: (right + top, left + top),
-    text(size: 10.1pt)[#n.],
+    tnum(text(size: 10.1pt)[#n.]),
     {
       if it.byline.len() > 0 [#bolded(it.byline). ]
       emph(it.title)
@@ -249,7 +273,7 @@
         .map(l => if l.label == l.rel {
           link(l.url, icon(l.icon, size: 0.9em))
         } else {
-          link(l.url, [#icon(l.icon, size: 0.9em) #l.label])
+          link(l.url, [#icon(l.icon, size: 0.9em) #lnum(l.label)])
         })
         .join(h(5pt))
       if cite.len() > 0 [ #cited]
