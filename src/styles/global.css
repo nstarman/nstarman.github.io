@@ -244,7 +244,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
 }
 .cvsection:first-of-type{margin-top:1rem}
-.pdfrow{display:flex; align-items:center; justify-content:flex-end; gap:.7rem;
+.pdfrow{display:flex; align-items:center; justify-content:flex-start; gap:.7rem;
   flex-wrap:wrap; margin:0 0 .4rem}
 
 /* Divider between the software tiers — the same 32%, low-alpha rule used
