@@ -24,7 +24,7 @@ const background = [...byType('position'), ...byType('education')]
       <div class="ident">
         <h1>{person.name}</h1>
         <p class="role">
-          <em>{person.role}</em> · {person.institution}
+          <em>{person.role}</em> · <strong>{person.titleShort}</strong> @ <strong>{person.institutionShort}</strong> {person.institutionRest}
         </p>
         <ul class="pills">
           {person.contacts.map((c) => (
