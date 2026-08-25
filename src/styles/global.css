@@ -94,7 +94,13 @@ h2{
   font-family:var(--serif); font-weight:500; font-size:1.28rem; margin:0 0 .95rem;
   letter-spacing:-.01em;
 }
-.h2row{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin-bottom:.95rem}
+/* Centred, not baseline. The right-hand side is a cluster of controls — pills,
+   a segmented filter, a bare glyph — with no single text baseline, so baseline
+   alignment resolved against whichever child happened to come first and left
+   the title sitting a different amount off on every page: 0.2px on the CV,
+   0.56px on the home page, 0.82px on Publications. Centring the boxes is
+   independent of what the row contains. */
+.h2row{display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.95rem}
 .h2row h2{margin:0}
 .more{font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase}
 
