@@ -29,7 +29,13 @@ const onBuilder = current === 'builder';
           </span>}
       <span class="sep">|</span>
       <span class="cvtoggle cvtoggle--main">
-        <a href="/cv/builder/" class={onBuilder ? 'build on' : 'build'} tabindex="-1">Build</a>
+        {onBuilder
+          /* Not a link on the builder itself. It only ever led back to this
+             page, and the persistent bar sits under the pointer the whole time
+             you are working down the list — one stray click reloaded it and
+             took the selection with it. */
+          ? <span class="tog build on" aria-current="page">Build</span>
+          : <a href="/cv/builder/" class="build" tabindex="-1">Build</a>}
       </span>
     </span>
   </div>
