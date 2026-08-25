@@ -155,6 +155,12 @@ const money = (a) => {
           </span>
           <span class="what">
             <strong>{item.title}</strong>
+            {/* The same pill the publications page uses. The CV page does not
+                group by status the way the PDF does, so without it a submitted
+                paper is indistinguishable from a published one. */}
+            {item.status && item.status !== 'published' && (
+              <span class="statustag">{item.status}</span>
+            )}
             {item.institution && <>, {item.institution}</>}
             {item.event && <>, {item.event}</>}
             {item.type === 'publication' && (
