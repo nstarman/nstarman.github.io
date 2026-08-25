@@ -28,6 +28,11 @@
 #let accent = rgb("#003399") // linkcolour: rgb(0, 0.2, 0.6)
 #let faint = rgb("#808080") // \grayhref: gray 0.5
 #let orcid = rgb("#A6CE39") // orcidlogocol
+// The header sits on this. Barely there by intent — enough to read as one
+// block rather than four columns that happen to be adjacent, not enough to
+// look like a filled panel, and light enough to survive an office printer
+// without banding.
+#let headerwash = luma(250)
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
@@ -166,7 +171,10 @@
 // at both edges, and keeps agreeing if a title or an address line is added.
 #context {
   let h = measure(namecol).height
-  grid(
+  // `outset`, not `inset`: the wash is drawn around the grid without taking
+  // any space, so the header's geometry — and the page counts that depend on
+  // it — are exactly as they were.
+  block(fill: headerwash, radius: 8pt, outset: (x: 9pt, y: 8pt), grid(
     columns: (hdr, auto, 1fr, hdr),
     column-gutter: 11pt,
     align: (left + horizon, left + horizon, right + horizon, right + horizon),
@@ -185,7 +193,7 @@
     }),
 
     link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
-  )
+  ))
 }
 
 // ── headings ──────────────────────────────────────────────────────────────
