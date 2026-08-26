@@ -1115,7 +1115,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   /* Full width of the map, so the three stack as one panel. Small, because it
      is a control on an aside and must not out-shout the CV beside it. */
   .cvmini-who{
-    display:block; width:100%; margin:0 0 .4rem;
+    display:block; width:100%; margin:.4rem 0 0;
     font-family:var(--mono); font-size:.62rem; letter-spacing:.02em;
     color:var(--ink-2); background:var(--ground);
     border:1px solid var(--rule); border-radius:4px;
