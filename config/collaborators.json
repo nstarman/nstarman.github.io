@@ -103,10 +103,20 @@
           "city": "New York",
           "region": "New York",
           "country": "US",
+          "role": "Research Scientist",
+          "kind": "employment",
+          "start": "2025-10",
+          "end": null
+        },
+        {
+          "organization": "Simons Foundation",
+          "city": "New York",
+          "region": "New York",
+          "country": "US",
           "role": "Associate Research Scientist",
           "kind": "employment",
           "start": "2021-08",
-          "end": null
+          "end": "2025-10"
         },
         {
           "organization": "Simons Foundation",
@@ -1305,6 +1315,26 @@
       "name": "Lina Necib",
       "affiliations": [
         {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Associate Professor",
+          "kind": "employment",
+          "start": "2026-07",
+          "end": null
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2021-07",
+          "end": "2026-06"
+        },
+        {
           "organization": "Observatories of the Carnegie Institution of Washington",
           "city": "Pasadena",
           "region": "CA",
@@ -1312,7 +1342,7 @@
           "role": null,
           "kind": "employment",
           "start": "2020-10",
-          "end": null
+          "end": "2021-08"
         },
         {
           "organization": "California Institute of Technology",
@@ -1322,7 +1352,7 @@
           "role": "Postdoctoral Fellow",
           "kind": "employment",
           "start": "2017-09",
-          "end": null
+          "end": "2020-06"
         },
         {
           "organization": "Massachusetts Institute of Technology",
