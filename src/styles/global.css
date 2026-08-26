@@ -686,9 +686,14 @@ summary.cvsechead .cvsection::after{
 details[open] > summary.cvsechead .cvsection::after{transform:rotate(90deg)}
 summary.cvsechead:hover .cvsection{color:var(--accent)}
 .cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
-.cvsechead .cvtoggle{margin-left:auto}
 .seclink{color:var(--ink-faint); margin-left:.5rem; transition:color .15s}
 .seclink:hover{color:var(--accent); text-decoration:none}
+/* The page's icon stands in for its name. Inline rather than block, because it
+   sits between two words and has to share their baseline. */
+.seclink .ico{
+  width:12px; height:12px; fill:currentColor;
+  display:inline-block; vertical-align:-1px;
+}
 .cvsechead .cvsection{margin:0; padding:0; border:0}
 
 /* Segmented length control. Each segment is its own pill; the active one is
@@ -709,10 +714,6 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   background:transparent;
 }
 .cvtoggle a.on:hover{color:var(--accent); border-color:var(--accent)}
-
-/* Per-section: quiet until you look for it. */
-.cvsechead .cvtoggle{opacity:.45; transition:opacity .15s}
-.cvsechead:hover .cvtoggle, .cvsechead .cvtoggle:focus-within{opacity:1}
 
 /* The one at the top of the page is the primary control, so it stays legible. */
 .cvtoggle--main a, .cvtoggle--main .tog{font-size:.72rem; padding:.2rem .6rem}

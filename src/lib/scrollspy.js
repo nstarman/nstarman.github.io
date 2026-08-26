@@ -39,3 +39,23 @@ export function currentSection(heads, topGap) {
   }
   return best.id;
 }
+
+/**
+ * @param {{id: string, top: number}[]} heads  headings in document order, `top`
+ *   as viewport coordinates
+ * @param {number} topGap  the offset headings are scrolled to
+ * @returns {{id: string, top: number}[]} where to stand, best candidate first
+ *
+ * Switching CV length navigates to a different document, so the reader's place
+ * has to be described by something both documents share: a heading, and how far
+ * down the viewport it sat. The heading they are in is the first choice.
+ *
+ * The rest of the trail is the fallback, because the length you switch to need
+ * not have that section — 1P has no Talks. Each earlier heading carries its own
+ * offset, so landing on one still puts the reader where they were standing,
+ * only measured from a landmark further back.
+ */
+export function anchorTrail(heads, topGap) {
+  const at = heads.findIndex((h) => h.id === currentSection(heads, topGap));
+  return heads.slice(0, at + 1).reverse().map((h) => ({ id: h.id, top: Math.round(h.top) }));
+}
