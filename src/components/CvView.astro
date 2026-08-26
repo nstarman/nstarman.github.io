@@ -274,6 +274,7 @@ const money = (a) => {
 })}
 
 <script>
+  import { currentSection } from '../lib/scrollspy.js';
   // Switching detail level should not throw you to the top of the section.
   // The href carries the anchor so it still works without JavaScript; with it,
   // we remember where the heading sat in the viewport and put it back there on
@@ -328,20 +329,35 @@ const money = (a) => {
       for (const [key, a] of links) a.classList.toggle('is-current', key === id);
     };
 
-    // Track the heading nearest the top of the viewport rather than whichever
-    // happens to be intersecting: sections here vary from one row to thirty-five,
-    // so "is visible" is true of several at once.
+    // Which heading is current is decided in lib/scrollspy.js, against numbers
+    // rather than elements, so the comparison that used to mark the wrong
+    // section can be tested without a browser.
     const update = () => {
       // No bottom-out special case: .cvsec--last is tall enough for the final
       // heading to reach the top like any other, so the same rule decides it.
-      let best = heads[0];
-      for (const h of heads) {
-        if (h.getBoundingClientRect().top - topGap <= 0) best = h;
-      }
-      mark(best.id);
+      mark(currentSection(
+        heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top })),
+        topGap,
+      ));
     };
     update();
     addEventListener('scroll', update, { passive: true });
     addEventListener('resize', update, { passive: true });
+
+    // A fragment jump moves the page, and cannot be relied on to deliver a
+    // `scroll` event for it — so on its own, `scroll` leaves the rail marking
+    // wherever the reader was standing before they clicked. That is the half of
+    // this bug that survived the first fix: the landing position was then right
+    // and the mark was never recomputed to notice.
+    //
+    // Three signals, because each covers a gap in the others: `hashchange` for
+    // a click on the rail or any in-page anchor, `scrollend` for a smooth
+    // scroll that has come to rest (not everywhere yet, hence the guard), and a
+    // click on the rail itself for the case where the hash is unchanged because
+    // the reader clicked the section they were already in.
+    const soon = () => requestAnimationFrame(() => requestAnimationFrame(update));
+    addEventListener('hashchange', soon);
+    if ('onscrollend' in window) addEventListener('scrollend', update);
+    document.querySelector('.cvtoc')?.addEventListener('click', soon);
   }
 </script>
