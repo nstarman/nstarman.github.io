@@ -42,11 +42,15 @@ function posStops(section) {
 // point — a list of bare titles is not the CV you are about to compile.
 // `picked` is the starting selection, so the server renders the right ticks
 // rather than the client unticking 155 boxes after paint.
-const { cv, pick = false, picked = null, level = 'full' } = Astro.props;
+const { cv, pick = false, picked = null, level = 'full', completeLines = cv.includeAll } = Astro.props;
 const isPicked = (id) => !picked || picked.has(id);
 // Elaboration is a list of lines, and in the builder each one is its own
 // choice — inclusion is a tick, not a level.
-const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i) : []);
+const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []);
+// Which of those lines only the complete CV shows. They are appended last, so
+// everything from this index on is complete-only — the builder needs to know,
+// because seeding from NP must not tick a line the NP CV does not print.
+const baseLines = (i) => detailLines(i).length;
 const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
 
 // Every preset that renders this section, so the toggle offers exactly the
@@ -247,7 +251,8 @@ const money = (a) => {
               <span class="sub">
                 {pick && (
                   <input type="checkbox" class="subbox" data-id={item.id} data-line={i}
-                         checked={level === 'full'}
+                         data-complete={i >= baseLines(item) ? '' : undefined}
+                         checked={level === 'full' && (i < baseLines(item) || completeLines)}
                          aria-label={`Include this line under ${item.title}`} />
                 )}
                 {line.map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}

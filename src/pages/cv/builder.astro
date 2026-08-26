@@ -14,6 +14,10 @@ const cv = resolve('complete');
 const START = 'np';
 const picked = new Set(memberIds(START));
 const startLevel = preset(START).detail;
+// The complete CV is the only one that prints `detailsComplete`, so seeding the
+// picker from any other preset must leave those lines unticked — otherwise
+// "start from NP, compile" quietly puts back a line the NP CV does not have.
+const startsComplete = Boolean(preset(START).includeAll);
 const membership = Object.fromEntries(presetNames.map((n) => [n, memberIds(n)]));
 const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
 // Stamped into a saved selection so it can be taken back to the data it names.
@@ -60,7 +64,7 @@ const site = buildInfo();
         <iframe id="preview" title="CV preview" hidden></iframe>
 
         <div id="tree">
-          <CvView cv={cv} pick picked={picked} level={startLevel} />
+          <CvView cv={cv} pick picked={picked} level={startLevel} completeLines={startsComplete} />
         </div>
       </div>
     </section>
@@ -72,6 +76,8 @@ const site = buildInfo();
   <script type="application/json" id="membership" set:html={JSON.stringify(membership)}></script>
   <script type="application/json" id="detaillevels"
           set:html={JSON.stringify(Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])))}></script>
+  <script type="application/json" id="unabridged"
+          set:html={JSON.stringify(Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])))}></script>
   <script type="application/json" id="siteinfo" set:html={JSON.stringify(site)}></script>
 
   <script>
@@ -89,6 +95,8 @@ const site = buildInfo();
     const boxes = () => [...document.querySelectorAll('.itembox')];
     const subs = () => [...document.querySelectorAll('.subbox')];
     const DETAIL = JSON.parse(document.getElementById('detaillevels').textContent);
+    // Which presets print the complete-only lines. Only the complete CV does.
+    const UNABRIDGED = JSON.parse(document.getElementById('unabridged').textContent);
     const SITE = JSON.parse(document.getElementById('siteinfo').textContent);
 
     /** An unticked line greys out in place, so the page keeps showing what it
@@ -203,7 +211,12 @@ const site = buildInfo();
         // A preset is not only which entries appear but how much each says, so
         // the detail controls move with it.
         const full = (DETAIL[t.dataset.preset] ?? 'full') === 'full';
-        subs().forEach((b) => (b.checked = full));
+        // A complete-only line belongs to the complete CV alone, so it stays
+        // unticked for every other preset even though they are "full" detail.
+        const unabridged = UNABRIDGED[t.dataset.preset] ?? false;
+        subs().forEach((b) => {
+          b.checked = full && (b.dataset.complete === undefined || unabridged);
+        });
         applyDetail();
         recount();
         status(`Selection set from ${t.textContent}.`);

@@ -76,6 +76,7 @@ from the `$schema` key.
   "title": "Stream Members Only: …",
   "summary": "One line. Always rendered, including in the 2-page CV.",
   "details": "Elaboration. Long CVs and website only — dropped from short presets.",
+  "detailsComplete": "Only the complete CV shows this. For a GPA.",
   "links": [ { "rel": "paper", "url": "https://…" } ],
   "refs":  ["trackstream"],           // other items, by bare id
   "tags":  ["streams", "machine-learning"],
@@ -83,14 +84,28 @@ from the `$schema` key.
 }
 ```
 
-### `summary` vs `details`
+### `summary` vs `details` vs `detailsComplete`
 
-This replaces the old LaTeX `% SKIP` preprocessor. `summary` always renders;
-`details` is dropped from the 1-page and 2-page CVs and kept in the np and
-complete CVs and on
-the website. Put the elaboration — thesis title, award citation, what the grant
-paid for — in `details`. Publications are the exception: their one-line is
-derived from `authors` and `venue`, so `summary` is usually omitted there.
+This replaces the old LaTeX `% SKIP` preprocessor. Three tiers, widest first:
+
+| field | where it renders |
+|---|---|
+| `summary` | everywhere, including the 1-page CV |
+| `details` | the website and the np and complete CVs; dropped by 1-page and 2-page |
+| `detailsComplete` | the complete CV alone |
+
+Put the elaboration — thesis title, award citation, what the grant paid for —
+in `details`. Publications are the exception: their one-line is derived from
+`authors` and `venue`, so `summary` is usually omitted there.
+
+`detailsComplete` is for a fact that is true and on the record but does not
+belong on a CV you hand someone — a GPA is the case it exists for. It is
+appended after `details`, the thesis and the supervisors, so a line index means
+the same thing whether or not it is included; the CV builder ticks lines by
+index, and inserting in the middle would silently move every tick after it.
+
+The complete CV is identified by `includeAll` in `config/presets.json`, not by
+its name, so nothing hard-codes which preset is the unabridged one.
 
 ### `type` and what each one adds
 

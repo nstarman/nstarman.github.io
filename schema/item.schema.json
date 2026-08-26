@@ -84,6 +84,21 @@
         }
       ]
     },
+    "detailsComplete": {
+      "description": "Elaboration only the complete CV shows \u2014 the tier below `details`. `summary` always renders; `details` renders on the website and the long CVs and is dropped by the short presets; this renders in the complete CV alone. For the fact that is true and on the record but does not belong on a CV you hand someone, such as a GPA. Same string-or-lines shape as `details`, and appended after it.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      ]
+    },
     "links": {
       "type": "array",
       "items": {
