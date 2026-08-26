@@ -1,0 +1,155 @@
+---
+// Where I have given a talk, run a workshop, or shown a poster.
+//
+// Same machinery as the collaborator map — a committed Equal Earth outline, no
+// tiles, so no third party sees a visitor's viewport and the whole thing works
+// offline. See issue #22.
+//
+// The unit is the place, not the talk: a pin's size is how many times I have
+// spoken there. The list underneath is not a fallback but the same data in the
+// form a screen reader, a keyboard, or a small phone can actually use, and it
+// is where the talk titles live in full.
+import { conferenceMap, map } from '../lib/confmap.js';
+
+const conf = conferenceMap();
+const { pins, online, unsettled, unplaced } = conf;
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
+// Everything that is deliberately not a pin, in one place so the page can own
+// up to it in one sentence rather than three.
+const offMap = online.length + unsettled.length + unplaced.length;
+---
+
+<figure class="cmap cmap--conf">
+  <figcaption>
+    {/* Both keys share a viewBox so the ratio between them is the real one:
+        four times the area, twice the radius. A wider box on the second was
+        squashed back to the same 11px and the two read as one size. */}
+    <span class="cmap-key cmap-key--conf">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="2.8" /></svg>
+      one talk
+    </span>
+    <span class="cmap-key cmap-key--conf">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.6" /></svg>
+      four — a pin's area is its count
+    </span>
+    <a class="cmap-proj" href="https://en.wikipedia.org/wiki/Equal_Earth_projection">Equal Earth projection</a>
+  </figcaption>
+
+  <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
+       aria-label={`World map: ${plural(conf.talks, 'talk')} given in `
+                 + `${plural(pins.length, 'place')}, on an Equal Earth projection. `
+                 + `The same information is listed below.`}>
+    <path class="cmap-land" d={map.land} />
+    {/* Drawn over the land in the ocean's colour rather than cut out of it:
+        two paths and no fill-rule to get wrong. */}
+    <path class="cmap-lakes" d={map.lakes} />
+
+    {/* Biggest first, so a place with one talk is never hidden under a place
+        with eight — the pins are filled, and painting order is the only depth
+        an SVG has.
+
+        --r carries its unit: CSS `r` is a length, and a unitless number is only
+        a length in a browser being generous. Chromium accepts it; Safari drops
+        the declaration, `r` computes to its initial 0, and every pin vanishes
+        while the land still draws — so it reads as an empty map rather than as
+        a broken rule, and survives a look in the wrong browser. */}
+    {[...pins].sort((a, b) => b.r - a.r).map((pin) => (
+      <g class="cmap-pin" data-c={pins.indexOf(pin)} style={`--h:${pin.hue}; --r:${pin.r}px`}>
+        {/* <title> is the native tooltip and the accessible name at once. */}
+        <title>{pin.place} — {plural(pin.talks.length, 'talk')}</title>
+        {/* `r` twice on purpose: the attribute is what a stylesheet-less render
+            draws, --r is what the stylesheet scales for hover and small screens. */}
+        <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)} r={pin.r} />
+      </g>
+    ))}
+  </svg>
+
+  <div class="cmap-pick">
+    <label for="conf-who">Show</label>
+    <select id="conf-who" class="cmap-who btn btn--sel">
+      <option value="">Everywhere</option>
+      {pins.map((p, i) => (
+        <option value={String(i)}>{p.place} ({p.talks.length})</option>
+      ))}
+    </select>
+    {offMap > 0 && (
+      <span class="cmap-partial"
+            title="Online talks have no place to pin, and some records have no location recorded yet. Both are listed under the map rather than dropped.">
+        {plural(offMap, 'talk')} not on the map
+      </span>
+    )}
+  </div>
+
+  <ol class="cmap-list">
+    {pins.map((p, i) => (
+      <li data-c={i} style={`--h:${p.hue}`}>
+        <h3>{p.place} <span class="cmap-count">{plural(p.talks.length, 'talk')}</span></h3>
+        <ol hidden>
+          {p.talks.map((t) => (
+            <li>
+              <span class="cmap-when">{t.when}</span>
+              <span class="cmap-where">{t.url
+                ? <a href={t.url}>{t.title}</a>
+                : t.title}</span>
+              <span class="cmap-kind">{t.kindLabel}</span>
+              {t.details && <span class="cmap-role">{t.details}</span>}
+            </li>
+          ))}
+        </ol>
+      </li>
+    ))}
+  </ol>
+
+  {/* Outside .cmap-list on purpose: these are the talks the map cannot show, so
+      the picker must never hide them. */}
+  {offMap > 0 && (
+    <div class="cmap-off">
+      {online.length > 0 && (
+        <details>
+          <summary>{plural(online.length, 'talk')} online</summary>
+          {/* Not a pin, and not pretending to be one — an online talk happened
+              nowhere in particular, which is a fact worth keeping rather than
+              rounding to wherever I was sitting. */}
+          <ol>
+            {online.map((t) => (
+              <li>
+                <span class="cmap-when">{t.when}</span>
+                <span class="cmap-where">{t.url ? <a href={t.url}>{t.title}</a> : t.title}</span>
+                <span class="cmap-kind">{t.kindLabel}</span>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+      {(unplaced.length > 0 || unsettled.length > 0) && (
+        <details>
+          <summary>{plural(unplaced.length + unsettled.length, 'talk')} not placed yet</summary>
+          <p class="cmap-note">
+            Where these happened is recorded in <a href="https://github.com/nstarman/nstarman.github.io/issues/22">#22</a> and
+            not yet settled. {unsettled.length > 0 && (
+              <>Two carry a location written the old way — <code>TO, CA</code> reads
+              as California to a geocoder rather than Toronto — so they are listed
+              rather than pinned somewhere wrong.</>
+            )}
+          </p>
+          <ol>
+            {[...unsettled, ...unplaced].map((t) => (
+              <li>
+                <span class="cmap-when">{t.when}</span>
+                <span class="cmap-where">{t.url ? <a href={t.url}>{t.title}</a> : t.title}</span>
+                <span class="cmap-kind">{t.kindLabel}</span>
+                {t.location && <span class="cmap-role">recorded as “{t.location}”</span>}
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+    </div>
+  )}
+</figure>
+
+<script>
+  import { wireAll } from '../lib/mappick.js';
+  wireAll();
+</script>

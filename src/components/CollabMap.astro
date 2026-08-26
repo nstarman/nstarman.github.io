@@ -62,7 +62,7 @@ const label = (pin) =>
 
   <div class="cmap-pick">
     <label for="cmap-who">Show</label>
-    <select id="cmap-who" class="btn btn--sel">
+    <select id="cmap-who" class="cmap-who btn btn--sel">
       <option value="">Everyone</option>
       {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
     </select>
@@ -111,84 +111,6 @@ const label = (pin) =>
 </figure>
 
 <script>
-  // Progressive enhancement, and only that: with no JavaScript every pin, every
-  // trajectory and every name is already on the page, which is the honest
-  // default anyway. What this adds is the ability to pull one person out of
-  // thirty-four.
-  //
-  // It toggles `hidden` rather than a class so the effect is in the DOM rather
-  // than only in the paint — a screen reader is told the same thing the eye is.
-  const fig = document.querySelector('.cmap');
-  const pick = document.getElementById('cmap-who');
-  if (fig && pick) {
-    const all = (sel) => [...fig.querySelectorAll(sel)];
-    const list = fig.querySelector('.cmap-list');
-
-    const show = (only) => {
-      const mine = (el) => only === '' || el.dataset.c === only;
-      for (const el of all('.cmap-pin, .cmap-trail')) el.style.display = mine(el) ? '' : 'none';
-      // Everyone means the map, and only the map: a roster of thirty-four names
-      // under it is the wall of text the picker exists to avoid.
-      list.hidden = only === '';
-      for (const li of all('.cmap-list > li')) {
-        li.hidden = !mine(li);
-        // The posts are the detail; they belong to whoever was asked for.
-        const posts = li.querySelector('ol');
-        const note = li.querySelector('.cmap-note');
-        // Only the person asked for; the others are hidden anyway, and content
-        // inside a hidden element should not be pretending to be visible.
-        const open = only !== '' && mine(li);
-        if (posts) posts.hidden = !open;
-        if (note) note.hidden = !open;
-      }
-      fig.dataset.only = only;
-    };
-
-    pick.addEventListener('change', () => show(pick.value));
-    show('');
-
-    fig.addEventListener('pointerover', (e) => mark(e.target));
-    fig.addEventListener('pointerleave', () => mark(null));
-    fig.addEventListener('focusin', (e) => mark(e.target));
-    fig.addEventListener('focusout', () => mark(null));
-
-    // Clicking a pin or a trail picks that person, which is what pointing at
-    // something on a map and pressing it ought to do. Hover deliberately does
-    // not: sweeping the cursor across eighty-five pins would rebuild the list
-    // under the reader several times a second. Hover previews by dimming the
-    // others; the click commits.
-    fig.addEventListener('click', (e) => {
-      const owner = e.target.closest?.('.cmap-pin, .cmap-trail');
-      if (!owner) return;
-      pick.value = owner.dataset.c;
-      show(pick.value);
-      // Selecting hides everyone else, so the thing being pointed at is no
-      // longer under the cursor and the dimming has nothing left to say.
-      mark(null);
-    });
-
-    // Hover and keyboard linking between the two halves. The state goes on the
-    // figure rather than being expressed with :has(), because one attribute on
-    // an ancestor is two CSS rules instead of one per person — and because a
-    // pin and its name in the list are in different subtrees, which is exactly
-    // the case :has() is worst at.
-    // Set on the elements rather than expressed as a rule keyed off the figure.
-    // CSS cannot say "this element's data-c matches its ancestor's data-hover"
-    // without one rule per person, and the version that dimmed everything and
-    // lit the match back up did not survive contact with a real browser. This
-    // does one thing and can be checked by reading it back.
-    const dimmable = () => all('.cmap-pin, .cmap-trail, .cmap-list > li');
-    const mark = (el) => {
-      const owner = el?.closest?.('[data-c]');
-      const only = owner?.dataset.c;
-      for (const e of dimmable()) {
-        // Trails carry their own resting opacity, so restoring means clearing
-        // the override rather than writing 1 over the top of it.
-        e.style.opacity = only === undefined || e.dataset.c === only ? '' : '.12';
-      }
-      if (only === undefined) delete fig.dataset.hover;
-      else fig.dataset.hover = only;
-    };
-
-  }
+  import { wireAll } from '../lib/mappick.js';
+  wireAll();
 </script>
