@@ -886,7 +886,10 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-key--trail svg{width:22px}
 /* Opposite the legend on the same line: it names the drawing, the keys name
    what is drawn on it. */
-.cmap-proj{margin-left:auto; white-space:nowrap}
+.cmap-proj{margin-left:auto; white-space:nowrap; color:inherit;
+  text-decoration:underline; text-decoration-color:var(--rule-strong);
+  text-underline-offset:.18em}
+.cmap-proj:hover, .cmap-proj:focus-visible{color:var(--accent); text-decoration-color:currentColor}
 .cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
 
 /* Everything recedes but the person under the cursor. Two rules, keyed on an
