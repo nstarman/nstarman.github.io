@@ -971,15 +971,15 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-partial{
   margin-left:auto; white-space:nowrap;
   font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
-  color:#8a4b00; background:#fff3e0; border:1px solid #f0c98a;
+  color:#a35c05; background:#fff8ee; border:1px solid #f6dcb4;
   border-radius:.25rem; padding:.1rem .38rem;
 }
 :root:not([data-theme="light"]) {
   @media (prefers-color-scheme: dark) {
-    .cmap-partial{color:#f0b978; background:#3a2a14; border-color:#6b4a1e}
+    .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
   }
 }
-:root[data-theme="dark"] .cmap-partial{color:#f0b978; background:#3a2a14; border-color:#6b4a1e}
+:root[data-theme="dark"] .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
 
 /* ORCID's own green, because it is their mark and a reader recognises it
    faster than any label would explain it. */
