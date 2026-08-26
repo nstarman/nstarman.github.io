@@ -5,6 +5,10 @@ name: CI
 # This replaces a path-filtered data check that let most changes through
 # ungated: a PR touching src/, cv/ or a workflow ran nothing at all, so a
 # broken build or a CV template that would not compile went green.
+#
+# The preview lives here too rather than in its own workflow, because the
+# `CI Pass` gate at the bottom — the one required check — can only `needs:`
+# jobs that share its workflow.
 
 on:
   pull_request:
@@ -66,3 +70,147 @@ jobs:
           name: site
           path: dist
           retention-days: 7
+
+  # Moved here from preview.yml: a gate job can only `needs:` jobs in its own
+  # workflow, and the preview is one of the things that must be green.
+  #
+  # A live preview URL for every pull request, so a change to the site can be
+  # looked at rather than imagined.
+  #
+  # GitHub Pages serves one deployment per repository, which is the production
+  # site, so previews go to Cloudflare Pages instead. Setup, once:
+  #
+  #   1. Cloudflare -> My Profile -> API Tokens -> Create Custom Token, with one
+  #      permission: Account / Cloudflare Pages / Edit.
+  #   2. This repo -> Settings -> Secrets and variables -> Actions:
+  #        CLOUDFLARE_API_TOKEN    the token from step 1
+  #        CLOUDFLARE_ACCOUNT_ID   the ID in the dashboard's right-hand sidebar
+  #
+  # The Pages project itself is created by the job below if it is missing, so
+  # there is nothing to set up by hand beyond those two secrets.
+  #
+  # Until those secrets exist the job passes without deploying rather than
+  # failing, so this is safe to merge before the account is set up — and it
+  # does the same for pull requests from forks, which cannot read secrets.
+  preview:
+    name: preview
+    runs-on: ubuntu-latest
+    # Nothing to preview on a push to main — that is the live site — and
+    # `github.event.number`, which names the Cloudflare branch, is empty there.
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    # `secrets` cannot be used in a job-level `if`, so the guard is a step.
+    steps:
+      - id: guard
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Cloudflare secrets are not set — see the comments in this workflow." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/checkout@v7
+      - if: steps.guard.outputs.ready == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm ci
+
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build
+
+      # The CV PDFs are part of the site; a preview without them would 404 on
+      # every Download button.
+      - if: steps.guard.outputs.ready == 'true'
+        uses: typst-community/setup-typst@v5
+        with:
+          typst-version: "0.15.1"
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build:pdf
+
+      # The production domain must not follow the preview: CNAME in the
+      # artifact would try to claim nstarkman.space on Cloudflare too.
+      #
+      # Cloudflare Pages also refuses any file over 25 MiB, and the Typst
+      # compiler wasm the CV builder loads is 27 MiB. GitHub Pages serves it,
+      # so this costs the preview one page — /cv/builder/ says "Compile failed"
+      # there — rather than costing the live site anything. Matched by size,
+      # not by name: the built filename carries a content hash.
+      - if: steps.guard.outputs.ready == 'true'
+        run: |
+          rm -f dist/CNAME
+          find dist -type f -size +25M -printf 'too large for Pages, dropped: %p (%s bytes)\n' -delete \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - if: steps.guard.outputs.ready == 'true'
+        name: Ensure the Pages project exists
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Already exists is the normal case and not an error.
+          command: >-
+            pages project create nstarkman-space
+            --production-branch=main
+        continue-on-error: true
+
+      - if: steps.guard.outputs.ready == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # dist/ is untracked, so the checkout always looks dirty to wrangler.
+          command: >-
+            pages deploy dist
+            --project-name=nstarkman-space
+            --branch=pr-${{ github.event.number }}
+            --commit-dirty=true
+
+      - if: steps.guard.outputs.ready == 'true'
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: preview
+          message: |
+            **Preview:** ${{ steps.deploy.outputs.deployment-url }}
+
+            Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
+            Updated on every push to this pull request.
+
+            `/cv/builder/` cannot compile here — its 27 MiB wasm is over Cloudflare's
+            25 MiB file limit. Every other page is the real build.
+
+  # The one required check. Branch protection cannot require a job that never
+  # ran — a missing check reads as "expected", not as a pass — but it also
+  # cannot notice a job it was never told about. Requiring this single gate
+  # instead of each job by name means a new job added below is covered the day
+  # it lands, and a workflow that fails to trigger at all leaves the pull
+  # request blocked rather than green.
+  #
+  # CodeQL cannot be listed here: it runs from code scanning's default setup,
+  # not from a workflow file in this repo, so no job can `needs:` it. Mark its
+  # "CodeQL" check required alongside "CI Pass" in branch protection.
+  status:
+    name: CI Pass
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    needs: [test, preview]
+    steps:
+      - name: All required jobs passed
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
+          # preview is pull-request-only, so it is deliberately skipped on a
+          # push to main or a manual run. A skip there is not a failure.
+          allowed-skips: preview
