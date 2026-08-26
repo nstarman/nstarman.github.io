@@ -1096,8 +1096,52 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
   .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
   .cvmini-more{
-    display:block; margin-top:.4rem; font-size:.7rem; line-height:1.35;
+    display:block; margin:0 0 .4rem; font-size:.7rem; line-height:1.35;
     color:var(--ink-faint);
   }
   .cvmini-more:hover, .cvmini-more:focus-visible{color:var(--accent)}
+
+  /* Full width of the map, so the three stack as one panel. Small, because it
+     is a control on an aside and must not out-shout the CV beside it. */
+  .cvmini-who{
+    display:block; width:100%; margin:0 0 .4rem;
+    font-family:var(--mono); font-size:.62rem; letter-spacing:.02em;
+    color:var(--ink-2); background:var(--ground);
+    border:1px solid var(--rule); border-radius:4px;
+    padding:.2rem .3rem;
+  }
+  .cvmini-who:hover{border-color:var(--rule-strong)}
+  .cvmini-who:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+}
+
+/* A paper written with whoever is picked in the CV's gutter map.
+   Green rather than the site's blue: the accent already means "this is a link
+   or the current thing", and this is neither — it is a transient answer to a
+   question the reader just asked. Low alpha so the row is tinted rather than
+   recoloured, and the type on it keeps its own contrast.
+
+   The spread shadow is the padding. A real padding would move every row on the
+   page the moment one was marked; a shadow in the same colour as the background
+   paints the same shape and costs no layout. */
+.tl.is-coauthor, .card.is-coauthor{
+  --coauthor:oklch(.62 .15 152);
+  background:color-mix(in srgb, var(--coauthor) 11%, transparent);
+  border-radius:12px;
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 11%, transparent);
+  transition:background .15s ease, box-shadow .15s ease;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tl.is-coauthor, :root:not([data-theme="light"]) .card.is-coauthor{
+    --coauthor:oklch(.74 .15 152);
+    background:color-mix(in srgb, var(--coauthor) 14%, transparent);
+    box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+  }
+}
+:root[data-theme="dark"] .tl.is-coauthor, :root[data-theme="dark"] .card.is-coauthor{
+  --coauthor:oklch(.74 .15 152);
+  background:color-mix(in srgb, var(--coauthor) 14%, transparent);
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+}
+@media (prefers-reduced-motion:reduce){
+  .tl.is-coauthor, .card.is-coauthor{transition:none}
 }

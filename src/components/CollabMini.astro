@@ -3,40 +3,108 @@
 //
 // Same data and same projection as the full map on /research/ — imported, not
 // reimplemented, so the two cannot disagree about where anyone worked. What is
-// dropped is everything interactive: no picker, no per-person list, no hover
-// linking. At this size those would be unusable, and the full map is one click
-// away for anyone who wants them.
+// dropped is the prose: no per-person post list, no paper titles, no hover
+// linking. At 176px those are unreadable, and the full map is one click away.
 //
-// It rides in the `}` gutter beside the publications, which is where the eye
-// already goes for a paper's source link, and it is only ever shown on a
-// viewport wide enough to hold it without moving the text — the same bargain
-// the contents rail makes on the other side.
+// What is kept is the picker, because the picker is the thing that makes a map
+// of thirty-four people answer a question rather than just decorate. Here it
+// earns more than it does on /research/: the CV it sits beside is a list of
+// papers, so picking a collaborator can light up the ones we wrote together.
 import { collaboratorMap, map } from '../lib/collabmap.js';
 
 const people = collaboratorMap();
-const pins = people.flatMap((p) => p.pins);
-// One dot per place rather than per post: at this scale a career of four posts
-// at one institution is four dots on the same pixel, which is just a darker
-// pixel. The full map fans them into a rosette; here they are one place.
-const places = [...new Map(pins.map((p) => [`${p.x.toFixed(1)},${p.y.toFixed(1)}`, p])).values()];
-const shared = new Set(
-  pins.filter((p) => p.papers.length > 0).map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`),
-);
-const label = `${people.length} collaborators across ${places.length} places`;
+
+// One dot per place per person. Within a person, four posts at one institution
+// are one dot — at this scale a rosette is just a darker pixel. Across people
+// the dots stack, which is why they are drawn opaque: two collaborators at the
+// same institution should read as one place, not as a darker one.
+const entries = people.map((person, c) => {
+  const at = new Map();
+  for (const pin of person.pins) {
+    const key = `${pin.x.toFixed(1)},${pin.y.toFixed(1)}`;
+    at.set(key, {
+      x: pin.x.toFixed(1),
+      y: pin.y.toFixed(1),
+      // Shared if anything was written during any post there.
+      shared: (at.get(key)?.shared ?? false) || pin.papers.length > 0,
+    });
+  }
+  // Every paper with this person, wherever they were standing. `unplacedPapers`
+  // are still collaborations — their ORCID just does not say where they were.
+  const papers = [...new Set([
+    ...person.pins.flatMap((p) => p.papers.map((q) => q.id)),
+    ...person.unplacedPapers.map((q) => q.id),
+  ])];
+  return { c, name: person.name, places: [...at.values()], papers };
+});
+
+// Shared places last, so they are drawn over the plain ones rather than under.
+const dots = entries
+  .flatMap((e) => e.places.map((pl) => ({ ...pl, c: e.c })))
+  .sort((a, b) => Number(a.shared) - Number(b.shared));
+
+const label = `${people.length} collaborators`;
 ---
 
 <aside class="cvmini" id="cv-collab-map" hidden>
   <div class="cvmini-stick">
-    <svg class="cvmini-svg" viewBox={`0 0 ${map.width} ${map.height}`} role="img" aria-label={`Map: ${label}.`}>
+    {/* At the top, where it reads as the heading for what follows rather than
+        as a footnote to it. */}
+    <a class="cvmini-more" href="/research/#collaborators">See Collaborator page &rarr;</a>
+
+    <select class="cvmini-who" aria-label="Highlight one collaborator">
+      <option value="">Everyone</option>
+      {entries.map((e) => (
+        <option value={String(e.c)} data-papers={e.papers.join(' ')}>{e.name}</option>
+      ))}
+    </select>
+
+    <svg class="cvmini-svg" viewBox={`0 0 ${map.width} ${map.height}`} role="img"
+         aria-label={`Map: where ${label} have worked. The same information is on the collaborator page.`}>
       <path class="cvmini-land" d={map.land} />
       {/* Lakes are drawn over the land in the ocean's colour, as on the full
           map: two paths and no fill-rule to get wrong. */}
       <path class="cvmini-lakes" d={map.lakes} />
-      {places.map((p) => (
-        <circle class={shared.has(`${p.x.toFixed(1)},${p.y.toFixed(1)}`) ? 'is-shared' : ''}
-                cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="9" />
+      {dots.map((d) => (
+        <circle class={d.shared ? 'is-shared' : ''} data-c={String(d.c)}
+                cx={d.x} cy={d.y} r="9" />
       ))}
     </svg>
-    <a class="cvmini-more" href="/research/#collaborators">See Collaborator page &rarr;</a>
   </div>
 </aside>
+
+<script>
+  // Picking a collaborator does two things at once, and the second is the point
+  // of putting this map next to a CV rather than on its own page: it narrows the
+  // map to where that person has worked, and it marks the papers in the list
+  // beside it that we wrote together.
+  //
+  // Progressive enhancement, as everywhere else here: with no JavaScript the map
+  // still draws every pin and the link still goes to the full version.
+  const aside = document.getElementById('cv-collab-map');
+  const pick = aside?.querySelector('.cvmini-who');
+
+  if (aside && pick) {
+    const dots = [...aside.querySelectorAll('circle')];
+    // Only the rows this CV actually rendered: a preset that drops a paper has
+    // no row to mark, which is not an error, just a shorter CV.
+    const rowFor = (id) => document.getElementById(`item-${id}`);
+
+    let marked = [];
+    const show = (only) => {
+      for (const d of dots) d.style.display = only === '' || d.dataset.c === only ? '' : 'none';
+
+      for (const row of marked) row.classList.remove('is-coauthor');
+      marked = [];
+      if (only === '') return;
+
+      const opt = pick.options[pick.selectedIndex];
+      for (const id of (opt.dataset.papers || '').split(' ').filter(Boolean)) {
+        const row = rowFor(id);
+        if (row) { row.classList.add('is-coauthor'); marked.push(row); }
+      }
+    };
+
+    pick.addEventListener('change', () => show(pick.value));
+  }
+</script>
