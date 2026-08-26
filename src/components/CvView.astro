@@ -320,13 +320,21 @@ const money = (a) => {
   const mapBtn = document.querySelector('.cvminibtn');
   const mapAside = document.getElementById('cv-collab-map');
   if (mapBtn && mapAside) {
-    mapBtn.addEventListener('click', () => {
-      const open = mapAside.hidden;
+    const setOpen = (open) => {
       mapAside.hidden = !open;
       mapBtn.setAttribute('aria-expanded', String(open));
       const what = open ? 'Hide' : 'Show';
       mapBtn.setAttribute('aria-label', `${what} where my collaborators have worked`);
       mapBtn.setAttribute('title', `${what} where my collaborators have worked`);
+    };
+    mapBtn.addEventListener('click', () => setOpen(mapAside.hidden));
+    // The panel's own copy of the button only ever shuts it — it is inside the
+    // thing it hides. Focus goes back to the heading's button, because closing
+    // has just removed the focused element from the page; `preventScroll`
+    // because the point of the second button is that the heading is far above.
+    mapAside.querySelector('.cvmini-shut')?.addEventListener('click', () => {
+      setOpen(false);
+      mapBtn.focus({ preventScroll: true });
     });
   }
 
