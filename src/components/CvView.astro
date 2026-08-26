@@ -96,7 +96,7 @@ const money = (a) => {
   const Head = collapsed ? 'summary' : 'div';
   const selectable = pick && s.items.length > 0;
   return (
-  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${!pick && s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
+  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
     <Head class="cvsechead">
       {selectable && (
         <input type="checkbox" class="groupbox"
@@ -149,7 +149,7 @@ const money = (a) => {
           link sits, so it reads as part of that column rather than as another
           control on the heading row. Publications only: the map is about the
           people in these bylines. */}
-      {!pick && s.id === 'publications' && (
+      {s.id === 'publications' && (
         <button type="button" class="cvminibtn" aria-expanded="false" aria-controls="cv-collab-map"
                 aria-label="Show where my collaborators have worked"
                 title="Show where my collaborators have worked">
@@ -276,7 +276,7 @@ const money = (a) => {
         right margin and sticks while the section is on screen, so the section's
         own box is what stops it: past the last publication it scrolls away with
         everything else rather than following the reader down the page. */}
-    {!pick && s.id === 'publications' && <CollabMini />}
+    {s.id === 'publications' && <CollabMini />}
   </Wrap>
   );
 })}
