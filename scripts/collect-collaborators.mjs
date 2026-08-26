@@ -116,12 +116,22 @@ const when = (d) => {
   return m ? `${y}-${String(m).padStart(2, '0')}` : `${y}`;
 };
 
+// Employment alone missed where people trained: Stacy McGaugh's MIT is an S.B.
+// from 1981, not a post, and a trajectory that starts at his first job starts
+// halfway through. Education is a place someone was, which is what the map is
+// about.
+const SECTIONS = [
+  ['employments', 'employment-summary', 'employment'],
+  ['educations', 'education-summary', 'education'],
+];
+
 async function history(id) {
-  const groups = (await orcid(`/${id}/employments`))['affiliation-group'] ?? [];
   const out = [];
-  for (const g of groups) {
+  for (const [path, key, kind] of SECTIONS) {
+    const groups = (await orcid(`/${id}/${path}`))['affiliation-group'] ?? [];
+    for (const g of groups) {
     for (const s of g.summaries ?? []) {
-      const e = s['employment-summary'];
+      const e = s[key];
       if (!e) continue;
       const org = e.organization ?? {};
       const addr = org.address ?? {};
@@ -131,12 +141,15 @@ async function history(id) {
         region: clean(addr.region),
         country: clean(addr.country),
         role: clean(e['role-title']),
+        kind,
         start: when(e['start-date']),
         // Absent end means the post is current, which is a fact worth keeping
         // distinct from "we do not know".
         end: when(e['end-date']),
       });
     }
+    }
+    await new Promise((r) => setTimeout(r, 200));
   }
   // Newest first, undated last — the same order ORCID shows them in.
   return out.sort((a, b) => (b.start ?? '').localeCompare(a.start ?? ''));

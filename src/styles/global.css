@@ -1,5 +1,5 @@
 :root{
-  --ground:#FFFFFF; --surface:#F5F7FA; --sunk:#EFF2F7;
+  --ground:#FFFFFF; --surface:#F5F7FA; --sunk:#EFF2F7; --sea:#4FC3D9;
   --ink:#12161C; --ink-2:#2A313C; --ink-mute:#5A6472; --ink-faint:#8A93A1;
   --rule:#E2E6EC; --rule-strong:#CFD6E0;
   --accent:#2A5DA8; --accent-soft:#EAF0F9; --accent-line:#7FA6D9;
@@ -15,7 +15,7 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ground:#0B0E14; --surface:#131923; --sunk:#0F141D;
+    --ground:#0B0E14; --surface:#131923; --sunk:#0F141D; --sea:#4FC3D9; --sea:#4FC3D9;
     --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
     --rule:#222A37; --rule-strong:#313B4B;
     --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
@@ -834,3 +834,158 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* An unticked line stays readable but recedes — the same bargain the unticked
    entries make, so a selection reads as one picture. */
 .sub.is-off{opacity:.35}
+
+/* ---------- the collaborator map ---------- */
+/* Hue comes from the render model, lightness from here: one number cannot be
+   legible on both paper-white and near-black, so the model picks the hue and
+   each theme picks how light to make it. */
+.cmap{margin:1.4rem 0 0}
+.cmap svg{
+  display:block; width:100%; height:auto;
+  /* The faintest wash of sea. Cyan rather than the site's navy accent: mixing
+     the accent in brought its darkness with it, and water reads as water at a
+     lighter, greener blue. Six per cent of it leaves the ground lighter than
+     the navy did — 238 against 237 — while the green-over-red cast that makes
+     it cyan rather than blue goes from 5 to 10. */
+  background:color-mix(in srgb, var(--sea) 6%, var(--sunk));
+  border-radius:12px;
+}
+/* The empty half of the map is the point: it says where the collaborations are
+   not. Equal Earth's 2.05:1 is kept, so areas stay comparable. */
+/* Land wants to be clearly land without competing with the pins on it —
+   --rule was so faint the continents were guesswork. */
+.cmap-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
+/* Exactly the ground the map sits on, so a lake is a hole rather than a shape.
+   Kept in step with the svg's own background by hand — color-mix cannot be
+   referred to twice without repeating it. */
+.cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
+.cmap-trail{
+  fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
+  stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
+}
+/* Radius lives here rather than in the markup so it can grow as the map
+   shrinks: at phone width the whole 1000-unit map is ~330px, where a 4.5-unit
+   pin is three pixels across and invisible. The `r` attribute stays in the SVG
+   as the value a stylesheet-less render would use. */
+.cmap-pin circle{
+  r:3; fill:var(--ground); stroke:oklch(.55 .16 var(--h)); stroke-width:2;
+  transition:r .12s ease;
+}
+.cmap-pin circle.is-shared{r:4.5; fill:oklch(.55 .16 var(--h))}
+.cmap-pin:hover circle, .cmap-pin:focus-visible circle{r:8}
+@media (max-width:44rem){
+  .cmap-pin circle{r:6; stroke-width:3}
+  .cmap-pin circle.is-shared{r:8}
+  .cmap-trail{stroke-width:3; stroke-dasharray:7 7}
+}
+@media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
+
+.cmap figcaption{
+  margin:0 0 .7rem;
+  /* Inset by the map's own corner radius, so the first dot and the last word
+     begin where the squircle stops curving rather than floating past it. */
+  padding:0 12px; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
+  display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .9rem;
+}
+/* The legend shows the two pins rather than describing them; a sentence
+   explaining a shape the reader can simply be shown is a sentence too many. */
+.cmap-key{display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap}
+.cmap-key svg{width:11px; height:11px; background:none; border-radius:0; flex:none}
+.cmap-key circle{stroke:var(--ink-mute); stroke-width:2; fill:var(--ground)}
+.cmap-key--shared circle{fill:var(--ink-mute)}
+.cmap-key--trail svg{width:22px}
+/* Opposite the legend on the same line: it names the drawing, the keys name
+   what is drawn on it. */
+.cmap-proj{margin-left:auto; white-space:nowrap; color:inherit;
+  text-decoration:underline; text-decoration-color:var(--rule-strong);
+  text-underline-offset:.18em}
+.cmap-proj:hover, .cmap-proj:focus-visible{color:var(--accent); text-decoration-color:currentColor}
+.cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
+
+/* Everything recedes but the person under the cursor. Two rules, keyed on an
+   attribute the script puts on the figure — a pin and its name live in
+   different subtrees, so there is nothing a pure-CSS sibling selector could
+   reach across. Without the script nothing fades, which is the honest default. */
+/* The hovered person's pins grow a little. The script dims the others by
+   writing an inline opacity, so "has no inline opacity" is exactly "is the one
+   being pointed at" — expressed here rather than as a second class to keep in
+   step. */
+.cmap[data-hover] .cmap-pin:not([style*="opacity"]) circle{r:7}
+.cmap-pin, .cmap-trail, .cmap-list > li{transition:opacity .15s ease}
+.cmap-list > li{outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .cmap-pin, .cmap-trail, .cmap-list > li{transition:none}
+}
+
+.cmap-head{margin-top:2rem}
+.cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
+/* `display` on the element beats the user agent's [hidden]{display:none}, so a
+   grid that sets one is never hidden by the attribute alone. Both of these are
+   toggled with `hidden`, so both have to say it themselves. */
+.cmap-list[hidden], .cmap-list ol[hidden]{display:none}
+.cmap-list > li{
+  border-left:3px solid oklch(.55 .16 var(--h)); padding-left:.7rem;
+}
+.cmap-list h3{margin:0 0 .35rem; font-size:.92rem}
+.cmap-list ol{list-style:none; margin:0; padding:0; display:grid; gap:.5rem}
+.cmap-list ol li{font-size:.8rem; line-height:1.45}
+.cmap-when{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-right:.4rem}
+.cmap-where{color:var(--ink-2)}
+.cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
+.cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
+.cmap-papers li{font-size:.76rem; margin-top:.15rem}
+.cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
+
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    .cmap-trail{stroke:oklch(.74 .15 var(--h))}
+    .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
+    .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
+    .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
+  }
+}
+:root[data-theme="dark"] .cmap-trail{stroke:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
+:root[data-theme="dark"] .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
+
+
+
+/* The map's person picker. */
+.cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.8rem 0 0}
+.cmap-pick label{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+
+/* With one person selected the list is a single record rather than a grid of
+   thirty-four, so it should not be laid out as columns. */
+.cmap[data-only]:not([data-only=""]) .cmap-list{grid-template-columns:1fr}
+
+/* Sits on each person's record rather than under the map, because that is
+   where the claim is actually made: this is their career as ORCID has it, not
+   as it was. Orange rather than the site's blue — it is a caveat, not a link. */
+/* The WIP tag's shape and weight, in orange rather than the site's blue —
+   same kind of label, different kind of thing to say. */
+.cmap-partial{
+  margin-left:auto; white-space:nowrap;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+  color:#a35c05; background:#fff8ee; border:1px solid #f6dcb4;
+  border-radius:.25rem; padding:.1rem .38rem;
+}
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
+  }
+}
+:root[data-theme="dark"] .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
+
+/* ORCID's own green, because it is their mark and a reader recognises it
+   faster than any label would explain it. */
+.cmap-orcid{float:right; margin:0 0 .2rem .5rem; line-height:0; color:#A6CE39}
+.cmap-orcid .ico{width:15px; height:15px; fill:currentColor; display:block}
+.cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}
+
+/* A pin is pressable, so it should look it. */
+.cmap-pin, .cmap-trail{cursor:pointer}

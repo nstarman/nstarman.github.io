@@ -3,6 +3,98 @@
   "source": "https://orcid.org",
   "people": [
     {
+      "orcid": "0000-0002-7626-506X",
+      "name": "Aarya A. Patil",
+      "affiliations": [
+        {
+          "organization": "Max Planck Institute for Astronomy",
+          "city": "Heidelberg",
+          "region": null,
+          "country": "DE",
+          "role": "LSST Discovery Alliance Catalyst Fellow",
+          "kind": "employment",
+          "start": "2023",
+          "end": null
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2018",
+          "end": "2023"
+        },
+        {
+          "organization": "Savitribai Phule Pune University",
+          "city": "Pune",
+          "region": "Maharashtra",
+          "country": "IN",
+          "role": "B.E.",
+          "kind": "education",
+          "start": "2014",
+          "end": "2018"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-6431-9633",
+      "name": "Adam Ginsburg",
+      "affiliations": [
+        {
+          "organization": "University of Florida",
+          "city": "Gainesville",
+          "region": "FL",
+          "country": "US",
+          "role": "Associate Professor",
+          "kind": "employment",
+          "start": "2023-08",
+          "end": null
+        },
+        {
+          "organization": "University of Florida",
+          "city": "Gainesville",
+          "region": "FL",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2019-08",
+          "end": "2023-08"
+        },
+        {
+          "organization": "University of Colorado",
+          "city": "Boulder",
+          "region": "CO",
+          "country": "US",
+          "role": null,
+          "kind": "education",
+          "start": "2007-08",
+          "end": "2013-09"
+        },
+        {
+          "organization": "University of Colorado",
+          "city": "Boulder",
+          "region": "CO",
+          "country": "US",
+          "role": "MS Astrophysics",
+          "kind": "education",
+          "start": "2007",
+          "end": "2009"
+        },
+        {
+          "organization": "Rice University",
+          "city": "Houston",
+          "region": "Texas",
+          "country": "US",
+          "role": "BS",
+          "kind": "education",
+          "start": "2003-08",
+          "end": "2006-05"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0003-0872-7098",
       "name": "Adrian M. Price-Whelan",
       "affiliations": [
@@ -12,6 +104,7 @@
           "region": "New York",
           "country": "US",
           "role": "Associate Research Scientist",
+          "kind": "employment",
           "start": "2021-08",
           "end": null
         },
@@ -21,6 +114,7 @@
           "region": "New York",
           "country": "US",
           "role": "Flatiron Research Fellow",
+          "kind": "employment",
           "start": "2019-07",
           "end": "2021-08"
         },
@@ -30,8 +124,55 @@
           "region": "New Jersey",
           "country": "US",
           "role": "Lyman J. Spitzer, Jr. fellow",
+          "kind": "employment",
           "start": "2016-07",
           "end": "2019-07"
+        },
+        {
+          "organization": "Columbia University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2011-09",
+          "end": "2016-05"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-6874-2594",
+      "name": "Albert Y. Shih",
+      "affiliations": [
+        {
+          "organization": "NASA",
+          "city": "Washington",
+          "region": "DC",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": "2010",
+          "end": null
+        },
+        {
+          "organization": "University of California, Berkeley",
+          "city": "Berkeley",
+          "region": "California",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2001",
+          "end": "2009"
+        },
+        {
+          "organization": "California Institute of Technology",
+          "city": "Pasadena",
+          "region": "CA",
+          "country": "US",
+          "role": "BS",
+          "kind": "education",
+          "start": "1997",
+          "end": "2001"
         }
       ]
     },
@@ -45,6 +186,7 @@
           "region": "California",
           "country": "US",
           "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -53,7 +195,18 @@
     {
       "orcid": "0009-0005-1250-1800",
       "name": "Andreas Thoyas",
-      "affiliations": []
+      "affiliations": [
+        {
+          "organization": "Northeastern University",
+          "city": "Boston",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Physics",
+          "kind": "education",
+          "start": "2023-09",
+          "end": "2027-05"
+        }
+      ]
     },
     {
       "orcid": "0000-0002-3734-331X",
@@ -65,6 +218,7 @@
           "region": "PA",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "2012-09",
           "end": null
         },
@@ -74,6 +228,7 @@
           "region": "PA",
           "country": "US",
           "role": "Associate Professor",
+          "kind": "employment",
           "start": "2005-09",
           "end": "2012-08"
         },
@@ -83,6 +238,7 @@
           "region": "NJ",
           "country": "US",
           "role": "Associate Professor",
+          "kind": "employment",
           "start": "2004-09",
           "end": "2005-08"
         },
@@ -92,6 +248,7 @@
           "region": "NJ",
           "country": "US",
           "role": "Assistant Professor",
+          "kind": "employment",
           "start": "1997-09",
           "end": "2004-08"
         },
@@ -101,8 +258,197 @@
           "region": "MA",
           "country": "US",
           "role": "Junior Fellow",
+          "kind": "employment",
           "start": "1994-09",
           "end": "1997-08"
+        },
+        {
+          "organization": "University of Chicago",
+          "city": "Chicago",
+          "region": "IL",
+          "country": "US",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": null,
+          "end": "1994-07"
+        },
+        {
+          "organization": "Washington University",
+          "city": "St. Louis",
+          "region": "MO",
+          "country": "US",
+          "role": "B.S.",
+          "kind": "education",
+          "start": null,
+          "end": "1989-05"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0003-2528-3409",
+      "name": "Brett M. Morris",
+      "affiliations": [
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Senior Astronomical Data Scientist",
+          "kind": "employment",
+          "start": "2026-04",
+          "end": null
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Senior Software Engineer",
+          "kind": "employment",
+          "start": "2022-09",
+          "end": "2026-03"
+        },
+        {
+          "organization": "Universität Bern",
+          "city": "Bern",
+          "region": "BE",
+          "country": "CH",
+          "role": "Postdoctoral research fellow",
+          "kind": "employment",
+          "start": "2019-07",
+          "end": "2022-08"
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2013-09",
+          "end": "2019-04"
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "M. Sc.",
+          "kind": "education",
+          "start": "2013-08",
+          "end": "2015-08"
+        },
+        {
+          "organization": "NASA",
+          "city": "Washington",
+          "region": "DC",
+          "country": "US",
+          "role": "Research Associate",
+          "kind": "employment",
+          "start": "2013-01",
+          "end": "2013-08"
+        },
+        {
+          "organization": "University of Maryland",
+          "city": "College Park",
+          "region": "MD",
+          "country": "US",
+          "role": "Bachelor of Science",
+          "kind": "education",
+          "start": "2009-08",
+          "end": "2012-12"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-3713-6337",
+      "name": "Brigitta M. Sipőcz",
+      "affiliations": [
+        {
+          "organization": "California Institute of Technology",
+          "city": "Pasadena",
+          "region": "CA",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": "2021",
+          "end": null
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "DiRAC Fellow",
+          "kind": "employment",
+          "start": "2018",
+          "end": "2021"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-9314-960X",
+      "name": "C. E. Brasseur",
+      "affiliations": [
+        {
+          "organization": "Lowell Observatory",
+          "city": "Flagstaff",
+          "region": "Arizona",
+          "country": "US",
+          "role": "NST Postdoctoral Fellow",
+          "kind": "employment",
+          "start": "2025-10",
+          "end": null
+        },
+        {
+          "organization": "University of St Andrews",
+          "city": "St Andrews",
+          "region": "Fife",
+          "country": "GB",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2021-10",
+          "end": "2025-06"
+        },
+        {
+          "organization": "Liverpool John Moores University",
+          "city": "Liverpool",
+          "region": "Liverpool",
+          "country": "GB",
+          "role": "MSc with distinction",
+          "kind": "education",
+          "start": "2017-09",
+          "end": "2019-10"
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Software Engineer",
+          "kind": "employment",
+          "start": "2016-05",
+          "end": "2021-08"
+        },
+        {
+          "organization": "Mills College",
+          "city": "Oakland",
+          "region": "CA",
+          "country": "US",
+          "role": "M.A.",
+          "kind": "education",
+          "start": "2008-08",
+          "end": "2010-05"
+        },
+        {
+          "organization": "Oberlin College",
+          "city": "Oberlin",
+          "region": "OH",
+          "country": "US",
+          "role": "B.A.",
+          "kind": "education",
+          "start": "2004-08",
+          "end": "2008-05"
         }
       ]
     },
@@ -116,6 +462,17 @@
           "region": "Massachusetts",
           "country": "US",
           "role": null,
+          "kind": "education",
+          "start": "2023-09",
+          "end": "2027-05"
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -131,7 +488,34 @@
           "region": "OH",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "1997-08",
+          "end": null
+        },
+        {
+          "organization": "University of North Carolina at Chapel Hill",
+          "city": "Chapel Hill",
+          "region": "NC",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": null,
+          "end": "1989"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0003-4401-0430",
+      "name": "David L. Shupe",
+      "affiliations": [
+        {
+          "organization": "Caltech",
+          "city": "Pasadena",
+          "region": "California",
+          "country": "US",
+          "role": "Senior Staff Scientist",
+          "kind": "employment",
+          "start": "1995-05",
           "end": null
         }
       ]
@@ -146,6 +530,7 @@
           "region": "Aragon",
           "country": "ES",
           "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -154,12 +539,79 @@
     {
       "orcid": "0000-0002-1544-1381",
       "name": "Dylan Folsom",
-      "affiliations": []
+      "affiliations": [
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": "2020-08",
+          "end": null
+        },
+        {
+          "organization": "Vanderbilt University",
+          "city": "Nashville",
+          "region": "Tennessee",
+          "country": "US",
+          "role": "BA",
+          "kind": "education",
+          "start": "2016-08",
+          "end": "2020-06"
+        }
+      ]
     },
     {
       "orcid": "0000-0002-2814-3578",
       "name": "E. Sola",
       "affiliations": []
+    },
+    {
+      "orcid": "0000-0001-8736-1762",
+      "name": "Eero Vaher",
+      "affiliations": [
+        {
+          "organization": "Lund Observatory",
+          "city": "Lund",
+          "region": null,
+          "country": "SE",
+          "role": "PhD student",
+          "kind": "employment",
+          "start": "2019-09",
+          "end": null
+        },
+        {
+          "organization": "European Space Agency",
+          "city": "Noordwijk",
+          "region": null,
+          "country": "NL",
+          "role": "Young Graduate Trainee",
+          "kind": "employment",
+          "start": "2018",
+          "end": "2019"
+        },
+        {
+          "organization": "Leiden University",
+          "city": "Leiden",
+          "region": null,
+          "country": "NL",
+          "role": "MSc in Astronomy",
+          "kind": "education",
+          "start": "2016-02",
+          "end": "2018-01"
+        },
+        {
+          "organization": "University of Tartu",
+          "city": "Tartu",
+          "region": null,
+          "country": "EE",
+          "role": "BSc in Physics",
+          "kind": "education",
+          "start": "2011-09",
+          "end": "2015-06"
+        }
+      ]
     },
     {
       "orcid": "0000-0001-5996-4072",
@@ -171,8 +623,39 @@
           "region": "Massachusetts",
           "country": "US",
           "role": "Postdoctoral Research Associate",
+          "kind": "employment",
           "start": "2025-09",
           "end": null
+        },
+        {
+          "organization": "University of Cambridge",
+          "city": "Cambridge",
+          "region": "Cambridgeshire",
+          "country": "GB",
+          "role": "PhD Astronomy",
+          "kind": "education",
+          "start": "2021-10",
+          "end": "2025-06"
+        },
+        {
+          "organization": "The University of Edinburgh",
+          "city": "Edinburgh",
+          "region": "Edinburgh",
+          "country": "GB",
+          "role": "MSc Theoretical Physics",
+          "kind": "education",
+          "start": "2020-09",
+          "end": "2021-08"
+        },
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": "A.B. Astrophysics with Applied and Computational Mathematics",
+          "kind": "education",
+          "start": "2016-09",
+          "end": "2020-06"
         }
       ]
     },
@@ -186,7 +669,18 @@
           "region": "OH",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "2008-08",
+          "end": null
+        },
+        {
+          "organization": "University of Helsinki",
+          "city": "Helsinki",
+          "region": null,
+          "country": "FI",
+          "role": "PhD",
+          "kind": "education",
+          "start": "1986-09",
           "end": null
         }
       ]
@@ -201,6 +695,7 @@
           "region": "Tuscany",
           "country": "IT",
           "role": "Research Staff",
+          "kind": "employment",
           "start": "2020-12",
           "end": null
         },
@@ -210,6 +705,7 @@
           "region": "Wales",
           "country": "GB",
           "role": "Research Associate",
+          "kind": "employment",
           "start": "2020-01",
           "end": "2020-12"
         },
@@ -219,6 +715,7 @@
           "region": "Bayern",
           "country": "DE",
           "role": "ESO Fellow",
+          "kind": "employment",
           "start": "2017-01",
           "end": "2019-12"
         },
@@ -228,8 +725,39 @@
           "region": "OH",
           "country": "US",
           "role": "Postdoctoral Scholar",
+          "kind": "employment",
           "start": "2014-01",
           "end": "2016-12"
+        },
+        {
+          "organization": "University of Groningen",
+          "city": "Groningen",
+          "region": "Groningen",
+          "country": "NL",
+          "role": "Ph.D. Degree in Astronomy",
+          "kind": "education",
+          "start": "2009-12",
+          "end": "2013-12"
+        },
+        {
+          "organization": "University of Bologna",
+          "city": "Bologna",
+          "region": "Emilia-Romagna",
+          "country": "IT",
+          "role": "Master Degree in Astrophysics and Cosmology",
+          "kind": "education",
+          "start": "2006-10",
+          "end": "2009-10"
+        },
+        {
+          "organization": "University of Bologna",
+          "city": "Bologna",
+          "region": "Emilia-Romagna",
+          "country": "IT",
+          "role": "Bachelor Degree in Astronomy",
+          "kind": "education",
+          "start": "2003-10",
+          "end": "2006-10"
         }
       ]
     },
@@ -243,6 +771,7 @@
           "region": "Tyrol",
           "country": "AT",
           "role": "Associate Professor",
+          "kind": "employment",
           "start": "2012",
           "end": "2025"
         }
@@ -258,6 +787,7 @@
           "region": "OH",
           "country": "US",
           "role": "Distinguished University Professor",
+          "kind": "employment",
           "start": "1995-01",
           "end": null
         },
@@ -267,6 +797,7 @@
           "region": "ON",
           "country": "CA",
           "role": "Scholar",
+          "kind": "employment",
           "start": "1994-01",
           "end": "1994-12"
         },
@@ -276,6 +807,7 @@
           "region": "Ontario",
           "country": "CA",
           "role": "Research Associate",
+          "kind": "employment",
           "start": "1991-07",
           "end": "1994-12"
         },
@@ -285,8 +817,29 @@
           "region": "NJ",
           "country": "US",
           "role": "Member",
+          "kind": "employment",
           "start": "1988-07",
           "end": "1991-06"
+        },
+        {
+          "organization": "Stanford University",
+          "city": "Palo Alto",
+          "region": "CA",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "1984-09",
+          "end": "1988-06"
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "BSc",
+          "kind": "education",
+          "start": "1980-09",
+          "end": "1984-06"
         }
       ]
     },
@@ -297,11 +850,22 @@
         {
           "organization": "University of Toronto",
           "city": "Toronto",
-          "region": "Ontario",
+          "region": "ON",
           "country": "CA",
           "role": "Assistant Professor, Teaching Stream (Limited Term Appointment)",
+          "kind": "employment",
           "start": "2024-07",
           "end": "2025-06"
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "Doctor of Philosophy",
+          "kind": "education",
+          "start": "2018-09",
+          "end": "2024-07"
         }
       ]
     },
@@ -315,6 +879,7 @@
           "region": null,
           "country": "US",
           "role": "Prof",
+          "kind": "employment",
           "start": "1996",
           "end": "2018"
         },
@@ -324,15 +889,17 @@
           "region": "DC",
           "country": "US",
           "role": "Program Sc",
+          "kind": "employment",
           "start": "1994",
           "end": "1996"
         },
         {
-          "organization": "Caltech/JPL",
+          "organization": "Caltech",
           "city": "Pasadena",
-          "region": "CA",
+          "region": "California",
           "country": "US",
           "role": "Staff Sc",
+          "kind": "employment",
           "start": "1991",
           "end": "1994"
         },
@@ -342,6 +909,7 @@
           "region": "MI",
           "country": "US",
           "role": "Visiting Asst. Prof.",
+          "kind": "employment",
           "start": "1988",
           "end": "1991"
         },
@@ -351,8 +919,19 @@
           "region": "CA",
           "country": "US",
           "role": "Res. Assoc./Palomar Sky Survey",
+          "kind": "employment",
           "start": "1984-09",
           "end": "1988-07"
+        },
+        {
+          "organization": "Yale University",
+          "city": "New Haven",
+          "region": "CT",
+          "country": "US",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": "1980",
+          "end": "1984"
         }
       ]
     },
@@ -361,11 +940,22 @@
       "name": "Jacob Nibauer",
       "affiliations": [
         {
+          "organization": "University of Pennsylvania",
+          "city": "Philadelphia",
+          "region": "PA",
+          "country": "US",
+          "role": null,
+          "kind": "education",
+          "start": "2017-06",
+          "end": null
+        },
+        {
           "organization": "Princeton University",
           "city": "Princeton",
           "region": "New Jersey",
           "country": "US",
           "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -383,9 +973,10 @@
         {
           "organization": "University of Toronto",
           "city": "Toronto",
-          "region": "Ontario",
+          "region": "ON",
           "country": "CA",
           "role": "Assistant Professor",
+          "kind": "employment",
           "start": "2019-08",
           "end": null
         }
@@ -398,11 +989,78 @@
         {
           "organization": "University of Toronto",
           "city": "Toronto",
-          "region": "Ontario",
+          "region": "ON",
           "country": "CA",
           "role": "Professor",
+          "kind": "employment",
           "start": "2015-07",
           "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-9445-1846",
+      "name": "John D. Swinbank",
+      "affiliations": [
+        {
+          "organization": "Netherlands Institute for Radio Astronomy",
+          "city": "Dwingeloo",
+          "region": "Drenthe",
+          "country": "NL",
+          "role": "Senior Technical / Research Programme Manager",
+          "kind": "employment",
+          "start": "2020-10",
+          "end": null
+        },
+        {
+          "organization": "University of Washington",
+          "city": "Seattle",
+          "region": "WA",
+          "country": "US",
+          "role": "Research Professor",
+          "kind": "employment",
+          "start": "2017-10",
+          "end": "2020-09"
+        },
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": "Professional Specialist",
+          "kind": "employment",
+          "start": "2014-10",
+          "end": "2017-09"
+        },
+        {
+          "organization": "University of Amsterdam",
+          "city": "Amsterdam",
+          "region": "North Holland",
+          "country": "NL",
+          "role": null,
+          "kind": "employment",
+          "start": "2006-10",
+          "end": "2014-09"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "England",
+          "country": "GB",
+          "role": "DPhil (doctorate)",
+          "kind": "education",
+          "start": "2002-10",
+          "end": "2006-09"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "England",
+          "country": "GB",
+          "role": "MPhys",
+          "kind": "education",
+          "start": "1998-10",
+          "end": "2002-06"
         }
       ]
     },
@@ -416,6 +1074,7 @@
           "region": null,
           "country": "ES",
           "role": "PhD applicant",
+          "kind": "employment",
           "start": null,
           "end": null
         },
@@ -425,6 +1084,27 @@
           "region": null,
           "country": "ES",
           "role": "Lecturer",
+          "kind": "employment",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Universidad Politecnica",
+          "city": "Barcelona",
+          "region": "Cataluña",
+          "country": "ES",
+          "role": "Master in Industrial Engineering (Energy Techniques)",
+          "kind": "education",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Valencian International University",
+          "city": "Valencia",
+          "region": null,
+          "country": "ES",
+          "role": "Master in Astronomy and Astrophysics",
+          "kind": "education",
           "start": null,
           "end": null
         }
@@ -440,8 +1120,55 @@
           "region": "NY",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "2006-07",
           "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-1821-0650",
+      "name": "Kelle L. Cruz",
+      "affiliations": [
+        {
+          "organization": "Hunter College",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Associate Professor",
+          "kind": "employment",
+          "start": "2017-09",
+          "end": null
+        },
+        {
+          "organization": "Hunter College",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2010-01",
+          "end": "2017-08"
+        },
+        {
+          "organization": "University of Pennsylvania",
+          "city": "Philadelphia",
+          "region": "PA",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2000-09",
+          "end": "2004-05"
+        },
+        {
+          "organization": "University of Pennsylvania",
+          "city": "Philadelphia",
+          "region": "PA",
+          "country": "US",
+          "role": "BA",
+          "kind": "education",
+          "start": "1996-09",
+          "end": "2000-05"
         }
       ]
     },
@@ -455,6 +1182,17 @@
           "region": "NY",
           "country": "US",
           "role": "PhD Candidate",
+          "kind": "employment",
+          "start": "2022-09",
+          "end": null
+        },
+        {
+          "organization": "Columbia University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
           "start": "2022-09",
           "end": null
         },
@@ -464,8 +1202,101 @@
           "region": "NY",
           "country": "US",
           "role": "Guest Researcher",
+          "kind": "employment",
           "start": "2021-09",
           "end": "2022-06"
+        },
+        {
+          "organization": "The University of Chicago",
+          "city": "Chicago",
+          "region": "IL",
+          "country": "US",
+          "role": "B.S.",
+          "kind": "education",
+          "start": "2017-09",
+          "end": "2021-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-7908-9284",
+      "name": "Larry Bradley",
+      "affiliations": [
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5466-3817",
+      "name": "Lia Corrales",
+      "affiliations": [
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2020-09",
+          "end": null
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "LSA Collegiate Fellow",
+          "kind": "employment",
+          "start": "2018-09",
+          "end": "2020-08"
+        },
+        {
+          "organization": "University of Wisconsin Madison",
+          "city": "Madison",
+          "region": "WI",
+          "country": "US",
+          "role": "Einstein Fellow",
+          "kind": "employment",
+          "start": "2016-09",
+          "end": "2018-08"
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Postdoctoral Associate",
+          "kind": "employment",
+          "start": "2014-07",
+          "end": "2016-08"
+        },
+        {
+          "organization": "Columbia University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": "2007-09",
+          "end": "2014-06"
+        },
+        {
+          "organization": "Harvey Mudd College",
+          "city": "Claremont",
+          "region": "CA",
+          "country": "US",
+          "role": "B. S.",
+          "kind": "education",
+          "start": "2002-09",
+          "end": "2006-05"
         }
       ]
     },
@@ -479,6 +1310,7 @@
           "region": "CA",
           "country": "US",
           "role": null,
+          "kind": "employment",
           "start": "2020-10",
           "end": null
         },
@@ -488,7 +1320,18 @@
           "region": "CA",
           "country": "US",
           "role": "Postdoctoral Fellow",
+          "kind": "employment",
           "start": "2017-09",
+          "end": null
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": null,
+          "kind": "education",
+          "start": null,
           "end": null
         }
       ]
@@ -500,9 +1343,10 @@
         {
           "organization": "University of Toronto",
           "city": "Toronto",
-          "region": "Ontario",
+          "region": "ON",
           "country": "CA",
           "role": "Dunlap Fellow",
+          "kind": "employment",
           "start": "2023-09",
           "end": "2025-10"
         },
@@ -512,8 +1356,35 @@
           "region": "England",
           "country": "GB",
           "role": "Research Associate (postdoc)",
+          "kind": "employment",
           "start": "2021-02",
           "end": "2023-08"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "England",
+          "country": "GB",
+          "role": null,
+          "kind": "education",
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5830-8505",
+      "name": "Marten H. van Kerkwijk",
+      "affiliations": [
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "Professor",
+          "kind": "employment",
+          "start": "2003-01",
+          "end": null
         }
       ]
     },
@@ -532,6 +1403,7 @@
           "region": "England",
           "country": "GB",
           "role": "Lecturer in Astrophysics - Cosmology",
+          "kind": "employment",
           "start": "2025-08",
           "end": null
         },
@@ -541,6 +1413,7 @@
           "region": "England",
           "country": "GB",
           "role": "Senior Research Fellow on the ESA Euclid mission",
+          "kind": "employment",
           "start": "2021-08",
           "end": "2025-07"
         },
@@ -550,6 +1423,7 @@
           "region": "England",
           "country": "GB",
           "role": "Research Fellow on the ESA Euclid mission",
+          "kind": "employment",
           "start": "2020-10",
           "end": "2021-07"
         },
@@ -559,6 +1433,7 @@
           "region": "England",
           "country": "GB",
           "role": "Research Associate",
+          "kind": "employment",
           "start": "2016-04",
           "end": "2020-10"
         },
@@ -568,8 +1443,29 @@
           "region": null,
           "country": "IT",
           "role": "Research Assistant",
+          "kind": "employment",
           "start": "2015-10",
           "end": "2016-03"
+        },
+        {
+          "organization": "Università di Bologna",
+          "city": "Bologna",
+          "region": null,
+          "country": "IT",
+          "role": "Ph.D. in Astronomy",
+          "kind": "education",
+          "start": "2012-10",
+          "end": "2015-12"
+        },
+        {
+          "organization": "Ruprecht-Karls-Universität Heidelberg",
+          "city": "Heidelberg",
+          "region": null,
+          "country": "DE",
+          "role": "Diploma in Physics",
+          "kind": "education",
+          "start": "2006-09",
+          "end": "2012-05"
         },
         {
           "organization": "University College London",
@@ -577,6 +1473,7 @@
           "region": "England",
           "country": "GB",
           "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -592,6 +1489,7 @@
           "region": "Jiangsu",
           "country": "CN",
           "role": "Assistant professor",
+          "kind": "employment",
           "start": "2024-03",
           "end": null
         },
@@ -601,6 +1499,7 @@
           "region": null,
           "country": "DE",
           "role": "Alexander von Humboldt fellow",
+          "kind": "employment",
           "start": "2022-02",
           "end": "2024-01"
         },
@@ -610,6 +1509,7 @@
           "region": null,
           "country": "DE",
           "role": "Learning German (sponsored by Alexander von Humboldt foundation)",
+          "kind": "employment",
           "start": "2021-11",
           "end": "2022-02"
         },
@@ -619,8 +1519,19 @@
           "region": "OH",
           "country": "US",
           "role": "Postdoctoral scholar",
+          "kind": "employment",
           "start": "2020-09",
           "end": "2021-11"
+        },
+        {
+          "organization": "Case Western Reserve University",
+          "city": "Cleveland",
+          "region": "OH",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2016-05",
+          "end": "2020-08"
         }
       ]
     },
@@ -631,9 +1542,10 @@
         {
           "organization": "Space Telescope Science Institute",
           "city": "Baltimore",
-          "region": "MD",
+          "region": "Maryland",
           "country": "US",
           "role": null,
+          "kind": "employment",
           "start": "2007-10",
           "end": null
         }
@@ -649,6 +1561,7 @@
           "region": "OH",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "2012-08",
           "end": null
         },
@@ -658,6 +1571,7 @@
           "region": "MD",
           "country": "US",
           "role": "Professor",
+          "kind": "employment",
           "start": "1998-07",
           "end": "2012-08"
         },
@@ -667,6 +1581,7 @@
           "region": "NJ",
           "country": "US",
           "role": "Research Fellow",
+          "kind": "employment",
           "start": "1997-11",
           "end": "1998-06"
         },
@@ -676,6 +1591,7 @@
           "region": "DC",
           "country": "US",
           "role": "Carnegie Fellow",
+          "kind": "employment",
           "start": "1995-09",
           "end": "1997-10"
         },
@@ -685,8 +1601,39 @@
           "region": "Cambridgeshire",
           "country": "GB",
           "role": "Research Associate",
+          "kind": "employment",
           "start": "1992-10",
           "end": "1995-09"
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": "1987-07",
+          "end": "1992-06"
+        },
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": null,
+          "kind": "education",
+          "start": "1985-09",
+          "end": "1986-08"
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "S.B.",
+          "kind": "education",
+          "start": "1981-09",
+          "end": "1985-05"
         }
       ]
     },
@@ -700,6 +1647,7 @@
           "region": "Capital Region",
           "country": "DK",
           "role": "Associate Professor",
+          "kind": "employment",
           "start": "2026-05",
           "end": null
         },
@@ -709,6 +1657,7 @@
           "region": null,
           "country": "DK",
           "role": "Assistant Professor",
+          "kind": "employment",
           "start": "2023-12",
           "end": null
         },
@@ -718,6 +1667,7 @@
           "region": "New York",
           "country": "US",
           "role": "NASA Hubble Fellow",
+          "kind": "employment",
           "start": "2020-12",
           "end": "2023-12"
         },
@@ -727,8 +1677,19 @@
           "region": "NY",
           "country": "US",
           "role": "Flatiron Research Fellow",
+          "kind": "employment",
           "start": "2018-08",
           "end": "2020-12"
+        },
+        {
+          "organization": "Columbia University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2013-09",
+          "end": "2018-06"
         },
         {
           "organization": "Københavns Universitet",
@@ -736,6 +1697,33 @@
           "region": null,
           "country": "DK",
           "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-3657-4191",
+      "name": "Simon Conseil",
+      "affiliations": [
+        {
+          "organization": "Université Lyon 1",
+          "city": "Villeurbanne",
+          "region": "Rhône-Alpes",
+          "country": "FR",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Centre de Recherche Astrophysique de Lyon",
+          "city": "Lyon",
+          "region": "Rhône-Alpes",
+          "country": "FR",
+          "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
         }
@@ -746,13 +1734,110 @@
       "name": "Sirui Wu",
       "affiliations": [
         {
+          "organization": "Sun Yat-sen University",
+          "city": "Guangzhou",
+          "region": null,
+          "country": "CN",
+          "role": "MPhil in Astrophysics",
+          "kind": "education",
+          "start": "2021-09",
+          "end": "2024-06"
+        },
+        {
+          "organization": "Lanzhou University",
+          "city": "Lanzhou",
+          "region": null,
+          "country": "CN",
+          "role": "BSc in Physics",
+          "kind": "education",
+          "start": "2017-09",
+          "end": "2021-06"
+        },
+        {
           "organization": "Københavns Universitet",
           "city": "København K",
           "region": null,
           "country": "DK",
           "role": null,
+          "kind": "employment",
           "start": null,
           "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-9427-5448",
+      "name": "Timothy E. Pickering",
+      "affiliations": [
+        {
+          "organization": "University of Arizona",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant Staff Scientist",
+          "kind": "employment",
+          "start": "2017-01",
+          "end": null
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": "Systems Software Engineer",
+          "kind": "employment",
+          "start": "2013-08",
+          "end": "2016-12"
+        },
+        {
+          "organization": "Southern African Large Telescope",
+          "city": "Observatory",
+          "region": "Cape Town",
+          "country": "ZA",
+          "role": "SALT Astronomer",
+          "kind": "employment",
+          "start": "2009-10",
+          "end": "2013-07"
+        },
+        {
+          "organization": "MMT Observatory",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant/Associate Staff Scientist",
+          "kind": "employment",
+          "start": "2001-08",
+          "end": "2009-09"
+        },
+        {
+          "organization": "University of Arizona",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "Assistant Staff Scientist",
+          "kind": "employment",
+          "start": "2000-09",
+          "end": "2001-08"
+        },
+        {
+          "organization": "University of Arizona",
+          "city": "Tucson",
+          "region": "AZ",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "1992-08",
+          "end": "1998-08"
+        },
+        {
+          "organization": "Universtity of Wisconsin",
+          "city": "Madison",
+          "region": "WI",
+          "country": "US",
+          "role": "BS",
+          "kind": "education",
+          "start": "1988-09",
+          "end": "1992-07"
         }
       ]
     }

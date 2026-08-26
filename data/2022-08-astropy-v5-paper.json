@@ -34,6 +34,149 @@
       "given": "Nathaniel",
       "me": true,
       "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Bradley",
+      "given": "Larry",
+      "orcid": "0000-0002-7908-9284"
+    },
+    {
+      "family": "Shupe",
+      "given": "David L.",
+      "orcid": "0000-0003-4401-0430"
+    },
+    {
+      "family": "Patil",
+      "given": "Aarya A.",
+      "orcid": "0000-0002-7626-506X"
+    },
+    {
+      "family": "Corrales",
+      "given": "Lia",
+      "orcid": "0000-0002-5466-3817"
+    },
+    {
+      "family": "Brasseur",
+      "given": "C. E.",
+      "orcid": "0000-0002-9314-960X"
+    },
+    {
+      "family": "Nöthe",
+      "given": "Maximilian"
+    },
+    {
+      "family": "Tollerud",
+      "given": "Erik"
+    },
+    {
+      "family": "Morris",
+      "given": "Brett M.",
+      "orcid": "0000-0003-2528-3409"
+    },
+    {
+      "family": "Ginsburg",
+      "given": "Adam",
+      "orcid": "0000-0001-6431-9633"
+    },
+    {
+      "family": "Vaher",
+      "given": "Eero",
+      "orcid": "0000-0001-8736-1762"
+    },
+    {
+      "family": "Weaver",
+      "given": "Benjamin A."
+    },
+    {
+      "family": "Jamieson",
+      "given": "William"
+    },
+    {
+      "family": "van Kerkwijk",
+      "given": "Marten H.",
+      "orcid": "0000-0002-5830-8505"
+    },
+    {
+      "family": "Robitaille",
+      "given": "Thomas P."
+    },
+    {
+      "family": "Aldcroft",
+      "given": "Thomas L."
+    },
+    {
+      "family": "Cara",
+      "given": "Mihai"
+    },
+    {
+      "family": "Conroy",
+      "given": "Kyle E"
+    },
+    {
+      "family": "Conseil",
+      "given": "Simon",
+      "orcid": "0000-0002-3657-4191"
+    },
+    {
+      "family": "Craig",
+      "given": "Matthew W."
+    },
+    {
+      "family": "Cruz",
+      "given": "Kelle L.",
+      "orcid": "0000-0002-1821-0650"
+    },
+    {
+      "family": "Dencheva",
+      "given": "Nadia"
+    },
+    {
+      "family": "Glattly",
+      "given": "Lauren"
+    },
+    {
+      "family": "Greenfield",
+      "given": "Perry"
+    },
+    {
+      "family": "Homeier",
+      "given": "Derek"
+    },
+    {
+      "family": "O'Steen",
+      "given": "Richard"
+    },
+    {
+      "family": "Pickering",
+      "given": "Timothy E.",
+      "orcid": "0000-0002-9427-5448"
+    },
+    {
+      "family": "Shih",
+      "given": "Albert Y.",
+      "orcid": "0000-0001-6874-2594"
+    },
+    {
+      "family": "Sick",
+      "given": "Jonathan"
+    },
+    {
+      "family": "Singer",
+      "given": "Leo P."
+    },
+    {
+      "family": "Sipőcz",
+      "given": "Brigitta M.",
+      "orcid": "0000-0002-3713-6337"
+    },
+    {
+      "family": "Streicher",
+      "given": "Ole"
+    },
+    {
+      "family": "Swinbank",
+      "given": "John D.",
+      "orcid": "0000-0001-9445-1846"
     }
   ],
   "venue": {
@@ -72,7 +215,7 @@
     "astropy",
     "open-source"
   ],
-  "internal": "Author list truncated to the leading four; full list to be imported from ADS.",
+  "internal": "Author list is deliberately partial. The paper has 135 named authors; recorded here are the first ten plus every Astropy Active Voting Member who is on it (26 more, from config/astropy-voting-members.json, read 2026-08-25) - the people who run the project rather than the wider list who signed it. ORCIDs are recorded only where that ORCID record itself claims this DOI, which is 19 of the 36; the rest are named without one and so do not reach the collaborator map. Two surname collisions were rejected on first initial: Daria Cara is not Mihai Cara, and Rohit R. Patil is not Aarya Patil.",
   "details": "Co-wrote the Highlighted Feature Development, New and Planned Features, Precision, Accuracy & Reproducibility, and Performance sections.",
   "citekey": "Astropy+Price-Whelan+:2022:astropy-v5",
   "abstract": "The Astropy Project supports and fosters the development of open-source and openly-developed Python packages that provide commonly needed functionality to the astronomical community. A key element of the Astropy Project is the core package astropy, which serves as the foundation for more specialized projects and packages. In this article, we summarize key features in the core package as of the recent major release, version 5.0, and provide major updates for the Project. We then discuss supporting a broader ecosystem of interoperable packages, including connections with several astronomical observatories and missions. We also revisit the future outlook of the Astropy Project and the current status of Learn Astropy. We conclude by raising and discussing the current and future challenges facing the Project."

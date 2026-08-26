@@ -1,0 +1,18 @@
+{
+  "$comment": "Astropy's Active Voting Members, read once from https://www.astropy.org/team on 2026-08-25. A one-off snapshot, not generated: the collaborator collector uses it to decide which of the Astropy paper's 136 authors are colleagues rather than signatories. It will go stale — that is accepted, because the alternative is scraping someone else's page on a schedule.",
+  "source": "https://www.astropy.org/team",
+  "read": "2026-08-25",
+  "active": [
+    "Tom Aldcroft", "Larry Bradley", "Clara Brasseur", "Michael K. Brewer",
+    "Mihai Cara", "Kyle Conroy", "Simon Conseil", "Lia Corrales", "Matt Craig",
+    "Kelle Cruz", "Nadia Dencheva", "Nicholas Earl", "Tom Donaldson",
+    "Wilfred Gee", "Adam Ginsburg", "Lauren Glattly", "Perry Greenfield",
+    "Moritz Günther", "Derek Homeier", "William Jamieson", "Pey Lian Lim",
+    "Stuart Littlefair", "Brett Morris", "Stuart Mumford", "Ricky O'Steen",
+    "Hannu Parviainen", "Aarya Patil", "Tim Pickering", "Adrian Price-Whelan",
+    "Clément Robert", "Thomas Robitaille", "Albert Y. Shih", "David Shupe",
+    "Jonathan Sick", "Leo Singer", "Brigitta Sipőcz", "Nathaniel Starkman",
+    "Ole Streicher", "John Swinbank", "Erik Tollerud", "James Turner",
+    "Marten van Kerkwijk", "Eero Vaher", "Benjamin Alan Weaver", "Kyle Westfall"
+  ]
+}
