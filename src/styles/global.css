@@ -1,5 +1,5 @@
 :root{
-  --ground:#FFFFFF; --surface:#F5F7FA; --sunk:#EFF2F7;
+  --ground:#FFFFFF; --surface:#F5F7FA; --sunk:#EFF2F7; --sea:#4FC3D9;
   --ink:#12161C; --ink-2:#2A313C; --ink-mute:#5A6472; --ink-faint:#8A93A1;
   --rule:#E2E6EC; --rule-strong:#CFD6E0;
   --accent:#2A5DA8; --accent-soft:#EAF0F9; --accent-line:#7FA6D9;
@@ -15,7 +15,7 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ground:#0B0E14; --surface:#131923; --sunk:#0F141D;
+    --ground:#0B0E14; --surface:#131923; --sunk:#0F141D; --sea:#4FC3D9; --sea:#4FC3D9;
     --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
     --rule:#222A37; --rule-strong:#313B4B;
     --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
@@ -842,10 +842,12 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap{margin:1.4rem 0 0}
 .cmap svg{
   display:block; width:100%; height:auto;
-  /* The faintest wash of blue: enough that the empty half reads as ocean
-     rather than as margin, not enough to compete with a pin. Mixed from the
-     site's own accent so it follows the theme instead of being a new colour. */
-  background:color-mix(in srgb, var(--accent) 4%, var(--sunk));
+  /* The faintest wash of sea. Cyan rather than the site's navy accent: mixing
+     the accent in brought its darkness with it, and water reads as water at a
+     lighter, greener blue. Six per cent of it leaves the ground lighter than
+     the navy did — 238 against 237 — while the green-over-red cast that makes
+     it cyan rather than blue goes from 5 to 10. */
+  background:color-mix(in srgb, var(--sea) 6%, var(--sunk));
   border-radius:12px;
 }
 /* The empty half of the map is the point: it says where the collaborations are
@@ -856,7 +858,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Exactly the ground the map sits on, so a lake is a hole rather than a shape.
    Kept in step with the svg's own background by hand — color-mix cannot be
    referred to twice without repeating it. */
-.cmap-lakes{fill:color-mix(in srgb, var(--accent) 4%, var(--sunk)); stroke:none}
+.cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
 .cmap-trail{
   fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
   stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
