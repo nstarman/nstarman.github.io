@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
+import { collaboratorMap, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
   from '../src/lib/collabmap.js';
 
 const people = collaboratorMap();
@@ -182,5 +182,15 @@ describe('the collaborator map', () => {
     const unplaced = people.reduce((n, p) => n + p.unplacedPapers.length, 0);
     expect(placed).toBeGreaterThan(0);
     expect(placed + unplaced).toBeGreaterThan(placed);
+  });
+});
+
+describe('surname-first names', () => {
+  it('moves the given names behind the surname, particles included', () => {
+    expect(lastFirst('Adrian M. Price-Whelan')).toBe('Price-Whelan, Adrian M.');
+    expect(lastFirst('Marten H. van Kerkwijk')).toBe('van Kerkwijk, Marten H.');
+    expect(lastFirst('C. E. Brasseur')).toBe('Brasseur, C. E.');
+    // A mononym has nothing to move.
+    expect(lastFirst('Cher')).toBe('Cher');
   });
 });

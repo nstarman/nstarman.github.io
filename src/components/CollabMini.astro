@@ -10,7 +10,7 @@
 // of thirty-four people answer a question rather than just decorate. Here it
 // earns more than it does on /research/: the CV it sits beside is a list of
 // papers, so picking a collaborator can light up the ones we wrote together.
-import { collaboratorMap, map } from '../lib/collabmap.js';
+import { collaboratorMap, lastFirst, map } from '../lib/collabmap.js';
 
 const people = collaboratorMap();
 
@@ -35,8 +35,12 @@ const entries = people.map((person, c) => {
     ...person.pins.flatMap((p) => p.papers.map((q) => q.id)),
     ...person.unplacedPapers.map((q) => q.id),
   ])];
-  return { c, name: person.name, places: [...at.values()], papers };
+  return { c, name: lastFirst(person.name), places: [...at.values()], papers };
 });
+
+// Surname first, so the picker reads like an index rather than a list of
+// first names — the same order the CV's own references are scanned in.
+entries.sort((a, b) => a.name.localeCompare(b.name));
 
 // Shared places last, so they are drawn over the plain ones rather than under.
 const dots = entries
