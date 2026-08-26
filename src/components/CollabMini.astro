@@ -43,6 +43,13 @@ const dots = entries
   .flatMap((e) => e.places.map((pl) => ({ ...pl, c: e.c })))
   .sort((a, b) => Number(a.shared) - Number(b.shared));
 
+// One person's places joined in the order they held them — the same trajectory
+// the full map draws. `places` is already newest-first, because the dedup keeps
+// the order the pins came in and collaboratorMap sorts them that way.
+const trails = entries
+  .filter((e) => e.places.length > 1)
+  .map((e) => ({ c: e.c, points: e.places.map((pl) => `${pl.x},${pl.y}`).join(' ') }));
+
 const label = `${people.length} collaborators`;
 ---
 
@@ -65,6 +72,13 @@ const label = `${people.length} collaborators`;
       {/* Lakes are drawn over the land in the ocean's colour, as on the full
           map: two paths and no fill-rule to get wrong. */}
       <path class="cvmini-lakes" d={map.lakes} />
+      {/* Trajectories under the dots, so a pin sits on its own line rather than
+          being crossed by it. Faint until someone is picked: thirty-four of
+          them at this size is texture, not information — the picker is what
+          turns one of them back into a path through a career. */}
+      {trails.map((t) => (
+        <polyline class="cvmini-trail" data-c={String(t.c)} points={t.points} />
+      ))}
       {dots.map((d) => (
         <circle class={d.shared ? 'is-shared' : ''} data-c={String(d.c)}
                 cx={d.x} cy={d.y} r="9" />
@@ -85,14 +99,19 @@ const label = `${people.length} collaborators`;
   const pick = aside?.querySelector('.cvmini-who');
 
   if (aside && pick) {
-    const dots = [...aside.querySelectorAll('circle')];
+    // Dots and trajectories alike — anything the map draws per person.
+    const drawn = [...aside.querySelectorAll('[data-c]')];
     // Only the rows this CV actually rendered: a preset that drops a paper has
     // no row to mark, which is not an error, just a shorter CV.
     const rowFor = (id) => document.getElementById(`item-${id}`);
 
     let marked = [];
     const show = (only) => {
-      for (const d of dots) d.style.display = only === '' || d.dataset.c === only ? '' : 'none';
+      for (const d of drawn) d.style.display = only === '' || d.dataset.c === only ? '' : 'none';
+      // The stylesheet brings the surviving trajectory up from its resting
+      // faintness; expressed as one attribute rather than a class per element.
+      if (only === '') delete aside.dataset.only;
+      else aside.dataset.only = only;
 
       for (const row of marked) row.classList.remove('is-coauthor');
       marked = [];

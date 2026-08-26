@@ -1093,6 +1093,17 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   }
   .cvmini-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
   .cvmini-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
+  /* Dashed like the full map's, and monochrome unlike it: thirty-four hues at
+     176px is a rainbow, and the picker is what separates people here. */
+  .cvmini-trail{
+    fill:none; stroke:var(--ink-mute); stroke-width:2.6;
+    stroke-dasharray:7 7; stroke-linecap:round; opacity:.22;
+    transition:opacity .15s ease;
+  }
+  /* One person picked: the survivor is the point of the picture, not texture. */
+  .cvmini[data-only] .cvmini-trail{opacity:.85; stroke:var(--accent)}
+  @media (prefers-reduced-motion:reduce){ .cvmini-trail{transition:none} }
+
   .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
   .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
   .cvmini-more{
