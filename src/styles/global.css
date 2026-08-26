@@ -842,13 +842,17 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap{margin:1.4rem 0 0}
 .cmap svg{
   display:block; width:100%; height:auto;
-  background:var(--sunk); border-radius:12px;
+  /* The faintest wash of blue: enough that the empty half reads as ocean
+     rather than as margin, not enough to compete with a pin. Mixed from the
+     site's own accent so it follows the theme instead of being a new colour. */
+  background:color-mix(in srgb, var(--accent) 4%, var(--sunk));
+  border-radius:12px;
 }
 /* The empty half of the map is the point: it says where the collaborations are
    not. Equal Earth's 2.05:1 is kept, so areas stay comparable. */
 /* Land wants to be clearly land without competing with the pins on it —
    --rule was so faint the continents were guesswork. */
-.cmap-land{fill:var(--ink-faint); fill-opacity:.28; stroke:none}
+.cmap-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
 .cmap-trail{
   fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
   stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
