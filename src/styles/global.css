@@ -1033,3 +1033,126 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-off ol li{font-size:.8rem; line-height:1.45}
 .cmap-off .cmap-note{margin:.5rem 0 0}
 .cmap-off code{font-size:.9em}
+
+/* ── The collaborator map in the CV's right gutter ───────────────────────────
+   The mirror of the contents rail on the other side, and it makes the same
+   bargain: shown only where the margin can hold it without moving the text,
+   hidden entirely below that rather than reflowing the page.
+
+   Same 78rem breakpoint as .cvtoc, and the arithmetic is why they can share it.
+   At 78rem the column is 49rem and each margin is (78 - 49) / 2 = 14.5rem —
+   exactly the 2rem gap plus the 12.5rem rail. So the two appear and disappear
+   together, which is also the honest answer to "is there room": if one side
+   fits, so does the other. */
+.cvmini{display:none}
+.cvminibtn{display:none}
+
+@media (min-width:78rem){
+  /* The button rides where a paper's source mark does, so it reads as part of
+     the gutter rather than as another control crowding the length switcher. */
+  .cvsechead{position:relative}
+  /* Centred on the `}` column, not started at it. The marks below begin 1.5rem
+     past the column edge, so anchoring the button there put the `}` under its
+     left edge and the icon 6.6px to the right of the column it belongs to.
+     Half the mark's advance — 0.68rem of mono, so ~0.41rem wide — brings the
+     centres together, and translateX(-50%) does the rest. */
+  .cvminibtn{
+    display:block; position:absolute; left:100%; top:50%;
+    transform:translate(-50%, -50%);
+    margin-left:calc(1.5rem + 0.2rem); padding:.15rem; line-height:0;
+    background:none; border:0; cursor:pointer;
+    color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
+  }
+  .cvminibtn:hover, .cvminibtn:focus-visible{opacity:1; color:var(--accent)}
+  .cvminibtn .ico{width:15px; height:15px; fill:currentColor; display:block}
+  .cvminibtn[aria-expanded="true"]{opacity:1; color:var(--accent)}
+
+  .cvsec--hasmap{position:relative}
+  /* Absolute so it takes no space in the column, full height so the sticky
+     child has the section to travel down and nothing beyond it. */
+  /* Clear of the `}` column, not on top of it. The source marks sit 1.5rem past
+     the column edge and are about 12px wide, so anything starting at 2rem
+     overlapped them; 3.5rem leaves ~20px of daylight between the two.
+
+     11rem is then what the margin can still hold at the 78rem breakpoint:
+     (78rem - 49rem) / 2 is 14.5rem of margin, and 3.5rem of offset plus 11rem
+     of map plus a rem of breathing room is 15.5rem measured from the section's
+     content edge, which the wrap's own 1.5rem padding pays for. Wider than this
+     and the map would need a breakpoint of its own rather than sharing the
+     rail's. */
+  .cvmini{
+    display:block; position:absolute; left:100%; top:0; height:100%;
+    width:11rem; margin-left:3.5rem; pointer-events:none;
+  }
+  .cvmini[hidden]{display:none}
+  /* Clears the two sticky bars, like .cvtoc's own top. */
+  .cvmini-stick{position:sticky; top:6.5rem; pointer-events:auto}
+  .cvmini-svg{
+    display:block; width:100%; height:auto;
+    background:var(--sunk); border:1px solid var(--rule); border-radius:6px;
+  }
+  .cvmini-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
+  .cvmini-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
+  /* Dashed like the full map's, and monochrome unlike it: thirty-four hues at
+     176px is a rainbow, and the picker is what separates people here. */
+  .cvmini-trail{
+    fill:none; stroke:var(--ink-mute); stroke-width:2.6;
+    stroke-dasharray:7 7; stroke-linecap:round; opacity:.22;
+    transition:opacity .15s ease;
+  }
+  /* One person picked: the survivor is the point of the picture, not texture. */
+  .cvmini[data-only] .cvmini-trail{opacity:.85; stroke:var(--accent)}
+  @media (prefers-reduced-motion:reduce){ .cvmini-trail{transition:none} }
+
+  .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
+  .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
+  .cvmini-more{
+    display:block; margin:0 0 .4rem; font-size:.7rem; line-height:1.35;
+    color:var(--ink-faint); text-align:right;
+  }
+  .cvmini-more:hover, .cvmini-more:focus-visible{color:var(--accent)}
+
+  /* Full width of the map, so the three stack as one panel. Small, because it
+     is a control on an aside and must not out-shout the CV beside it. */
+  .cvmini-who{
+    display:block; width:100%; margin:.4rem 0 0;
+    font-family:var(--mono); font-size:.62rem; letter-spacing:.02em;
+    color:var(--ink-2); background:var(--ground);
+    border:1px solid var(--rule); border-radius:4px;
+    padding:.2rem .3rem;
+  }
+  .cvmini-who:hover{border-color:var(--rule-strong)}
+  .cvmini-who:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+}
+
+/* A paper written with whoever is picked in the CV's gutter map.
+   Green rather than the site's blue: the accent already means "this is a link
+   or the current thing", and this is neither — it is a transient answer to a
+   question the reader just asked. Low alpha so the row is tinted rather than
+   recoloured, and the type on it keeps its own contrast.
+
+   The spread shadow is the padding. A real padding would move every row on the
+   page the moment one was marked; a shadow in the same colour as the background
+   paints the same shape and costs no layout. */
+.tl.is-coauthor, .card.is-coauthor{
+  --coauthor:oklch(.62 .15 152);
+  background:color-mix(in srgb, var(--coauthor) 11%, transparent);
+  border-radius:12px;
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 11%, transparent);
+  transition:background .15s ease, box-shadow .15s ease;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tl.is-coauthor, :root:not([data-theme="light"]) .card.is-coauthor{
+    --coauthor:oklch(.74 .15 152);
+    background:color-mix(in srgb, var(--coauthor) 14%, transparent);
+    box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+  }
+}
+:root[data-theme="dark"] .tl.is-coauthor, :root[data-theme="dark"] .card.is-coauthor{
+  --coauthor:oklch(.74 .15 152);
+  background:color-mix(in srgb, var(--coauthor) 14%, transparent);
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+}
+@media (prefers-reduced-motion:reduce){
+  .tl.is-coauthor, .card.is-coauthor{transition:none}
+}
