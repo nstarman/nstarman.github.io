@@ -152,9 +152,9 @@ would publish the repo source instead of the built site.
 `public/CNAME` ships the custom domain in the artifact so it survives every
 deploy.
 
-Every pull request also gets a full preview — `preview.yml` builds the site and
-the four PDFs and deploys them to Cloudflare Pages, then posts the URL as a
-sticky comment. GitHub Pages serves one deployment per repository and that one
+Every pull request also gets a full preview — the `preview` job in `ci.yml`
+builds the site and the four PDFs and deploys them to Cloudflare Pages, then
+posts the URL as a sticky comment. GitHub Pages serves one deployment per repository and that one
 is production, which is why previews live elsewhere. The job skips rather than
 fails when the Cloudflare secrets are absent, so a fork does not see a red
 tick. One page cannot work there: `/cv/builder/` needs a 27 MiB compiler wasm

@@ -233,6 +233,10 @@ prevent.
 
 Every pull request also gets a live preview URL, posted as a comment.
 
+One check is required to merge: **CI Pass**, which is green only when every
+other job in `ci.yml` is. A job that fails to trigger at all therefore blocks
+the pull request instead of leaving it green with nothing run.
+
 ## 4. Open the PR
 
 - Branch `add/<id>`, e.g. `add/eas-2026-s10`.
