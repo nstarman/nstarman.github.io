@@ -1056,16 +1056,24 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
      left edge and the icon 6.6px to the right of the column it belongs to.
      Half the mark's advance — 0.68rem of mono, so ~0.41rem wide — brings the
      centres together, and translateX(-50%) does the rest. */
-  .cvminibtn{
-    display:block; position:absolute; left:100%; top:50%;
-    transform:translate(-50%, -50%);
-    margin-left:calc(1.5rem + 0.2rem); padding:.15rem; line-height:0;
+  /* The same control in two places — on the heading and in the panel — so it
+     is one set of rules and only the positioning differs. */
+  .cvminibtn, .cvmini-shut{
+    display:block; padding:.15rem; line-height:0;
     background:none; border:0; cursor:pointer;
     color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
   }
-  .cvminibtn:hover, .cvminibtn:focus-visible{opacity:1; color:var(--accent)}
-  .cvminibtn .ico{width:15px; height:15px; fill:currentColor; display:block}
-  .cvminibtn[aria-expanded="true"]{opacity:1; color:var(--accent)}
+  .cvminibtn{
+    position:absolute; left:100%; top:50%;
+    transform:translate(-50%, -50%);
+    margin-left:calc(1.5rem + 0.2rem);
+  }
+  .cvminibtn:hover, .cvminibtn:focus-visible,
+  .cvmini-shut:hover, .cvmini-shut:focus-visible{opacity:1; color:var(--accent)}
+  .cvminibtn .ico, .cvmini-shut .ico{width:15px; height:15px; fill:currentColor; display:block}
+  /* Lit while the map is open, which for the panel's copy is always: it is
+     inside the thing it closes. */
+  .cvminibtn[aria-expanded="true"], .cvmini-shut{opacity:1; color:var(--accent)}
 
   .cvsec--hasmap{position:relative}
   /* Absolute so it takes no space in the column, full height so the sticky
@@ -1106,8 +1114,11 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
   .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
   .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
+  /* Button left, link right, baseline-aligned on one row above the map. */
+  .cvmini-top{display:flex; align-items:center; justify-content:space-between;
+    gap:.4rem; margin:0 0 .4rem}
   .cvmini-more{
-    display:block; margin:0 0 .4rem; font-size:.7rem; line-height:1.35;
+    font-size:.7rem; line-height:1.35;
     color:var(--ink-faint); text-align:right;
   }
   .cvmini-more:hover, .cvmini-more:focus-visible{color:var(--accent)}
