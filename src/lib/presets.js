@@ -102,6 +102,11 @@ export function resolve(name, only) {
     name,
     label: spec.label,
     detail: spec.detail,
+    // The CV that takes every item is also the one that says every line, so it
+    // is what `detailsComplete` keys off. Read from the spec rather than by
+    // comparing the name to "complete", so a renderer never hard-codes which
+    // preset is the unabridged one.
+    includeAll: Boolean(spec.includeAll),
     sections: sections.filter((s) => s.items.length > 0 || s.entries?.length > 0),
   };
 }

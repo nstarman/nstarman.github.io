@@ -42,6 +42,32 @@ describe('detail levels', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0);
     for (const i of all(onlyFirst)) expect(i.lines.length).toBeLessThanOrEqual(1);
   });
+
+  it('prints `detailsComplete` in the complete CV and nowhere else', () => {
+    // The GPA is on the record and belongs in the unabridged CV; it is not
+    // something to hand a search committee. `details` is the wrong tier for it
+    // because np and the website both print that.
+    const text = (model, id) => {
+      const item = all(model).find((i) => i.id === id);
+      return (item?.lines ?? []).flat().map((sp) => sp.t).join(' ');
+    };
+    const record = itemById('cwru-bs');
+    expect(record.detailsComplete).toBe('GPA 4.0.');
+
+    expect(text(cvModel('complete'), 'cwru-bs')).toContain('GPA 4.0.');
+    for (const name of ['np', '2page', '1page']) {
+      expect(text(cvModel(name), 'cwru-bs')).not.toContain('GPA');
+    }
+    // And the tier above it still prints everywhere it did before.
+    expect(text(cvModel('np'), 'cwru-bs')).toContain('Summa Cum Laude.');
+  });
+
+  it('appends a complete-only line last, so line indices do not shift', () => {
+    // The builder ticks lines by index. If the extra line were inserted among
+    // the others, every tick after it would silently point at a different line.
+    const lines = all(cvModel('complete')).find((i) => i.id === 'cwru-bs').lines;
+    expect(lines.at(-1).map((sp) => sp.t).join(' ')).toContain('GPA 4.0.');
+  });
 });
 
 describe('publications', () => {

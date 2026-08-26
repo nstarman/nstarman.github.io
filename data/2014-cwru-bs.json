@@ -18,7 +18,8 @@
   "supervisors": [
     "Stacy McGaugh"
   ],
-  "details": "Summa Cum Laude, GPA 4.0.",
+  "details": "Summa Cum Laude.",
+  "detailsComplete": "GPA 4.0.",
   "links": [
     {
       "rel": "homepage",

@@ -51,11 +51,21 @@ export function lines(long, base = '') {
  * must use. Shared so the page and the PDF cannot disagree about what an
  * entry's lines are — or, once the builder can tick them individually, about
  * which line index a tick refers to.
+ *
+ * `complete` adds the lines only the complete CV shows. It is off by default so
+ * every caller that has not thought about it gets the discreet answer: a field
+ * whose whole purpose is to appear in one place should not leak into a fourth
+ * renderer by being forgotten about.
+ *
+ * The extra lines go last, after the thesis and supervisors, so a line index
+ * means the same thing whether or not they are included — the builder ticks
+ * lines by index, and inserting in the middle would silently move its ticks.
  */
-export function detailLines(item) {
+export function detailLines(item, { complete = false } = {}) {
   return [
     ...lines(item.details),
     ...(item.thesis ? [spans(`Thesis: ${item.thesis}`)] : []),
     ...(item.supervisors?.length ? [spans(`Supervisors: ${item.supervisors.join(', ')}`)] : []),
+    ...(complete ? lines(item.detailsComplete) : []),
   ];
 }

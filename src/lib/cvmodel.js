@@ -151,7 +151,7 @@ export function cvModel(presetName, only, keepLine) {
         // summary/details split, and what make_short.py could not express.
         // Span arrays, not strings: `details` may be several lines and may carry
         // inline links, and Typst would print the markup verbatim otherwise.
-        lines: detailLines(item).filter((_, i) =>
+        lines: detailLines(item, { complete: cv.includeAll }).filter((_, i) =>
           keepLine ? keepLine(item.id, i) : s.detail === 'full'),
         trailing: trailing(item),
         recipient: item.recipient ?? null,
