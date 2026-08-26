@@ -70,12 +70,17 @@ describe('the collaborator database', () => {
   });
 
   it('keeps distinct posts at one employer distinct', () => {
-    // Normalising the place must not collapse a career into one row: two
-    // Simons Foundation posts share an address and differ in role and dates.
+    // Normalising the place must not collapse a career into one row: the Simons
+    // Foundation posts share an address and differ in role and dates.
+    //
+    // Counted rather than fixed at a number. This file is regenerated from
+    // ORCID, so a hard-coded two became wrong the day Price-Whelan was promoted
+    // — and a test that fails on someone else's promotion is testing the world,
+    // not the normaliser. The property is that the rows stay separate.
     const apw = doc.people.find((p) => p.orcid === '0000-0003-0872-7098');
     const simons = apw.affiliations.filter((a) => a.organization === 'Simons Foundation');
-    expect(simons.length).toBe(2);
-    expect(new Set(simons.map((a) => a.role)).size).toBe(2);
+    expect(simons.length).toBeGreaterThan(1);
+    expect(new Set(simons.map((a) => a.role)).size).toBe(simons.length);
   });
 
   it('sorts each history newest first', () => {
