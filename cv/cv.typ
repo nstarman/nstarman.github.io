@@ -14,7 +14,19 @@
 // rather than the words "code" and "docs". Set 11pt here rather than 12, which
 // keeps most of the reading gain without the page count.
 //
+// Three files, and this is the document:
+//
+//   cv/cv.typ          the header, the section shapes, and the body loop
+//   cv/lib/theme.typ   the palette, and the figures that are not old-style
+//   cv/lib/styles.typ  the marks, and one unit per style — see the README
+//
+// So nothing here names a colour, a font or a glyph, and adding a style never
+// touches this file.
+//
 //   typst compile --root . cv/cv.typ out.pdf
+
+#import "lib/theme.typ": ink, accent, faint, orcid, accentsoft, accentline, headerwash, tnum, lnum
+#import "lib/styles.typ": styled
 
 #let cv = json("cv.json")
 #let p = cv.person
@@ -24,25 +36,11 @@
 // the top and two-thirds empty at the bottom.
 #let tight = cv.preset == "1page"
 
-// Which pre-built style. "default" draws the marks; "plain" spells them out in
-// words instead, for anywhere a row of glyphs is unwelcome — a plain-text ATS,
-// a printer that renders symbol fonts badly, or simply a preference. Only the
-// browser builder sets it, so the CLI PDFs are always the default and their
-// page-count contracts are unaffected.
-#let plain = cv.at("style", default: "default") == "plain"
-
-#let ink = rgb("#111111")
-#let accent = rgb("#003399") // linkcolour: rgb(0, 0.2, 0.6)
-#let faint = rgb("#808080") // \grayhref: gray 0.5
-#let orcid = rgb("#A6CE39") // orcidlogocol
-// The publication status pill, same two tints the website uses.
-#let accentsoft = rgb("#EAF0F9")
-#let accentline = rgb("#7FA6D9")
-// The header sits on this. Barely there by intent — enough to read as one
-// block rather than four columns that happen to be adjacent, not enough to
-// look like a filled panel, and light enough to survive an office printer
-// without banding.
-#let headerwash = luma(250)
+// Which style. Each is a self-contained unit in lib/styles.typ answering how a
+// mark is drawn beside words (`marked`), standing alone (`solo`), and in a run
+// of them (`trail`). Only the browser builder sets the key, so the CLI PDFs are
+// always the default and their page-count contracts are unaffected.
+#let (glyph, solo, trail, marked) = styled(cv.at("style", default: "default"))
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
@@ -66,82 +64,12 @@
   number-type: "old-style",
 )
 
-// Lining and tabular: equal-width, cap-height digits, for the places where
-// figures form a column and have to align down the page rather than read as
-// part of a sentence.
-#let tnum(body) = text(number-type: "lining", number-width: "tabular", body)
-
-// Lining but proportional, for identifiers rather than columns. An ORCID iD, an
-// arXiv number or a postcode is transcribed digit by digit rather than read as
-// a quantity, and old-style figures — which vary in height by design — make
-// that harder for no gain.
-#let lnum(body) = text(number-type: "lining", body)
 #set par(
   justify: true,
   spacing: 0pt,
   leading: if tight { 0.42em } else { 0.5em },
 )
 #show link: set text(fill: accent)
-
-// ── icons ─────────────────────────────────────────────────────────────────
-// The same fonts the LaTeX CV uses — Font Awesome 5 Free Solid, its Brands
-// companion, and Academicons — vendored in public/fonts/. Real glyphs rather
-// than traced SVGs: they hint and scale like type, and they take a fill, so one
-// definition serves every colour.
-#let FA = "Font Awesome 5 Free Solid"
-#let FAB = "Font Awesome 5 Brands"
-#let AI = "Academicons"
-
-// name -> (family, codepoint), keyed by the names presets.json and REL_ICON use
-#let MARKS = (
-  // link trails
-  ads: (AI, "\u{E9CB}"),
-  arxiv: (AI, "\u{E974}"),
-  zenodo: (FA, "\u{F1C0}"), // \faIcon{database}, as in the LaTeX header
-  paper: (FA, "\u{F15C}"), // file-alt
-  repo: (FA, "\u{F6E3}"), // hammer — the reproducible-paper mark
-  github: (FAB, "\u{F09B}"),
-  code: (FA, "\u{F121}"),
-  docs: (FA, "\u{F05A}"), // info-circle
-  data: (FA, "\u{F1C0}"), // database
-  slides: (FA, "\u{F15C}"),
-  link: (FA, "\u{F0C1}"),
-  email: (FA, "\u{F0E0}"), // envelope
-  globe: (FA, "\u{F0AC}"),
-  orcid: (FAB, "\u{F8D2}"),
-  // section marks
-  education: (FA, "\u{F19C}"), // university
-  positions: (FA, "\u{F6FF}"), // network-wired
-  publications: (FA, "\u{F15C}"), // file-alt
-  awards: (FA, "\u{F559}"), // award
-  grants: (FA, "\u{F0D6}"), // money-bill
-  talks: (FA, "\u{F51C}"), // chalkboard-teacher
-  conferences: (FA, "\u{F0C0}"), // users
-  mentoring: (FA, "\u{E068}"), // people-arrows
-  teaching: (FA, "\u{F5D1}"), // apple-alt
-  service: (FA, "\u{F2B5}"), // handshake
-  panels: (FA, "\u{F0E3}"), // gavel
-  outreach: (FA, "\u{F234}"), // user-plus
-  media: (FA, "\u{F1EA}"), // newspaper
-)
-
-#let icon(name, size: 1em, fill: accent) = {
-  let (family, glyph) = MARKS.at(name, default: MARKS.link)
-  text(font: family, size: size, fill: fill, glyph)
-}
-
-// A link whose whole body is a mark.
-#let iconlink(url, name, size: 1em, fill: accent) = link(
-  url,
-  icon(name, size: size, fill: fill),
-)
-
-// A mark with words beside it — or, in the plain style, the words on their own.
-// Every call site that pairs the two goes through this, so switching styles is
-// one branch rather than one per mark.
-#let marked(name, body, size: 1em, fill: accent) = if plain { body } else {
-  [#icon(name, size: size, fill: fill) #body]
-}
 
 // ── header ────────────────────────────────────────────────────────────────
 // Four columns across the full measure rather than five centred lines: a QR to
@@ -227,10 +155,13 @@
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
   v(if tight { 8pt } else { 15pt })
+  // `none` twice over: no mark named for this section, or a style that draws
+  // none. Both mean the heading is the words alone.
+  let g = if mark == none { none } else { glyph(mark, size: 0.95em, fill: ink) }
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
     #text(size: 15.6pt)[
-      #if mark != none and not plain [#icon(mark, size: 0.95em, fill: ink) #h(2pt)]
+      #if g != none [#g #h(2pt)]
       #smallcaps(title)
     ]
     #v(4.5pt)
@@ -258,18 +189,6 @@
 #let linked(sp) = sp.map(s => if "url" in s and not s.url.starts-with("#") {
   link(s.url)[#s.t]
 } else { s.t }).join()
-
-// The resource trail: marks, not words, so it costs the end of a line instead
-// of a line of its own.
-#let trail(links, tint: accent, size: 1em) = {
-  if plain {
-    // Nothing left to carry the meaning, so the words do it — and they are the
-    // words the model already holds: code, docs, data, repo.
-    links.map(l => link(l.url, text(size: size * 0.86, fill: tint, l.label))).join([, ])
-  } else {
-    links.map(l => iconlink(l.url, l.icon, size: size, fill: tint)).join(h(3pt))
-  }
-}
 
 // ── one entry ─────────────────────────────────────────────────────────────
 // Title and subject share a line — "**Institution**, Role" — which is what
@@ -330,7 +249,7 @@
         .map(l => if l.label == l.rel {
           // The label is the bare rel — "paper", "repo" — which is a word the
           // mark was standing in for, so it serves when the mark is gone.
-          link(l.url, if plain { text(size: 0.9em, l.label) } else { icon(l.icon, size: 0.9em) })
+          link(l.url, solo(l.icon, l.label, size: 0.9em))
         } else {
           link(l.url, marked(l.icon, lnum(l.label), size: 0.9em))
         })

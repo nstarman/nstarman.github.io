@@ -21,7 +21,8 @@ config/          things that are configuration rather than items: the CV presets
                  the person, and the generated contributions list
 schema/          the item JSON Schema, plus invalid fixtures the tests assert on
 src/             the Astro site
-cv/              the Typst CV template, and the portrait and QR it draws
+cv/              the Typst CV template — cv.typ, lib/ (the palette and the
+                 styles), and the portrait and QR it draws
 tests/           vitest suites over src/lib and the generated data
 scripts/         test, build and generation scripts
 public/          served verbatim: CNAME, files/starkman_cv.pdf, and the fonts
@@ -56,10 +57,23 @@ why `npm test` builds in the middle rather than at the end.
 ## The CV
 
 The four pre-built PDFs and the in-browser builder at `/cv/builder/` compile the
-same `cv/cv.typ` from the same render model, so the PDF and the site cannot
+same template from the same render model, so the PDF and the site cannot
 disagree about what a preset contains. Under CI the Typst CLI reads `cv.json`
 off disk; in the browser typst.ts is handed the same filename through its
 virtual filesystem. Nothing forks.
+
+### The template, in three pieces
+
+| file | what is in it |
+|---|---|
+| [`cv/cv.typ`](cv/cv.typ) | the document — the header, the shape of a section, and the loop over `cv.json`. Names no colour, no font and no glyph. |
+| [`cv/lib/theme.typ`](cv/lib/theme.typ) | the palette, and the two figure styles that are not the document's old-style default |
+| [`cv/lib/styles.typ`](cv/lib/styles.typ) | the icon fonts, the mark table, and one unit per style |
+
+`cv/` is the compilation root in both runtimes, so `cv/lib/styles.typ` is
+`/lib/styles.typ` to typst.ts and the relative imports resolve unchanged either
+way. The builder globs `/cv/**/*.typ` into that virtual filesystem, so a new
+module needs no change there.
 
 ### Styles
 
@@ -82,11 +96,22 @@ the one- and two-page contracts cannot be affected by a style. (Both hold at
 one and two pages in either style regardless, which is worth knowing: words are
 wider than glyphs.)
 
-Adding a style is a branch in `cv.typ` behind that key plus an `<option>` in
-`src/pages/cv/builder.astro` — not a second template. Call sites that pair a
-mark with words go through one `marked()` helper, so the styles cannot drift
-apart; only a mark standing *alone* needs a deliberate fallback, or it compiles
-to an empty link.
+A style is a self-contained **unit** rather than a branch: one entry in `STYLES`
+in [`cv/lib/styles.typ`](cv/lib/styles.typ), answering three questions and
+nothing else.
+
+| the unit answers | asked by |
+|---|---|
+| `glyph(name)` | a mark drawn beside words — a section heading, a contact line. `none` draws nothing. |
+| `solo(name, word)` | a mark standing *alone*, given the word it was standing in for — a bare `arXiv` or `paper` link on a publication. Without a deliberate answer here a style compiles an empty link. |
+| `trail(links)` | a run of marks — the `code, docs, data` trail at the end of an entry. |
+
+`marked()`, a mark with words beside it, is derived from `glyph` rather than
+restated, so a style cannot answer those two inconsistently. Everything else is
+shared — the same type, the same spacing, the same sections, off the same
+model — which is why adding a style is that entry plus an `<option>` in
+`src/pages/cv/builder.astro`, touches `cv.typ` not at all, and never becomes a
+second template.
 
 ## Generated data
 
