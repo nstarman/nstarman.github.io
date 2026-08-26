@@ -338,5 +338,21 @@ const money = (a) => {
     update();
     addEventListener('scroll', update, { passive: true });
     addEventListener('resize', update, { passive: true });
+
+    // A fragment jump moves the page, and cannot be relied on to deliver a
+    // `scroll` event for it — so on its own, `scroll` leaves the rail marking
+    // wherever the reader was standing before they clicked. That is the half of
+    // this bug that survived the first fix: the landing position was then right
+    // and the mark was never recomputed to notice.
+    //
+    // Three signals, because each covers a gap in the others: `hashchange` for
+    // a click on the rail or any in-page anchor, `scrollend` for a smooth
+    // scroll that has come to rest (not everywhere yet, hence the guard), and a
+    // click on the rail itself for the case where the hash is unchanged because
+    // the reader clicked the section they were already in.
+    const soon = () => requestAnimationFrame(() => requestAnimationFrame(update));
+    addEventListener('hashchange', soon);
+    if ('onscrollend' in window) addEventListener('scrollend', update);
+    document.querySelector('.cvtoc')?.addEventListener('click', soon);
   }
 </script>
