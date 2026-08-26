@@ -18,7 +18,8 @@ command -v "$TYPST" >/dev/null || { echo "typst not found (set TYPST=/path/to/ty
 # a rule rather than a hope: a missing file fails here instead of quietly
 # substituting whatever the build machine happens to have installed.
 FONTS=(NewCM10-Regular.otf NewCM10-Bold.otf NewCM10-Italic.otf NewCM10-BoldItalic.otf
-       FontAwesome5Free-Solid-900.otf FontAwesome5Brands-Regular-400.otf academicons.otf)
+       FontAwesome5Free-Solid-900.otf FontAwesome5Brands-Regular-400.otf academicons.otf
+       Lato-Lig.ttf Lato-LigIta.ttf Lato-Reg.ttf Lato-Bol.ttf)
 for f in "${FONTS[@]}"; do
   [ -f "public/fonts/$f" ] || { echo "missing font: public/fonts/$f"; exit 1; }
 done

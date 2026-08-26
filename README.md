@@ -69,6 +69,7 @@ The builder adds a style menu beside **Compile PDF**:
 |---|---|
 | **Default** | what the pre-built PDFs are. Font Awesome and Academicons marks on links, section headings and the contact block. |
 | **Default - 🎨** | the same CV with none of the marks. Where a glyph stood alone the word takes its place — a resource trail reads `code, docs` rather than two icons — and the PDF embeds no icon fonts at all. |
+| **adrn** | a close mimic of [adrn/cv](https://github.com/adrn/cv). Lato rather than a serif, steel-blue headings over a light rule, US Letter with 1in margins, no portrait or QR, dates inline instead of in a gutter, and a running head. Values are taken from that repo's `apw-cv.cls`, not eyeballed. |
 
 A style is one key on `cv.json`:
 
@@ -78,9 +79,11 @@ A style is one key on `cv.json`:
 
 read by `cv.typ` as `cv.at("style", default: "default")`. **Only the builder
 sets it.** The CLI never writes it, so every pre-built PDF is the default and
-the one- and two-page contracts cannot be affected by a style. (Both hold at
-one and two pages in either style regardless, which is worth knowing: words are
-wider than glyphs.)
+the one- and two-page contracts cannot be affected by a style. `plain` holds at one and two pages too, though that was
+not a given — words are wider than glyphs. **`adrn` does not, and cannot:** US
+Letter with 1in margins is about a third less text area than this A4 setup, so
+the one-page preset runs to two. That is a property of the design being copied,
+not something spacing can recover.
 
 Adding a style is a branch in `cv.typ` behind that key plus an `<option>` in
 `src/pages/cv/builder.astro` — not a second template. Call sites that pair a

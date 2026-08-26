@@ -51,6 +51,7 @@ const site = buildInfo();
           <select class="btn btn--sel" id="style">
             <option value="default">Default</option>
             <option value="plain">Default - 🎨</option>
+            <option value="adrn">adrn</option>
           </select>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -359,6 +360,12 @@ const site = buildInfo();
             '/fonts/FontAwesome5Free-Solid-900.otf',
             '/fonts/FontAwesome5Brands-Regular-400.otf',
             '/fonts/academicons.otf',
+            // Lato, for the adrn style. Four faces, because that style leans
+            // on the Light/Regular distinction rather than on a bold.
+            '/fonts/Lato-Lig.ttf',
+            '/fonts/Lato-LigIta.ttf',
+            '/fonts/Lato-Reg.ttf',
+            '/fonts/Lato-Bol.ttf',
           ]),
         ],
       });
