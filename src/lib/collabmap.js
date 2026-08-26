@@ -41,6 +41,21 @@ function papersByAuthor() {
   return out;
 }
 
+// Nobiliary particles travel with the surname: "van Kerkwijk", not "Kerkwijk".
+const PARTICLES = new Set(['van', 'von', 'de', 'der', 'den', 'del', 'della', 'di', 'da', 'dos', 'la', 'le']);
+
+/** "Marten H. van Kerkwijk" -> "van Kerkwijk, Marten H." — index order, for
+ *  lists a reader scans by surname. Anything without a given name is left be. */
+export function lastFirst(name) {
+  const parts = name.split(' ');
+  // ponytail: a two-word name always splits, so a particle surname on its own
+  // ("Le Guin") comes out wrong. No collaborator has one; widen if one arrives.
+  let i = parts.length - 1;
+  while (i > 1 && PARTICLES.has(parts[i - 1].toLowerCase())) i -= 1;
+  const given = parts.slice(0, i).join(' ');
+  return given ? `${parts.slice(i).join(' ')}, ${given}` : name;
+}
+
 /** Did a post that ran `start`..`end` cover this date? */
 const covers = (post, date) =>
   Boolean(post.start) && post.start <= date && (!post.end || post.end >= date);
