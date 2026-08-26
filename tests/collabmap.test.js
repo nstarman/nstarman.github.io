@@ -38,8 +38,47 @@ describe('the Equal Earth projection', () => {
     expect(Math.abs(toXY(0, -90)[1] - map.height)).toBeLessThan(1);
   });
 
-  it('keeps Equal Earth’s proportions', () => {
+  it('agrees with the published formula, not just with itself', () => {
+    // Equal-area alone only proves it is *an* equal-area projection. These are
+    // the forward equations as Šavrič, Patterson & Jenny published them,
+    // written out with explicit powers so a folded exponent in the
+    // implementation cannot hide in both places at once.
+    const [A1, A2, A3, A4] = [1.340264, -0.081106, 0.000893, 0.003796];
+    const literal = (lonDeg, latDeg) => {
+      const lam = (lonDeg * Math.PI) / 180;
+      const th = Math.asin((Math.sqrt(3) / 2) * Math.sin((latDeg * Math.PI) / 180));
+      return [
+        (2 * Math.sqrt(3) * lam * Math.cos(th))
+          / (3 * (9 * A4 * th ** 8 + 7 * A3 * th ** 6 + 3 * A2 * th ** 2 + A1)),
+        A4 * th ** 9 + A3 * th ** 7 + A2 * th ** 3 + A1 * th,
+      ];
+    };
+    for (let lat = -90; lat <= 90; lat += 15) {
+      for (let lon = -180; lon <= 180; lon += 30) {
+        const [ax, ay] = literal(lon, lat);
+        const [bx, by] = project(lon, lat);
+        expect(bx).toBeCloseTo(ax, 12);
+        expect(by).toBeCloseTo(ay, 12);
+      }
+    }
+  });
+
+  it('has Equal Earth’s published proportions', () => {
+    // "The projected equator is about 2.05 times the length of the projected
+    // central meridian" — wider than Robinson's 1.97, which is the nearest
+    // thing it could be mistaken for.
+    const halfWidth = project(180, 0)[0];
+    const halfHeight = project(0, 90)[1];
+    expect(halfWidth / halfHeight).toBeCloseTo(2.0546, 3);
     expect(map.width / map.height).toBeCloseTo(2.05, 1);
+  });
+
+  it('puts the corners where the paper says', () => {
+    // Reference values at unit radius, so a change of constants shows up here.
+    expect(project(180, 0)[0]).toBeCloseTo(2.706630, 6);
+    expect(project(0, 90)[1]).toBeCloseTo(1.317363, 6);
+    expect(project(90, 45)[0]).toBeCloseTo(1.159854, 6);
+    expect(project(90, 45)[1]).toBeCloseTo(0.860231, 6);
   });
 });
 
