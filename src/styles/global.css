@@ -989,3 +989,44 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 /* A pin is pressable, so it should look it. */
 .cmap-pin, .cmap-trail{cursor:pointer}
+
+/* ── The conference map ──────────────────────────────────────────────────────
+   Shares every class with the collaborator map above; what follows is only the
+   handful of things a map of talks needs and a map of people does not. */
+
+/* A conference pin's radius carries its count, so it comes from the model as
+   --r rather than from a fixed rule. Written back through CSS because the
+   collaborator map's `r` above would otherwise flatten every pin to one size —
+   the `r` attribute in the markup is still what a stylesheet-less render uses.
+   Part-transparent so overlapping cities read as overlapping rather than as one
+   blob, which is what Cambridge and New York do at this scale. */
+.cmap--conf .cmap-pin circle{r:var(--r); fill:oklch(.55 .16 var(--h) / .72)}
+.cmap--conf .cmap-pin:hover circle,
+.cmap--conf .cmap-pin:focus-visible circle,
+.cmap--conf[data-hover] .cmap-pin:not([style*="opacity"]) circle{
+  r:calc(var(--r) * 1.45); fill-opacity:1
+}
+@media (max-width:44rem){
+  /* The phone rule above doubles a three-unit pin; the same generosity here,
+     applied to a size that already varies. */
+  .cmap--conf .cmap-pin circle{r:calc(var(--r) * 1.7); stroke-width:3}
+}
+
+/* Filled and unstroked, because a conference pin is: a 2px stroke on a circle
+   this small is most of the circle, and the two keys stopped being comparable. */
+.cmap-key--conf circle{fill:var(--ink-mute); stroke:none}
+
+.cmap-count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); font-weight:400}
+.cmap-kind{display:inline-block; margin-left:.4rem; font-size:.68rem; color:var(--ink-mute);
+  text-transform:lowercase; font-variant:small-caps; letter-spacing:.02em}
+
+/* The talks the map cannot show. Collapsed, because they are a footnote to it —
+   but present, because dropping them would make the map read as complete. */
+.cmap-off{margin:1.2rem 0 0; display:grid; gap:.5rem}
+.cmap-off details{border-left:2px solid var(--ink-faint); padding:0 0 0 .7rem}
+.cmap-off summary{font-size:.8rem; color:var(--ink-2); cursor:pointer}
+.cmap-off summary:hover, .cmap-off summary:focus-visible{color:var(--accent)}
+.cmap-off ol{list-style:none; margin:.5rem 0 0; padding:0; display:grid; gap:.5rem}
+.cmap-off ol li{font-size:.8rem; line-height:1.45}
+.cmap-off .cmap-note{margin:.5rem 0 0}
+.cmap-off code{font-size:.9em}

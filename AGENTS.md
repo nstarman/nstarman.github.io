@@ -119,6 +119,37 @@ those four buckets, and `config/presets.json` maps each to a heading.
 Talks", "Selected Presentations" and "Conferences & Workshops" — `kind` carries
 the distinction, including `attended` for a meeting where you presented nothing.
 
+### `location` — a place, never an institution
+
+`location` is what the conference map pins, so it has one format:
+
+```
+City, ST, Country      US and Canada — "Cleveland, OH, USA", "Toronto, ON, Canada"
+City, Country          everywhere else — "Lausanne, Switzerland"
+Online                 a meeting with no venue
+```
+
+Not `MIT, USA` — that is an institution, and a geocoder cannot place it. Not
+`TO, CA` either: `CA` reads as California, which is the failure this format
+exists to prevent, and it puts the pin 3,500 km from Toronto without ever
+looking wrong.
+
+After adding one, resolve its coordinates once and commit them:
+
+```bash
+node scripts/geocode-places.mjs           # fills in only what is missing
+node scripts/geocode-places.mjs --check   # exit 1 if anything is unplaced
+```
+
+Coordinates live in `config/places.json` so the site and CI never call a
+geocoder. The script skips anything not in the format above, and checks the
+`matched` string it wrote — Nominatim answers "Durham, UK" with the county, not
+the city. Correct a wrong pin by hand; the script never overwrites one.
+
+A talk whose location is missing or unsettled is not dropped — it is listed
+under the map as not placed. That is deliberate, so a missing coordinate is
+visible rather than silent.
+
 ### Publications must produce valid BibTeX
 
 The renderer emits a `.bib` file, so publication entries carry everything a
