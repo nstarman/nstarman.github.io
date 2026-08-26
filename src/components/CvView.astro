@@ -2,7 +2,6 @@
 // Renders a resolved preset. Shared by /cv/ and /cv/<preset>/ so the two can
 // never drift.
 import CvHeader from './CvHeader.astro';
-import { presetNames, preset, resolve, sectionIndex } from '../lib/presets.js';
 import { dateLabel, authors, venueLine,
   venueUrl, links, REL_ICON, relKey, authorPosition,
   softwarePaper } from '../lib/data.js';
@@ -51,14 +50,6 @@ const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete:
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.
 const baseLines = (i) => detailLines(i).length;
-const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
-
-// Every preset that renders this section, so the toggle offers exactly the
-// variants where it exists.
-const INDEX = sectionIndex();
-const url = (n, id) => (n === 'np' ? `/cv/#${id}` : `/cv/${n}/#${id}`);
-const variantsFor = (id) => presetNames.filter((n) => INDEX.get(n)?.has(id));
-
 // What rides in the left date gutter rather than under the text: an
 // institution's homepage anywhere, and a talk's whole trail — a presentation's
 // only link is the event, and it belongs beside the date it happened on.
@@ -142,16 +133,6 @@ const money = (a) => {
       )}
       {s.page && !pick && (
         <a class="more seclink" href={s.page}>All {s.page.replaceAll('/', '')} &rarr;</a>
-      )}
-      {variantsFor(s.id).length > 1 && !pick && (
-        <span class="cvtoggle" role="group" aria-label={`Detail level for ${s.heading}`}>
-          {variantsFor(s.id).map((n) => (
-            <a href={url(n, s.id)} class={n === cv.name ? 'on' : ''}
-               data-section={s.id}
-               aria-current={n === cv.name ? 'true' : undefined}
-               title={`${preset(n).label} CV`}>{preset(n).label}</a>
-          ))}
-        </span>
       )}
     </Head>
 
@@ -274,26 +255,34 @@ const money = (a) => {
 })}
 
 <script>
-  import { currentSection } from '../lib/scrollspy.js';
-  // Switching detail level should not throw you to the top of the section.
-  // The href carries the anchor so it still works without JavaScript; with it,
-  // we remember where the heading sat in the viewport and put it back there on
-  // the other page, so the switch reads as the list changing under a fixed
-  // heading rather than as a jump.
+  import { anchorTrail, currentSection } from '../lib/scrollspy.js';
+
+  const heads = [...document.querySelectorAll('.cvsection')];
+  // The same offset the headings are scrolled to, read from the CSS rather
+  // than restated here: a hardcoded 90 against a 94px bar left the final
+  // section unmarked even once it could reach the top.
+  const topGap = heads.length
+    ? parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96
+    : 96;
+  const rects = () => heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top }));
+
+  // Switching length should not throw you to the top of the document. We
+  // remember where the heading you were reading sat in the viewport and put it
+  // back there on the other page, so the switch reads as the list changing
+  // under a fixed heading rather than as a jump.
+  //
+  // This used to be repeated on every section heading, because only a link that
+  // named its own section could restore anything. Asking the scroll-spy which
+  // heading you are in gives the one control at the top the same answer, so the
+  // other fifteen copies are gone.
   const KEY = 'cv:anchor';
 
-  for (const a of document.querySelectorAll('.cvtoggle a[data-section]')) {
-    a.addEventListener('click', (e) => {
-      if (a.classList.contains('on')) { e.preventDefault(); return; }
-      const head = document.getElementById(a.dataset.section);
-      if (!head) return;
-      sessionStorage.setItem(KEY, JSON.stringify({
-        id: a.dataset.section,
-        top: Math.round(head.getBoundingClientRect().top),
-      }));
-      // Navigate without the fragment, or the browser jumps before we can.
-      e.preventDefault();
-      location.href = a.getAttribute('href').split('#')[0];
+  // `.build` is excluded: the builder is a different document, not this one at
+  // another length, and it opens at the top on purpose.
+  for (const a of document.querySelectorAll('.cvtoggle--main a:not(.build)')) {
+    a.addEventListener('click', () => {
+      if (!heads.length) return;
+      sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), topGap)));
     });
   }
 
@@ -301,11 +290,12 @@ const money = (a) => {
   if (saved) {
     sessionStorage.removeItem(KEY);
     try {
-      const { id, top } = JSON.parse(saved);
-      const head = document.getElementById(id);
-      if (head) {
+      for (const { id, top } of JSON.parse(saved)) {
+        const head = document.getElementById(id);
+        if (!head) continue;
         const y = head.getBoundingClientRect().top + scrollY - top;
         scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+        break;
       }
     } catch {}
   }
@@ -315,13 +305,8 @@ const money = (a) => {
   const links = new Map(
     [...document.querySelectorAll('.cvtoc a')].map((a) => [a.dataset.sec, a]),
   );
-  const heads = [...document.querySelectorAll('.cvsection')];
 
   if (links.size && heads.length) {
-    // The same offset the headings are scrolled to, read from the CSS rather
-    // than restated here: a hardcoded 90 against a 94px bar left the final
-    // section unmarked even once it could reach the top.
-    const topGap = parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96;
     let current = null;
     const mark = (id) => {
       if (id === current) return;
@@ -335,10 +320,7 @@ const money = (a) => {
     const update = () => {
       // No bottom-out special case: .cvsec--last is tall enough for the final
       // heading to reach the top like any other, so the same rule decides it.
-      mark(currentSection(
-        heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top })),
-        topGap,
-      ));
+      mark(currentSection(rects(), topGap));
     };
     update();
     addEventListener('scroll', update, { passive: true });
