@@ -47,9 +47,15 @@ const offMap = online.length + unsettled.length + unplaced.length;
 
     {/* Biggest first, so a place with one talk is never hidden under a place
         with eight — the pins are filled, and painting order is the only depth
-        an SVG has. */}
+        an SVG has.
+
+        --r carries its unit: CSS `r` is a length, and a unitless number is only
+        a length in a browser being generous. Chromium accepts it; Safari drops
+        the declaration, `r` computes to its initial 0, and every pin vanishes
+        while the land still draws — so it reads as an empty map rather than as
+        a broken rule, and survives a look in the wrong browser. */}
     {[...pins].sort((a, b) => b.r - a.r).map((pin) => (
-      <g class="cmap-pin" data-c={pins.indexOf(pin)} style={`--h:${pin.hue}; --r:${pin.r}`}>
+      <g class="cmap-pin" data-c={pins.indexOf(pin)} style={`--h:${pin.hue}; --r:${pin.r}px`}>
         {/* <title> is the native tooltip and the accessible name at once. */}
         <title>{pin.place} — {plural(pin.talks.length, 'talk')}</title>
         {/* `r` twice on purpose: the attribute is what a stylesheet-less render

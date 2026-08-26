@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { conferenceMap, radius, ONLINE, map } from '../src/lib/confmap.js';
 import { toXY, KM_PER_UNIT, MAX_DRIFT_MILES } from '../src/lib/worldmap.js';
 import { byType } from '../src/lib/data.js';
+import { readFileSync } from 'node:fs';
 
 const cmap = conferenceMap();
 
@@ -50,6 +51,17 @@ describe('the conference map', () => {
     for (const pin of cmap.pins) {
       expect(pin.place).toMatch(/^[^,]+, (?:[A-Z]{2}, (?:USA|Canada)|[^,]+)$/);
     }
+  });
+
+  it('writes the pin radius with a unit', () => {
+    // The bug this guards: `--r:7.92` with no unit. CSS `r` takes a length, and
+    // a bare number is not one — Chromium accepts it anyway, Safari drops the
+    // declaration, `r` computes to its initial 0, and every pin vanishes while
+    // the land still draws. It reads as an empty map, not as a broken rule, so
+    // it survives a look in the wrong browser.
+    const src = readFileSync(new URL('../src/components/ConfMap.astro', import.meta.url), 'utf8');
+    expect(src).toMatch(/--r:\$\{pin\.r\}px/);
+    expect(src).not.toMatch(/--r:\$\{pin\.r\}[^p]/);
   });
 
   it('sizes a pin by area, so counts read honestly', () => {
