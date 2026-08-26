@@ -106,16 +106,14 @@ const label = `${people.length} collaborators`;
     const rowFor = (id) => document.getElementById(`item-${id}`);
 
     let marked = [];
-    const show = (only) => {
-      for (const d of drawn) d.style.display = only === '' || d.dataset.c === only ? '' : 'none';
-      // The stylesheet brings the surviving trajectory up from its resting
-      // faintness; expressed as one attribute rather than a class per element.
-      if (only === '') delete aside.dataset.only;
-      else aside.dataset.only = only;
 
+    /** The green rows, which live outside this aside and so must be cleaned up
+     *  explicitly. A mark with no map to explain it is just an unexplained
+     *  green row, so nothing is marked while the map is shut. */
+    const markPapers = () => {
       for (const row of marked) row.classList.remove('is-coauthor');
       marked = [];
-      if (only === '') return;
+      if (aside.hidden || pick.value === '') return;
 
       const opt = pick.options[pick.selectedIndex];
       for (const id of (opt.dataset.papers || '').split(' ').filter(Boolean)) {
@@ -124,6 +122,23 @@ const label = `${people.length} collaborators`;
       }
     };
 
+    const show = (only) => {
+      for (const d of drawn) d.style.display = only === '' || d.dataset.c === only ? '' : 'none';
+      // The stylesheet brings the surviving trajectory up from its resting
+      // faintness; expressed as one attribute rather than a class per element.
+      if (only === '') delete aside.dataset.only;
+      else aside.dataset.only = only;
+      markPapers();
+    };
+
     pick.addEventListener('change', () => show(pick.value));
+
+    // The button that opens and shuts the map belongs to the CV, not to this
+    // component, so watch the attribute rather than reaching for the button:
+    // whoever hides the aside — that button, a future one, or a stylesheet
+    // change — the marks go with it, and the selection is honoured again when
+    // it reopens.
+    new MutationObserver(markPapers)
+      .observe(aside, { attributes: true, attributeFilter: ['hidden'] });
   }
 </script>
