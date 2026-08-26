@@ -1108,7 +1108,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
   .cvmini-more{
     display:block; margin:0 0 .4rem; font-size:.7rem; line-height:1.35;
-    color:var(--ink-faint);
+    color:var(--ink-faint); text-align:right;
   }
   .cvmini-more:hover, .cvmini-more:focus-visible{color:var(--accent)}
 
