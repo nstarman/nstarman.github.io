@@ -853,6 +853,10 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Land wants to be clearly land without competing with the pins on it —
    --rule was so faint the continents were guesswork. */
 .cmap-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
+/* Exactly the ground the map sits on, so a lake is a hole rather than a shape.
+   Kept in step with the svg's own background by hand — color-mix cannot be
+   referred to twice without repeating it. */
+.cmap-lakes{fill:color-mix(in srgb, var(--accent) 4%, var(--sunk)); stroke:none}
 .cmap-trail{
   fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
   stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;

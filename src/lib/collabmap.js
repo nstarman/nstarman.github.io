@@ -13,7 +13,10 @@ import places from '/config/places.json';
 import world from '../assets/world-equal-earth.json';
 import { byType, venueUrl, links } from './data.js';
 
-export const map = { width: world.width, height: world.height, land: world.d };
+export const map = {
+  width: world.width, height: world.height,
+  land: world.d, lakes: world.lakes,
+};
 
 const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796;
 const M = Math.sqrt(3) / 2;

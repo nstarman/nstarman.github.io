@@ -43,6 +43,30 @@ describe('the Equal Earth projection', () => {
   });
 });
 
+describe('the world outline', () => {
+  it('carries land and lakes, and the lakes are the cheaper half by far', () => {
+    expect(map.land.length).toBeGreaterThan(1000);
+    expect(map.lakes.length).toBeGreaterThan(100);
+    // The whole point of including them: twenty-four lakes cost a fraction of
+    // the coastline. If that ever inverts, something has gone wrong upstream.
+    expect(map.lakes.length).toBeLessThan(map.land.length / 4);
+  });
+
+  it('keeps the whole thing small enough to inline', () => {
+    // It is committed into the page, so its size is the page's size.
+    expect((map.land.length + map.lakes.length) / 1024).toBeLessThan(40);
+  });
+
+  it('draws every path inside the viewBox', () => {
+    for (const d of [map.land, map.lakes]) {
+      for (const [, x, y] of d.matchAll(/([\d.]+) ([\d.]+)/g)) {
+        expect(Number(x)).toBeLessThanOrEqual(map.width + 1);
+        expect(Number(y)).toBeLessThanOrEqual(map.height + 1);
+      }
+    }
+  });
+});
+
 describe('the collaborator map', () => {
   it('places every pin inside the map', () => {
     const out = pins.filter((p) => p.x < 0 || p.x > map.width || p.y < 0 || p.y > map.height);

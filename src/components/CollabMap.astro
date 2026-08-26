@@ -38,6 +38,9 @@ const label = (pin) =>
        aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
                  + `on an Equal Earth projection. The same information is listed below.`}>
     <path class="cmap-land" d={map.land} />
+    {/* Drawn over the land in the ocean's colour rather than cut out of it:
+        two paths and no fill-rule to get wrong. */}
+    <path class="cmap-lakes" d={map.lakes} />
 
     {/* Trajectories first, so pins sit on top of their own lines. */}
     {trails.map((p) => (
