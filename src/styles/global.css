@@ -976,3 +976,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-orcid{float:right; margin:0 0 .2rem .5rem; line-height:0; color:#A6CE39}
 .cmap-orcid .ico{width:15px; height:15px; fill:currentColor; display:block}
 .cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}
+
+/* A pin is pressable, so it should look it. */
+.cmap-pin, .cmap-trail{cursor:pointer}

@@ -144,6 +144,26 @@ const label = (pin) =>
     pick.addEventListener('change', () => show(pick.value));
     show('');
 
+    fig.addEventListener('pointerover', (e) => mark(e.target));
+    fig.addEventListener('pointerleave', () => mark(null));
+    fig.addEventListener('focusin', (e) => mark(e.target));
+    fig.addEventListener('focusout', () => mark(null));
+
+    // Clicking a pin or a trail picks that person, which is what pointing at
+    // something on a map and pressing it ought to do. Hover deliberately does
+    // not: sweeping the cursor across eighty-five pins would rebuild the list
+    // under the reader several times a second. Hover previews by dimming the
+    // others; the click commits.
+    fig.addEventListener('click', (e) => {
+      const owner = e.target.closest?.('.cmap-pin, .cmap-trail');
+      if (!owner) return;
+      pick.value = owner.dataset.c;
+      show(pick.value);
+      // Selecting hides everyone else, so the thing being pointed at is no
+      // longer under the cursor and the dimming has nothing left to say.
+      mark(null);
+    });
+
     // Hover and keyboard linking between the two halves. The state goes on the
     // figure rather than being expressed with :has(), because one attribute on
     // an ancestor is two CSS rules instead of one per person — and because a
@@ -166,9 +186,6 @@ const label = (pin) =>
       if (only === undefined) delete fig.dataset.hover;
       else fig.dataset.hover = only;
     };
-    fig.addEventListener('pointerover', (e) => mark(e.target));
-    fig.addEventListener('pointerleave', () => mark(null));
-    fig.addEventListener('focusin', (e) => mark(e.target));
-    fig.addEventListener('focusout', () => mark(null));
+
   }
 </script>
