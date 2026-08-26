@@ -844,10 +844,12 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   display:block; width:100%; height:auto;
   /* The faintest wash of sea. Cyan rather than the site's navy accent: mixing
      the accent in brought its darkness with it, and water reads as water at a
-     lighter, greener blue. Six per cent of it leaves the ground lighter than
-     the navy did — 238 against 237 — while the green-over-red cast that makes
-     it cyan rather than blue goes from 5 to 10. */
-  background:color-mix(in srgb, var(--sea) 6%, var(--sunk));
+     lighter, greener blue. Mixed into the page's own ground rather than --sunk:
+     against --sunk the sea sat at 229 and read as another shade of land, since
+     land is grey ink on the same ground. Over white it sits at 244, so the
+     water is the page showing through and the continents are the only
+     substance on it. */
+  background:color-mix(in srgb, var(--sea) 6%, var(--ground));
   border-radius:12px;
 }
 /* The empty half of the map is the point: it says where the collaborations are
@@ -858,7 +860,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Exactly the ground the map sits on, so a lake is a hole rather than a shape.
    Kept in step with the svg's own background by hand — color-mix cannot be
    referred to twice without repeating it. */
-.cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
+.cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--ground)); stroke:none}
 .cmap-trail{
   fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
   stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
