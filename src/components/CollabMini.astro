@@ -1,0 +1,42 @@
+---
+// The collaborator map, shrunk to fit the CV's right margin.
+//
+// Same data and same projection as the full map on /research/ — imported, not
+// reimplemented, so the two cannot disagree about where anyone worked. What is
+// dropped is everything interactive: no picker, no per-person list, no hover
+// linking. At this size those would be unusable, and the full map is one click
+// away for anyone who wants them.
+//
+// It rides in the `}` gutter beside the publications, which is where the eye
+// already goes for a paper's source link, and it is only ever shown on a
+// viewport wide enough to hold it without moving the text — the same bargain
+// the contents rail makes on the other side.
+import { collaboratorMap, map } from '../lib/collabmap.js';
+
+const people = collaboratorMap();
+const pins = people.flatMap((p) => p.pins);
+// One dot per place rather than per post: at this scale a career of four posts
+// at one institution is four dots on the same pixel, which is just a darker
+// pixel. The full map fans them into a rosette; here they are one place.
+const places = [...new Map(pins.map((p) => [`${p.x.toFixed(1)},${p.y.toFixed(1)}`, p])).values()];
+const shared = new Set(
+  pins.filter((p) => p.papers.length > 0).map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`),
+);
+const label = `${people.length} collaborators across ${places.length} places`;
+---
+
+<aside class="cvmini" id="cv-collab-map" hidden>
+  <div class="cvmini-stick">
+    <svg class="cvmini-svg" viewBox={`0 0 ${map.width} ${map.height}`} role="img" aria-label={`Map: ${label}.`}>
+      <path class="cvmini-land" d={map.land} />
+      {/* Lakes are drawn over the land in the ocean's colour, as on the full
+          map: two paths and no fill-rule to get wrong. */}
+      <path class="cvmini-lakes" d={map.lakes} />
+      {places.map((p) => (
+        <circle class={shared.has(`${p.x.toFixed(1)},${p.y.toFixed(1)}`) ? 'is-shared' : ''}
+                cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="9" />
+      ))}
+    </svg>
+    <a class="cvmini-more" href="/research/#collaborators">See Collaborator page &rarr;</a>
+  </div>
+</aside>

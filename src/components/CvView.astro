@@ -6,6 +6,7 @@ import { dateLabel, authors, venueLine,
   venueUrl, links, REL_ICON, relKey, authorPosition,
   softwarePaper } from '../lib/data.js';
 import { spans, detailLines } from '../lib/inline.js';
+import CollabMini from './CollabMini.astro';
 import LinkIcons from './LinkIcons.astro';
 
 /**
@@ -95,7 +96,7 @@ const money = (a) => {
   const Head = collapsed ? 'summary' : 'div';
   const selectable = pick && s.items.length > 0;
   return (
-  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}`}>
+  <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${!pick && s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
     <Head class="cvsechead">
       {selectable && (
         <input type="checkbox" class="groupbox"
@@ -143,6 +144,17 @@ const money = (a) => {
           All {PAGE_ICON[s.page]
             ? <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${PAGE_ICON[s.page]}`} /></svg>
             : pageName(s.page)}</a>
+      )}
+      {/* In the `}` gutter, centred on the column where each paper's source
+          link sits, so it reads as part of that column rather than as another
+          control on the heading row. Publications only: the map is about the
+          people in these bylines. */}
+      {!pick && s.id === 'publications' && (
+        <button type="button" class="cvminibtn" aria-expanded="false" aria-controls="cv-collab-map"
+                aria-label="Show where my collaborators have worked"
+                title="Show where my collaborators have worked">
+          <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-map" /></svg>
+        </button>
       )}
     </Head>
 
@@ -260,6 +272,11 @@ const money = (a) => {
     </div>
     )}
     {s.dropped > 0 && <p class="dropped">{s.dropped} more not shown.</p>}
+    {/* Inside the section on purpose. It is absolutely positioned into the
+        right margin and sticks while the section is on screen, so the section's
+        own box is what stops it: past the last publication it scrolls away with
+        everything else rather than following the reader down the page. */}
+    {!pick && s.id === 'publications' && <CollabMini />}
   </Wrap>
   );
 })}
@@ -293,6 +310,23 @@ const money = (a) => {
     a.addEventListener('click', () => {
       if (!heads.length) return;
       sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), topGap)));
+    });
+  }
+
+  // The gutter map. Off until asked for, because the CV is the thing on this
+  // page and a map beside the publications is an aside to it. `hidden` rather
+  // than a class, so with the map closed a screen reader is told the same thing
+  // the eye is, and the button's aria-expanded says which way it is.
+  const mapBtn = document.querySelector('.cvminibtn');
+  const mapAside = document.getElementById('cv-collab-map');
+  if (mapBtn && mapAside) {
+    mapBtn.addEventListener('click', () => {
+      const open = mapAside.hidden;
+      mapAside.hidden = !open;
+      mapBtn.setAttribute('aria-expanded', String(open));
+      const what = open ? 'Hide' : 'Show';
+      mapBtn.setAttribute('aria-label', `${what} where my collaborators have worked`);
+      mapBtn.setAttribute('title', `${what} where my collaborators have worked`);
     });
   }
 
