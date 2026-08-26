@@ -50,6 +50,12 @@ const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete:
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.
 const baseLines = (i) => detailLines(i).length;
+// The section's own page, named by its icon rather than by the heading two
+// inches to its left repeated in full. A page with no icon keeps the word, so
+// adding one to config/presets.json cannot produce a nameless arrow.
+const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
+const pageName = (page) => page.replaceAll('/', '');
+
 // What rides in the left date gutter rather than under the text: an
 // institution's homepage anywhere, and a talk's whole trail — a presentation's
 // only link is the event, and it belongs beside the date it happened on.
@@ -132,7 +138,12 @@ const money = (a) => {
         </label>
       )}
       {s.page && !pick && (
-        <a class="more seclink" href={s.page}>All {s.page.replaceAll('/', '')} &rarr;</a>
+        <a class="more seclink" href={s.page} aria-label={`All ${pageName(s.page)}`}
+           title={`All ${pageName(s.page)}`}>
+          All {PAGE_ICON[s.page]
+            ? <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${PAGE_ICON[s.page]}`} /></svg>
+            : pageName(s.page)} &rarr;
+        </a>
       )}
     </Head>
 
