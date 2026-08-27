@@ -148,7 +148,9 @@ const money = (a) => {
       {/* In the `}` gutter, centred on the column where each paper's source
           link sits, so it reads as part of that column rather than as another
           control on the heading row. Publications only: the map is about the
-          people in these bylines. */}
+          people in these bylines. The button is rendered here because it
+          belongs to this row; what it does is in lib/minipick.js, with the map
+          it opens and with the panel's own copy of it. */}
       {s.id === 'publications' && (
         <button type="button" class="cvminibtn" aria-expanded="false" aria-controls="cv-collab-map"
                 aria-label="Show where my collaborators have worked"
@@ -310,31 +312,6 @@ const money = (a) => {
     a.addEventListener('click', () => {
       if (!heads.length) return;
       sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), topGap)));
-    });
-  }
-
-  // The gutter map. Off until asked for, because the CV is the thing on this
-  // page and a map beside the publications is an aside to it. `hidden` rather
-  // than a class, so with the map closed a screen reader is told the same thing
-  // the eye is, and the button's aria-expanded says which way it is.
-  const mapBtn = document.querySelector('.cvminibtn');
-  const mapAside = document.getElementById('cv-collab-map');
-  if (mapBtn && mapAside) {
-    const setOpen = (open) => {
-      mapAside.hidden = !open;
-      mapBtn.setAttribute('aria-expanded', String(open));
-      const what = open ? 'Hide' : 'Show';
-      mapBtn.setAttribute('aria-label', `${what} where my collaborators have worked`);
-      mapBtn.setAttribute('title', `${what} where my collaborators have worked`);
-    };
-    mapBtn.addEventListener('click', () => setOpen(mapAside.hidden));
-    // The panel's own copy of the button only ever shuts it — it is inside the
-    // thing it hides. Focus goes back to the heading's button, because closing
-    // has just removed the focused element from the page; `preventScroll`
-    // because the point of the second button is that the heading is far above.
-    mapAside.querySelector('.cvmini-shut')?.addEventListener('click', () => {
-      setOpen(false);
-      mapBtn.focus({ preventScroll: true });
     });
   }
 
