@@ -242,26 +242,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 .dropped{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin:.5rem 0 0}
 .tl .btns{margin-top:.3rem}
-/* A publication's links sit in their own gutter, stacked, as on the
-   publications page — `.btns` otherwise spans every column and drops a row. */
-.tl--pub{grid-template-columns:5.1rem 1fr auto}
-.tl--pub > .btns--icon{grid-column:3; align-self:start; justify-content:flex-end;
-  gap:.3rem; margin:0; width:calc(3 * 1.45rem + 2 * .3rem)}
-@media (max-width:34rem){
-  .tl--pub{grid-template-columns:5.1rem 1fr}
-  .tl--pub > .btns--icon{grid-column:2; flex-direction:row; margin-top:.3rem}
-}
 .tl .me{color:var(--ink-2); font-weight:600}
-
-/* CV page: section headings mirror the PDF's ruled headings rather than the
-   small mono labels used for publication status groups. */
-.cvsection{
-  font-family:var(--serif); font-weight:500; font-size:1.05rem; color:var(--ink);
-  margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
-}
-.cvsection:first-of-type{margin-top:1rem}
-.pdfrow{display:flex; align-items:center; justify-content:flex-start; gap:.7rem;
-  flex-wrap:wrap; margin:0 0 .4rem}
 
 /* Divider between the software tiers — the same 32%, low-alpha rule used
    between publications and under the lead package. */
@@ -330,16 +311,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .card--tiny p{font-size:.72rem; line-height:1.4}
 .card--tiny .btns{padding-top:.35rem; gap:.2rem}
 
-/* CV builder */
-.builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
-.builderbar--go{margin-top:.2rem}
-.builderbar .bl{font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
-  text-transform:uppercase; color:var(--ink-faint); margin-right:.2rem}
-.builderbar .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto;
-  font-variant-numeric:tabular-nums}
-.btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
-  font-size:.75rem; padding:.35rem .8rem}
-
 /* The style menu. A real <select>, so it gets the platform's own popup and
    keyboard handling for free; .btn gives it the shape of the buttons beside it
    and this only undoes the parts a select does not want. */
@@ -353,14 +324,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   background-position:right .62rem center, right .45rem center;
   background-size:4px 4px, 4px 4px; background-repeat:no-repeat;
 }
-.btn--go:hover{background-color:var(--ink); color:var(--ground); border-color:var(--ink)}
-.btn--go:disabled{opacity:.5; cursor:progress}
-.status{font-family:var(--mono); font-size:.7rem; color:var(--ink-mute)}
-#preview{width:100%; height:min(78vh,900px); border:1px solid var(--rule);
-  border-radius:8px; margin:.4rem 0 1rem; background:var(--surface)}
-/* The builder sits on the preset row but is a different kind of action — a
-   divider and a touch of weight keep it from reading as a fifth preset. */
-.more .sep{color:var(--rule-strong); margin:0 .5rem}
 
 /* Publications page: abstract in full, and icon buttons rather than text ones.
    Deliberately larger than the reference site's — they are the main way into
@@ -438,79 +401,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .entry--full .venueline .venue{font-style:italic; color:var(--ink-2)}
 .entry--full .abstract{color:var(--ink-2)}
 
-/* The institution's own site sits in the date gutter, under the years — it
-   belongs to the row as a whole, not alongside a paper or a dataset. */
-.tl .when{display:flex; flex-direction:column; align-items:flex-start; gap:.3rem}
-.gutterlinks{display:flex; flex-wrap:wrap; gap:.3rem}
-.homelink{
-  display:inline-flex; width:1.2rem; height:1.2rem; align-items:center;
-  justify-content:center; border-radius:.25rem; color:var(--ink-faint);
-  border:1px solid var(--rule); transition:.15s;
-}
-.homelink .ico{width:11px; height:11px; fill:currentColor; display:block}
-.homelink:hover{color:var(--ground); background:var(--ink); border-color:var(--ink)}
-/* detail-line links read as links, not as decoration */
-.tl .sub a{color:var(--accent)}
-.tl .sub a:hover{text-decoration:underline; text-underline-offset:2px}
-
-/* CV contents rail. Hidden by default and shown only when the viewport is wide
-   enough to hold it in the left margin without moving the content column:
-   49rem of column plus ~13rem of rail and its gap on each side. Below that the
-   page is unchanged rather than reflowed. */
-.cvtoc{display:none}
-/* Clears both sticky bars, plus a little room so the heading is not flush
-   against the bar's rule. 4.5rem covered only the nav, so every in-page jump
-   landed the heading 22px under .cvbar with 4px of its descenders showing. */
-.cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + 0.75rem)}
-
-/* The last section gets enough room for its heading to be scrolled to the top
-   like every other one. Without it the page bottoms out with the final sections
-   stranded mid-screen and the contents rail can never mark the last of them.
-   min-height rather than a trailing spacer, so a long final section adds no
-   blank at all and only a short one leaves any.
-
-   --cv-tail is what the page already puts below the last section — the wrap's
-   bottom padding, the footer's top margin, and the footer itself. Leaving it
-   out was scrolling a further 112px past the point where the heading reaches
-   the top, which read as a screen of dead space. Getting it slightly wrong
-   only means the last heading stops a few pixels high or low, not that the
-   page breaks. */
-.cvsec--last{
-  --cv-tail:7rem;
-  min-height:calc(100vh - var(--nav-h) - var(--cvbar-h) - var(--cv-tail));
-  min-height:calc(100svh - var(--nav-h) - var(--cvbar-h) - var(--cv-tail));
-}
-/* Applies to a collapsed last section too. .cvsec carries no background or
-   border, so a tall closed <details> is indistinguishable from a spacer — and
-   exempting it put /cv/1page/, whose last section is the collapsed Software,
-   straight back to being unable to scroll its final heading to the top. */
-
-@media (min-width:78rem){
-  .cvtoc{
-    display:block; position:fixed; top:6.5rem;
-    right:calc(50% + 24.5rem + 2rem); width:12.5rem;
-    max-height:calc(100vh - 9rem); overflow-y:auto;
-  }
-  .cvtoc ol{list-style:none; margin:0; padding:0;
-    display:flex; flex-direction:column; gap:.32rem}
-  /* The rail sits in the left margin, but its rule runs down the right edge and
-     the labels are right-aligned — so the marker and the text both point at the
-     content column they belong to. */
-  .cvtoc{text-align:right}
-  .cvtoc a{
-    display:block; font-size:.78rem; line-height:1.3; color:var(--ink-faint);
-    border-right:2px solid var(--rule); padding:.1rem .6rem .1rem 0;
-    transition:color .15s, border-color .15s;
-  }
-  .cvtoc a:hover{color:var(--ink-2); text-decoration:none; border-color:var(--rule-strong)}
-  .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
-}
-.tl .recipient{color:var(--ink-mute); font-style:italic}
-
-/* An unpublished paper's year is the year it was submitted, not the year of
-   record — italic says the date is provisional the way the pill says the
-   status is. */
-.tl--unpub .when{font-style:italic}
 /* Same on the publications list and the home page's short list, so a year means
    the same thing wherever a paper is shown. */
 .entry--unpub .yr{font-style:italic}
@@ -523,30 +413,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
 .baremark .ico{width:17px; height:17px; fill:currentColor; display:block}
 .baremark:hover, .baremark:focus-visible{color:var(--accent)}
-
-/* The builder's per-publication selector. Out of the way until the heading is
-   hovered — or something inside it takes focus, which is what keeps it
-   reachable by keyboard: pointer-events go with the opacity, so an invisible
-   button is never clickable, but tabbing to it reveals it. */
-/* Left, following the heading — not pushed to the right-hand cluster, which is
-   where `detail` lives. The gap is the heading row's own, so it clears the
-   title rather than sitting against it. */
-.possel{display:inline-flex; gap:.15rem;
-  opacity:0; pointer-events:none; transition:opacity .15s ease}
-.cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
-@media (prefers-reduced-motion:reduce){ .possel{transition:none} }
-
-.posbtn{
-  font-family:var(--mono); font-size:.6rem; letter-spacing:.04em; text-transform:uppercase;
-  color:var(--ink-mute); background:var(--surface);
-  border:1px solid var(--rule-strong); border-radius:999px;
-  padding:.05rem .4rem; cursor:pointer; line-height:1.5;
-}
-.posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
-/* A glyph rather than a word, so the padding is even and the box is square-ish
-   instead of stretched by uppercase letter-spacing that no longer applies. */
-.posbtn--icon{display:inline-flex; align-items:center; padding:.05rem .35rem; letter-spacing:0}
-.posbtn--icon .ico{width:11px; height:11px; fill:currentColor; display:block}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
 /* Two stops, All first and selected: the list's own state is every package, and
@@ -660,151 +526,12 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 .tl{scroll-margin-top:5rem}
 
-/* Section head carries the rule, so the heading and its toggle sit on one line. */
-.cvsechead{
-  /* Centred, not baseline. The row mixes a heading with a checkbox, a pill
-     group and a small label, none of which share a text baseline — under
-     `baseline` they sat at three different heights, spread over 3.2px, with
-     `detail` riding highest and the selector lowest. */
-  display:flex; align-items:center; justify-content:flex-start; gap:1rem;
-  margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
-}
-.cvsec--first .cvsechead{margin-top:1rem}
-/* In the builder the first heading follows a row of controls rather than the
-   page heading, and 1rem is the same gap the list uses internally — so the
-   content ran on from the buttons instead of starting after them. #tree is the
-   builder's own wrapper, so the read-only CV pages keep their spacing. */
-#tree .cvsec--first .cvsechead{margin-top:2rem}
-/* A collapsed section: the whole head is the control, so it takes the pointer
-   and the caret, and the count says what is behind it. */
-summary.cvsechead{cursor:pointer; list-style:none}
-summary.cvsechead::-webkit-details-marker{display:none}
-summary.cvsechead .cvsection::after{
-  content:"\203A"; display:inline-block; margin-left:.5rem;
-  color:var(--ink-faint); font-weight:400; transition:transform .15s;
-}
-details[open] > summary.cvsechead .cvsection::after{transform:rotate(90deg)}
-summary.cvsechead:hover .cvsection{color:var(--accent)}
-.cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
-.seclink{color:var(--ink-faint); margin-left:.5rem; transition:color .15s}
-.seclink:hover{color:var(--accent); text-decoration:none}
-/* The page's icon stands in for its name. Inline rather than block, because it
-   sits between two words and has to share their baseline. */
-.seclink .ico{
-  width:12px; height:12px; fill:currentColor;
-  display:inline-block; vertical-align:-1px;
-}
-.cvsechead .cvsection{margin:0; padding:0; border:0}
-
-/* Segmented length control. Each segment is its own pill; the active one is
-   outlined in the accent rather than filled, so nothing on the page competes
-   with the content for weight. */
-.cvtoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
-/* `.tog` is a segment that is not a link — the Build segment on the builder
-   itself, which would only reload the page. It shares every rule with the
-   anchors so the two cannot drift apart visually. */
-.cvtoggle a, .cvtoggle .tog{
-  font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
-  padding:.14rem .5rem; line-height:1.4; transition:.15s;
-}
-.cvtoggle a:hover{color:var(--ink); border-color:var(--rule-strong); text-decoration:none}
-.cvtoggle a.on, .cvtoggle .tog.on{
-  color:var(--accent); border-color:var(--accent-line); font-weight:500;
-  background:transparent;
-}
-.cvtoggle a.on:hover{color:var(--accent); border-color:var(--accent)}
-
-/* The one at the top of the page is the primary control, so it stays legible. */
-.cvtoggle--main a, .cvtoggle--main .tog{font-size:.72rem; padding:.2rem .6rem}
-
-/* The CV's controls, condensed into the header once the originals scroll away.
-   Download on the left, length on the right. */
-.cvbar{
-  position:fixed; top:var(--nav-h); left:0; right:0; z-index:9;
-  background:color-mix(in srgb, var(--ground) 92%, transparent);
-  backdrop-filter:blur(8px);
-  transform:translateY(-110%); opacity:0; pointer-events:none;
-  transition:transform .18s ease, opacity .18s ease;
-}
-.cvbar.is-on{transform:none; opacity:1; pointer-events:auto}
-.cvbar .wrap{
-  /* padding-block:0 because this .wrap sits inside <main>, so `main .wrap`
-     was giving it .9rem/1.85rem — asymmetric, which pushed the contents 8px
-     above centre and overflowed the fixed height. */
-  display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
-}
-.cvbar .cvtoggle--main a, .cvbar .cvtoggle--main .tog{font-size:.66rem; padding:.16rem .5rem}
-@media (prefers-reduced-motion:reduce){
-  .cvbar{transition:opacity .18s ease}
-}
-
 /* Which part of the site you are in — the same outlined pill the CV length
    toggle uses, so "you are here" reads the same way everywhere. Sticky nav, so
    it stays visible once the page title has scrolled away. */
 nav ul a{border:1px solid transparent; border-radius:2rem; padding:.18rem .55rem}
 nav ul a.on{color:var(--accent); border-color:var(--accent-line)}
 nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
-/* The builder has no download, so the toggle still sits right. */
-.cvbar .spacer{flex:1}
-
-/* "Build custom" is a different kind of action, so it keeps the accent even
-   when inactive — but it is a toggle segment like the rest, so its size,
-   padding and pill come from .cvtoggle and cannot drift from them. */
-.cvtoggle a.build, .cvtoggle .tog.build{color:var(--accent)}
-.cvtoggle a.build:hover{color:var(--accent); border-color:var(--accent)}
-
-/* Source link. Every CV entry is one record in data/, and the mark in the right
-   margin opens it. Hidden below the width that can hold it outside the column,
-   the same bargain the contents rail makes on the left. */
-.srclink{display:none}
-.card--mini{position:relative}
-@media (min-width:56rem){
-  .tl{position:relative}
-  .srclink{
-    display:block; font-family:var(--mono); font-size:.68rem; line-height:1;
-    color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
-  }
-  .tl > .srclink{position:absolute; left:100%; top:50%; transform:translateY(-50%);
-    margin-left:1.5rem}
-  /* A grid cell has no margin of its own, so its mark sits in the corner. */
-  .card--mini > .srclink{position:absolute; right:.7rem; top:.7rem}
-  .srclink:hover,.srclink:focus-visible{opacity:1; color:var(--accent); text-decoration:none}
-}
-
-/* A list section — refereeing venues, review panels. No dates, so no gutter:
-   the entries line up under the heading like the prose they are. */
-.plainlist{margin:.1rem 0 0; padding:0 0 0 1.1rem; list-style:disc}
-.plainlist li{font-size:.95rem; color:var(--ink-2); line-height:1.55; margin:.15rem 0}
-.plainlist li::marker{color:var(--ink-faint)}
-
-/* The builder's compile controls, once they have moved into the condensed
-   header: the same buttons, sized for the bar, and without the status line
-   that has no room there. */
-.cvbar .builderbar--go{margin:0; flex:1; gap:.35rem}
-.cvbar .builderbar--go .btn{font-size:.66rem; padding:.16rem .5rem}
-.cvbar .builderbar--go .status{display:none}
-
-/* The builder renders the complete CV with a checkbox on every entry. The row
-   gains a column for it rather than squeezing it into the date gutter, so the
-   dates still line up with the ones on the CV proper. */
-.tl--pick{grid-template-columns:1.3rem 5.1rem 1fr}
-.tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr auto}
-.tl--pick.tl--pub > .btns--icon{grid-column:4}
-.tl--pick > .itembox{align-self:start; margin:.28rem 0 0}
-.cvsechead .groupbox{margin:0 .1rem 0 0; align-self:center}
-.card--mini .name{display:flex; align-items:center; gap:.45rem}
-.card--mini .name .itembox{margin:0}
-.itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
-/* Unticked entries stay legible but recede, so the shape of the selection is
-   visible without reading every checkbox. */
-.tl--pick:has(> .itembox:not(:checked)),
-.card--mini:has(> .itembox:not(:checked)){opacity:.42}
-@media (max-width:34rem){
-  .tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr}
-  .tl--pick.tl--pub > .btns--icon{grid-column:3}
-}
 
 /* Theme toggle. One mark, a half-filled circle, sitting quietly at the end of
    the nav — it turns over rather than swapping to a different icon, so nothing
@@ -821,20 +548,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) .themetoggle{transform:rotate(180deg)}
 }
-
-/* Detail ticks. Every elaboration line is its own inclusion, and the section
-   head carries one that sets them together. */
-.subbox{accent-color:var(--accent); margin:0 .4rem 0 0; vertical-align:.02em; cursor:pointer}
-.subgrouplab{
-  margin-left:auto; display:flex; align-items:center; gap:.35rem; cursor:pointer;
-  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--ink-faint);
-}
-.subgrouplab:hover{color:var(--ink-2)}
-.subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
-/* An unticked line stays readable but recedes — the same bargain the unticked
-   entries make, so a selection reads as one picture. */
-.sub.is-off{opacity:.35}
 
 /* ---------- the collaborator map ---------- */
 /* Hue comes from the render model, lightness from here: one number cannot be
@@ -953,8 +666,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 :root[data-theme="dark"] .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
 :root[data-theme="dark"] .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
 
-
-
 /* The map's person picker. */
 .cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.8rem 0 0}
 .cmap-pick label{
@@ -1033,137 +744,3 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .cmap-off ol li{font-size:.8rem; line-height:1.45}
 .cmap-off .cmap-note{margin:.5rem 0 0}
 .cmap-off code{font-size:.9em}
-
-/* ── The collaborator map in the CV's right gutter ───────────────────────────
-   The mirror of the contents rail on the other side, and it makes the same
-   bargain: shown only where the margin can hold it without moving the text,
-   hidden entirely below that rather than reflowing the page.
-
-   Same 78rem breakpoint as .cvtoc, and the arithmetic is why they can share it.
-   At 78rem the column is 49rem and each margin is (78 - 49) / 2 = 14.5rem —
-   exactly the 2rem gap plus the 12.5rem rail. So the two appear and disappear
-   together, which is also the honest answer to "is there room": if one side
-   fits, so does the other. */
-.cvmini{display:none}
-.cvminibtn{display:none}
-
-@media (min-width:78rem){
-  /* The button rides where a paper's source mark does, so it reads as part of
-     the gutter rather than as another control crowding the length switcher. */
-  .cvsechead{position:relative}
-  /* Centred on the `}` column, not started at it. The marks below begin 1.5rem
-     past the column edge, so anchoring the button there put the `}` under its
-     left edge and the icon 6.6px to the right of the column it belongs to.
-     Half the mark's advance — 0.68rem of mono, so ~0.41rem wide — brings the
-     centres together, and translateX(-50%) does the rest. */
-  /* The same control in two places — on the heading and in the panel — so it
-     is one set of rules and only the positioning differs. */
-  .cvminibtn, .cvmini-shut{
-    display:block; padding:.15rem; line-height:0;
-    background:none; border:0; cursor:pointer;
-    color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
-  }
-  .cvminibtn{
-    position:absolute; left:100%; top:50%;
-    transform:translate(-50%, -50%);
-    margin-left:calc(1.5rem + 0.2rem);
-  }
-  .cvminibtn:hover, .cvminibtn:focus-visible,
-  .cvmini-shut:hover, .cvmini-shut:focus-visible{opacity:1; color:var(--accent)}
-  .cvminibtn .ico, .cvmini-shut .ico{width:15px; height:15px; fill:currentColor; display:block}
-  /* Lit while the map is open, which for the panel's copy is always: it is
-     inside the thing it closes. */
-  .cvminibtn[aria-expanded="true"], .cvmini-shut{opacity:1; color:var(--accent)}
-
-  .cvsec--hasmap{position:relative}
-  /* Absolute so it takes no space in the column, full height so the sticky
-     child has the section to travel down and nothing beyond it. */
-  /* Clear of the `}` column, not on top of it. The source marks sit 1.5rem past
-     the column edge and are about 12px wide, so anything starting at 2rem
-     overlapped them; 3.5rem leaves ~20px of daylight between the two.
-
-     11rem is then what the margin can still hold at the 78rem breakpoint:
-     (78rem - 49rem) / 2 is 14.5rem of margin, and 3.5rem of offset plus 11rem
-     of map plus a rem of breathing room is 15.5rem measured from the section's
-     content edge, which the wrap's own 1.5rem padding pays for. Wider than this
-     and the map would need a breakpoint of its own rather than sharing the
-     rail's. */
-  .cvmini{
-    display:block; position:absolute; left:100%; top:0; height:100%;
-    width:11rem; margin-left:3.5rem; pointer-events:none;
-  }
-  .cvmini[hidden]{display:none}
-  /* Clears the two sticky bars, like .cvtoc's own top. */
-  .cvmini-stick{position:sticky; top:6.5rem; pointer-events:auto}
-  .cvmini-svg{
-    display:block; width:100%; height:auto;
-    background:var(--sunk); border:1px solid var(--rule); border-radius:6px;
-  }
-  .cvmini-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
-  .cvmini-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--sunk)); stroke:none}
-  /* Dashed like the full map's, and monochrome unlike it: thirty-four hues at
-     176px is a rainbow, and the picker is what separates people here. */
-  .cvmini-trail{
-    fill:none; stroke:var(--ink-mute); stroke-width:2.6;
-    stroke-dasharray:7 7; stroke-linecap:round; opacity:.22;
-    transition:opacity .15s ease;
-  }
-  /* One person picked: the survivor is the point of the picture, not texture. */
-  .cvmini[data-only] .cvmini-trail{opacity:.85; stroke:var(--accent)}
-  @media (prefers-reduced-motion:reduce){ .cvmini-trail{transition:none} }
-
-  .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
-  .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
-  /* Button left, link right, baseline-aligned on one row above the map. */
-  .cvmini-top{display:flex; align-items:center; justify-content:space-between;
-    gap:.4rem; margin:0 0 .4rem}
-  .cvmini-more{
-    font-size:.7rem; line-height:1.35;
-    color:var(--ink-faint); text-align:right;
-  }
-  .cvmini-more:hover, .cvmini-more:focus-visible{color:var(--accent)}
-
-  /* Full width of the map, so the three stack as one panel. Small, because it
-     is a control on an aside and must not out-shout the CV beside it. */
-  .cvmini-who{
-    display:block; width:100%; margin:.4rem 0 0;
-    font-family:var(--mono); font-size:.62rem; letter-spacing:.02em;
-    color:var(--ink-2); background:var(--ground);
-    border:1px solid var(--rule); border-radius:4px;
-    padding:.2rem .3rem;
-  }
-  .cvmini-who:hover{border-color:var(--rule-strong)}
-  .cvmini-who:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
-}
-
-/* A paper written with whoever is picked in the CV's gutter map.
-   Green rather than the site's blue: the accent already means "this is a link
-   or the current thing", and this is neither — it is a transient answer to a
-   question the reader just asked. Low alpha so the row is tinted rather than
-   recoloured, and the type on it keeps its own contrast.
-
-   The spread shadow is the padding. A real padding would move every row on the
-   page the moment one was marked; a shadow in the same colour as the background
-   paints the same shape and costs no layout. */
-.tl.is-coauthor, .card.is-coauthor{
-  --coauthor:oklch(.62 .15 152);
-  background:color-mix(in srgb, var(--coauthor) 11%, transparent);
-  border-radius:12px;
-  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 11%, transparent);
-  transition:background .15s ease, box-shadow .15s ease;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .tl.is-coauthor, :root:not([data-theme="light"]) .card.is-coauthor{
-    --coauthor:oklch(.74 .15 152);
-    background:color-mix(in srgb, var(--coauthor) 14%, transparent);
-    box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
-  }
-}
-:root[data-theme="dark"] .tl.is-coauthor, :root[data-theme="dark"] .card.is-coauthor{
-  --coauthor:oklch(.74 .15 152);
-  background:color-mix(in srgb, var(--coauthor) 14%, transparent);
-  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
-}
-@media (prefers-reduced-motion:reduce){
-  .tl.is-coauthor, .card.is-coauthor{transition:none}
-}
