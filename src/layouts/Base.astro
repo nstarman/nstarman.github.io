@@ -5,9 +5,9 @@ import IconSprite from '../components/IconSprite.astro';
 const { title, description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.' } = Astro.props;
 const nav = [
   { href: '/', label: 'Home' },
-  { href: '/research/', label: 'Research' },
-  { href: '/publications/', label: 'Publications' },
-  { href: '/software/', label: 'Software' },
+  { href: '/research/', label: 'Research', icon: 'i-telescope' },
+  { href: '/publications/', label: 'Publications', icon: 'i-paper' },
+  { href: '/software/', label: 'Software', icon: 'i-code' },
   { href: '/cv/', label: 'CV' },
 ];
 // Which nav entry the current URL belongs to. Prefix matching, so /cv/2page/
@@ -65,7 +65,10 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
             <li>
               <a href={n.href}
                  class={isCurrent(n.href) ? 'on' : ''}
-                 aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
+                 aria-current={isCurrent(n.href) ? 'page' : undefined}>
+                {n.icon && <svg class="ico navico" aria-hidden="true" focusable="false"><use href={`#${n.icon}`} /></svg>}
+                <span class="navtext">{n.label}</span>
+              </a>
             </li>
           ))}
           {/* Hidden until the script that gives it meaning has run — without

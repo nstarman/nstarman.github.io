@@ -54,6 +54,16 @@ nav ul a{
   color:var(--ink-mute);
 }
 nav ul a:hover{color:var(--accent); text-decoration:none}
+/* Long labels blow out the bar on a phone, so Publications and Software fall
+   back to their mark. The word stays in the DOM, clipped, so the link keeps
+   its name for screen readers. */
+.navico{display:none; width:14px; height:14px; fill:currentColor}
+@media (max-width:34rem){
+  nav ul a:has(.navico){display:flex; align-items:center}
+  .navico{display:block}
+  a:has(> .navico) .navtext{position:absolute; width:1px; height:1px; margin:-1px;
+    overflow:hidden; clip-path:inset(50%); white-space:nowrap}
+}
 
 /* ---------- hero ---------- */
 header{position:relative; overflow:hidden}
@@ -231,7 +241,14 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   border-top:1px solid var(--rule)}
 
 @media (max-width:34rem){
-  nav ul{gap:.9rem}
+  /* Tight enough that the name, the four links and the theme toggle all fit
+     one phone-width line, with the name still on a single line. */
+  nav .wrap{padding-inline:1rem; gap:.25rem}
+  nav ul{gap:.1rem}
+  nav ul li a{padding-inline:.35rem}
+  .themetoggle{margin-left:0}
+  /* The name already goes home, so Home is a second copy of the same link. */
+  nav ul li:first-child{display:none}
   .entry--brief{flex-direction:column; gap:.4rem}
   .entry--brief .side{flex-direction:row; align-items:center; order:-1}
   .tl{grid-template-columns:1fr; gap:.05rem}
