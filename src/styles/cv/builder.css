@@ -1,0 +1,95 @@
+/* What /cv/builder/ adds to the CV: a tick box on every entry and every
+ * elaboration line, the per-section selectors, and the compile controls.
+ *
+ * Layered over cv/page.css rather than replacing it — the builder renders the
+ * complete CV through the same component, so every rule here assumes the
+ * reading view underneath it and only adds the column, the control or the
+ * dimming that picking needs.
+ */
+
+/* CV builder */
+.builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
+.builderbar--go{margin-top:.2rem}
+.builderbar .bl{font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-faint); margin-right:.2rem}
+.builderbar .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto;
+  font-variant-numeric:tabular-nums}
+.btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
+  font-size:.75rem; padding:.35rem .8rem}
+
+.btn--go:hover{background-color:var(--ink); color:var(--ground); border-color:var(--ink)}
+.btn--go:disabled{opacity:.5; cursor:progress}
+.status{font-family:var(--mono); font-size:.7rem; color:var(--ink-mute)}
+#preview{width:100%; height:min(78vh,900px); border:1px solid var(--rule);
+  border-radius:8px; margin:.4rem 0 1rem; background:var(--surface)}
+
+/* The builder's per-publication selector. Out of the way until the heading is
+   hovered — or something inside it takes focus, which is what keeps it
+   reachable by keyboard: pointer-events go with the opacity, so an invisible
+   button is never clickable, but tabbing to it reveals it. */
+/* Left, following the heading — not pushed to the right-hand cluster, which is
+   where `detail` lives. The gap is the heading row's own, so it clears the
+   title rather than sitting against it. */
+.possel{display:inline-flex; gap:.15rem;
+  opacity:0; pointer-events:none; transition:opacity .15s ease}
+.cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
+@media (prefers-reduced-motion:reduce){ .possel{transition:none} }
+
+.posbtn{
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-mute); background:var(--surface);
+  border:1px solid var(--rule-strong); border-radius:999px;
+  padding:.05rem .4rem; cursor:pointer; line-height:1.5;
+}
+.posbtn:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+/* A glyph rather than a word, so the padding is even and the box is square-ish
+   instead of stretched by uppercase letter-spacing that no longer applies. */
+.posbtn--icon{display:inline-flex; align-items:center; padding:.05rem .35rem; letter-spacing:0}
+.posbtn--icon .ico{width:11px; height:11px; fill:currentColor; display:block}
+
+/* In the builder the first heading follows a row of controls rather than the
+   page heading, and 1rem is the same gap the list uses internally — so the
+   content ran on from the buttons instead of starting after them. #tree is the
+   builder's own wrapper, so the read-only CV pages keep their spacing. */
+#tree .cvsec--first .cvsechead{margin-top:2rem}
+
+/* The builder's compile controls, once they have moved into the condensed
+   header: the same buttons, sized for the bar, and without the status line
+   that has no room there. */
+.cvbar .builderbar--go{margin:0; flex:1; gap:.35rem}
+.cvbar .builderbar--go .btn{font-size:.66rem; padding:.16rem .5rem}
+.cvbar .builderbar--go .status{display:none}
+
+/* The builder renders the complete CV with a checkbox on every entry. The row
+   gains a column for it rather than squeezing it into the date gutter, so the
+   dates still line up with the ones on the CV proper. */
+.tl--pick{grid-template-columns:1.3rem 5.1rem 1fr}
+.tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr auto}
+.tl--pick.tl--pub > .btns--icon{grid-column:4}
+.tl--pick > .itembox{align-self:start; margin:.28rem 0 0}
+.cvsechead .groupbox{margin:0 .1rem 0 0; align-self:center}
+.card--mini .name{display:flex; align-items:center; gap:.45rem}
+.card--mini .name .itembox{margin:0}
+.itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
+/* Unticked entries stay legible but recede, so the shape of the selection is
+   visible without reading every checkbox. */
+.tl--pick:has(> .itembox:not(:checked)),
+.card--mini:has(> .itembox:not(:checked)){opacity:.42}
+@media (max-width:34rem){
+  .tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr}
+  .tl--pick.tl--pub > .btns--icon{grid-column:3}
+}
+
+/* Detail ticks. Every elaboration line is its own inclusion, and the section
+   head carries one that sets them together. */
+.subbox{accent-color:var(--accent); margin:0 .4rem 0 0; vertical-align:.02em; cursor:pointer}
+.subgrouplab{
+  margin-left:auto; display:flex; align-items:center; gap:.35rem; cursor:pointer;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.subgrouplab:hover{color:var(--ink-2)}
+.subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
+/* An unticked line stays readable but recedes — the same bargain the unticked
+   entries make, so a selection reads as one picture. */
+.sub.is-off{opacity:.35}

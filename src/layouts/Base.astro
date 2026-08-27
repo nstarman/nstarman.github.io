@@ -1,5 +1,12 @@
 ---
+// The stylesheet, in four pieces. Order is the cascade: the site first, then
+// what the CV layers on top of it — see the README. Imported here rather than
+// @import-ed so the order is the one written, and bundled into one file either
+// way, so the split costs no extra request.
 import '../styles/global.css';
+import '../styles/cv/page.css';
+import '../styles/cv/builder.css';
+import '../styles/cv/minimap.css';
 import IconSprite from '../components/IconSprite.astro';
 
 const { title, description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.' } = Astro.props;

@@ -20,7 +20,7 @@ data/lists/      bare enumerations (peer review) as plain arrays
 config/          things that are configuration rather than items: the CV presets,
                  the person, and the generated contributions list
 schema/          the item JSON Schema, plus invalid fixtures the tests assert on
-src/             the Astro site
+src/             the Astro site; src/styles/ is the stylesheet, in four pieces
 cv/              the Typst CV template — cv.typ, lib/ (the palette and the
                  styles), and the portrait and QR it draws
 tests/           vitest suites over src/lib and the generated data
@@ -53,6 +53,30 @@ npm run validate     # the schema check alone, against data/*.json
 
 `test:a11y` and `test:links` read `dist/`, so they need a build first — which is
 why `npm test` builds in the middle rather than at the end.
+
+## Styles
+
+One stylesheet, written as four files and bundled back into one — so the split
+costs no extra request and the site still loads exactly one `.css`.
+
+| file | what is in it |
+|---|---|
+| [`src/styles/global.css`](src/styles/global.css) | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, an item as the site renders it, the software cards, and the two maps on `/research/` |
+| [`src/styles/cv/page.css`](src/styles/cv/page.css) | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the contents rail, the sticky bar, the length toggle |
+| [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | what `/cv/builder/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
+| [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | the collaborator map in the CV's right margin, and the tint on a publication row when the person picked is one of its authors |
+
+They are imported in that order by `src/layouts/Base.astro`, and the order is
+the cascade: the site first, then what the CV layers on top of it. Imported
+rather than `@import`-ed, because an `@import` has to come before every rule in
+the file and could not express "after everything else".
+
+A dated row — `.tl` — stays in `global.css` even though the CV is full of them:
+the home page's Background section is built from the same rows, so the row
+belongs to the site and only the variants the CV alone has (`.tl--pub`,
+`.tl--unpub`, `.tl--pick`) sit under `cv/`. The test for whether a rule belongs
+in `cv/` is whether anything outside `/cv/` renders it, not whether the CV
+happens to use it.
 
 ## The CV
 
