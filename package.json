@@ -30,6 +30,6 @@
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "astro": "^7.2.6"
+    "astro": "^7.3.2"
   }
 }
