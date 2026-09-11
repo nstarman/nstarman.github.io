@@ -234,13 +234,6 @@
       "description": "Probabilistic programming with NumPy powered by JAX for autograd and JIT compilation to GPU/TPU/CPU."
     },
     {
-      "repo": "JAXtronomy/spexial",
-      "url": "https://github.com/JAXtronomy/spexial",
-      "first": "2024-10-17",
-      "prs": 5,
-      "description": "Special functions in Jax"
-    },
-    {
       "repo": "joshspeagle/brutus",
       "url": "https://github.com/joshspeagle/brutus",
       "first": "2024-11-20",
