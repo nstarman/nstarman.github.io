@@ -1,0 +1,21 @@
+name: Milestone PRs
+
+# Every PR lands in the one open-ended milestone — there's no release cycle
+# here to sort them into, just a running count of what's shipped.
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  milestone:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr edit "$PR" --milestone "♾️&➡"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
