@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "spexial",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2024-10",
+    "present": true
+  },
+  "title": "spexial",
+  "summary": "scipy.special in JAX",
+  "repo": "JAXtronomy/spexial",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/JAXtronomy/spexial"
+    },
+    {
+      "rel": "docs",
+      "url": "https://jaxtronomy.github.io/spexial"
+    }
+  ],
+  "tags": [
+    "jax"
+  ],
+  "details": "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions."
+}
