@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-2026-conference",
+  "type": "presentation",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-09"
+  },
+  "title": "Astropy 2026 Conference",
+  "kind": "organizer",
+  "location": "Online",
+  "details": "Role: Coordination Committee and Strategic Planning Committee; moderated online discussion and helped moderate the AI sessions.",
+  "refs": [
+    "astropy-coordinator-developer"
+  ]
+}
