@@ -90,6 +90,17 @@ describe('authors', () => {
     expect(authors(paper, 9).etal).toBe(false);
   });
 
+  it('elides to the owner rather than cutting them off', () => {
+    const long = { authors: [...'ABCDE'].map((f) => ({ family: f, given: 'X' })) };
+    long.authors.splice(3, 0, { family: 'Starkman', given: 'Nathaniel', me: true });
+    const names = (max) => authors(long, max).shown.map((a) => a.name);
+    expect(names(2)).toEqual(['X. A', '…', 'N. Starkman']);
+    expect(authors(long, 2).etal).toBe(true);           // D and E follow
+    expect(names(4)).toEqual(['X. A', 'X. B', 'X. C', 'N. Starkman']);
+    long.authors.splice(4);                              // owner now last
+    expect(authors(long, 2).etal).toBe(false);
+  });
+
   it('points a co-author at their ORCID', () => {
     // Jo Bovy, whose ORCID was confirmed from his own claim on this paper.
     const bovy = authors(resolve('pal5-gaia-dr2')).shown.find((a) => a.name.endsWith('Bovy'));

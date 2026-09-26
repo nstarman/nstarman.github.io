@@ -179,19 +179,26 @@ export function affiliationAt(orcid, date) {
   return held.reduce((best, a) => (a.start > best.start ? a : best));
 }
 
+const ELLIPSIS = { name: '…', me: false, url: null, affiliation: null };
+
 export function authors(item, max = Infinity) {
   const all = item.authors ?? [];
   // Where they were at the time. The paper's own printed affiliation wins where
   // there is one — that is what the paper actually claimed — and the employment
   // history answers for the rest.
   const at = item.date?.start ?? null;
-  const shown = all.slice(0, max).map((a) => ({
+  // Cutting at `max` would drop the owner into "et al." — the one name a CV's
+  // reader is looking for. Keep the first author and elide to the owner instead: "J. Nibauer, …, N. Starkman, et al."
+  const meAt = all.findIndex((a) => a.me);
+  const elide = max >= 2 && meAt >= max;
+  const picked = elide ? [all[0], null, all[meAt]] : all.slice(0, max);
+  const shown = picked.map((a) => a === null ? ELLIPSIS : ({
     name: displayName(a),
     me: Boolean(a.me),
     url: a.me ? null : orcidUrl(a.orcid),
     affiliation: a.me ? null : (a.affiliation ?? affiliationAt(a.orcid, at)?.organization ?? null),
   }));
-  return { shown, etal: all.length > max, collaboration: item.collaboration };
+  return { shown, etal: all.length > (elide ? meAt + 1 : max), collaboration: item.collaboration };
 }
 
 /** "The Astrophysical Journal 979, 155" */
