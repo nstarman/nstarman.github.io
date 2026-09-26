@@ -227,7 +227,7 @@ describe('venueUrl', () => {
     expect(venueUrl(resolve('astropy-v5-paper'))).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
   });
 
-  it('gives a submitted paper no article link, because there is no article', () => {
+  it('gives an unpublished paper no article link, because there is no article', () => {
     expect(venueUrl(resolve('pinns-mnras'))).toBeNull();
     expect(venueUrl(resolve('potamides-apj'))).toBeNull();
   });

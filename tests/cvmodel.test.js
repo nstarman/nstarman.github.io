@@ -86,7 +86,7 @@ describe('publications', () => {
 
   it('groups by status, newest state first', () => {
     expect(pubs.groups.map((g) => g.label))
-      .toEqual(['In Preparation', 'Submitted', 'Published']);
+      .toEqual(['In Preparation', 'Submitted', 'Accepted', 'Published']);
     const grouped = pubs.groups.flatMap((g) => g.ids);
     expect(new Set(grouped).size).toBe(grouped.length);
     expect(grouped.length).toBe(pubs.items.length);
