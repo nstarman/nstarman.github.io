@@ -22,7 +22,8 @@ const pos = authorPosition(item);
          data-pos={pos ?? undefined}>
   <div class="body">
     <div class="ttl">
-      <a href={paper?.url ?? '#'}>{item.title}</a>
+      {/* No link at all before a submitted paper reaches arXiv: a bare title, not a dead '#'. */}
+      {paper ? <a href={paper.url}>{item.title}</a> : item.title}
       {pending && <span class="statustag">{pending}</span>}
     </div>
 
