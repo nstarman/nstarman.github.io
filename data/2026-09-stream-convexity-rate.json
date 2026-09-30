@@ -2,25 +2,49 @@
   "$schema": "../schema/item.schema.json",
   "id": "stream-convexity-rate",
   "type": "publication",
-  "cvs": [],
+  "cvs": [
+    "np",
+    "2page"
+  ],
   "date": {
-    "start": "2026"
+    "start": "2026-09"
   },
-  "title": "Convex Stellar Stream Segments Constrain Dark Matter Nature and Halo Geometry",
-  "status": "in-prep",
-  "entryType": "unpublished",
+  "title": "When Streams Curve Away: a Test of Dark Matter from Extragalactic Stellar Stream Populations",
+  "status": "submitted",
+  "entryType": "misc",
   "authors": [
     {
       "family": "Starkman",
       "given": "Nathaniel",
       "me": true,
       "orcid": "0000-0003-3954-3291"
+    },
+    {
+      "family": "Nibauer",
+      "given": "Jacob",
+      "orcid": "0000-0001-8042-5794"
+    },
+    {
+      "family": "Pearson",
+      "given": "Sarah",
+      "orcid": "0000-0003-0256-5446"
+    },
+    {
+      "family": "Wu",
+      "given": "Sirui",
+      "orcid": "0009-0003-4675-3622"
+    },
+    {
+      "family": "Necib",
+      "given": "Lina",
+      "orcid": "0000-0003-2806-1414"
     }
   ],
   "tags": [
     "streams",
     "dark-matter"
   ],
-  "internal": "CV lists 'et al.'; the remaining authors are still to be imported from ADS.",
-  "citekey": "Starkman+:2026:stream-convexity-rate"
+  "internal": "Recorded while in prep as 'Convex Stellar Stream Segments Constrain Dark Matter Nature and Halo Geometry'; the Overleaf project is still named 'Stellar Stream Straights and Convexities Constrain Dark Matter Nature and Geometry'. Submitted to arXiv 2026-09; add `arxiv` and `primaryClass` once it is announced.",
+  "citekey": "Starkman+:2026:stream-convexity-rate",
+  "abstract": "The nature of dark matter sets the shape of galactic halos: collisionless cold dark matter (CDM) predicts triaxial halos, while scattering in self-interacting dark matter (SIDM) rounds them toward sphericity. We show that a large catalog of projected stellar stream tracks can statistically constrain halo shapes, and therefore the particle nature of dark matter, without detailed modeling of any individual stream or gravitational potential. We develop a new geometric diagnostic for stellar streams: if the curvature of any segment along a stream points away from the host galaxy's projected center of mass, then that stream falsifies broad classes of potentials, including spherical ones. We call such a segment convex. The diagnostic needs only a projected stream track and a host-center estimate, requiring no kinematics, distances, progenitor model, or fit to individual host potentials. Halo triaxiality sets the rate at which streams show convex segments, making this rate an observable of the halo-shape distribution and the underlying dark-matter model. We forecast that upcoming survey-scale stream morphology catalogs can discriminate between CDM and SIDM at up to $5\\sigma$."
 }
