@@ -586,8 +586,8 @@
           "type": "string",
           "minLength": 2
         },
-        "title": {
-          "description": "Overrides the item's `title` on the card, for a paper whose full title is too long for one.",
+        "miniTitle": {
+          "description": "The title on the paper's card in the carousel on /research/: shorter than the full title, longer than `microTitle` if it needs to be. Defaults to the item's `title`. Keep it to about two lines on the card.",
           "type": "string",
           "minLength": 2
         },

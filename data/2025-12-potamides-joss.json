@@ -61,7 +61,7 @@
     "topic": "extragalactic",
     "image": "highlights/potamides-joss.webp",
     "alt": "Relative likelihood of a halo’s y-axis flattening, q₂, from a Potamides tutorial: a flat plateau from about 0.7 to 1.55 that contains the true value, q₂ = 1, falling to zero on either side.",
-    "title": "Potamides: the software",
+    "miniTitle": "Potamides: the software",
     "microTitle": "Potamides Software",
     "description": "Potamides is a JAX package that infers a galaxy’s mass distribution from the shapes of its stellar streams. Instead of simulating a stream for every trial potential, it fits the observed track with splines and compares its curvature directly to the potential’s accelerations, covering the pipeline from annotating streams to evaluating likelihoods. Led by Sirui Wu."
   }

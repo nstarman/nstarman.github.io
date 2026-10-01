@@ -58,7 +58,7 @@
     "topic": "galactic",
     "image": "highlights/pal5-gaia-dr2.webp",
     "alt": "Smoothed density map of Gaia DR2 stars around the Palomar 5 globular cluster, in coordinates aligned with its tidal tails. A dark band marks the stream detected in earlier CFHT data, mostly the trailing arm; black dots trace the tails found here, matching that band and continuing about 7 degrees further along the leading arm.",
-    "title": "An extended Pal 5 stream in Gaia DR2",
+    "miniTitle": "An extended Pal 5 stream in Gaia DR2",
     "microTitle": "Extended Pal 5",
     "description": "Palomar 5 is a star cluster being pulled apart by the Milky Way, leaving two tails of stars that trace the Galaxy’s gravity. Gaia data show its leading tail runs about 7° further than was known, making the stream about 30° long. The two tails come out roughly equal, which limits how much the Galactic bar can have cut one short."
   }

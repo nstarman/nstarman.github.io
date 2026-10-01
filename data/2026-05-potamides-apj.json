@@ -63,7 +63,7 @@
     "topic": "extragalactic",
     "image": "highlights/potamides-apj.webp",
     "alt": "The galaxy ESO 186-063 seen edge-on, with its faint stellar stream fitted as a curved track. Arrows show the stream’s curvature, and the track is shaded by how often each point rejects a trial halo potential, over that potential’s equipotential contours.",
-    "title": "Potamides: halo shapes from stream curvature",
+    "miniTitle": "Potamides: halo shapes from stream curvature",
     "microTitle": "Potamides",
     "description": "A stellar stream’s curvature traces the pull of its host’s dark matter halo. Applied to 15 streams from the Stellar Stream Legacy Survey, Potamides constrains each halo’s projected flattening and orientation. Streams with edge-on loops or sharp turns constrain it most, great-circle-like ones barely at all, and three hint that the stellar disk shapes the inner gravitational field. Led by Sirui Wu."
   }
