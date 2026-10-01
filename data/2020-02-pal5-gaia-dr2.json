@@ -48,7 +48,9 @@
     }
   ],
   "tags": [
-    "streams"
+    "streams",
+    "milky-way",
+    "dynamics"
   ],
   "citekey": "Starkman+:2020:pal5-gaia-dr2",
   "abstract": "We present the results of a detailed search for members of the Pal 5 tidal tail system in Gaia Data Release 2 (DR2). Tidal tails provide a sensitive method for measuring the current and past gravitational potential of their host galaxy as well as for testing predictions for the abundance of dark matter subhaloes. The Pal 5 globular cluster and its associated tails are an excellent candidate for such analysis; however, only ∼23° of arc are currently known, with in particular the leading tail much shorter than the trailing. Using Gaia DR2 and its precise astrometry, we extend the known extent of the Pal 5 tail to ∼30°, 7° of which are newly detected along the leading arm. The detected leading and trailing arms are symmetric in length and remain near constant width. This detection constrains proposed models in which the Galactic bar truncates Pal 5’s leading arm. Follow-up spectroscopic observations are necessary to verify the candidate stream stars are consistent with the known tidal tails. If confirmed, this Pal 5 stream extension opens up new possibilities to constrain the Galactic potential."
