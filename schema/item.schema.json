@@ -261,6 +261,10 @@
           "version": {
             "type": "string"
           },
+          "order": {
+            "type": "integer",
+            "description": "Position within the `headline` tier. Lower first; items without it count as 0 and keep their newest-first order, so a positive value sends one to the end."
+          },
           "role": {
             "type": "string"
           },
