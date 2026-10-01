@@ -607,6 +607,9 @@
   "refs": [
     "astropy"
   ],
+  "tags": [
+    "software"
+  ],
   "internal": "Author list is complete: all 135 named authors, in the order Crossref gives for the DOI, with its 'Paper Authors' and 'Astropy Project Contributors' group headings dropped. The collaborator map is deliberately narrower: only the first ten plus every Astropy Active Voting Member on the paper (26 more, from config/astropy-voting-members.json, read 2026-08-25) may carry an ORCID - the people who run the project rather than the wider list who signed it. Of those 36, ORCIDs are recorded only where that ORCID record itself claims this DOI, which is 19. Everyone else is named without one, so does not reach the map; do not add ORCIDs to them. Two surname collisions were rejected on first initial: Daria Cara is not Mihai Cara, and Rohit R. Patil is not Aarya Patil.",
   "details": "Co-wrote the Highlighted Feature Development, New and Planned Features, Precision, Accuracy & Reproducibility, and Performance sections.",
   "citekey": "Astropy+Price-Whelan+:2022:astropy-v5",
