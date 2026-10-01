@@ -116,17 +116,6 @@ h2{
 
 /* ---------- entries ---------- */
 .entries{display:flex; flex-direction:column; gap:1.15rem}
-.entry{display:grid; grid-template-columns:1fr auto; gap:.15rem 1rem; align-items:baseline}
-.entry .ttl{font-size:.99rem; font-weight:500; color:var(--ink); line-height:1.4; text-wrap:balance}
-.entry .ttl a{color:var(--ink)}
-.entry .ttl a:hover{color:var(--accent)}
-.entry .yr{
-  font-family:var(--mono); font-size:.8rem; color:var(--ink-faint);
-  font-variant-numeric:tabular-nums; justify-self:end;
-}
-.entry .meta{grid-column:1/-1; margin:0; font-size:.9rem; color:var(--ink-mute)}
-.entry .meta .me{color:var(--ink-2); font-weight:500}
-.entry .venue{font-style:italic}
 /* The publication status pill. Named apart from .status, which is the builder's
    compile message: both were .status, and the later rule was quietly overriding
    this one's size and colour — the pill asks for .62rem in accent and rendered
@@ -253,8 +242,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   .entry--brief .side{flex-direction:row; align-items:center; order:-1}
   .tl{grid-template-columns:1fr; gap:.05rem}
   header .wrap{padding-block:2.5rem 2.25rem}
-  .entry{grid-template-columns:1fr}
-  .entry .yr{justify-self:start; order:-1}
 }
 
 .dropped{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin:.5rem 0 0}
