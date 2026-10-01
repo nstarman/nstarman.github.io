@@ -290,7 +290,7 @@ describe('softwarePaper', () => {
   it('finds exactly the packages that have one', () => {
     const withPaper = byType('software').filter(softwarePaper).map((s) => s.id).sort();
     expect(withPaper).toEqual(
-      ['astropy', 'macro-lightning-code', 'phasecurvefit', 'trackstream', 'unxt'],
+      ['astropy', 'macro-lightning-code', 'phasecurvefit', 'potamides', 'trackstream', 'unxt'],
     );
   });
 });

@@ -269,13 +269,6 @@
       "description": "Interpolation and function approximation with JAX"
     },
     {
-      "repo": "xggs-dev/potamides",
-      "url": "https://github.com/xggs-dev/potamides",
-      "first": "2025-03-23",
-      "prs": 42,
-      "description": "Constrain gravitational potentials using stellar stream curvature analysis"
-    },
-    {
       "repo": "quantity-dev/metrology-apis",
       "url": "https://github.com/quantity-dev/metrology-apis",
       "first": "2025-08-22",
