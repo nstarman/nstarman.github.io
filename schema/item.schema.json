@@ -563,12 +563,13 @@
       ],
       "properties": {
         "topic": {
-          "description": "Which group of Research Highlights the card sits under on /research/. The labels and their order live in src/pages/research.astro.",
+          "description": "Which group of Research Highlights the card sits under on /research/. The labels and their order live in src/pages/research.astro. `software` is not in that list, so a card under it is kept in the data but not shown.",
           "enum": [
             "extragalactic",
             "galactic",
             "cmb",
-            "dm-direct-detection"
+            "dm-direct-detection",
+            "software"
           ]
         },
         "image": {

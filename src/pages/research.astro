@@ -11,7 +11,8 @@ const papers = byType('publication').filter((p) => p.highlight);
 const highlights = [...byType('highlight'), ...papers];
 const anchor = (id) => `hl-${id}`;
 
-// The order the groups appear in; a topic with no card yet is skipped.
+// The order the groups appear in; a topic with no card yet is skipped. A topic
+// left out of this list is not shown at all: `software` cards wait here.
 const topics = [
   ['extragalactic', 'Extragalactic'],
   ['galactic', 'Galactic'],

@@ -144,7 +144,7 @@ and the links out. Every paper can have one: give the publication a
 ```jsonc
 "highlight": {
   "image": "highlights/stream-members-only.png",   // file at public/highlights/…
-  "topic": "galactic",                             // extragalactic | galactic | cmb | dm-direct-detection
+  "topic": "galactic",                             // extragalactic | galactic | cmb | dm-direct-detection | software
   "alt": "What the picture shows",
   "title": "Short title",                          // optional; defaults to `title`
   "description": "Two or three plain sentences. May carry [text](url)."
@@ -152,8 +152,10 @@ and the links out. Every paper can have one: give the publication a
 ```
 
 `topic` groups the card on the page and is required: `extragalactic` · `galactic`
-· `cmb` · `dm-direct-detection`. A topic with no card is not shown; a new topic
-is a schema change plus the list in `src/pages/research.astro`.
+· `cmb` · `dm-direct-detection` · `software`. A topic with no card is not shown; a new topic
+is a schema change plus the list in `src/pages/research.astro`. `software` is
+deliberately absent from that list: a card under it is written and kept, but
+not shown until the topic is added there.
 
 A highlight that draws several papers together is its own item, `type:
 "highlight"`, with the same `highlight` block and the papers in `refs`. Its card
