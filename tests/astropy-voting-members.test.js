@@ -5,10 +5,10 @@ describe('Astropy voting-member scraper', () => {
   it('keeps only active members, decodes entities, and sorts the snapshot', () => {
     const html = `
       <h3>Active Voting Members<a href="#active-voting-members">#</a></h3>
-      <ul><li>Zoë Example</li><li>Ada &amp; Byron</li><li>Zoë Example</li></ul>
+      <ul><li>Zoë Example</li><li>Ada &amp; Byron</li><li>Li &amp;quot; Example</li><li>Zoë Example</li></ul>
       <h3>Emeritus Voting Members</h3><ul><li>Former Member</li></ul>`;
 
-    expect(parseActiveVotingMembers(html)).toEqual(['Ada & Byron', 'Zoë Example']);
+    expect(parseActiveVotingMembers(html)).toEqual(['Ada & Byron', 'Li &quot; Example', 'Zoë Example']);
   });
 
   it('refuses a changed page structure instead of silently writing an empty list', () => {

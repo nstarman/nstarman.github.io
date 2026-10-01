@@ -14,12 +14,14 @@ const OUT = 'config/astropy-voting-members.json';
 
 const decode = (text) => text
   .replace(/&nbsp;/gi, ' ')
-  .replace(/&amp;/gi, '&')
   .replace(/&quot;/gi, '"')
   .replace(/&apos;|&#0*39;/gi, "'")
   .replace(/&#(x[0-9a-f]+|[0-9]+);/gi, (_, value) => String.fromCodePoint(
     value.startsWith('x') ? Number.parseInt(value.slice(1), 16) : Number.parseInt(value, 10),
-  ));
+  ))
+  // Decode the entity delimiter last: doing it first would turn `&amp;quot;`
+  // into a quote when the following replacement ran.
+  .replace(/&amp;/gi, '&');
 
 const plainText = (html) => decode(html
   .replace(/<[^>]*>/g, ' ')
