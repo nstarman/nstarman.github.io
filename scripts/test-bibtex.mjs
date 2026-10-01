@@ -1,9 +1,8 @@
 // Smoke test for lib/bibtex.js. Reads data/ directly so it runs without Astro.
-import fs from 'node:fs';
 import { toBibtex, toBibliography } from '../src/lib/bibtex.js';
+import { readItems } from './lib/items.mjs';
 
-const items = fs.readdirSync('data').filter((f) => f.endsWith('.json'))
-  .map((f) => JSON.parse(fs.readFileSync(`data/${f}`, 'utf8')));
+const items = readItems().map((r) => r.item);
 const pubs = items.filter((i) => i.type === 'publication');
 const bib = toBibliography(items);
 

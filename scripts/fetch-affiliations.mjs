@@ -17,6 +17,7 @@
 // gives no ORCID for most authors, and initials vary between the two sources.
 
 import fs from 'node:fs';
+import { readItems } from './lib/items.mjs';
 
 const dry = process.argv.includes('--dry-run');
 const fold = (s) => (s ?? '')
@@ -26,11 +27,7 @@ let filled = 0;
 let noRecord = 0;
 const skipped = [];
 
-for (const f of fs.readdirSync('data').sort()) {
-  if (!f.endsWith('.json')) continue;
-  const path = `data/${f}`;
-  const text = fs.readFileSync(path, 'utf8');
-  const rec = JSON.parse(text);
+for (const { path, text, item: rec } of readItems()) {
   if (rec.type !== 'publication' || !rec.doi) continue;
   const missing = (rec.authors ?? []).filter((a) => !a.me && !a.affiliation);
   if (missing.length === 0) continue;

@@ -17,7 +17,7 @@
 // honoured below.
 
 import fs from 'node:fs';
-import path from 'node:path';
+import { readItems } from './lib/items.mjs';
 
 const OUT = 'config/places.json';
 const collaborators = JSON.parse(fs.readFileSync('config/collaborators.json', 'utf8'));
@@ -46,8 +46,7 @@ for (const p of collaborators.people) {
 // Presentation locations are already written as a place, so each one is its own
 // query as well as its own key.
 const skipped = new Set();
-for (const f of fs.readdirSync('data').filter((n) => n.endsWith('.json'))) {
-  const item = JSON.parse(fs.readFileSync(path.join('data', f), 'utf8'));
+for (const { item } of readItems()) {
   if (item.type !== 'presentation' || !item.location) continue;
   if (isPlaceable(item.location)) wanted.set(item.location, item.location);
   else if (item.location !== ONLINE) skipped.add(item.location);

@@ -13,14 +13,14 @@
 // is git-ignored for the same reason.
 import fs from 'node:fs';
 import path from 'node:path';
+import { readItems } from './lib/items.mjs';
 
 const OUT = 'public/records';
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-const items = fs.readdirSync('data').filter((f) => f.endsWith('.json'));
-for (const f of items) {
-  const item = JSON.parse(fs.readFileSync(path.join('data', f), 'utf8'));
+const items = readItems();
+for (const { item } of items) {
   // the source path is relative to data/; here the schema sits alongside
   if (item.$schema) item.$schema = './item.schema.json';
   // named by id, not by the source filename: the id is what links point at,
