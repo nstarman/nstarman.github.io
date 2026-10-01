@@ -11,23 +11,22 @@ import { authors, venueLine, dateLabel, links, money, softwarePaper, REL_ICON, r
 import { spans, detailLines } from './inline.js';
 
 /**
- * Order the groups the way a CV reads them, newest state first, and drop any
- * the preset happens not to contain.
+ * The groups a section can break into, in the order a CV reads them: newest
+ * state first, dropping any the preset happens not to contain. `status` is the
+ * only `groupBy` the presets use; anything else in config/presets.json is a
+ * typo, and says so rather than silently grouping by status.
  */
-const GROUP_ORDER = {
-  status: [
-    ['in-prep', 'In Preparation'],
-    ['submitted', 'Submitted'],
-    ['accepted', 'Accepted'],
-    ['published', 'Published'],
-  ],
-};
+const STATUS_GROUPS = [
+  ['in-prep', 'In Preparation'],
+  ['submitted', 'Submitted'],
+  ['accepted', 'Accepted'],
+  ['published', 'Published'],
+];
 
 function groupsOf(items, field) {
-  const order = GROUP_ORDER[field];
-  if (!order) throw new Error(`No group order defined for "${field}".`);
-  return order
-    .map(([value, label]) => ({ label, items: items.filter((i) => i[field] === value) }))
+  if (field !== 'status') throw new Error(`Only groupBy "status" is supported, not "${field}".`);
+  return STATUS_GROUPS
+    .map(([value, label]) => ({ label, items: items.filter((i) => i.status === value) }))
     .filter((g) => g.items.length > 0);
 }
 
