@@ -84,6 +84,6 @@
     "image": "highlights/characterizing-stream-tracks.webp",
     "alt": "A simulated stellar stream from a 47 Tucanae-like progenitor, looping around the Galactic centre in Galactocentric x–y coordinates. Blue and orange lines trace the fitted path of each tidal arm, wrapped in grey uncertainty ellipses that grow largest at the arms’ sparse far ends.",
     "title": "On the fast track",
-    "description": "Comparing stellar streams to simulations is hard when even a stream’s path is hard to pin down. Self-organizing maps put the stars in order along the stream, and a Kalman filter then traces its path, carrying measurement errors and sparse data into the track’s uncertainty. The method is non-parametric, independent of any Galactic model and works on streams that wrap around the sky; it tracks simulated streams and real data for Palomar 5 and GD-1, and is public as the Python package TrackStream."
+    "description": "Comparing a stellar stream to simulations first needs a clear map of the stream’s path. This method puts the stars in order along the stream, then traces the path and its uncertainty — without assuming any model of the Galaxy. It works on simulated streams and on real ones like Palomar 5 and GD-1, and is available as the Python package TrackStream."
   }
 }
