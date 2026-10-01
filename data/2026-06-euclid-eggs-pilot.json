@@ -97,6 +97,7 @@
     "image": "highlights/euclid-eggs-pilot.webp",
     "alt": "Stellar stream tracks from 13 Euclid galaxies, drawn as magenta curves and stacked over one host galaxy, as if every stream orbits a common center.",
     "title": "The geometry of dark matter halos from Euclid streams",
+    "microTitle": "Euclid Extragalactic Streams",
     "description": "Euclid is turning up stellar streams around galaxies across a cosmological volume. A stream’s shape on the sky constrains the shape and center of its host’s dark matter halo, complementing weak lensing. Across 13 galaxies in Euclid’s first quick data release, halos are consistent with spherical, albeit with a mild preference for flattening, q = 0.95 (+0.05, −0.10), in line with ΛCDM. Thousands more streams are expected over the mission."
   }
 }

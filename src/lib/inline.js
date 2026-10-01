@@ -11,7 +11,9 @@
 // `[text](https://…)` for the web, and `[text](item:some-id)` to point at
 // another entry on the same CV — the CV cross-references itself (a position
 // citing the grants that funded it) and a bare URL cannot express that.
-const LINK = /\[([^\]]+)\]\((https?:\/\/[^)\s]+|item:[a-z0-9-]+)\)/g;
+// `[](item:some-id)`, with no text, is for /research/'s topic introductions:
+// the span carries `item`, and the page fills in that paper's micro-title.
+const LINK = /\[([^\]]*)\]\((https?:\/\/[^)\s]+|item:[a-z0-9-]+)\)/g;
 
 // `base` is where the cross-referenced entry lives. Empty on the CV, which
 // holds every entry itself; '/cv/' from any other page, so the reference is a
@@ -22,7 +24,7 @@ const href = (target, base = '') =>
 /**
  * @param {string|string[]} text
  * @param {string} [base]  prefix for `item:` targets, e.g. '/cv/'
- * @returns {{t: string, url?: string}[]}
+ * @returns {{t: string, url?: string, item?: string}[]}
  */
 export function spans(text, base = '') {
   if (!text) return [];
@@ -31,7 +33,8 @@ export function spans(text, base = '') {
   let last = 0;
   for (const m of text.matchAll(LINK)) {
     if (m.index > last) out.push({ t: text.slice(last, m.index) });
-    out.push({ t: m[1], url: href(m[2], base) });
+    const item = m[2].startsWith('item:') ? m[2].slice(5) : undefined;
+    out.push({ t: m[1], url: href(m[2], base), ...(item && { item }) });
     last = m.index + m[0].length;
   }
   if (last < text.length) out.push({ t: text.slice(last) });

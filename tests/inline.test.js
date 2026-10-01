@@ -21,13 +21,21 @@ describe('spans', () => {
 
   it('turns an item: target into a same-page anchor', () => {
     expect(spans('[the award](item:brinson-prize-fellowship)')).toEqual([
-      { t: 'the award', url: '#item-brinson-prize-fellowship' },
+      { t: 'the award', url: '#item-brinson-prize-fellowship', item: 'brinson-prize-fellowship' },
     ]);
   });
 
   it('prefixes item: anchors with a base, for pages that are not the CV', () => {
     expect(spans('[x](item:some-id)', '/cv/')).toEqual([
-      { t: 'x', url: '/cv/#item-some-id' },
+      { t: 'x', url: '/cv/#item-some-id', item: 'some-id' },
+    ]);
+  });
+
+  it('accepts an item: link with no text, for the page to name', () => {
+    expect(spans('in [](item:some-id) we')).toEqual([
+      { t: 'in ' },
+      { t: '', url: '#item-some-id', item: 'some-id' },
+      { t: ' we' },
     ]);
   });
 
