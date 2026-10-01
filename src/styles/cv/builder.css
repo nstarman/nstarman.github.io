@@ -67,14 +67,15 @@
 .tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr auto}
 .tl--pick.tl--pub > .btns--icon{grid-column:4}
 .tl--pick > .itembox{align-self:start; margin:.28rem 0 0}
-.cvsechead .groupbox{margin:0 .1rem 0 0; align-self:center}
+.cvsechead .groupbox,.cvsechead .itembox{margin:0 .1rem 0 0; align-self:center}
 .card--mini .name{display:flex; align-items:center; gap:.45rem}
 .card--mini .name .itembox{margin:0}
 .itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
 /* Unticked entries stay legible but recede, so the shape of the selection is
    visible without reading every checkbox. */
 .tl--pick:has(> .itembox:not(:checked)),
-.card--mini:has(> .itembox:not(:checked)){opacity:.42}
+.card--mini:has(> .itembox:not(:checked)),
+.cvsec:has(> .cvsechead > .itembox:not(:checked)) .plainlist{opacity:.42}
 @media (max-width:34rem){
   .tl--pick.tl--pub{grid-template-columns:1.3rem 5.1rem 1fr}
   .tl--pick.tl--pub > .btns--icon{grid-column:3}
