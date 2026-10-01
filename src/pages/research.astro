@@ -11,6 +11,17 @@ const papers = byType('publication').filter((p) => p.highlight);
 const highlights = [...byType('highlight'), ...papers];
 const anchor = (id) => `hl-${id}`;
 
+// The order the groups appear in; a topic with no card yet is skipped.
+const topics = [
+  ['extragalactic', 'Extragalactic'],
+  ['galactic', 'Galactic'],
+  ['cmb', 'Cosmic Microwave Background'],
+  ['dm-direct-detection', 'Dark Matter Direct Detection'],
+];
+const groups = topics
+  .map(([key, label]) => ({ key, label, items: highlights.filter((i) => i.highlight.topic === key) }))
+  .filter((g) => g.items.length > 0);
+
 // A synthesis's papers link to their cards; a paper without one, out to the paper.
 const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
 const mainHref = (item) => {
@@ -36,8 +47,10 @@ const mainHref = (item) => {
 
         {highlights.length > 0 && <>
           <h3 id="highlights" class="cmap-head">Research Highlights</h3>
+          {groups.map((g) => <>
+          <h4 id={`hl-topic-${g.key}`} class="hl-topic">{g.label}</h4>
           <div class="hl">
-            {highlights.map((item) => {
+            {g.items.map((item) => {
               const h = item.highlight;
               const href = mainHref(item);
               const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
@@ -47,7 +60,7 @@ const mainHref = (item) => {
                     ? <a href={href}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
                     : <img src={`/${h.image}`} alt={h.alt} loading="lazy" />}
                   <div class="hl-body">
-                    <h4 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h4>
+                    <h5 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h5>
                     <p>{spans(h.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
                     {refs.length > 0 && (
                       <ul class="hl-refs">
@@ -60,6 +73,7 @@ const mainHref = (item) => {
               );
             })}
           </div>
+          </>)}
         </>}
 
         <h3 id="conferences" class="cmap-head">Conferences</h3>

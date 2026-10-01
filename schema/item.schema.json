@@ -556,11 +556,21 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "topic",
         "image",
         "alt",
         "description"
       ],
       "properties": {
+        "topic": {
+          "description": "Which group of Research Highlights the card sits under on /research/. The labels and their order live in src/pages/research.astro.",
+          "enum": [
+            "extragalactic",
+            "galactic",
+            "cmb",
+            "dm-direct-detection"
+          ]
+        },
         "image": {
           "description": "Path under public/, served from the site root: highlights/<id>.png puts the file at public/highlights/<id>.png.",
           "type": "string",

@@ -59,6 +59,7 @@
     "dynamics"
   ],
   "highlight": {
+    "topic": "galactic",
     "image": "highlights/galactic-amnesia.webp",
     "alt": "Heat map of how much a merger’s present-day orbital energy reveals about its infall time, by infall time and galactocentric radius. Memory is highest for recent mergers in the outer galaxy and fades for older mergers and toward the center, following dashed lines of constant orbit count.",
     "title": "Galactic Amnesia",
