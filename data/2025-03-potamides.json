@@ -2,6 +2,11 @@
   "$schema": "../schema/item.schema.json",
   "id": "potamides",
   "type": "software",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
   "featured": true,
   "date": {
     "start": "2025-03",
@@ -9,9 +14,9 @@
   },
   "title": "potamides",
   "summary": "Constrain gravitational potentials from stellar stream curvature",
-  "details": "A JAX package that fits stream tracks with splines and compares their curvature directly to a potential's accelerations. Led by Sirui Wu.",
+  "details": "A JAX package that fits stream tracks with splines and compares their curvature directly to a potential's accelerations. Co-led with Sirui Wu.",
   "repo": "xggs-dev/potamides",
-  "role": "contributor",
+  "role": "co-lead developer",
   "refs": [
     "potamides-joss"
   ],
