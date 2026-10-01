@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, plural } from '../src/lib/inline.js';
+import { spans, plain, lines, detailLines, plural, ordinal } from '../src/lib/inline.js';
 
 describe('spans', () => {
   it('leaves prose alone', () => {
@@ -91,6 +91,13 @@ describe('detailLines', () => {
   it('omits the parts an item does not have', () => {
     expect(detailLines({ details: 'only this' })).toHaveLength(1);
     expect(detailLines({})).toEqual([]);
+  });
+});
+
+describe('ordinal', () => {
+  it('suffixes 1st, 2nd, 3rd, and th for the rest and the teens', () => {
+    expect([1, 2, 3, 4, 10, 11, 12, 13, 21, 22, 23, 101, 111].map(ordinal)).toEqual(
+      ['1st', '2nd', '3rd', '4th', '10th', '11th', '12th', '13th', '21st', '22nd', '23rd', '101st', '111th']);
   });
 });
 

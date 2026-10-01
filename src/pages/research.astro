@@ -3,8 +3,8 @@ import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import LinkIcons from '../components/LinkIcons.astro';
-import { byType, links, primaryLink, resolve, year, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { spans } from '../lib/inline.js';
+import { byType, links, primaryLink, resolve, year, authorPosition, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { spans, ordinal } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
 const papers = byType('publication').filter((p) => p.highlight);
@@ -67,11 +67,13 @@ const micro = (s) => {
               const h = item.highlight;
               const href = mainHref(item);
               const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
+              // Bold only the papers I led or was second on.
+              const pos = authorPosition(item);
               return (
                 <article class="card hl-card" id={anchor(item.id)}>
                   {/* Three areas — title, figure, footer — on rows the whole
                       carousel shares, so every card's lines up. */}
-                  <h5 class="name">{href ? <a href={href}>{h.miniTitle ?? item.title}</a> : (h.miniTitle ?? item.title)}</h5>
+                  <h5 class:list={['name', pos > 2 && 'name--minor']}>{href ? <a href={href}>{h.miniTitle ?? item.title}</a> : (h.miniTitle ?? item.title)}</h5>
                   {href
                     ? <a class="hl-fig" href={href} tabindex="-1"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
                     : <img class="hl-fig" src={`/${h.image}`} alt={h.alt} loading="lazy" />}
@@ -82,7 +84,7 @@ const micro = (s) => {
                       </ul>
                     )}
                     <LinkIcons links={links(item)} />
-                    <span class="hl-year">{year(item)}</span>
+                    <span class="hl-year">{pos && <>{ordinal(pos)} | </>}{year(item)}</span>
                   </div>
                 </article>
               );

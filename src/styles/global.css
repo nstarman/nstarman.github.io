@@ -692,6 +692,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl > .card{scroll-snap-align:start; display:grid; grid-row:span 3;
   grid-template-rows:subgrid; row-gap:.55rem; padding:.75rem .9rem .7rem}
 .hl > .card > .name{align-self:start}
+.hl > .card > .name--minor{font-weight:400}
 /* Wider than the 4:3 figure elsewhere, so the card is shorter; contain keeps
    the whole figure, just smaller. */
 .hl > .card img{aspect-ratio:16/10; padding:.3rem}
