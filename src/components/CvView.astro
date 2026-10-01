@@ -3,12 +3,15 @@
 // never drift.
 import CvHeader from './CvHeader.astro';
 import { dateLabel, authors, venueLine,
-  venueUrl, links, REL_ICON, relKey, authorPosition,
+  links, REL_ICON, relKey, authorPosition,
   softwarePaper, positionStops, money } from '../lib/data.js';
 import { spans, detailLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
 import LinkIcons from './LinkIcons.astro';
+import Inline from './Inline.astro';
+import Byline from './Byline.astro';
+import Venue from './Venue.astro';
 
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
@@ -170,7 +173,7 @@ const mapFor = (s) => {
       {s.layout === 'list' ? (
         <ul class="plainlist">
           {s.entries.map((e) => (
-            <li>{spans(e).map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}</li>
+            <li><Inline text={e} /></li>
           ))}
         </ul>
       ) : s.layout === 'grid' ? (
@@ -233,17 +236,9 @@ const mapFor = (s) => {
               {item.institution && <>, {item.institution}</>}
               {item.event && <>, {item.event}</>}
               {item.type === 'publication' && (
-                <> — {authors(item, 4).shown.map((a, i) => (
-                    <>{i > 0 && ', '}{a.me
-                      ? <span class="me">{a.name}</span>
-                      : a.url
-                        ? <a class="authorlink" href={a.url}>{a.name}</a>
-                        : a.name}</>
-                  ))}{authors(item, 4).etal && <>, et al</>}
+                <> — <Byline shown={authors(item, 4).shown} />{authors(item, 4).etal && <>, et al</>}
                   {(authors(item, 4).etal || venueLine(item)) && '.'}
-                  {venueLine(item) && <> {venueUrl(item)
-                    ? <a class="venue venuelink" href={venueUrl(item)}>{venueLine(item)}</a>
-                    : <span class="venue">{venueLine(item)}</span>}</>}
+                  {venueLine(item) && <> <Venue item={item} /></>}
                 </>
               )}
               {/* Grants show their figure; awards keep theirs in the record only. */}
@@ -267,7 +262,7 @@ const mapFor = (s) => {
                            checked={level === 'full' && (i < baseLines(item) || completeLines)}
                            aria-label={`Include this line under ${item.title}`} />
                   )}
-                  {line.map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}
+                  <Inline spans={line} />
                 </span>
               ))}
               {/* publications keep their trail in a gutter of its own, as on the

@@ -1,0 +1,11 @@
+---
+// "The Astrophysical Journal 979, 155", linked to the article where it has one.
+import { venueLine, venueUrl } from '../lib/data.js';
+
+const { item } = Astro.props;
+const venue = venueLine(item);
+const href = venueUrl(item);
+---
+{venue && (href
+  ? <a class="venue venuelink" href={href}>{venue}</a>
+  : <span class="venue">{venue}</span>)}

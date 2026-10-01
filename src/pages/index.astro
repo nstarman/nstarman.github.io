@@ -4,6 +4,7 @@ import Publication from '../components/Publication.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, featured, dateLabel } from '../lib/data.js';
 import { lines as longLines } from '../lib/inline.js';
+import Inline from '../components/Inline.astro';
 import portrait from '../../cv/assets/portrait.jpg';
 import person from '/config/person.json';
 
@@ -72,7 +73,7 @@ const background = [...byType('position'), ...byType('education')]
                      separator and [text](url) prints as its own markup */
                   longLines(item.details, '/cv/').map((line) => (
                     <span class="sub">
-                      {line.map((x) => (x.url ? <a href={x.url}>{x.t}</a> : x.t))}
+                      <Inline spans={line} />
                     </span>
                   ))}
                 {item.thesis && <span class="sub">Thesis: {item.thesis}</span>}
