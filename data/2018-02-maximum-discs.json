@@ -62,6 +62,6 @@
     "image": "highlights/maximum-discs.webp",
     "alt": "Rotation curves of two disc galaxies: the high-surface-brightness NGC 2403 (left) and the low-surface-brightness UGC 128 (right). Each shows the observed speeds as points with error bars, the gas contribution, and the stellar disc and total baryonic contributions at both the stellar-population mass-to-light ratio and the maximum-disc value. NGC 2403 needs only a modest boost to become maximal; UGC 128 needs a far larger one.",
     "title": "Quantifying maximum discs",
-    "description": "A maximum disc — scaling a galaxy’s stars up until they explain as much of its rotation curve as they can — sets an upper limit on stellar mass, but the term is used loosely. An automatic algorithm makes it quantitative and recovers the classic hand-fitted results across 153 galaxies from SPARC. Bright, high-surface-brightness galaxies come out nearly maximal, at mass-to-light ratios close to stellar population models, while faint, low-surface-brightness ones would need ratios as high as 10 — unphysical for normal stellar populations, confirming they are sub-maximal."
+    "description": "A galaxy’s rotation comes from both its stars and its dark matter. A “maximum disc” gives the stars as much of that rotation as possible, but the term was never precisely defined. A new algorithm measures it across 153 SPARC galaxies: bright galaxies come close to a maximum disc, while faint ones cannot — their stars would have to be unrealistically heavy for their light."
   }
 }
