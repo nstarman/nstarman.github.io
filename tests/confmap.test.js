@@ -35,7 +35,7 @@ describe('the conference map', () => {
     }
   });
 
-  it('pins online talks at the south pole, on the prime meridian', () => {
+  it('pins online talks in Antarctica, on the prime meridian', () => {
     // Nowhere a talk could have been, so it cannot be mistaken for a city —
     // and in particular not rounded to wherever I happened to be sitting.
     const online = byType('presentation').filter((i) => i.location === ONLINE);
@@ -43,10 +43,12 @@ describe('the conference map', () => {
     const pin = cmap.pins.find((p) => p.place === ONLINE);
     expect(pin.talks.map((t) => t.id).sort()).toEqual(online.map((i) => i.id).sort());
     expect([pin.lat, pin.lon]).toEqual([ONLINE_AT.lat, ONLINE_AT.lon]);
-    expect(ONLINE_AT).toEqual({ lat: -90, lon: 0 });
-    // Bottom edge, dead centre.
+    expect(ONLINE_AT).toEqual({ lat: -70, lon: 0 });
+    // Dead centre, at the bottom — and wholly inside the map, even at the
+    // radius it grows to on hover (8), which the pole itself was not.
     expect(pin.x).toBeCloseTo(map.width / 2, 0);
-    expect(pin.y).toBeCloseTo(map.height, 0);
+    expect(pin.y).toBeGreaterThan(map.height * 0.9);
+    expect(pin.y + 8).toBeLessThan(map.height);
   });
 
   it('refuses a location a geocoder would misread, rather than guessing', () => {

@@ -20,11 +20,16 @@ export { map };
 /** A talk with no venue. */
 export const ONLINE = 'Online';
 
-/** Where the online talks are pinned: the south pole, on the prime meridian —
- *  the bottom edge of the map, dead centre. A place no talk could have been,
- *  so the pin reads as "nowhere in particular" rather than inventing a city;
- *  rounding to wherever I was sitting would be the invented fact (#22). */
-export const ONLINE_AT = { lat: -90, lon: 0 };
+/** Where the online talks are pinned: Antarctica, on the prime meridian — the
+ *  bottom of the map, dead centre. A place no talk could have been, so the pin
+ *  reads as "nowhere in particular" rather than inventing a city; rounding to
+ *  wherever I was sitting would be the invented fact (#22).
+ *
+ *  -70 rather than the pole because the pole is the map's bottom edge, and
+ *  Equal Earth squashes latitude there: -85 is still under two units above
+ *  it. -70 is 20.6 units up, which clears the largest Online pin either map
+ *  draws — the CV gutter map's, when it holds every online talk. */
+export const ONLINE_AT = { lat: -70, lon: 0 };
 
 /** Where a location string is on Earth, or nothing if it is not settled. */
 const coords = (loc) => (loc === ONLINE ? ONLINE_AT : places.places[loc]);
