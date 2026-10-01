@@ -6,7 +6,7 @@
 
 ## Adding an item
 
-**Type:** <!-- publication | software | education | position | award | grant | presentation | mentoring | teaching | service | media | outreach -->
+**Type:** <!-- publication | software | education | position | award | grant | presentation | mentoring | teaching | service | media | outreach | highlight -->
 **File:** `data/<date.start>-<id>.json`
 **In CV presets:** <!-- np / 2page / 1page — or "none".
                         The "complete" CV takes everything regardless. -->

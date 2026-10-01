@@ -111,7 +111,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 
 | `type` | also required | also accepted |
 |---|---|---|
-| `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations` |
+| `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
 | `software` | — | `repo`, `authors`, `version`, `role`, `doi` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `role`, `location` |
@@ -121,6 +121,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `teaching` | — | `institution`, `course`, `role` |
 | `service`, `outreach` | — | `organization`, `role` |
 | `media` | `outlet` | — |
+| `highlight` | `highlight`, `refs` | — |
 
 `status`: `in-prep` · `submitted` · `accepted` · `published`
 `kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended`
@@ -133,6 +134,27 @@ those four buckets, and `config/presets.json` maps each to a heading.
 **`presentation`** covers everything that used to be split across "Invited
 Talks", "Selected Presentations" and "Conferences & Workshops" — `kind` carries
 the distinction, including `attended` for a meeting where you presented nothing.
+
+### Research highlights
+
+`/research/` opens with a grid of cards — a picture, a title, a few sentences,
+and the links out. Every paper can have one: give the publication a
+`highlight`.
+
+```jsonc
+"highlight": {
+  "image": "highlights/stream-members-only.png",   // file at public/highlights/…
+  "alt": "What the picture shows",
+  "title": "Short title",                          // optional; defaults to `title`
+  "description": "Two or three plain sentences. May carry [text](url)."
+}
+```
+
+A highlight that draws several papers together is its own item, `type:
+"highlight"`, with the same `highlight` block and the papers in `refs`. Its card
+lists them, each linking to that paper's card — or straight out to the paper if
+it has none yet. Syntheses lead the grid; paper cards follow, newest first. The
+section renders only once there is a card to show.
 
 ### `location` — a place, never an institution
 
