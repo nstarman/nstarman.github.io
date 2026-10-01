@@ -50,6 +50,6 @@
     "image": "highlights/phasecurvefit-joss.webp",
     "alt": "The phasecurvefit logo: noisy points along a self-crossing looped curve, coloured by their fitted order from red through yellow to blue, with the learned mean path drawn as a black line.",
     "title": "phasecurvefit",
-    "description": "Stellar streams, like many filamentary structures, are observed as an unordered cloud of points, and fitting one usually starts by working out their order along the stream and the path it traces. phasecurvefit does this in JAX by walking along the local phase-space flow, with pluggable distance metrics and neighbour-search strategies, then training a fast autoencoder that gives every point an ordering parameter and reconstructs the smooth mean track. Because it follows velocities as well as positions, the walk stays on the right strand where a stream crosses or folds back on itself."
+    "description": "A stellar stream is observed as an unordered cloud of stars, so fitting one starts with putting them in order along it. phasecurvefit does this in JAX by stepping from star to star, using velocities as well as positions so it stays on the right strand where the stream crosses itself. It then learns the stream’s smooth central path."
   }
 }
