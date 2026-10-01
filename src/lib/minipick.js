@@ -22,10 +22,9 @@
  * @param {string} id the aside's element id — what the two buttons that work
  *   it name in `aria-controls`.
  * @param {{ jump?: boolean }} [opts] `jump`: a pin is clickable, and picking
- *   scrolls the CV to the first row marked — the newest, as the rows are
- *   listed newest-first. The conference map's, where a pin is one place; on
- *   the collaborator map one institution stacks several people's dots, so a
- *   click there would pick whoever happened to be drawn last.
+ *   scrolls the CV to the first row marked — the newest, as `data-rows` is
+ *   listed newest-first. Where dots stack, as colleagues at one institution
+ *   do, a click picks whichever is drawn on top; the picker reaches the rest.
  */
 export function wireMiniMap(id = 'cv-collab-map', { jump = false } = {}) {
   const aside = document.getElementById(id);

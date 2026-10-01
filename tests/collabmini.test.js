@@ -78,4 +78,15 @@ describe('the CV gutter map', () => {
     // Unplaced papers exist in the data, so this is not vacuous.
     expect(people.some((p) => p.unplacedPapers.length > 0)).toBe(true);
   });
+
+  it('lists each person\'s papers newest first, the one a pick scrolls to', () => {
+    for (const e of entries) {
+      const all = [...who(e).pins.flatMap((pin) => pin.papers), ...who(e).unplacedPapers];
+      const date = new Map(all.map((q) => [q.id, q.date]));
+      const dates = e.papers.map((id) => date.get(id));
+      expect(dates).toEqual([...dates].sort((a, b) => b.localeCompare(a)));
+    }
+    // Someone has more than one paper with me, or this proves nothing.
+    expect(entries.some((e) => e.papers.length > 1)).toBe(true);
+  });
 });

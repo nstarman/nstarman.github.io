@@ -93,11 +93,11 @@
   /* Translucent, because conference pins are sized by count and overlap: two
      neighbouring cities should read as two discs, not one blot. */
   .cvmini-svg circle.is-talk{fill:var(--accent); fill-opacity:.55}
-  /* Clickable, and a single-talk pin is ~3px across at this size. The
-     transparent stroke is the hit area: painted, so it takes the click, and
-     invisible. Small pins are drawn last, so where hit areas overlap the
-     smaller place wins. */
-  .cvmini-svg circle.is-talk{cursor:pointer; stroke:transparent; stroke-width:30}
+  /* Clickable, and a dot is ~3px across at this size. The transparent stroke
+     is the hit area: painted, so it takes the click, and invisible. Where hit
+     areas overlap the dot drawn last wins — the smaller place on the
+     conference map, a shared place on the collaborator one. */
+  .cvmini-svg circle{cursor:pointer; stroke:transparent; stroke-width:30}
   /* Button left, link right, baseline-aligned on one row above the map. */
   .cvmini-top{display:flex; align-items:center; justify-content:space-between;
     gap:.4rem; margin:0 0 .4rem}
