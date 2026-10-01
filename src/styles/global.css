@@ -420,7 +420,8 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* The highlight on a publication: figure and words only, smaller than on
    /research/. The abstract folds behind a disclosure, as .contribs does. */
-.hl-card--pub{grid-template-columns:9rem 1fr; align-items:center; margin-top:.6rem}
+.hl-card--pub{grid-template-columns:9rem 1fr; align-items:center; margin-top:.6rem;
+  background:color-mix(in srgb, var(--ink) 1.25%, transparent)}
 .absmore{margin-top:.45rem}
 @media (max-width:34rem){ .hl-card--pub{grid-template-columns:1fr} }
 .absmore summary{
