@@ -71,11 +71,12 @@ function wire(fig) {
   // a map and pressing it ought to do. Hover deliberately does not: sweeping
   // the cursor across eighty-five pins would rebuild the list under the reader
   // several times a second. Hover previews by dimming the others; the click
-  // commits.
+  // commits. Clicking the one already picked puts everyone back, so a click
+  // undoes itself without a trip to the select.
   fig.addEventListener('click', (e) => {
     const owner = e.target.closest?.('.cmap-pin, .cmap-trail');
     if (!owner) return;
-    pick.value = owner.dataset.c;
+    pick.value = pick.value === owner.dataset.c ? '' : owner.dataset.c;
     show(pick.value);
     // Selecting hides everything else, so the thing being pointed at is no
     // longer under the cursor and the dimming has nothing left to say.
