@@ -17,7 +17,9 @@ const year = (d) => d.slice(0, 4);
 
 const all = byType('software');
 const lead = all.find((s) => s.tier === 'lead');
-const headline = all.filter((s) => s.tier === 'headline');
+// Array.sort is stable, so equal `order` keeps byType's newest-first.
+const headline = all.filter((s) => s.tier === 'headline')
+  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const other = (tail ? all.filter((s) => s.tier === 'other') : [])
   .sort((a, b) => a.title.localeCompare(b.title));
 // Fourth tier: things worth having that are not research software. Smaller
