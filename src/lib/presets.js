@@ -123,12 +123,3 @@ export function resolve(name, only) {
 export function memberIds(name) {
   return resolve(name).sections.flatMap((s) => (s.key ? [s.key] : s.items.map((i) => i.id)));
 }
-
-/**
- * For every preset, the section ids it actually renders — a section that
- * resolves to nothing is not offered, so the toggle never points at an empty
- * page position.
- */
-export function sectionIndex() {
-  return new Map(presetNames.map((n) => [n, new Set(resolve(n).sections.map((s) => s.id))]));
-}

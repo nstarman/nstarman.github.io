@@ -3,7 +3,7 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds, sectionIndex } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds } from '../src/lib/presets.js';
 import { items } from '../src/lib/data.js';
 
 describe('the presets', () => {
@@ -81,16 +81,6 @@ describe('memberIds', () => {
     for (const name of presetNames) {
       const rendered = resolve(name).sections.flatMap((s) => (s.key ? [s.key] : s.items.map((i) => i.id)));
       expect(memberIds(name)).toEqual(rendered);
-    }
-  });
-});
-
-describe('sectionIndex', () => {
-  it('offers a section only where it resolves to something', () => {
-    const index = sectionIndex();
-    for (const name of presetNames) {
-      const ids = new Set(resolve(name).sections.map((s) => s.id));
-      expect([...index.get(name)].sort()).toEqual([...ids].sort());
     }
   });
 });
