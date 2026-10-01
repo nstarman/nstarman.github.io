@@ -313,11 +313,17 @@
 }
 
 // ── body ──────────────────────────────────────────────────────────────────
+// A lone section needs no heading — e.g. a builder export of only the
+// publications. Empty sections are already dropped by the resolver.
 #for s in cv.sections {
-  section(
-    s.heading,
-    mark: s.at("icon", default: none),
-  )
+  if cv.sections.len() > 1 {
+    section(
+      s.heading,
+      mark: s.at("icon", default: none),
+    )
+  } else {
+    v(if tight { 8pt } else { 15pt })
+  }
   if "layout" in s and s.layout == "list" {
     plainlist(s.entries)
   } else if "layout" in s and s.layout == "grid" {
