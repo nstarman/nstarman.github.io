@@ -652,13 +652,22 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 .cmap-head{margin-top:2rem}
 
-/* Research Highlights: picture, title, a few sentences, links out. */
-.hl{display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem; margin-top:1rem}
+/* Research Highlights: a list of cards, figure on the left and the words
+   beside it. Stacked on a phone, where a side column would leave neither room. */
+.hl{display:grid; gap:1.2rem; margin-top:1rem}
+.hl-card{display:grid; grid-template-columns:15rem 1fr; gap:1.1rem}
+/* The text column stretches so its links sit at the bottom; the figure centres
+   against it. First child, because the figure is an <img> or its link. */
+.hl-card > :first-child{align-self:center}
+.hl-body{display:flex; flex-direction:column; gap:.3rem}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
-.hl-card img{display:block; width:100%; aspect-ratio:16/10; object-fit:contain;
-  border-radius:10px; background:#fff; padding:.4rem; margin-bottom:.45rem}
+.hl-card img{display:block; width:100%; aspect-ratio:4/3; object-fit:contain;
+  border-radius:10px; background:#fff; padding:.4rem}
 .hl-card h4{margin:0; line-height:1.35}
 .hl-refs{margin:.2rem 0 0; padding-left:1.1rem; font-size:.85rem}
+@media (max-width:34rem){
+  .hl-card{grid-template-columns:1fr; gap:.45rem}
+}
 .cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
   display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
 /* `display` on the element beats the user agent's [hidden]{display:none}, so a

@@ -46,14 +46,16 @@ const mainHref = (item) => {
                   {href
                     ? <a href={href}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
                     : <img src={`/${h.image}`} alt={h.alt} loading="lazy" />}
-                  <h4 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h4>
-                  <p>{spans(h.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
-                  {refs.length > 0 && (
-                    <ul class="hl-refs">
-                      {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}
-                    </ul>
-                  )}
-                  <LinkIcons links={links(item)} />
+                  <div class="hl-body">
+                    <h4 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h4>
+                    <p>{spans(h.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+                    {refs.length > 0 && (
+                      <ul class="hl-refs">
+                        {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}
+                      </ul>
+                    )}
+                    <LinkIcons links={links(item)} />
+                  </div>
                 </article>
               );
             })}
