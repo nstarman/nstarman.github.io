@@ -51,7 +51,7 @@ const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
       ))}
     </select>
     {/* The full map owns up to what it cannot pin; so does this one. */}
-    {offMap > 0 && <p class="cvmini-note">{plural(offMap, 'talk')} online or not yet placed</p>}
+    {offMap > 0 && <p class="cvmini-note">{plural(offMap, 'talk')} not yet placed</p>}
   </div>
 </aside>
 

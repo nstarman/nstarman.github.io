@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { conferenceMap, radius, ONLINE, map } from '../src/lib/confmap.js';
+import { conferenceMap, radius, ONLINE, ONLINE_AT, map } from '../src/lib/confmap.js';
 import { toXY, KM_PER_UNIT, MAX_DRIFT_MILES } from '../src/lib/worldmap.js';
 import { byType } from '../src/lib/data.js';
 import { readFileSync } from 'node:fs';
@@ -15,7 +15,6 @@ describe('the conference map', () => {
 
     const ids = [
       ...cmap.pins.flatMap((p) => p.talks.map((t) => t.id)),
-      ...cmap.online.map((t) => t.id),
       ...cmap.unsettled.map((t) => t.id),
       ...cmap.unplaced.map((t) => t.id),
     ];
@@ -36,11 +35,18 @@ describe('the conference map', () => {
     }
   });
 
-  it('never puts an online talk on the map', () => {
-    // "Online" is not a place, and the whole point of #22's note about it is
-    // that it must not become a pin somewhere on Earth.
-    expect(cmap.online.length).toBeGreaterThan(0);
-    for (const pin of cmap.pins) expect(pin.place).not.toBe(ONLINE);
+  it('pins online talks at the south pole, on the prime meridian', () => {
+    // Nowhere a talk could have been, so it cannot be mistaken for a city —
+    // and in particular not rounded to wherever I happened to be sitting.
+    const online = byType('presentation').filter((i) => i.location === ONLINE);
+    expect(online.length).toBeGreaterThan(0);
+    const pin = cmap.pins.find((p) => p.place === ONLINE);
+    expect(pin.talks.map((t) => t.id).sort()).toEqual(online.map((i) => i.id).sort());
+    expect([pin.lat, pin.lon]).toEqual([ONLINE_AT.lat, ONLINE_AT.lon]);
+    expect(ONLINE_AT).toEqual({ lat: -90, lon: 0 });
+    // Bottom edge, dead centre.
+    expect(pin.x).toBeCloseTo(map.width / 2, 0);
+    expect(pin.y).toBeCloseTo(map.height, 0);
   });
 
   it('refuses a location a geocoder would misread, rather than guessing', () => {
@@ -48,7 +54,8 @@ describe('the conference map', () => {
     // calls this the one that silently produces a plausible-looking wrong map.
     // Until the string is settled the talk is listed, not pinned.
     for (const t of cmap.unsettled) expect(t.location).toBeTruthy();
-    for (const pin of cmap.pins) {
+    // Online is pinned by convention, not geocoded — the test above covers it.
+    for (const pin of cmap.pins.filter((p) => p.place !== ONLINE)) {
       expect(pin.place).toMatch(/^[^,]+, (?:[A-Z]{2}, (?:USA|Canada)|[^,]+)$/);
     }
   });

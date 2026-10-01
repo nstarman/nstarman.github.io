@@ -17,9 +17,17 @@ import { byType, dateLabel, links } from './data.js';
 
 export { map };
 
-/** A talk with no venue. Deliberately not a pin: putting "Online" somewhere on
- *  Earth would be inventing a fact, so it gets its own list instead (#22). */
+/** A talk with no venue. */
 export const ONLINE = 'Online';
+
+/** Where the online talks are pinned: the south pole, on the prime meridian —
+ *  the bottom edge of the map, dead centre. A place no talk could have been,
+ *  so the pin reads as "nowhere in particular" rather than inventing a city;
+ *  rounding to wherever I was sitting would be the invented fact (#22). */
+export const ONLINE_AT = { lat: -90, lon: 0 };
+
+/** Where a location string is on Earth, or nothing if it is not settled. */
+const coords = (loc) => (loc === ONLINE ? ONLINE_AT : places.places[loc]);
 
 /** How the CV's `kind` reads in a sentence about one talk. */
 const KIND = {
@@ -56,16 +64,15 @@ const newestFirst = (a, b) => b.date.localeCompare(a.date);
 /**
  * Every presentation, sorted into the four things it can be.
  *
- * `pins` are the ones with a settled, resolvable location. `online` had no
- * venue. `unsettled` still carry a location string the geocoder refuses —
- * `TO, CA` reads as California, so it is left off rather than guessed at.
- * `undated` have no location recorded yet at all.
+ * `pins` are the ones with a settled, resolvable location, plus one for the
+ * talks given online, at ONLINE_AT. `unsettled` still carry a location string
+ * the geocoder refuses — `TO, CA` reads as California, so it is left off
+ * rather than guessed at. `unplaced` have no location recorded yet at all.
  *
- * Every talk lands in exactly one of the four, and the page says so: a map that
- * quietly drops seventeen talks is worse than one that admits to them.
+ * Every talk lands in exactly one of the three, and the page says so: a map
+ * that quietly drops seventeen talks is worse than one that admits to them.
  */
 export function conferenceMap() {
-  const online = [];
   const unsettled = [];
   const unplaced = [];
   const here = new Map();
@@ -74,9 +81,7 @@ export function conferenceMap() {
     const talk = talkOf(item);
     const loc = item.location;
     if (!loc) { unplaced.push(talk); continue; }
-    if (loc === ONLINE) { online.push(talk); continue; }
-    const at = places.places[loc];
-    if (!at) { unsettled.push({ ...talk, location: loc }); continue; }
+    if (!coords(loc)) { unsettled.push({ ...talk, location: loc }); continue; }
     if (!here.has(loc)) here.set(loc, []);
     here.get(loc).push(talk);
   }
@@ -86,24 +91,22 @@ export function conferenceMap() {
     // reader looking for Toronto should find it where T belongs.
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([place, talks], i) => {
-      const { lat, lon } = places.places[place];
+      const { lat, lon } = coords(place);
       const [x, y] = toXY(lon, lat);
       talks.sort(newestFirst);
       return { place, lat, lon, x, y, talks, r: radius(talks.length), hue: hueFor(i) };
     });
 
   spread(pins);
-  online.sort(newestFirst);
   unsettled.sort(newestFirst);
   unplaced.sort(newestFirst);
 
   return {
     pins,
-    online,
     unsettled,
     unplaced,
     talks: pins.reduce((n, p) => n + p.talks.length, 0),
-    total: online.length + unsettled.length + unplaced.length
+    total: unsettled.length + unplaced.length
       + pins.reduce((n, p) => n + p.talks.length, 0),
   };
 }

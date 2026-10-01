@@ -12,12 +12,12 @@
 import { conferenceMap, map } from '../lib/confmap.js';
 
 const conf = conferenceMap();
-const { pins, online, unsettled, unplaced } = conf;
+const { pins, unsettled, unplaced } = conf;
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 // Everything that is deliberately not a pin, in one place so the page can own
-// up to it in one sentence rather than three.
-const offMap = online.length + unsettled.length + unplaced.length;
+// up to it in one sentence rather than two.
+const offMap = unsettled.length + unplaced.length;
 ---
 
 <figure class="cmap cmap--conf">
@@ -75,7 +75,7 @@ const offMap = online.length + unsettled.length + unplaced.length;
     </select>
     {offMap > 0 && (
       <span class="cmap-partial"
-            title="Online talks have no place to pin, and some records have no location recorded yet. Both are listed under the map rather than dropped.">
+            title="Some records have no settled location yet. They are listed under the map rather than dropped.">
         {plural(offMap, 'talk')} not on the map
       </span>
     )}
@@ -105,23 +105,6 @@ const offMap = online.length + unsettled.length + unplaced.length;
       the picker must never hide them. */}
   {offMap > 0 && (
     <div class="cmap-off">
-      {online.length > 0 && (
-        <details>
-          <summary>{plural(online.length, 'talk')} online</summary>
-          {/* Not a pin, and not pretending to be one — an online talk happened
-              nowhere in particular, which is a fact worth keeping rather than
-              rounding to wherever I was sitting. */}
-          <ol>
-            {online.map((t) => (
-              <li>
-                <span class="cmap-when">{t.when}</span>
-                <span class="cmap-where">{t.url ? <a href={t.url}>{t.title}</a> : t.title}</span>
-                <span class="cmap-kind">{t.kindLabel}</span>
-              </li>
-            ))}
-          </ol>
-        </details>
-      )}
       {(unplaced.length > 0 || unsettled.length > 0) && (
         <details>
           <summary>{plural(unplaced.length + unsettled.length, 'talk')} not placed yet</summary>
