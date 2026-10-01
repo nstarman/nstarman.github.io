@@ -21,61 +21,9 @@ node scripts/validate.mjs schema/list.schema.json "data/lists/*.json" \
   || fails=$((fails + 1))
 
 echo
-echo "identity — filename must be <date.start>-<id>.json"
-# One node process, not one per file. The id is the item's identity and refs
-# elsewhere point at it; the date in front only orders the directory, so both
-# halves have to agree with the record or something silently points at nothing.
-node -e '
-const fs = require("fs");
-const files = fs.readdirSync("data").filter(f => f.endsWith(".json"));
-let bad = 0;
-for (const f of files) {
-  const o = JSON.parse(fs.readFileSync("data/" + f, "utf8"));
-  const want = `${o.date && o.date.start}-${o.id}.json`;
-  if (f !== want) { console.log(`  MISMATCH data/${f} should be ${want}`); bad++; }
-}
-if (!bad) console.log(`  ok       ${files.length} filenames are <date.start>-<id>.json`);
-process.exit(bad ? 1 : 0);
-' || fails=$((fails + 1))
-
-echo
-echo "refs — every ref must resolve to an existing item"
-# A ref at a missing id is not a schema error: the pattern matches, so ajv passes
-# and the link just renders as nothing. Catch it here instead.
-node -e '
-const fs = require("fs");
-const files = fs.readdirSync("data").filter(f => f.endsWith(".json"));
-const items = files.map(f => JSON.parse(fs.readFileSync("data/" + f, "utf8")));
-const ids = new Set(items.map(i => i.id));
-let bad = 0;
-for (const i of items)
-  for (const r of i.refs ?? [])
-    if (!ids.has(r)) { console.log(`  DANGLING ${i.id} -> ${r}`); bad++; }
-const n = items.reduce((a, i) => a + (i.refs?.length ?? 0), 0);
-if (!bad) console.log(`  ok       ${n} ref(s) across ${items.length} items`);
-process.exit(bad ? 1 : 0);
-' || fails=$((fails + 1))
-
-echo
-echo "cross-links — every [text](item:id) must resolve"
-# `item:` targets live inside prose, so the schema cannot see them. A typo there
-# renders as an anchor to nothing.
-node -e '
-const fs = require("fs");
-const files = fs.readdirSync("data").filter(f => f.endsWith(".json"));
-const items = files.map(f => JSON.parse(fs.readFileSync("data/" + f, "utf8")));
-const ids = new Set(items.map(i => i.id));
-let bad = 0, n = 0;
-for (const i of items) {
-  const text = [i.details, i.summary].flat().filter(t => typeof t === "string").join(" ");
-  for (const m of text.matchAll(/\[[^\]]+\]\(item:([a-z0-9-]+)\)/g)) {
-    n++;
-    if (!ids.has(m[1])) { console.log(`  DANGLING ${i.id} -> item:${m[1]}`); bad++; }
-  }
-}
-if (!bad) console.log(`  ok       ${n} cross-link(s) resolve`);
-process.exit(bad ? 1 : 0);
-' || fails=$((fails + 1))
+echo "integrity — filenames, refs and [text](item:id) cross-links"
+# What the schema cannot see; tests/integrity.test.js says why each matters.
+npx vitest run tests/integrity.test.js || fails=$((fails + 1))
 
 echo
 echo "negative — schema/invalid/ must be rejected"
