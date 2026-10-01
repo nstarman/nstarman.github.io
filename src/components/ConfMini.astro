@@ -1,0 +1,61 @@
+---
+// The conference map, shrunk to fit the CV's right margin.
+//
+// CollabMini's sibling, and built the same way: the full map's data and
+// projection imported rather than reimplemented, the prose dropped because at
+// 176px it is unreadable, and the picker kept because it is what lets the map
+// answer a question. Picking a place lights up the talks given there in the
+// sections beside it.
+//
+// It spans every talk section in a run, not one: CvView wraps Invited Talks,
+// Presentations and Conferences together so the map sticks through all three.
+//
+// Markup only. The arithmetic is lib/confmini.js and the behaviour is the same
+// lib/minipick.js the collaborator map uses.
+import { confMini, map } from '../lib/confmini.js';
+
+/** The talks this CV renders — the map pins those and no others. */
+const { ids } = Astro.props;
+const { entries, dots, placed, offMap } = confMini(ids);
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+---
+
+<aside class="cvmini" id="cv-conf-map" data-words="where I have given talks" hidden>
+  <div class="cvmini-stick">
+    <div class="cvmini-top">
+      <button type="button" class="cvmini-shut" aria-controls="cv-conf-map"
+              aria-expanded="true"
+              aria-label="Hide where I have given talks"
+              title="Hide where I have given talks">
+        <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-map" /></svg>
+      </button>
+      <a class="cvmini-more" href="/research/#conferences">Expanded View &rarr;</a>
+    </div>
+
+    <svg class="cvmini-svg" viewBox={`0 0 ${map.width} ${map.height}`} role="img"
+         aria-label={`Map: ${plural(placed, 'talk')} in ${plural(entries.length, 'place')}. `
+                   + `The same information is on the research page.`}>
+      <path class="cvmini-land" d={map.land} />
+      <path class="cvmini-lakes" d={map.lakes} />
+      {/* `r` from the count, so a pin's area says how many talks: the full
+          map's legend, without room to print it. */}
+      {dots.map((d) => (
+        <circle class="is-talk" data-c={String(d.c)} cx={d.x} cy={d.y} r={d.r} />
+      ))}
+    </svg>
+
+    <select class="cvmini-who" aria-label="Highlight one place">
+      <option value="">Everywhere</option>
+      {entries.map((e) => (
+        <option value={String(e.c)} data-rows={e.talks.join(' ')}>{e.place} ({e.talks.length})</option>
+      ))}
+    </select>
+    {/* The full map owns up to what it cannot pin; so does this one. */}
+    {offMap > 0 && <p class="cvmini-note">{plural(offMap, 'talk')} online or not yet placed</p>}
+  </div>
+</aside>
+
+<script>
+  import { wireMiniMap } from '../lib/minipick.js';
+  wireMiniMap('cv-conf-map');
+</script>
