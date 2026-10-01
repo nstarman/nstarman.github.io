@@ -450,7 +450,9 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    straight into the row beneath, and all three keep visible cards under either
    stop anyway. A tier the filter empties completely is the other case: its
    divider would separate nothing, so it goes with the grid. */
-#sw-yes:checked ~ .tier-nopaper{display:none}
+#sw-yes:checked ~ .tier-nopaper,
+/* Merged PRs in other people's repos carry no paper of their own. */
+#sw-yes:checked ~ .contribs{display:none}
 
 /* ---------- publications: filter by author position ---------- */
 /* Clipped rather than display:none — a display:none radio is not focusable, and
