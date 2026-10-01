@@ -96,6 +96,8 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
 </Base>
 
 <script>
+  import { currentSection } from '../lib/scrollspy.js';
+
   // Topic filter. A paper shows if it carries any ticked topic; none ticked is
   // "All". Hidden with a class so it composes with the author-position CSS.
   const menu = document.querySelector('.tagmenu');
@@ -120,14 +122,16 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
   const links = [...document.querySelectorAll('.cvtoc a')];
   const shown = () => [...document.querySelectorAll('.entry--full')].filter((e) => e.offsetParent);
   const firstOf = (y) => shown().find((e) => e.dataset.year === y);
+  // The same rule as the CV's section rail (lib/scrollspy.js): the last paper
+  // within 120px of the top, which allows a pixel past its 119px gap.
   const spy = () => {
     const vis = shown();
-    let cur = null;
-    for (const e of vis) if (e.getBoundingClientRect().top <= 120) cur = e.dataset.year;
+    const cur = currentSection(
+      vis.map((e) => ({ id: e.dataset.year, top: e.getBoundingClientRect().top })), 119);
     const have = new Set(vis.map((e) => e.dataset.year));
     for (const a of links) {
       a.parentElement.hidden = !have.has(a.dataset.year);
-      a.classList.toggle('is-current', a.dataset.year === (cur ?? vis[0]?.dataset.year));
+      a.classList.toggle('is-current', a.dataset.year === cur);
     }
   };
   document.querySelector('.cvtoc')?.addEventListener('click', (e) => {

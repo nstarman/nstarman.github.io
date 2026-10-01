@@ -4,16 +4,14 @@
 import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
-import { dateLabel, authors, venueLine,
-  links, REL_ICON, relKey, authorPosition,
-  softwarePaper, positionStops, money } from '../lib/data.js';
-import { spans, detailLines } from '../lib/inline.js';
+import { links, softwarePaper, positionStops } from '../lib/data.js';
+import { detailLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
 import LinkIcons from './LinkIcons.astro';
 import Inline from './Inline.astro';
-import Byline from './Byline.astro';
-import Venue from './Venue.astro';
+import CvToc from './CvToc.astro';
+import CvTimelineItem from './CvTimelineItem.astro';
 
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
@@ -46,13 +44,6 @@ const baseLines = (i) => detailLines(i).length;
 const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
 
-// What rides in the left date gutter rather than under the text: an
-// institution's homepage anywhere, and a talk's whole trail — a presentation's
-// only link is the event, and it belongs beside the date it happened on.
-const inGutter = (item, l) => l.rel === 'homepage' || item.type === 'presentation';
-const gutterLinks = (item) => links(item).filter((l) => inGutter(item, l));
-const bodyLinks = (item) => links(item).filter((l) => !inGutter(item, l));
-
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
 // of one.
@@ -83,13 +74,7 @@ const mapFor = (s) => {
   </p>
 )}
 
-<nav class="cvtoc" aria-label="CV sections">
-  <ol>
-    {cv.sections.map((s) => (
-      <li><a href={`#${s.id}`} data-sec={s.id}>{s.heading}</a></li>
-    ))}
-  </ol>
-</nav>
+<CvToc sections={cv.sections} />
 
 {runs.map((run) => {
   const sections = run.sections.map(({ s, i }) => {
@@ -206,74 +191,9 @@ const mapFor = (s) => {
       ) : (
       <div class="timeline">
         {s.items.map((item) => (
-          <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
-               id={`item-${item.id}`}>
-            {pick && (
-              <input type="checkbox" class="itembox" value={item.id}
-                     data-pos={item.type === 'publication'
-                       ? (authorPosition(item) ?? undefined) : undefined}
-                     checked={isPicked(item.id)}
-                     aria-label={`Include ${item.title}`} />
-            )}
-            <a class="srclink" href={`/records/${item.id}.json`}
-               aria-label={`${item.title} — JSON source`} title="JSON source">{'}'}</a>
-            <span class="when">
-              {dateLabel(item)}
-              {gutterLinks(item).length > 0 && (
-                <span class="gutterlinks">
-              {gutterLinks(item).map((l) => (
-                <a class="homelink" href={l.url}
-                   aria-label={`${item.event ?? item.institution ?? item.organization ?? item.title} ${l.label ?? l.rel}`}
-                   title={l.label ?? l.rel}>
-                  <svg class="ico" aria-hidden="true" focusable="false">
-                    <use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} />
-                  </svg>
-                </a>
-              ))}
-                </span>
-              )}
-            </span>
-            <span class="what">
-              <strong>{item.title}</strong>
-              {item.institution && <>, {item.institution}</>}
-              {item.event && <>, {item.event}</>}
-              {item.type === 'publication' && (
-                <> — <Byline shown={authors(item, 4).shown} />{authors(item, 4).etal && <>, et al</>}
-                  {(authors(item, 4).etal || venueLine(item)) && '.'}
-                  {venueLine(item) && <> <Venue item={item} /></>}
-                </>
-              )}
-              {/* Grants show their figure; awards keep theirs in the record only. */}
-              {item.amount && item.type !== 'award' && (
-                <> — {money(item.amount)}{item.declined && ' (declined)'}</>
-              )}
-              {item.declined && item.type === 'award' && <> (declined)</>}
-              {item.recipient && <span class="recipient"> — to {item.recipient}</span>}
-              {/* Last on the line, after the venue. The CV page does not group by
-                  status the way the PDF does, so without it a submitted paper is
-                  indistinguishable from a published one — but it qualifies the
-                  whole citation, not the title, so it reads at the end. */}
-              {item.status && item.status !== 'published' && (
-                <span class="statustag">{item.status}</span>
-              )}
-              {detail(item).map((line, i) => (
-                <span class="sub">
-                  {pick && (
-                    <input type="checkbox" class="subbox" data-id={item.id} data-line={i}
-                           data-complete={i >= baseLines(item) ? '' : undefined}
-                           checked={level === 'full' && (i < baseLines(item) || completeLines)}
-                           aria-label={`Include this line under ${item.title}`} />
-                  )}
-                  <Inline spans={line} />
-                </span>
-              ))}
-              {/* publications keep their trail in a gutter of its own, as on the
-                  publications page; everything else that is not in the date
-                  gutter sits under the text */}
-              {item.type !== 'publication' && <LinkIcons links={bodyLinks(item)} />}
-            </span>
-            {item.type === 'publication' && <LinkIcons links={bodyLinks(item)} />}
-          </div>
+          <CvTimelineItem item={item} pick={pick} picked={isPicked(item.id)}
+                          lines={detail(item)} baseCount={baseLines(item)}
+                          level={level} completeLines={completeLines} />
         ))}
       </div>
       )}
@@ -295,93 +215,3 @@ const mapFor = (s) => {
     </div>
   ) : sections;
 })}
-
-<script>
-  import { anchorTrail, currentSection } from '../lib/scrollspy.js';
-
-  const heads = [...document.querySelectorAll('.cvsection')];
-  // The same offset the headings are scrolled to, read from the CSS rather
-  // than restated here: a hardcoded 90 against a 94px bar left the final
-  // section unmarked even once it could reach the top.
-  const topGap = heads.length
-    ? parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96
-    : 96;
-  const rects = () => heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top }));
-
-  // Switching length should not throw you to the top of the document. We
-  // remember where the heading you were reading sat in the viewport and put it
-  // back there on the other page, so the switch reads as the list changing
-  // under a fixed heading rather than as a jump.
-  //
-  // This used to be repeated on every section heading, because only a link that
-  // named its own section could restore anything. Asking the scroll-spy which
-  // heading you are in gives the one control at the top the same answer, so the
-  // other fifteen copies are gone.
-  const KEY = 'cv:anchor';
-
-  // `.build` is excluded: the builder is a different document, not this one at
-  // another length, and it opens at the top on purpose.
-  for (const a of document.querySelectorAll('.cvtoggle--main a:not(.build)')) {
-    a.addEventListener('click', () => {
-      if (!heads.length) return;
-      sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), topGap)));
-    });
-  }
-
-  const saved = sessionStorage.getItem(KEY);
-  if (saved) {
-    sessionStorage.removeItem(KEY);
-    try {
-      for (const { id, top } of JSON.parse(saved)) {
-        const head = document.getElementById(id);
-        if (!head) continue;
-        const y = head.getBoundingClientRect().top + scrollY - top;
-        scrollTo({ top: Math.max(0, y), behavior: 'instant' });
-        break;
-      }
-    } catch {}
-  }
-
-  // Scroll-spy for the CV contents rail. The rail itself is shown by a media
-  // query — this only tracks position, so it costs nothing when it is hidden.
-  const links = new Map(
-    [...document.querySelectorAll('.cvtoc a')].map((a) => [a.dataset.sec, a]),
-  );
-
-  if (links.size && heads.length) {
-    let current = null;
-    const mark = (id) => {
-      if (id === current) return;
-      current = id;
-      for (const [key, a] of links) a.classList.toggle('is-current', key === id);
-    };
-
-    // Which heading is current is decided in lib/scrollspy.js, against numbers
-    // rather than elements, so the comparison that used to mark the wrong
-    // section can be tested without a browser.
-    const update = () => {
-      // No bottom-out special case: .cvsec--last is tall enough for the final
-      // heading to reach the top like any other, so the same rule decides it.
-      mark(currentSection(rects(), topGap));
-    };
-    update();
-    addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update, { passive: true });
-
-    // A fragment jump moves the page, and cannot be relied on to deliver a
-    // `scroll` event for it — so on its own, `scroll` leaves the rail marking
-    // wherever the reader was standing before they clicked. That is the half of
-    // this bug that survived the first fix: the landing position was then right
-    // and the mark was never recomputed to notice.
-    //
-    // Three signals, because each covers a gap in the others: `hashchange` for
-    // a click on the rail or any in-page anchor, `scrollend` for a smooth
-    // scroll that has come to rest (not everywhere yet, hence the guard), and a
-    // click on the rail itself for the case where the hash is unchanged because
-    // the reader clicked the section they were already in.
-    const soon = () => requestAnimationFrame(() => requestAnimationFrame(update));
-    addEventListener('hashchange', soon);
-    if ('onscrollend' in window) addEventListener('scrollend', update);
-    document.querySelector('.cvtoc')?.addEventListener('click', soon);
-  }
-</script>
