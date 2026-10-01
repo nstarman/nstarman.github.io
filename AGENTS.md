@@ -147,6 +147,7 @@ and the links out. Every paper can have one: give the publication a
   "topic": "galactic",                             // extragalactic | galactic | cmb | dm-direct-detection | software
   "alt": "What the picture shows",
   "title": "Short title",                          // optional; defaults to `title`
+  "microTitle": "Stream Members Only",              // a few words: the paper's name in a sentence
   "description": "Two or three plain sentences. May carry [text](url)."
 }
 ```
@@ -156,6 +157,13 @@ and the links out. Every paper can have one: give the publication a
 is a schema change plus `HIGHLIGHT_TOPICS` in `src/lib/data.js`. `software` is
 deliberately absent from that list: a card under it is written and kept, but
 not shown until the topic is added there.
+
+Each topic opens with an introduction, written in `HIGHLIGHT_TOPICS`, that
+tells the story its papers belong to. Where it mentions a paper it writes
+`[](item:<id>)`, and that becomes a text-sized micro-card named by the paper's
+`microTitle` and linking to its card. The cards then run in a row that scrolls
+sideways, newest first, with prev/next buttons. A paper added to a topic
+should be worked into its introduction, not just appended to the row.
 
 A highlight that draws several papers together is its own item, `type:
 "highlight"`, with the same `highlight` block and the papers in `refs`. Its card

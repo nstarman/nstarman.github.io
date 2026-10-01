@@ -4,7 +4,7 @@ import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import LinkIcons from '../components/LinkIcons.astro';
 import { byType, links, primaryLink, resolve, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import Inline from '../components/Inline.astro';
+import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
 const papers = byType('publication').filter((p) => p.highlight);
@@ -13,12 +13,21 @@ const anchor = (id) => `hl-${id}`;
 
 // A topic with no card yet is skipped.
 const groups = HIGHLIGHT_TOPICS
-  .map(([key, label]) => ({ key, label, items: highlights.filter((i) => i.highlight.topic === key) }))
+  .map(([key, label, intro]) => ({ key, label, intro, items: highlights.filter((i) => i.highlight.topic === key) }))
   .filter((g) => g.items.length > 0);
 
 // A synthesis's papers link to their cards; a paper without one, out to the paper.
 const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
 const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
+
+// An intro's `[](item:id)` becomes that paper's micro-card. A typo fails the
+// build rather than rendering a card that points nowhere.
+const micro = (s) => {
+  const p = resolve(s.item);
+  if (!p) throw new Error(`research highlights: [](item:${s.item}) names no item`);
+  const name = s.t || p.highlight?.microTitle || p.highlight?.title || p.title;
+  return { name, href: p.highlight ? `#${anchor(p.id)}` : mainHref(p) };
+};
 ---
 <Base title="Research — Nathaniel Starkman">
   <main>
@@ -36,29 +45,44 @@ const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
           <h3 id="highlights" class="cmap-head">Research Highlights</h3>
           {groups.map((g) => <>
           <h4 id={`hl-topic-${g.key}`} class="hl-topic">{g.label}</h4>
-          <div class="hl">
+          {g.intro?.map((para) => (
+            <p class="hl-intro">{spans(para, '/cv/').map((s) => {
+              if (s.item) {
+                const m = micro(s);
+                return <a class="micro" href={m.href}>{m.name}</a>;
+              }
+              return s.url ? <a href={s.url}>{s.t}</a> : s.t;
+            })}</p>
+          ))}
+          {/* A carousel: one row that scrolls sideways, each card snapping to the
+              start. Focusable so the arrow keys scroll it too. The buttons
+              need the script, so they stay hidden until it runs. */}
+          <div class="hl-wrap">
+          <div class="hl-nav" hidden>
+            <button type="button" class="iconbtn" data-step="-1" aria-label={`Previous ${g.label} highlight`}>‹</button>
+            <button type="button" class="iconbtn" data-step="1" aria-label={`Next ${g.label} highlight`}>›</button>
+          </div>
+          <div class="hl" role="region" aria-label={`${g.label} highlights`} tabindex="0">
             {g.items.map((item) => {
               const h = item.highlight;
               const href = mainHref(item);
               const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
               return (
                 <article class="card hl-card" id={anchor(item.id)}>
+                  <h5 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h5>
                   {href
-                    ? <a href={href}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
+                    ? <a href={href} tabindex="-1"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
                     : <img src={`/${h.image}`} alt={h.alt} loading="lazy" />}
-                  <div class="hl-body">
-                    <h5 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h5>
-                    <p><Inline text={h.description} base="/cv/" /></p>
-                    {refs.length > 0 && (
-                      <ul class="hl-refs">
-                        {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}
-                      </ul>
-                    )}
-                    <LinkIcons links={links(item)} />
-                  </div>
+                  {refs.length > 0 && (
+                    <ul class="hl-refs">
+                      {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}
+                    </ul>
+                  )}
+                  <LinkIcons links={links(item)} />
                 </article>
               );
             })}
+          </div>
           </div>
           </>)}
         </>}
@@ -70,3 +94,26 @@ const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
     </section>
   </main>
 </Base>
+
+<script>
+  // Prev/next scroll a carousel by one card. Hidden when everything fits;
+  // each disabled at its end.
+  const motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  for (const wrap of document.querySelectorAll('.hl-wrap')) {
+    const row = wrap.querySelector('.hl');
+    const nav = wrap.querySelector('.hl-nav');
+    const [prev, next] = nav.querySelectorAll('button');
+    const card = () => row.querySelector('.card').offsetWidth + parseFloat(getComputedStyle(row).columnGap);
+    for (const b of [prev, next]) {
+      b.addEventListener('click', () => row.scrollBy({ left: Number(b.dataset.step) * card(), behavior: motion }));
+    }
+    const update = () => {
+      prev.disabled = row.scrollLeft <= 1;
+      next.disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 1;
+      nav.hidden = prev.disabled && next.disabled;
+    };
+    row.addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+</script>

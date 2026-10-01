@@ -420,7 +420,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* The highlight on a publication: figure and words only, smaller than on
    /research/. The abstract folds behind a disclosure, as .contribs does. */
-.hl-card--pub{grid-template-columns:9rem 1fr; align-items:center; margin-top:.6rem;
+.hl-card--pub{display:grid; grid-template-columns:9rem 1fr; gap:1.1rem; align-items:center; margin-top:.6rem;
   background:color-mix(in srgb, var(--ink) 1.25%, transparent)}
 .hl-context{align-self:flex-end; font-family:var(--mono); font-size:.68rem;
   letter-spacing:.06em; text-transform:uppercase;
@@ -677,22 +677,42 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* A rule between the research page's sections, not above the first. */
 .cmap-head ~ .cmap-head{margin-top:2.6rem; padding-top:2rem; border-top:1px solid var(--rule)}
 
-/* Research Highlights: a list of cards, figure on the left and the words
-   beside it. Stacked on a phone, where a side column would leave neither room. */
-.hl{display:grid; gap:1.2rem; margin-top:1rem}
-.hl-card{display:grid; grid-template-columns:15rem 1fr; gap:1.1rem}
-/* The text column stretches so its links sit at the bottom; the figure centres
-   against it. First child, because the figure is an <img> or its link. */
-.hl-card > :first-child{align-self:center}
+/* Research Highlights: each topic's introduction, then its cards in a row
+   that scrolls sideways. A card is the site's ordinary grey .card — title,
+   figure, links, top to bottom; the introduction does the telling — newest
+   first, at a fixed width, so the next one
+   peeks in from the right and says there is more. */
+.hl-intro{margin:.6rem 0 0; color:var(--ink-2); line-height:1.65}
+.hl{display:grid; grid-auto-flow:column; grid-auto-columns:min(17rem, 85%); gap:.7rem;
+  margin-top:1rem; padding-bottom:.6rem; overflow-x:auto;
+  scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:thin}
+.hl > .card{scroll-snap-align:start; gap:.45rem; padding:.75rem .9rem .8rem}
+/* Wider than the 4:3 figure elsewhere, so the card is shorter; contain keeps
+   the whole figure, just smaller. */
+.hl > .card img{aspect-ratio:16/10; padding:.3rem}
+.hl > .card .btns--icon{margin-top:auto; padding-top:.2rem}
+.hl-card h5{margin:0; line-height:1.35}
 .hl-body{display:flex; flex-direction:column; gap:.3rem}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
 .hl-card img{display:block; width:100%; aspect-ratio:4/3; object-fit:contain;
   border-radius:10px; background:#fff; padding:.4rem}
-.hl-card h5{margin:0; line-height:1.35}
 .hl-refs{margin:.2rem 0 0; padding-left:1.1rem; font-size:.85rem}
-@media (max-width:34rem){
-  .hl-card{grid-template-columns:1fr; gap:.45rem}
-}
+/* Prev/next, right-aligned above the row. */
+.hl-nav{display:flex; justify-content:flex-end; gap:.35rem; margin-top:.8rem}
+.hl-nav[hidden]{display:none}
+.hl-nav + .hl{margin-top:.5rem}
+.hl-nav .iconbtn{font-size:1.15rem; line-height:1; cursor:pointer}
+.hl-nav .iconbtn:disabled{opacity:.35; cursor:default; color:var(--ink-mute);
+  background:var(--surface); border-color:var(--rule-strong)}
+/* Arrived at from a micro-card: say which card it meant. */
+.hl-card:target{box-shadow:inset 0 0 0 1.5px var(--accent-line)}
+
+/* A micro-card: a paper's card shrunk to its name and set into the sentence
+   that mentions it. The card's grey and mono title, at the text's own size. */
+.micro{font-family:var(--mono); font-size:.86em; font-weight:500; color:var(--ink);
+  background:color-mix(in srgb, var(--ink) 6%, transparent); border-radius:6px;
+  padding:.08em .4em; white-space:nowrap; transition:color .15s, background-color .15s}
+.micro:hover,.micro:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
 .cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
   display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
 /* `display` on the element beats the user agent's [hidden]{display:none}, so a

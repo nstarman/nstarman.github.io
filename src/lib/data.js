@@ -58,11 +58,25 @@ export const resolve = (id) => byId.get(id);
 // Research-highlight topics in the order /research/ shows them; a topic left
 // out is not shown at all: `software` cards wait here. Anchored there as
 // `#hl-topic-<key>`, which /publications/ links to.
+//
+// The third entry is the topic's introduction, one string per paragraph.
+// `[](item:<id>)` puts that paper's micro-card into the sentence, named by its
+// `highlight.microTitle` and linking to its card below.
 export const HIGHLIGHT_TOPICS = [
-  ['extragalactic', 'Extragalactic'],
-  ['galactic', 'Galactic'],
-  ['cmb', 'Cosmic Microwave Background'],
-  ['dm-direct-detection', 'Dark Matter Direct Detection'],
+  ['extragalactic', 'Extragalactic', [
+    'Weighing a galaxy’s dark matter halo is comparatively easy: its rotation curve tells us how much gravitational mass is present. [](item:maximum-discs) turned decades of by-eye mass modelling into an algorithm for measuring how much of that gravity can be supplied by stars, while [](item:sparc-halo-density) found that haloes have remarkably similar characteristic densities across galaxies spanning five orders of magnitude in brightness. The harder—and more revealing—question is shape. Cold dark matter predicts haloes that are flattened and triaxial; self-interacting dark matter makes them rounder. Stellar streams are ideal probes because their paths trace the gravitational field, preserving a visible record of the halo geometry.',
+    'Our work turns that record into a scalable test of dark matter. [](item:potamides-apj) showed that projected stream tracks around nearby galaxies can constrain halo shape, using 15 systems; [](item:potamides-joss) made that inference run in minutes on a laptop. [](item:euclid-eggs-pilot) then took the method beyond the local Universe: it was the first analysis of stellar streams around more distant galaxies, and the first to combine multiple streams in a single joint halo-shape measurement—13 galaxies in Euclid’s first data. The real payoff is statistical: in a round halo, streams cannot curve away from their host galaxy’s centre in projection, while non-spherical haloes can produce such “wrong-way” curves. [](item:stream-convexity-rate) turns that signature into a population test: across about 10,000 streams, within reach of Euclid, Rubin and Roman, how often those curves appear can distinguish cold dark matter from self-interacting dark matter at up to 5σ.',
+  ]],
+  ['galactic', 'Galactic', [
+    'Galaxies forget. Stars that arrived in the same merger are gradually stirred into the Milky Way’s background, erasing the record of how it was assembled. [](item:galactic-amnesia) measures this loss of memory: radial velocities forget a merger’s mass and timing within about 5 billion years, but orbital energies retain the signal for more than 10—provided we know the Galaxy’s gravitational potential. Stellar streams are the exception. They are stars stripped from one cluster and stretched along nearly a single orbit, so one snapshot reveals a path that would take a single star hundreds of millions of years to trace. [](item:pal5-gaia-dr2) nearly doubled the known length of Palomar 5’s leading tail; [](item:stream-members-only) identifies a stream’s members star by star; and [](item:characterizing-stream-tracks) maps a stream’s path in about a second, without assuming a model for the Milky Way.',
+    'Streams probe dark matter on both large and small scales: the Galaxy-wide gravitational potential that guides their orbits, and the compact dark-matter clumps that perturb them. [](item:streamsculptor) finds that GD-1 may have been struck by up to a hundred subhaloes too small to form stars, leaving its stars moving about three times more randomly than an undisturbed stream would—just what cold dark matter predicts. [](item:pinns-mnras) learns the potential itself from measured accelerations: tested on simulated Milky Ways, it recovers the influence of both the Galactic bar and the Large Magellanic Cloud even when neither is included in the starting model.',
+  ]],
+  ['cmb', 'Cosmic Microwave Background', [
+    'The cosmic microwave background is almost a perfect blackbody, but its tiny spectral distortions contain information that its temperature map cannot provide. In [](item:cmb-spectrum-distortions), we calculate a signal that standard cosmology must produce. As the Universe became transparent, photons diffused out of hotter and colder regions, mixing blackbodies with slightly different temperatures. That mixing created a faint Compton y-distortion that is largest where the temperatures being mixed differ most, so it correlates with the squared temperature map. That correlation should already be detectable with ACT and SPT, at a signal-to-noise of about 12, opening a new observational test of early-Universe physics.',
+  ]],
+  ['dm-direct-detection', 'Dark Matter Direct Detection', [
+    'Direct detection usually means placing a shielded detector underground and waiting for a dark-matter particle to scatter. But if dark matter comes in macroscopic objects—far heavier, and therefore far rarer, than ordinary particle candidates—no laboratory detector is large enough to expect an encounter. In [](item:macro-lightning), we turn the atmosphere into the detector instead. A macro passing through a thunderstorm would leave a long, straight channel of ionized air that could seed a lightning bolt straight as a ruler, unlike the jagged bolts produced by ordinary storms; the odds of ordinary lightning running even ten steps that straight are about 3 in 10 trillion. Searching for straight lightning on Earth, or even on Jupiter, turns thunderstorms into planet-sized dark-matter experiments.',
+  ]],
 ];
 
 /** "Nathaniel" -> "N."; "Adrian M." -> "A. M."  */

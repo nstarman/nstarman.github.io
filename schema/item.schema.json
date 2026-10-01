@@ -591,6 +591,12 @@
           "type": "string",
           "minLength": 2
         },
+        "microTitle": {
+          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized micro-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32
+        },
         "description": {
           "description": "A few plain sentences on what was found and why it matters. May carry [text](url) links.",
           "type": "string",
