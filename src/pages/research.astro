@@ -4,7 +4,7 @@ import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import LinkIcons from '../components/LinkIcons.astro';
 import { byType, links, primaryLink, resolve, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { spans } from '../lib/inline.js';
+import Inline from '../components/Inline.astro';
 
 // Syntheses lead, then each paper's own card; newest first within each.
 const papers = byType('publication').filter((p) => p.highlight);
@@ -48,7 +48,7 @@ const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
                     : <img src={`/${h.image}`} alt={h.alt} loading="lazy" />}
                   <div class="hl-body">
                     <h5 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h5>
-                    <p>{spans(h.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+                    <p><Inline text={h.description} base="/cv/" /></p>
                     {refs.length > 0 && (
                       <ul class="hl-refs">
                         {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}

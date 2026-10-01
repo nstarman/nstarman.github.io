@@ -1,16 +1,17 @@
 ---
 // One publication. `brief` is the landing-page variant: year and a single
 // `paper` button stacked in the right-hand column, everything else dropped.
-import { authors, venueLine, year, links, primaryLink, authorPosition, venueUrl, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { authors, venueLine, year, links, primaryLink, authorPosition, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
-import { spans } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
+import Inline from './Inline.astro';
+import Byline from './Byline.astro';
+import Venue from './Venue.astro';
 
 const { item, brief = false, maxAuthors = 8, abstract = false, anchor } = Astro.props;
 
 const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
 const venue = venueLine(item);
-const venueHref = venueUrl(item);
 const all = links(item);
 const paper = primaryLink(item);
 const trail = brief ? [] : all;
@@ -34,24 +35,14 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
 
     <p class="meta">
       {collaboration && <>{collaboration}, </>}
-      {shown.map((a, i) => (
-        <>{i > 0 && ', '}{a.me
-          ? <span class="me">{a.name}</span>
-          : a.url
-            ? <a class="authorlink" href={a.url}>{a.name}</a>
-            : a.name}</>
-      ))}
+      <Byline shown={shown} />
       {etal && <>, et al.</>}
-      {brief && venue && <> · {venueHref
-        ? <a class="venue venuelink" href={venueHref}>{venue}</a>
-        : <span class="venue">{venue}</span>}</>}
+      {brief && venue && <> · <Venue item={item} /></>}
     </p>
 
     {!brief && (venue || item.arxiv) && (
       <p class="venueline">
-        {venue && (venueHref
-          ? <a class="venue venuelink" href={venueHref}>{venue}</a>
-          : <span class="venue">{venue}</span>)}
+        <Venue item={item} />
         {venue && <span class="dot">·</span>}
         {!venue && item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}
         <span class="yr">{year(item)}</span>
@@ -64,7 +55,7 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
       <div class="card hl-card hl-card--pub">
         <img src={`/${item.highlight.image}`} alt={item.highlight.alt} loading="lazy" />
         <div class="hl-body">
-          <p>{spans(item.highlight.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+          <p><Inline text={item.highlight.description} base="/cv/" /></p>
           {topic && <a class="hl-context" href={`/research/#hl-topic-${topic[0]}`}
                        title={`${topic[1]} research highlights`}>Context&nbsp;›</a>}
         </div>

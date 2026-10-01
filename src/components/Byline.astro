@@ -1,0 +1,13 @@
+---
+// The names from authors(): the owner bold, a co-author linked to their ORCID.
+// The collaboration and "et al." stay with the caller, because the CV and the
+// publication list punctuate them differently.
+const { shown } = Astro.props;
+---
+{shown.map((a, i) => (
+  <>{i > 0 && ', '}{a.me
+    ? <span class="me">{a.name}</span>
+    : a.url
+      ? <a class="authorlink" href={a.url}>{a.name}</a>
+      : a.name}</>
+))}
