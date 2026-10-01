@@ -1,0 +1,107 @@
+---
+// The CV's contents rail, and the two things that keep it honest as the page
+// scrolls: which section is current, and — when the reader switches length —
+// putting the heading they were reading back where it sat. The rail is shown
+// by a media query; this only tracks position, so it costs nothing hidden.
+//
+// The rules themselves are in lib/scrollspy.js, against numbers rather than
+// elements, so they are tested without a browser.
+const { sections } = Astro.props;
+---
+<nav class="cvtoc" aria-label="CV sections">
+  <ol>
+    {sections.map((s) => (
+      <li><a href={`#${s.id}`} data-sec={s.id}>{s.heading}</a></li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  import { anchorTrail, currentSection } from '../lib/scrollspy.js';
+
+  const heads = [...document.querySelectorAll('.cvsection')];
+  // The same offset the headings are scrolled to, read from the CSS rather
+  // than restated here: a hardcoded 90 against a 94px bar left the final
+  // section unmarked even once it could reach the top.
+  const topGap = heads.length
+    ? parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96
+    : 96;
+  const rects = () => heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top }));
+
+  // Switching length should not throw you to the top of the document. We
+  // remember where the heading you were reading sat in the viewport and put it
+  // back there on the other page, so the switch reads as the list changing
+  // under a fixed heading rather than as a jump.
+  //
+  // This used to be repeated on every section heading, because only a link that
+  // named its own section could restore anything. Asking the scroll-spy which
+  // heading you are in gives the one control at the top the same answer, so the
+  // other fifteen copies are gone.
+  const KEY = 'cv:anchor';
+
+  // `.build` is excluded: the builder is a different document, not this one at
+  // another length, and it opens at the top on purpose.
+  for (const a of document.querySelectorAll('.cvtoggle--main a:not(.build)')) {
+    a.addEventListener('click', () => {
+      if (!heads.length) return;
+      sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), topGap)));
+    });
+  }
+
+  const saved = sessionStorage.getItem(KEY);
+  if (saved) {
+    sessionStorage.removeItem(KEY);
+    try {
+      for (const { id, top } of JSON.parse(saved)) {
+        const head = document.getElementById(id);
+        if (!head) continue;
+        const y = head.getBoundingClientRect().top + scrollY - top;
+        scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+        break;
+      }
+    } catch {}
+  }
+
+  // Scroll-spy for the CV contents rail. The rail itself is shown by a media
+  // query — this only tracks position, so it costs nothing when it is hidden.
+  const links = new Map(
+    [...document.querySelectorAll('.cvtoc a')].map((a) => [a.dataset.sec, a]),
+  );
+
+  if (links.size && heads.length) {
+    let current = null;
+    const mark = (id) => {
+      if (id === current) return;
+      current = id;
+      for (const [key, a] of links) a.classList.toggle('is-current', key === id);
+    };
+
+    // Which heading is current is decided in lib/scrollspy.js, against numbers
+    // rather than elements, so the comparison that used to mark the wrong
+    // section can be tested without a browser.
+    const update = () => {
+      // No bottom-out special case: .cvsec--last is tall enough for the final
+      // heading to reach the top like any other, so the same rule decides it.
+      mark(currentSection(rects(), topGap));
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+
+    // A fragment jump moves the page, and cannot be relied on to deliver a
+    // `scroll` event for it — so on its own, `scroll` leaves the rail marking
+    // wherever the reader was standing before they clicked. That is the half of
+    // this bug that survived the first fix: the landing position was then right
+    // and the mark was never recomputed to notice.
+    //
+    // Three signals, because each covers a gap in the others: `hashchange` for
+    // a click on the rail or any in-page anchor, `scrollend` for a smooth
+    // scroll that has come to rest (not everywhere yet, hence the guard), and a
+    // click on the rail itself for the case where the hash is unchanged because
+    // the reader clicked the section they were already in.
+    const soon = () => requestAnimationFrame(() => requestAnimationFrame(update));
+    addEventListener('hashchange', soon);
+    if ('onscrollend' in window) addEventListener('scrollend', update);
+    document.querySelector('.cvtoc')?.addEventListener('click', soon);
+  }
+</script>

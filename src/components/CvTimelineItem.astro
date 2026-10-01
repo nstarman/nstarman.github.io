@@ -1,0 +1,99 @@
+---
+// One row of the CV's timeline: the date gutter, the entry, its detail lines
+// and its links. In the builder (`pick`) it also carries the tick-boxes, so
+// what you select is what you are reading.
+import { dateLabel, authors, venueLine, links, REL_ICON, relKey, authorPosition, money }
+  from '../lib/data.js';
+import LinkIcons from './LinkIcons.astro';
+import Inline from './Inline.astro';
+import Byline from './Byline.astro';
+import Venue from './Venue.astro';
+
+/**
+ * @prop item
+ * @prop pick           render the builder's tick-boxes
+ * @prop picked         whether this entry starts ticked
+ * @prop lines          its detail lines, one span array each
+ * @prop baseCount      lines from this index on are complete-only (appended last)
+ * @prop level          the starting detail level; 'full' starts the lines ticked
+ * @prop completeLines  whether the complete-only lines start ticked
+ */
+const { item, pick = false, picked = true, lines = [], baseCount = lines.length,
+        level = 'full', completeLines = false } = Astro.props;
+
+// What rides in the left date gutter rather than under the text: an
+// institution's homepage anywhere, and a talk's whole trail — a presentation's
+// only link is the event, and it belongs beside the date it happened on.
+const inGutter = (l) => l.rel === 'homepage' || item.type === 'presentation';
+const gutterLinks = links(item).filter(inGutter);
+const bodyLinks = links(item).filter((l) => !inGutter(l));
+const byline = item.type === 'publication' ? authors(item, 4) : null;
+---
+<div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
+     id={`item-${item.id}`}>
+  {pick && (
+    <input type="checkbox" class="itembox" value={item.id}
+           data-pos={item.type === 'publication'
+             ? (authorPosition(item) ?? undefined) : undefined}
+           checked={picked}
+           aria-label={`Include ${item.title}`} />
+  )}
+  <a class="srclink" href={`/records/${item.id}.json`}
+     aria-label={`${item.title} — JSON source`} title="JSON source">{'}'}</a>
+  <span class="when">
+    {dateLabel(item)}
+    {gutterLinks.length > 0 && (
+      <span class="gutterlinks">
+    {gutterLinks.map((l) => (
+      <a class="homelink" href={l.url}
+         aria-label={`${item.event ?? item.institution ?? item.organization ?? item.title} ${l.label ?? l.rel}`}
+         title={l.label ?? l.rel}>
+        <svg class="ico" aria-hidden="true" focusable="false">
+          <use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} />
+        </svg>
+      </a>
+    ))}
+      </span>
+    )}
+  </span>
+  <span class="what">
+    <strong>{item.title}</strong>
+    {item.institution && <>, {item.institution}</>}
+    {item.event && <>, {item.event}</>}
+    {item.type === 'publication' && (
+      <> — <Byline shown={byline.shown} />{byline.etal && <>, et al</>}
+        {(byline.etal || venueLine(item)) && '.'}
+        {venueLine(item) && <> <Venue item={item} /></>}
+      </>
+    )}
+    {/* Grants show their figure; awards keep theirs in the record only. */}
+    {item.amount && item.type !== 'award' && (
+      <> — {money(item.amount)}{item.declined && ' (declined)'}</>
+    )}
+    {item.declined && item.type === 'award' && <> (declined)</>}
+    {item.recipient && <span class="recipient"> — to {item.recipient}</span>}
+    {/* Last on the line, after the venue. The CV page does not group by
+        status the way the PDF does, so without it a submitted paper is
+        indistinguishable from a published one — but it qualifies the
+        whole citation, not the title, so it reads at the end. */}
+    {item.status && item.status !== 'published' && (
+      <span class="statustag">{item.status}</span>
+    )}
+    {lines.map((line, i) => (
+      <span class="sub">
+        {pick && (
+          <input type="checkbox" class="subbox" data-id={item.id} data-line={i}
+                 data-complete={i >= baseCount ? '' : undefined}
+                 checked={level === 'full' && (i < baseCount || completeLines)}
+                 aria-label={`Include this line under ${item.title}`} />
+        )}
+        <Inline spans={line} />
+      </span>
+    ))}
+    {/* publications keep their trail in a gutter of its own, as on the
+        publications page; everything else that is not in the date
+        gutter sits under the text */}
+    {item.type !== 'publication' && <LinkIcons links={bodyLinks} />}
+  </span>
+  {item.type === 'publication' && <LinkIcons links={bodyLinks} />}
+</div>
