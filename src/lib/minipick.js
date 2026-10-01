@@ -21,8 +21,13 @@
  *
  * @param {string} id the aside's element id — what the two buttons that work
  *   it name in `aria-controls`.
+ * @param {{ jump?: boolean }} [opts] `jump`: a pin is clickable, and picking
+ *   scrolls the CV to the first row marked — the newest, as the rows are
+ *   listed newest-first. The conference map's, where a pin is one place; on
+ *   the collaborator map one institution stacks several people's dots, so a
+ *   click there would pick whoever happened to be drawn last.
  */
-export function wireMiniMap(id = 'cv-collab-map') {
+export function wireMiniMap(id = 'cv-collab-map', { jump = false } = {}) {
   const aside = document.getElementById(id);
   const pick = aside?.querySelector('.cvmini-who');
   if (!aside || !pick || aside.dataset.wired) return;
@@ -62,7 +67,24 @@ export function wireMiniMap(id = 'cv-collab-map') {
     if (only === '') delete aside.dataset.only;
     else aside.dataset.only = only;
     markRows();
+    // On the user's pick only, not in markRows: reopening the map re-marks
+    // the rows, and that should not yank the page somewhere.
+    if (jump && marked.length > 0) {
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      marked[0].scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+    }
   });
+
+  // A pin picks itself, through the picker, so the two cannot disagree. The
+  // picker stays the keyboard's way in; a 3px pin is a shortcut for a mouse.
+  if (jump) {
+    aside.querySelector('.cvmini-svg')?.addEventListener('click', (e) => {
+      const c = e.target.closest('[data-c]')?.dataset.c;
+      if (c === undefined) return;
+      pick.value = c;
+      pick.dispatchEvent(new Event('change'));
+    });
+  }
 
   // The button that opens the map belongs to the CV's heading row, where a
   // paper's source mark sits — it cannot live inside an aside that is
