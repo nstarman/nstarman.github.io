@@ -7,11 +7,15 @@ import fs from 'node:fs';
 
 const doc = JSON.parse(fs.readFileSync('config/acknowledgements.json', 'utf8'));
 
-// The topics his own papers use — the Topics filter's vocabulary.
+// The Topics menu on /publications/: the tags of his own listed papers. An
+// assist under any other topic would be unreachable, since the menu neither
+// lists nor counts topics the assists alone use.
 const vocabulary = new Set();
 for (const f of fs.readdirSync('data')) {
   if (!f.endsWith('.json')) continue;
-  for (const t of JSON.parse(fs.readFileSync(`data/${f}`, 'utf8')).tags ?? []) vocabulary.add(t);
+  const rec = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
+  if (rec.type !== 'publication' || rec.status === 'in-prep') continue;
+  for (const t of rec.tags ?? []) vocabulary.add(t);
 }
 
 describe('the acknowledgements list', () => {
@@ -24,7 +28,7 @@ describe('the acknowledgements list', () => {
     }
   });
 
-  it('files every paper under a topic his own papers use, so the filter finds it', () => {
+  it('files every paper under a topic in the Topics menu, so the filter finds it', () => {
     const lost = doc.papers.filter((p) => !p.tags.length || p.tags.some((t) => !vocabulary.has(t)));
     expect(lost.map((p) => `${p.bibcode} [${p.tags}]`)).toEqual([]);
   });

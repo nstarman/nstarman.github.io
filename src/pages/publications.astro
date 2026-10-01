@@ -22,9 +22,11 @@ const stops = positionStops(all);
 // except acronyms.
 const LABELS = { cmb: 'CMB', jax: 'JAX', 'milky-way': 'Milky Way', 'machine-learning': 'Machine learning' };
 const label = (t) => LABELS[t] ?? (t[0].toUpperCase() + t.slice(1).replace(/-/g, ' '));
-// Assists count too: the filter applies to them as well.
+// Counts are my own papers. The filter reaches the Assists too, but they are
+// filed under these same topics (tests/acknowledgements.test.js) and do not add
+// to them.
 const counts = {};
-for (const p of [...all, ...assists]) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
+for (const p of all) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
 // Years for the left rail, newest first like the list itself.
 const years = [...new Set(all.map(year))].filter(Boolean);
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
@@ -39,7 +41,11 @@ const byline = (a) => {
   <main>
     {/* Year rail: styled by .cvtoc (shared with the CV), shown only on wide screens. */}
     <nav class="cvtoc" aria-label="Publications by year">
-      <ol>{years.map((y) => <li><a href={`#y-${y}`} data-year={y}>{y}</a></li>)}</ol>
+      <ol>
+        {years.map((y) => <li><a href={`#y-${y}`} data-year={y}>{y}</a></li>)}
+        {/* After the years, as the section is after the papers. */}
+        {assists.length > 0 && <li class="toc-assists"><a href="#assists">Assists</a></li>}
+      </ol>
     </nav>
     <section>
       <div class="wrap">
@@ -59,7 +65,7 @@ const byline = (a) => {
             <details class="tagmenu">
               <summary>Topics<span id="tagcount"></span></summary>
               <div class="tagpanel" role="group" aria-label="Filter by topic">
-                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length + assists.length}</small></label>
+                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
                 {tags.map((t) => (
                   <label><input type="checkbox" class="tagbox" value={t} /> {label(t)} <small>{counts[t]}</small></label>
                 ))}
@@ -151,8 +157,11 @@ const byline = (a) => {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menu.open = false; });
 
   // Year rail. Years with no paper left after filtering are hidden; the current
-  // year is the newest one whose first visible paper has reached the top.
-  const links = [...document.querySelectorAll('.cvtoc a')];
+  // year is the newest one whose first visible paper has reached the top. Once
+  // the Assists section has, it is current instead, and it hides with it.
+  const links = [...document.querySelectorAll('.cvtoc a[data-year]')];
+  const ack = document.querySelector('.assists');
+  const ackLink = document.querySelector('.cvtoc a[href="#assists"]');
   const shown = () => [...document.querySelectorAll('.entry--full')].filter((e) => e.offsetParent);
   const firstOf = (y) => shown().find((e) => e.dataset.year === y);
   // The same rule as the CV's section rail (lib/scrollspy.js): the last paper
@@ -162,13 +171,21 @@ const byline = (a) => {
     const cur = currentSection(
       vis.map((e) => ({ id: e.dataset.year, top: e.getBoundingClientRect().top })), 119);
     const have = new Set(vis.map((e) => e.dataset.year));
+    // Or once the page bottoms out: the section is shorter than the viewport,
+    // so its heading never climbs as far as a year's does.
+    const bottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    const inAck = Boolean(ack && !ack.hidden && (ack.getBoundingClientRect().top <= 120 || bottom));
     for (const a of links) {
       a.parentElement.hidden = !have.has(a.dataset.year);
-      a.classList.toggle('is-current', a.dataset.year === cur);
+      a.classList.toggle('is-current', !inAck && a.dataset.year === cur);
+    }
+    if (ackLink) {
+      ackLink.parentElement.hidden = ack.hidden;
+      ackLink.classList.toggle('is-current', inAck);
     }
   };
   document.querySelector('.cvtoc')?.addEventListener('click', (e) => {
-    const a = e.target.closest('a');
+    const a = e.target.closest('a[data-year]');
     if (!a) return;
     e.preventDefault();
     firstOf(a.dataset.year)?.scrollIntoView();

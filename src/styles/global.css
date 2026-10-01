@@ -731,6 +731,8 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   }
   .cvtoc a:hover{color:var(--ink-2); text-decoration:none; border-color:var(--rule-strong)}
   .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
+  /* Set apart from the years, as the section is set apart by its rule. */
+  .cvtoc .toc-assists{margin-top:.6rem}
 }
 /* /publications/ uses the rail for years; a jump must clear the sticky nav. */
 .entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}
