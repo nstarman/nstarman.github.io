@@ -17,6 +17,11 @@
       "lon": -84.3898,
       "matched": "Atlanta, Fulton County, Georgia, United States"
     },
+    "Boston, MA, USA": {
+      "lat": 42.3588,
+      "lon": -71.0578,
+      "matched": "Boston, Suffolk County, Massachusetts, United States"
+    },
     "California Institute of Technology": {
       "lat": 34.137,
       "lon": -118.1253,
