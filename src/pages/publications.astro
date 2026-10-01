@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
-import { byType, authorPosition } from '../lib/data.js';
+import { byType, authorPosition, year } from '../lib/data.js';
 import person from '/config/person.json';
 
 // In-preparation papers stay out of the public list — they still appear in the
@@ -31,10 +31,16 @@ const LABELS = { cmb: 'CMB', jax: 'JAX', 'milky-way': 'Milky Way', 'machine-lear
 const label = (t) => LABELS[t] ?? (t[0].toUpperCase() + t.slice(1).replace(/-/g, ' '));
 const counts = {};
 for (const p of all) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
+// Years for the left rail, newest first like the list itself.
+const years = [...new Set(all.map(year))].filter(Boolean);
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
 ---
 <Base title="Publications — Nathaniel Starkman">
   <main>
+    {/* Year rail: styled by .cvtoc (shared with the CV), shown only on wide screens. */}
+    <nav class="cvtoc" aria-label="Publications by year">
+      <ol>{years.map((y) => <li><a href={`#y-${y}`} data-year={y}>{y}</a></li>)}</ol>
+    </nav>
     <section>
       <div class="wrap">
         {/* Direct children of .wrap and ahead of .entries, so both the filtering
@@ -89,7 +95,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
           </span>
         </div>
         <div class="entries">
-          {all.map((item) => <Publication item={item} abstract />)}
+          {all.map((item, i) => <Publication item={item} abstract anchor={year(item) !== year(all[i - 1] ?? {}) ? `y-${year(item)}` : undefined} />)}
         </div>
 
       </div>
@@ -116,4 +122,30 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
   boxes.forEach((b) => b.addEventListener('change', apply));
   document.addEventListener('click', (e) => { if (!menu.contains(e.target)) menu.open = false; });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menu.open = false; });
+
+  // Year rail. Years with no paper left after filtering are hidden; the current
+  // year is the newest one whose first visible paper has reached the top.
+  const links = [...document.querySelectorAll('.cvtoc a')];
+  const shown = () => [...document.querySelectorAll('.entry--full')].filter((e) => e.offsetParent);
+  const firstOf = (y) => shown().find((e) => e.dataset.year === y);
+  const spy = () => {
+    const vis = shown();
+    let cur = null;
+    for (const e of vis) if (e.getBoundingClientRect().top <= 120) cur = e.dataset.year;
+    const have = new Set(vis.map((e) => e.dataset.year));
+    for (const a of links) {
+      a.parentElement.hidden = !have.has(a.dataset.year);
+      a.classList.toggle('is-current', a.dataset.year === (cur ?? vis[0]?.dataset.year));
+    }
+  };
+  document.querySelector('.cvtoc')?.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    e.preventDefault();
+    firstOf(a.dataset.year)?.scrollIntoView();
+  });
+  addEventListener('scroll', spy, { passive: true });
+  addEventListener('resize', spy, { passive: true });
+  document.addEventListener('change', () => requestAnimationFrame(spy));
+  spy();
 </script>

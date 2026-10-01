@@ -217,3 +217,6 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 .plainlist{margin:.1rem 0 0; padding:0 0 0 1.1rem; list-style:disc}
 .plainlist li{font-size:.95rem; color:var(--ink-2); line-height:1.55; margin:.15rem 0}
 .plainlist li::marker{color:var(--ink-faint)}
+
+/* /publications/ reuses the rail above; a jump must clear the sticky nav. */
+.entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}
