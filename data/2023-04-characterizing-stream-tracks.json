@@ -78,6 +78,8 @@
     "dynamics"
   ],
   "citekey": "Starkman+:2023:stream-tracks",
+  "arxiv": "2212.00949",
+  "primaryClass": "astro-ph.GA",
   "abstract": "Stellar streams are sensitive probes of the Galactic potential. The likelihood of a stream model given stream data is often assessed using simulations. However, comparing to simulations is challenging when even the stream paths can be hard to quantify. Here we present a novel application of self-organizing maps and first-order Kalman filters to reconstruct a stream’s path, propagating measurement errors and data sparsity into the stream path uncertainty. The technique is Galactic-model independent, non-parametric, and works on phase-wrapped streams. With this technique, we can uniformly analyse and compare data with simulations, enabling both comparison of simulation techniques and ensemble analysis with stream tracks of many stellar streams. Our method is implemented in the public Python package TrackStream, available at https://github.com/nstarman/trackstream.",
   "highlight": {
     "topic": "galactic",
