@@ -655,8 +655,11 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Research Highlights: a list of cards, figure on the left and the words
    beside it. Stacked on a phone, where a side column would leave neither room. */
 .hl{display:grid; gap:1.2rem; margin-top:1rem}
-.hl-card{display:grid; grid-template-columns:15rem 1fr; gap:1.1rem; align-items:start}
-.hl-body{display:flex; flex-direction:column; gap:.3rem; height:100%}
+.hl-card{display:grid; grid-template-columns:15rem 1fr; gap:1.1rem}
+/* The text column stretches so its links sit at the bottom; the figure centres
+   against it. First child, because the figure is an <img> or its link. */
+.hl-card > :first-child{align-self:center}
+.hl-body{display:flex; flex-direction:column; gap:.3rem}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
 .hl-card img{display:block; width:100%; aspect-ratio:4/3; object-fit:contain;
   border-radius:10px; background:#fff; padding:.4rem}
