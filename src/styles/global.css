@@ -440,7 +440,12 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* Same on the publications list and the home page's short list, so a year means
    the same thing wherever a paper is shown. */
-.earlier{margin:.45rem 0 0; font-size:.78rem; color:var(--ink-mute)}
+.micro-card{display:flex; align-items:flex-start; gap:1rem; margin-top:.6rem; padding:.6rem .9rem}
+.micro-card .body{flex:1; min-width:0}
+.micro-card .ttl{font-size:.88rem; font-weight:500; color:var(--ink)}
+.micro-card .venueline{margin:.1rem 0 0; font-size:.82rem; color:var(--ink-mute)}
+.micro-card .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
+.micro-card .btns--icon{flex:none; flex-direction:row; gap:.35rem; margin:0}
 .entry--unpub .yr{font-style:italic}
 
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
@@ -630,15 +635,15 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl-nav .iconbtn{font-size:1.15rem; line-height:1; cursor:pointer}
 .hl-nav .iconbtn:disabled{opacity:.35; cursor:default; color:var(--ink-mute);
   background:var(--surface); border-color:var(--rule-strong)}
-/* Arrived at from a micro-card: say which card it meant. */
+/* Arrived at from an inline-card: say which card it meant. */
 .hl-card:target{box-shadow:inset 0 0 0 1.5px var(--accent-line)}
 
-/* A micro-card: a paper's card shrunk to its name and set into the sentence
+/* An inline-card: a paper's card shrunk to its name and set into the sentence
    that mentions it. The card's grey and mono title, at the text's own size. */
-.micro{font-family:var(--mono); font-size:.86em; font-weight:500; color:var(--ink);
+.inline-card{font-family:var(--mono); font-size:.86em; font-weight:500; color:var(--ink);
   background:color-mix(in srgb, var(--ink) 6%, transparent); border-radius:6px;
   padding:.08em .4em; white-space:nowrap; transition:color .15s, background-color .15s}
-.micro:hover,.micro:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
+.inline-card:hover,.inline-card:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
 
 /* ---------- publications: topic menu, and the mobile author fold ---------- */
 .ttlgroup{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap}

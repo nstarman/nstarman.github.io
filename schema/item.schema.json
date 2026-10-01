@@ -597,7 +597,7 @@
           "minLength": 2
         },
         "microTitle": {
-          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized micro-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
+          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized inline-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
           "type": "string",
           "minLength": 2,
           "maxLength": 32

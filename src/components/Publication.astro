@@ -74,12 +74,16 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
       </details>
     )}
 
-    {earlier.map((e) => {
-      const l = primaryLink(e);
-      return (
-        <p class="earlier">Earlier version: {l ? <a href={l.url}>{venueLine(e)}</a> : venueLine(e)} · {year(e)}</p>
-      );
-    })}
+    {/* A micro-card: the proceeding's title, venue and year, with its links. */}
+    {earlier.map((e) => (
+      <div class="card micro-card">
+        <div class="body">
+          <div class="ttl">{e.title}</div>
+          <p class="venueline"><Venue item={e} /><span class="dot">·</span><span class="yr">{year(e)}</span></p>
+        </div>
+        <LinkIcons links={links(e)} />
+      </div>
+    ))}
   </div>
 
   {brief && (
