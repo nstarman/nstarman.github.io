@@ -618,7 +618,7 @@
     "topic": "software",
     "image": "highlights/astropy-v5-paper.webp",
     "alt": "The Astropy logo: a white spiral on an orange-to-red oval.",
-    "miniTitle": "The Astropy Project: v5.0 and beyond",
+    "miniTitle": "The Astropy Project: v5.0 and Beyond",
     "microTitle": "Astropy v5.0",
     "description": "Astropy is the shared foundation of Python astronomy: a core package for units, coordinates, tables, file I/O and more, and an ecosystem of interoperable packages built on it. This paper describes the v5.0 release and the state of the Project, including its ties to observatories and missions and Learn Astropy, and confronts the challenge of sustaining a community-run codebase that much of astronomy now depends on."
   }

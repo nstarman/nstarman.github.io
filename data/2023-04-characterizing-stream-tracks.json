@@ -85,7 +85,7 @@
     "topic": "galactic",
     "image": "highlights/characterizing-stream-tracks.webp",
     "alt": "A simulated stellar stream from a 47 Tucanae-like progenitor, looping around the Galactic centre in Galactocentric x–y coordinates. Blue and orange lines trace the fitted path of each tidal arm, wrapped in grey uncertainty ellipses that grow largest at the arms’ sparse far ends.",
-    "miniTitle": "On the fast track",
+    "miniTitle": "On the Fast Track",
     "microTitle": "On the Fast Track",
     "description": "Comparing a stellar stream to simulations first needs a clear map of the stream’s path. This method puts the stars in order along the stream, then traces the path and its uncertainty — without assuming any model of the Galaxy. It works on simulated streams and on real ones like Palomar 5 and GD-1, and is available as the Python package TrackStream."
   }

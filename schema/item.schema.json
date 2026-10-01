@@ -587,7 +587,7 @@
           "minLength": 2
         },
         "miniTitle": {
-          "description": "The title on the paper's card in the carousel on /research/: shorter than the full title, longer than `microTitle` if it needs to be. Defaults to the item's `title`. Keep it to about two lines on the card.",
+          "description": "The title on the paper's card in the carousel on /research/: shorter than the full title, longer than `microTitle` if it needs to be. Defaults to the item's `title`. In title case, and about two lines on the card at most.",
           "type": "string",
           "minLength": 2
         },
