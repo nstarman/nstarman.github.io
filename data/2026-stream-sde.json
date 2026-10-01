@@ -19,7 +19,8 @@
   ],
   "tags": [
     "streams",
-    "inference"
+    "inference",
+    "dynamics"
   ],
   "internal": "CV lists 'et al.'; the remaining authors are still to be imported from ADS.",
   "citekey": "Starkman+:2026:stream-sde"
