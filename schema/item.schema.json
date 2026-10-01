@@ -36,7 +36,8 @@
         "teaching",
         "service",
         "media",
-        "outreach"
+        "outreach",
+        "highlight"
       ]
     },
     "cvs": {
@@ -216,6 +217,10 @@
           "citations": {
             "type": "integer",
             "minimum": 0
+          },
+          "highlight": {
+            "$ref": "#/$defs/highlight",
+            "description": "This paper's card in Research Highlights on /research/. Links out through the paper's own links."
           }
         }
       }
@@ -519,9 +524,65 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "highlight"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "description": "A research highlight that draws several papers together. Each paper keeps its own `highlight`; this one names them in `refs`, and its card links to theirs.",
+        "required": [
+          "highlight",
+          "refs"
+        ],
+        "properties": {
+          "highlight": {
+            "$ref": "#/$defs/highlight"
+          }
+        }
+      }
     }
   ],
   "$defs": {
+    "highlight": {
+      "description": "A card in Research Highlights: a picture, a title and a few sentences.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image",
+        "alt",
+        "description"
+      ],
+      "properties": {
+        "image": {
+          "description": "Path under public/, served from the site root: highlights/<id>.png puts the file at public/highlights/<id>.png.",
+          "type": "string",
+          "pattern": "^highlights/[\\w.-]+\\.(png|jpe?g|webp|gif|svg)$"
+        },
+        "alt": {
+          "description": "What the picture shows, for anyone who cannot see it.",
+          "type": "string",
+          "minLength": 2
+        },
+        "title": {
+          "description": "Overrides the item's `title` on the card, for a paper whose full title is too long for one.",
+          "type": "string",
+          "minLength": 2
+        },
+        "description": {
+          "description": "A few plain sentences on what was found and why it matters. May carry [text](url) links.",
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
     "partialDate": {
       "description": "YYYY, YYYY-MM or YYYY-MM-DD. Use the coarsest form you actually know.",
       "type": "string",

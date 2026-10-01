@@ -2,6 +2,21 @@
 import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
+import LinkIcons from '../components/LinkIcons.astro';
+import { byType, links, resolve } from '../lib/data.js';
+import { spans } from '../lib/inline.js';
+
+// Syntheses lead, then each paper's own card; newest first within each.
+const papers = byType('publication').filter((p) => p.highlight);
+const highlights = [...byType('highlight'), ...papers];
+const anchor = (id) => `hl-${id}`;
+
+// A synthesis's papers link to their cards; a paper without one, out to the paper.
+const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
+const mainHref = (item) => {
+  const all = links(item);
+  return (all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint') ?? all[0])?.url;
+};
 ---
 <Base title="Research — Nathaniel Starkman">
   <main>
@@ -14,8 +29,36 @@ import ConfMap from '../components/ConfMap.astro';
         <p class="lede">🚧&nbsp;Under Construction.&nbsp;🚧</p>
 
         <h3 id="collaborators" class="cmap-head">Collaborators</h3>
-        <p class="lede">An incomplete record of people I have written a paper with:</p>
+        <p class="lede">One of the great pleasures of astrophysics is doing fun work with fun people.
+          These are the people I have been lucky enough to write papers with — an incomplete
+          record, and still growing:</p>
         <CollabMap />
+
+        {highlights.length > 0 && <>
+          <h3 id="highlights" class="cmap-head">Research Highlights</h3>
+          <div class="hl">
+            {highlights.map((item) => {
+              const h = item.highlight;
+              const href = mainHref(item);
+              const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
+              return (
+                <article class="card hl-card" id={anchor(item.id)}>
+                  {href
+                    ? <a href={href}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
+                    : <img src={`/${h.image}`} alt={h.alt} loading="lazy" />}
+                  <h4 class="name">{href ? <a href={href}>{h.title ?? item.title}</a> : (h.title ?? item.title)}</h4>
+                  <p>{spans(h.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+                  {refs.length > 0 && (
+                    <ul class="hl-refs">
+                      {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.title ?? p.title}</a></li>)}
+                    </ul>
+                  )}
+                  <LinkIcons links={links(item)} />
+                </article>
+              );
+            })}
+          </div>
+        </>}
 
         <h3 id="conferences" class="cmap-head">Conferences</h3>
         <p class="lede">Every talk, poster and workshop, and where it happened:</p>

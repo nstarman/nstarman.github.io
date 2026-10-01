@@ -21,7 +21,8 @@ describe('resolve', () => {
     const complete = resolve('complete');
     const np = resolve('np');
     const count = (cv) => cv.sections.reduce((n, s) => n + s.items.length, 0);
-    expect(count(complete)).toBe(items.length);
+    // A synthesis highlight is the research page's, not a fact a CV states.
+    expect(count(complete)).toBe(items.filter((i) => i.type !== 'highlight').length);
     expect(count(np)).toBeLessThan(count(complete));
   });
 
