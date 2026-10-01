@@ -630,7 +630,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Opposite the legend on the same line: it names the drawing, the keys name
    what is drawn on it. */
 .cmap-proj{margin-left:auto; white-space:nowrap;
-  color:color-mix(in srgb, var(--ink-mute), var(--ink-faint));
+  color:var(--ink-faint);
   text-decoration:underline; text-decoration-color:var(--rule-strong);
   text-underline-offset:.18em}
 .cmap-proj:hover, .cmap-proj:focus-visible{color:var(--accent); text-decoration-color:currentColor}
