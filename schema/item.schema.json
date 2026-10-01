@@ -661,8 +661,7 @@
         },
         "url": {
           "type": "string",
-          "format": "uri",
-          "pattern": "^https?://"
+          "pattern": "^https?://\\S+$"
         },
         "label": {
           "type": "string",

@@ -1,0 +1,1 @@
+{"id":"bad-url","type":"software","date":{"start":"2021","present":true},"title":"Astropy","links":[{"rel":"code","url":"https://a.b/has space"}],"tier":"lead","repo":"astropy/astropy"}

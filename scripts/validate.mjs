@@ -12,7 +12,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import Ajv from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
 
 const [schemaPath, ...globs] = process.argv.slice(2);
 if (!schemaPath || globs.length === 0) {
@@ -21,7 +20,6 @@ if (!schemaPath || globs.length === 0) {
 }
 
 const ajv = new Ajv({ allErrors: true, strict: false });
-addFormats(ajv);
 const validate = ajv.compile(JSON.parse(fs.readFileSync(schemaPath, 'utf8')));
 
 let bad = 0;
