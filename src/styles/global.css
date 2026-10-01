@@ -422,6 +422,9 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    /research/. The abstract folds behind a disclosure, as .contribs does. */
 .hl-card--pub{grid-template-columns:9rem 1fr; align-items:center; margin-top:.6rem;
   background:color-mix(in srgb, var(--ink) 1.25%, transparent)}
+.hl-context{align-self:flex-end; font-family:var(--mono); font-size:.68rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mute)}
+.hl-context:hover{color:var(--accent)}
 .absmore{margin-top:.45rem}
 @media (max-width:34rem){ .hl-card--pub{grid-template-columns:1fr} }
 .absmore summary{

@@ -1,7 +1,7 @@
 ---
 // One publication. `brief` is the landing-page variant: year and a single
 // `paper` button stacked in the right-hand column, everything else dropped.
-import { authors, venueLine, year, links, authorPosition, venueUrl } from '../lib/data.js';
+import { authors, venueLine, year, links, authorPosition, venueUrl, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
 import { spans } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
@@ -18,6 +18,8 @@ const pending = item.status !== 'published' ? item.status : null;
 // The filter on /publications/ is CSS over this attribute, so it has to be on
 // the outermost element — that is what gets hidden.
 const pos = authorPosition(item);
+// Only a topic /research/ actually shows has a section to link to.
+const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
 ---
 <article class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ' entry--unpub' : ''}`}
          data-pos={pos ?? undefined}
@@ -60,7 +62,11 @@ const pos = authorPosition(item);
     {abstract && item.highlight && (
       <div class="card hl-card hl-card--pub">
         <img src={`/${item.highlight.image}`} alt={item.highlight.alt} loading="lazy" />
-        <p>{spans(item.highlight.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+        <div class="hl-body">
+          <p>{spans(item.highlight.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+          {topic && <a class="hl-context" href={`/research/#hl-topic-${topic[0]}`}
+                       title={`${topic[1]} research highlights`}>Context&nbsp;›</a>}
+        </div>
       </div>
     )}
 
