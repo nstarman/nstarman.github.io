@@ -208,7 +208,7 @@ jobs:
     needs: [test, preview]
     steps:
       - name: All required jobs passed
-        uses: re-actors/alls-green@v1.2.2
+        uses: re-actors/alls-green@v1.3.0
         with:
           jobs: ${{ toJSON(needs) }}
           # preview is pull-request-only, so it is deliberately skipped on a
