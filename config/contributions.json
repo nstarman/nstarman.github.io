@@ -272,7 +272,7 @@
       "repo": "xggs-dev/potamides",
       "url": "https://github.com/xggs-dev/potamides",
       "first": "2025-03-23",
-      "prs": 41,
+      "prs": 42,
       "description": "Constrain gravitational potentials using stellar stream curvature analysis"
     },
     {
@@ -316,6 +316,13 @@
       "first": "2026-01-28",
       "prs": 3,
       "description": "Opinionated typing package for precise type hints in Python"
+    },
+    {
+      "repo": "beartype/bearshape",
+      "url": "https://github.com/beartype/bearshape",
+      "first": "2026-08-17",
+      "prs": 1,
+      "description": "Runtime shape and dtype checking for NumPy, JAX, PyTorch, and CuPy arrays, powered by beartype."
     }
   ]
 }
