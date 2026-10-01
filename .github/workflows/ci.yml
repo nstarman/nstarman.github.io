@@ -98,6 +98,10 @@ jobs:
     # Nothing to preview on a push to main — that is the live site — and
     # `github.event.number`, which names the Cloudflare branch, is empty there.
     if: github.event_name == 'pull_request'
+    # Deploys the very build `test` checked and uploaded, rather than building
+    # the site and the PDFs a second time — so the preview is always the
+    # tested build, and a broken one never gets a URL.
+    needs: test
     permissions:
       contents: read
       deployments: write
@@ -117,27 +121,12 @@ jobs:
               >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      # The site with its CV PDFs, as `test` built it.
       - if: steps.guard.outputs.ready == 'true'
-        uses: actions/checkout@v7
-      - if: steps.guard.outputs.ready == 'true'
-        uses: actions/setup-node@v7
+        uses: actions/download-artifact@v8
         with:
-          node-version: "22"
-          cache: npm
-      - if: steps.guard.outputs.ready == 'true'
-        run: npm ci
-
-      - if: steps.guard.outputs.ready == 'true'
-        run: npm run build
-
-      # The CV PDFs are part of the site; a preview without them would 404 on
-      # every Download button.
-      - if: steps.guard.outputs.ready == 'true'
-        uses: typst-community/setup-typst@v5
-        with:
-          typst-version: "0.15.1"
-      - if: steps.guard.outputs.ready == 'true'
-        run: npm run build:pdf
+          name: site
+          path: dist
 
       # The production domain must not follow the preview: CNAME in the
       # artifact would try to claim nstarkman.space on Cloudflare too.
@@ -171,12 +160,10 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # dist/ is untracked, so the checkout always looks dirty to wrangler.
           command: >-
             pages deploy dist
             --project-name=nstarkman-space
             --branch=pr-${{ github.event.number }}
-            --commit-dirty=true
 
       - if: steps.guard.outputs.ready == 'true'
         uses: marocchino/sticky-pull-request-comment@v3
