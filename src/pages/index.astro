@@ -4,7 +4,7 @@ import Publication from '../components/Publication.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, featured, dateLabel } from '../lib/data.js';
 import { lines as longLines } from '../lib/inline.js';
-import { portrait } from '../lib/portrait.js';
+import portrait from '../../cv/assets/portrait.jpg';
 import person from '/config/person.json';
 
 const pubs = featured('publication').slice(0, 5);
@@ -20,7 +20,7 @@ const background = [...byType('position'), ...byType('education')]
   <header>
     <canvas id="stream" aria-hidden="true"></canvas>
     <div class="wrap">
-      <img class="portrait" src={portrait} alt="Nathaniel Starkman" width="112" height="112" />
+      <img class="portrait" src={portrait.src} alt="Nathaniel Starkman" width="112" height="112" />
       <div class="ident">
         <h1>{person.name}</h1>
         <p class="role">
