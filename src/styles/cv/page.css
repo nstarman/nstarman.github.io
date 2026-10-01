@@ -5,10 +5,11 @@
  * scroll away, and the length toggle. What the builder adds on top is
  * builder.css; the map in the right margin is minimap.css.
  *
- * A dated row — .tl — is not in here. The home page's Background section is
- * built from the same rows, so the row itself belongs to global.css and only
- * the variants the CV alone has (.tl--pub, .tl--unpub, and the gutter links
- * under a date) are below.
+ * Loaded by CvView.astro, so only the CV pages ship it. A dated row — .tl —
+ * is not in here: the home page's Background section is built from the same
+ * rows, so the row, its date gutter and its detail links belong to global.css,
+ * as do the contents rail (which /publications/ reuses) and the mini software
+ * cards. Only what the CV alone has is below.
  */
 
 /* A publication's links sit in their own gutter, stacked, as on the
@@ -31,13 +32,8 @@
 .pdfrow{display:flex; align-items:center; justify-content:flex-start; gap:.7rem;
   flex-wrap:wrap; margin:0 0 .4rem}
 
-/* The builder sits on the preset row but is a different kind of action — a
-   divider and a touch of weight keep it from reading as a fifth preset. */
-.more .sep{color:var(--rule-strong); margin:0 .5rem}
-
-/* The institution's own site sits in the date gutter, under the years — it
-   belongs to the row as a whole, not alongside a paper or a dataset. */
-.tl .when{display:flex; flex-direction:column; align-items:flex-start; gap:.3rem}
+/* The institution's own site sits in the date gutter, under the years (the
+   gutter itself is in global.css). */
 .gutterlinks{display:flex; flex-wrap:wrap; gap:.3rem}
 .homelink{
   display:inline-flex; width:1.2rem; height:1.2rem; align-items:center;
@@ -46,15 +42,6 @@
 }
 .homelink .ico{width:11px; height:11px; fill:currentColor; display:block}
 .homelink:hover{color:var(--ground); background:var(--ink); border-color:var(--ink)}
-/* detail-line links read as links, not as decoration */
-.tl .sub a{color:var(--accent)}
-.tl .sub a:hover{text-decoration:underline; text-underline-offset:2px}
-
-/* CV contents rail. Hidden by default and shown only when the viewport is wide
-   enough to hold it in the left margin without moving the content column:
-   49rem of column plus ~13rem of rail and its gap on each side. Below that the
-   page is unchanged rather than reflowed. */
-.cvtoc{display:none}
 /* Clears both sticky bars, plus a little room so the heading is not flush
    against the bar's rule. 4.5rem covered only the nav, so every in-page jump
    landed the heading 22px under .cvbar with 4px of its descenders showing. */
@@ -82,26 +69,6 @@
    exempting it put /cv/1page/, whose last section is the collapsed Software,
    straight back to being unable to scroll its final heading to the top. */
 
-@media (min-width:78rem){
-  .cvtoc{
-    display:block; position:fixed; top:6.5rem;
-    right:calc(50% + 24.5rem + 2rem); width:12.5rem;
-    max-height:calc(100vh - 9rem); overflow-y:auto;
-  }
-  .cvtoc ol{list-style:none; margin:0; padding:0;
-    display:flex; flex-direction:column; gap:.32rem}
-  /* The rail sits in the left margin, but its rule runs down the right edge and
-     the labels are right-aligned — so the marker and the text both point at the
-     content column they belong to. */
-  .cvtoc{text-align:right}
-  .cvtoc a{
-    display:block; font-size:.78rem; line-height:1.3; color:var(--ink-faint);
-    border-right:2px solid var(--rule); padding:.1rem .6rem .1rem 0;
-    transition:color .15s, border-color .15s;
-  }
-  .cvtoc a:hover{color:var(--ink-2); text-decoration:none; border-color:var(--rule-strong)}
-  .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
-}
 .tl .recipient{color:var(--ink-mute); font-style:italic}
 
 /* An unpublished paper's year is the year it was submitted, not the year of
@@ -130,7 +97,6 @@ summary.cvsechead .cvsection::after{
 }
 details[open] > summary.cvsechead .cvsection::after{transform:rotate(90deg)}
 summary.cvsechead:hover .cvsection{color:var(--accent)}
-.cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
 .seclink{color:var(--ink-faint); margin-left:.5rem; transition:color .15s}
 .seclink:hover{color:var(--accent); text-decoration:none}
 /* The page's icon stands in for its name. Inline rather than block, because it
@@ -198,9 +164,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
    margin opens it. Hidden below the width that can hold it outside the column,
    the same bargain the contents rail makes on the left. */
 .srclink{display:none}
-.card--mini{position:relative}
 @media (min-width:56rem){
-  .tl{position:relative}
   .srclink{
     display:block; font-family:var(--mono); font-size:.68rem; line-height:1;
     color:var(--ink-faint); opacity:.4; transition:opacity .15s, color .15s;
@@ -217,6 +181,3 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 .plainlist{margin:.1rem 0 0; padding:0 0 0 1.1rem; list-style:disc}
 .plainlist li{font-size:.95rem; color:var(--ink-2); line-height:1.55; margin:.15rem 0}
 .plainlist li::marker{color:var(--ink-faint)}
-
-/* /publications/ reuses the rail above; a jump must clear the sticky nav. */
-.entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}
