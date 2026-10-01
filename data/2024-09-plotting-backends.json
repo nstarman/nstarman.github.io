@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "plotting-backends",
   "type": "software",
-  "tier": "other",
+  "tier": "useful",
   "cvs": [],
   "date": {
     "start": "2024-09",
