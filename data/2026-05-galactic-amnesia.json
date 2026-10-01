@@ -62,7 +62,7 @@
     "topic": "galactic",
     "image": "highlights/galactic-amnesia.webp",
     "alt": "Heat map of how much a merger’s present-day orbital energy reveals about its infall time, by infall time and galactocentric radius. Memory is highest for recent mergers in the outer galaxy and fades for older mergers and toward the center, following dashed lines of constant orbit count.",
-    "title": "Galactic Amnesia",
+    "miniTitle": "Galactic Amnesia",
     "microTitle": "Galactic Amnesia",
     "description": "Mergers leave fingerprints on a galaxy’s stars, but orbits mix and the record fades. In 98 simulated Milky Ways, a merger’s imprint on stellar energy outlasts 10 Gyr, while radial velocity forgets within about 5 Gyr. To read the Milky Way’s past, we first need its potential."
   }

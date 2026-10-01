@@ -65,7 +65,7 @@
     "topic": "cmb",
     "image": "highlights/cmb-spectrum-distortions.webp",
     "alt": "Angular power spectra of the squared temperature fluctuations (blue), their cross-correlation with the diffusion y-distortion (purple, scaled by 50), and the y-distortion’s own autocorrelation (red, scaled by 1000). The blue and purple curves carry acoustic oscillations.",
-    "title": "CMB spectrum distortions from photon diffusion",
+    "miniTitle": "CMB Spectrum Distortions from Photon Diffusion",
     "microTitle": "CMB Spectrum Distortions",
     "description": "As the universe became transparent, the photons reaching us from any one direction last scattered off regions at slightly different temperatures. Blending those blackbodies leaves a small Compton y-distortion in the CMB spectrum. Its cross-correlation with the squared temperature fluctuations should already be detectable by ACT and SPT, at a forecast signal-to-noise of about 12, and CMB-S4 could turn it into a new cosmological probe."
   }

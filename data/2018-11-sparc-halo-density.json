@@ -65,7 +65,7 @@
     "topic": "extragalactic",
     "image": "highlights/sparc-halo-density.webp",
     "alt": "Characteristic dark-matter density of each SPARC galaxy’s Einasto halo against its 3.6-micron luminosity, coloured by Hubble type from S0 to blue compact dwarf. The points scatter around a flat line across five decades in luminosity.",
-    "title": "A constant dark-matter halo density",
+    "miniTitle": "A Constant Dark-Matter Halo Density",
     "microTitle": "SPARC Halo Density",
     "description": "How dark-matter haloes grow with the galaxies inside them is a direct test of how galaxies form. Fitting the rotation curves of 175 SPARC galaxies shows that bigger galaxies have bigger haloes, but the haloes’ typical density stays about the same — across galaxies that differ a hundred-thousand-fold in brightness."
   }

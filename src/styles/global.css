@@ -679,18 +679,32 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 /* Research Highlights: each topic's introduction, then its cards in a row
    that scrolls sideways. A card is the site's ordinary grey .card — title,
-   figure, links, top to bottom; the introduction does the telling — newest
+   figure, then links and year, top to bottom; the introduction does the telling — newest
    first, at a fixed width, so the next one
    peeks in from the right and says there is more. */
 .hl-intro{margin:.6rem 0 0; color:var(--ink-2); line-height:1.65}
-.hl{display:grid; grid-auto-flow:column; grid-auto-columns:min(17rem, 85%); gap:.7rem;
+.hl{display:grid; grid-auto-flow:column; grid-auto-columns:min(17rem, 85%);
+  grid-template-rows:auto auto auto; column-gap:.7rem;
   margin-top:1rem; padding-bottom:.6rem; overflow-x:auto;
   scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:thin}
-.hl > .card{scroll-snap-align:start; gap:.45rem; padding:.75rem .9rem .8rem}
+/* Each card spans the row's three tracks through subgrid: the title area is as
+   tall as the longest title in the row, so figures and footers line up. */
+.hl > .card{scroll-snap-align:start; display:grid; grid-row:span 3;
+  grid-template-rows:subgrid; row-gap:.55rem; padding:.75rem .9rem .7rem}
+.hl > .card > .name{align-self:start}
+.hl > .card > .name--minor{font-weight:400}
 /* Wider than the 4:3 figure elsewhere, so the card is shorter; contain keeps
    the whole figure, just smaller. */
 .hl > .card img{aspect-ratio:16/10; padding:.3rem}
-.hl > .card .btns--icon{margin-top:auto; padding-top:.2rem}
+/* Links left, year right. The smaller marks of .card--mini, so six links and
+   the year still share one line. */
+.hl-foot{display:grid; grid-template-columns:1fr auto; align-items:end; gap:.4rem}
+.hl-foot .btns--icon{grid-column:1; margin:0; padding:0; gap:.25rem}
+.hl-foot .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
+.hl-foot .iconbtn .ico{width:12px; height:12px}
+.hl-foot .hl-refs{grid-column:1 / -1}
+.hl-year{grid-column:2; font-family:var(--mono); font-size:.72rem;
+  letter-spacing:.04em; color:var(--ink-faint)}
 .hl-card h5{margin:0; line-height:1.35}
 .hl-body{display:flex; flex-direction:column; gap:.3rem}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */

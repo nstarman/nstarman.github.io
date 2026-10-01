@@ -44,6 +44,12 @@ export function spans(text, base = '') {
 /** "1 talk", "3 talks", "2 entries". */
 export const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
+/** 1 -> "1st", 2 -> "2nd", 11 -> "11th", 23 -> "23rd". */
+export const ordinal = (n) => {
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  return `${n}${(!teen && ['th', 'st', 'nd', 'rd'][n % 10]) || 'th'}`;
+};
+
 /** The same text with the link syntax stripped, for places that cannot link. */
 export const plain = (text) => (text ?? '').replace(LINK, '$1');
 

@@ -146,7 +146,7 @@ and the links out. Every paper can have one: give the publication a
   "image": "highlights/stream-members-only.png",   // file at public/highlights/…
   "topic": "galactic",                             // extragalactic | galactic | cmb | dm-direct-detection | software
   "alt": "What the picture shows",
-  "title": "Short title",                          // optional; defaults to `title`
+  "miniTitle": "Short title",                      // the card's title; optional, defaults to `title`
   "microTitle": "Stream Members Only",              // a few words: the paper's name in a sentence
   "description": "Two or three plain sentences. May carry [text](url)."
 }

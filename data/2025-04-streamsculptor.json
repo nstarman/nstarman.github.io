@@ -76,7 +76,7 @@
     "topic": "galactic",
     "image": "highlights/streamsculptor.webp",
     "alt": "Sketch of the method: a black base orbit with a fan of blue orbits beside it, each bent a little further as the perturbation strength grows from 0.01 to 0.04. Red arrows along the base orbit show the derivatives that predict that bending.",
-    "title": "StreamSculptor",
+    "miniTitle": "StreamSculptor",
     "microTitle": "StreamSculptor",
     "description": "Stellar streams are sensitive to the smallest dark matter subhalos. StreamSculptor uses Hamiltonian perturbation theory to model streams in time-dependent potentials, capturing the LMC and the Galactic bar alongside the dozens of subhalo impacts expected for streams like GD-1 and Pal 5. A stream’s velocity dispersion then ties directly to dark matter physics, giving a fast way to model whole stream populations from dark matter properties. Led by Jacob Nibauer."
   }
