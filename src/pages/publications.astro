@@ -59,7 +59,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
             <details class="tagmenu">
               <summary>Topics<span id="tagcount"></span></summary>
               <div class="tagpanel" role="group" aria-label="Filter by topic">
-                <label><input type="checkbox" id="tag-all" checked /> All</label>
+                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
                 {tags.map((t) => (
                   <label><input type="checkbox" class="tagbox" value={t} /> {label(t)} <small>{counts[t]}</small></label>
                 ))}
