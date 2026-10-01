@@ -796,7 +796,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   cursor:pointer; white-space:nowrap}
 #posmore:checked ~ .h2row .posmore{color:var(--accent)}
 #posmore:focus-visible ~ .h2row .posmore{outline:2px solid var(--accent); outline-offset:2px}
-@media (max-width:34rem){
+@media (max-width:44rem){
   .posmore{display:inline}
   .h2row{flex-wrap:wrap}
   .pubprofiles .sep, .pubprofiles .poslabel, .pubprofiles .pubfilter{display:none}
