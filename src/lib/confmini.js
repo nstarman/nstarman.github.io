@@ -21,7 +21,7 @@ const MINI = 3;
 /**
  * @param {Iterable<string>} ids the talks this CV renders.
  * @returns the places among them, the dots to draw, and the talks the map
- *   cannot show — online, or not placed yet — counted rather than dropped.
+ *   cannot show because they are not placed yet, counted rather than dropped.
  */
 export function confMini(ids) {
   const shown = new Set(ids);
