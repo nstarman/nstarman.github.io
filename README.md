@@ -64,7 +64,7 @@ costs no extra request and the site still loads exactly one `.css`.
 | [`src/styles/global.css`](src/styles/global.css) | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, an item as the site renders it, the software cards, and the two maps on `/research/` |
 | [`src/styles/cv/page.css`](src/styles/cv/page.css) | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the contents rail, the sticky bar, the length toggle |
 | [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | what `/cv/builder/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
-| [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | the collaborator map in the CV's right margin, and the tint on a publication row when the person picked is one of its authors |
+| [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | the collaborator and conference maps in the CV's right margin, and the tint on a row that answers what was picked in one — a paper written with that person, a talk given in that place |
 
 They are imported in that order by `src/layouts/Base.astro`, and the order is
 the cascade: the site first, then what the CV layers on top of it. Imported

@@ -1,9 +1,11 @@
-/* The collaborator map in the CV's right margin, and the rows it marks.
+/* The maps in the CV's right margin — collaborators beside Publications,
+ * conferences beside the talks — and the rows they mark.
  *
  * Two halves that only make sense together: the panel itself, which appears
- * only where the margin can hold it, and the tint on a publication row when
- * the person picked in the panel is one of its authors — which is why the
- * .is-coauthor rule lives here rather than with the publication rows.
+ * only where the margin can hold it, and the tint on a row that answers what
+ * was picked in the panel — a paper written with that person, a talk given in
+ * that place — which is why the .is-lit rule lives here rather than with the
+ * rows.
  */
 
 /* ── The collaborator map in the CV's right gutter ───────────────────────────
@@ -47,7 +49,9 @@
      inside the thing it closes. */
   .cvminibtn[aria-expanded="true"], .cvmini-shut{opacity:1; color:var(--accent)}
 
-  .cvsec--hasmap{position:relative}
+  /* The talk sections are wrapped as one run (.cvtalks), so the conference
+     map sticks through all of them rather than stopping at the first. */
+  .cvsec--hasmap, .cvtalks{position:relative}
   /* Absolute so it takes no space in the column, full height so the sticky
      child has the section to travel down and nothing beyond it. */
   /* Clear of the `}` column, not on top of it. The source marks sit 1.5rem past
@@ -86,6 +90,14 @@
 
   .cvmini-svg circle{fill:var(--ink-mute); fill-opacity:.55}
   .cvmini-svg circle.is-shared{fill:var(--accent); fill-opacity:.9}
+  /* Translucent, because conference pins are sized by count and overlap: two
+     neighbouring cities should read as two discs, not one blot. */
+  .cvmini-svg circle.is-talk{fill:var(--accent); fill-opacity:.55}
+  /* Clickable, and a dot is ~3px across at this size. The transparent stroke
+     is the hit area: painted, so it takes the click, and invisible. Where hit
+     areas overlap the dot drawn last wins — the smaller place on the
+     conference map, a shared place on the collaborator one. */
+  .cvmini-svg circle{cursor:pointer; stroke:transparent; stroke-width:30}
   /* Button left, link right, baseline-aligned on one row above the map. */
   .cvmini-top{display:flex; align-items:center; justify-content:space-between;
     gap:.4rem; margin:0 0 .4rem}
@@ -106,9 +118,11 @@
   }
   .cvmini-who:hover{border-color:var(--rule-strong)}
   .cvmini-who:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .cvmini-note{margin:.3rem 0 0; font-size:.62rem; line-height:1.35; color:var(--ink-faint)}
 }
 
-/* A paper written with whoever is picked in the CV's gutter map.
+/* A paper written with whoever, or a talk given wherever, is picked in a CV
+   gutter map.
    Green rather than the site's blue: the accent already means "this is a link
    or the current thing", and this is neither — it is a transient answer to a
    question the reader just asked. Low alpha so the row is tinted rather than
@@ -117,25 +131,25 @@
    The spread shadow is the padding. A real padding would move every row on the
    page the moment one was marked; a shadow in the same colour as the background
    paints the same shape and costs no layout. */
-.tl.is-coauthor, .card.is-coauthor{
-  --coauthor:oklch(.62 .15 152);
-  background:color-mix(in srgb, var(--coauthor) 11%, transparent);
+.tl.is-lit, .card.is-lit{
+  --lit:oklch(.62 .15 152);
+  background:color-mix(in srgb, var(--lit) 11%, transparent);
   border-radius:12px;
-  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 11%, transparent);
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--lit) 11%, transparent);
   transition:background .15s ease, box-shadow .15s ease;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .tl.is-coauthor, :root:not([data-theme="light"]) .card.is-coauthor{
-    --coauthor:oklch(.74 .15 152);
-    background:color-mix(in srgb, var(--coauthor) 14%, transparent);
-    box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+  :root:not([data-theme="light"]) .tl.is-lit, :root:not([data-theme="light"]) .card.is-lit{
+    --lit:oklch(.74 .15 152);
+    background:color-mix(in srgb, var(--lit) 14%, transparent);
+    box-shadow:0 0 0 7px color-mix(in srgb, var(--lit) 14%, transparent);
   }
 }
-:root[data-theme="dark"] .tl.is-coauthor, :root[data-theme="dark"] .card.is-coauthor{
-  --coauthor:oklch(.74 .15 152);
-  background:color-mix(in srgb, var(--coauthor) 14%, transparent);
-  box-shadow:0 0 0 7px color-mix(in srgb, var(--coauthor) 14%, transparent);
+:root[data-theme="dark"] .tl.is-lit, :root[data-theme="dark"] .card.is-lit{
+  --lit:oklch(.74 .15 152);
+  background:color-mix(in srgb, var(--lit) 14%, transparent);
+  box-shadow:0 0 0 7px color-mix(in srgb, var(--lit) 14%, transparent);
 }
 @media (prefers-reduced-motion:reduce){
-  .tl.is-coauthor, .card.is-coauthor{transition:none}
+  .tl.is-lit, .card.is-lit{transition:none}
 }

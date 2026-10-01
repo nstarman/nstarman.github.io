@@ -18,7 +18,7 @@ import { miniMap, map } from '../lib/collabmini.js';
 const { entries, dots, trails, label } = miniMap();
 ---
 
-<aside class="cvmini" id="cv-collab-map" hidden>
+<aside class="cvmini" id="cv-collab-map" data-words="where my collaborators have worked" hidden>
   <div class="cvmini-stick">
     {/* The arrow is right-aligned, pointing out of the panel the way the
         "All X →" links do elsewhere on the site. Facing it is a second copy of
@@ -60,7 +60,7 @@ const { entries, dots, trails, label } = miniMap();
     <select class="cvmini-who" aria-label="Highlight one collaborator">
       <option value="">Everyone</option>
       {entries.map((e) => (
-        <option value={String(e.c)} data-papers={e.papers.join(' ')}>{e.name}</option>
+        <option value={String(e.c)} data-rows={e.papers.join(' ')}>{e.name}</option>
       ))}
     </select>
   </div>
@@ -68,5 +68,5 @@ const { entries, dots, trails, label } = miniMap();
 
 <script>
   import { wireMiniMap } from '../lib/minipick.js';
-  wireMiniMap();
+  wireMiniMap('cv-collab-map', { jump: true });
 </script>
