@@ -67,8 +67,10 @@ const micro = (s) => {
               const h = item.highlight;
               const href = mainHref(item);
               const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
-              // Bold only the papers I led or was second on.
+              // Bold only the papers I led or was second on. Past third the
+              // place is just "nth", unless the record states it on purpose.
               const pos = authorPosition(item);
+              const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : 'nth');
               return (
                 <article class="card hl-card" id={anchor(item.id)}>
                   {/* Three areas — title, figure, footer — on rows the whole
@@ -84,7 +86,7 @@ const micro = (s) => {
                       </ul>
                     )}
                     <LinkIcons links={links(item)} />
-                    <span class="hl-year">{pos && <>{ordinal(pos)} | </>}{year(item)}</span>
+                    <span class="hl-year">{place && <>{place} | </>}{year(item)}</span>
                   </div>
                 </article>
               );

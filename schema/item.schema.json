@@ -160,7 +160,7 @@
             "type": "string"
           },
           "authorPosition": {
-            "description": "Credit position, when it differs from where the owner sits in `authors`. Normally omitted — the position is derived from the index of the author marked `me`, which is correct for every record so far, Euclid included: `collaboration` is a separate field and so takes no author slot. Set this only where the byline understates the credit. Named for the first four; a plain number beyond.",
+            "description": "Credit position, when it differs from where the owner sits in `authors`. Normally omitted — the position is derived from the index of the author marked `me`, which is correct for every record so far, Euclid included: `collaboration` is a separate field and so takes no author slot. Set this where the byline understates the credit, or to have a position past third stated exactly rather than as \"nth\" on /research/'s cards — Astropy v5.0, where fourth is the first author after the leads. Named for the first four; a plain number beyond.",
             "oneOf": [
               { "enum": ["first", "second", "third", "fourth"] },
               { "type": "integer", "minimum": 5 }
