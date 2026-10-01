@@ -588,95 +588,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   :root:not([data-theme="light"]) .themetoggle{transform:rotate(180deg)}
 }
 
-/* ---------- the collaborator map ---------- */
-/* Hue comes from the render model, lightness from here: one number cannot be
-   legible on both paper-white and near-black, so the model picks the hue and
-   each theme picks how light to make it. */
-.cmap{margin:1.4rem 0 0}
-.cmap svg{
-  display:block; width:100%; height:auto;
-  /* The faintest wash of sea. Cyan rather than the site's navy accent: mixing
-     the accent in brought its darkness with it, and water reads as water at a
-     lighter, greener blue. Mixed into the page's own ground rather than --sunk:
-     against --sunk the sea sat at 229 and read as another shade of land, since
-     land is grey ink on the same ground. Over white it sits at 244, so the
-     water is the page showing through and the continents are the only
-     substance on it. */
-  background:color-mix(in srgb, var(--sea) 6%, var(--ground));
-  border-radius:12px;
-}
-/* The empty half of the map is the point: it says where the collaborations are
-   not. Equal Earth's 2.05:1 is kept, so areas stay comparable. */
-/* Land wants to be clearly land without competing with the pins on it —
-   --rule was so faint the continents were guesswork. */
-.cmap-land{fill:var(--ink-faint); fill-opacity:.32; stroke:none}
-/* Exactly the ground the map sits on, so a lake is a hole rather than a shape.
-   Kept in step with the svg's own background by hand — color-mix cannot be
-   referred to twice without repeating it. */
-.cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--ground)); stroke:none}
-.cmap-trail{
-  fill:none; stroke:oklch(.55 .16 var(--h)); stroke-width:1.6;
-  stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
-}
-/* Radius lives here rather than in the markup so it can grow as the map
-   shrinks: at phone width the whole 1000-unit map is ~330px, where a 4.5-unit
-   pin is three pixels across and invisible. The `r` attribute stays in the SVG
-   as the value a stylesheet-less render would use. */
-.cmap-pin circle{
-  r:3; fill:var(--ground); stroke:oklch(.55 .16 var(--h)); stroke-width:2;
-  transition:r .12s ease;
-}
-.cmap-pin circle.is-shared{r:4.5; fill:oklch(.55 .16 var(--h))}
-.cmap-pin:hover circle, .cmap-pin:focus-visible circle{r:8}
-@media (max-width:44rem){
-  .cmap-pin circle{r:6; stroke-width:3}
-  .cmap-pin circle.is-shared{r:8}
-  .cmap-trail{stroke-width:3; stroke-dasharray:7 7}
-}
-@media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
-
-.cmap figcaption{
-  margin:0 0 .7rem;
-  /* Inset by the map's own corner radius, so the first dot and the last word
-     begin where the squircle stops curving rather than floating past it. */
-  padding:0 12px; font-size:.8rem; color:var(--ink-mute); line-height:1.5;
-  display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .9rem;
-}
-/* The legend shows the two pins rather than describing them; a sentence
-   explaining a shape the reader can simply be shown is a sentence too many. */
-.cmap-key{display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap}
-.cmap-key svg{width:11px; height:11px; background:none; border-radius:0; flex:none}
-.cmap-key circle{stroke:var(--ink-mute); stroke-width:2; fill:var(--ground)}
-.cmap-key--shared circle{fill:var(--ink-mute)}
-.cmap-key--trail svg{width:22px}
-/* Opposite the legend on the same line: it names the drawing, the keys name
-   what is drawn on it. */
-.cmap-proj{margin-left:auto; white-space:nowrap;
-  color:var(--ink-faint);
-  text-decoration:underline; text-decoration-color:var(--rule-strong);
-  text-underline-offset:.18em}
-.cmap-proj:hover, .cmap-proj:focus-visible{color:var(--accent); text-decoration-color:currentColor}
-.cmap-key--trail line{stroke:var(--ink-mute); stroke-width:2; stroke-dasharray:4 4}
-
-/* Everything recedes but the person under the cursor. Two rules, keyed on an
-   attribute the script puts on the figure — a pin and its name live in
-   different subtrees, so there is nothing a pure-CSS sibling selector could
-   reach across. Without the script nothing fades, which is the honest default. */
-/* The hovered person's pins grow a little. The script dims the others by
-   writing an inline opacity, so "has no inline opacity" is exactly "is the one
-   being pointed at" — expressed here rather than as a second class to keep in
-   step. */
-.cmap[data-hover] .cmap-pin:not([style*="opacity"]) circle{r:7}
-.cmap-pin, .cmap-trail, .cmap-list > li{transition:opacity .15s ease}
-.cmap-list > li{outline-offset:3px}
-@media (prefers-reduced-motion:reduce){
-  .cmap-pin, .cmap-trail, .cmap-list > li{transition:none}
-}
-
-.cmap-head{margin-top:2rem}
-/* A rule between the research page's sections, not above the first. */
-.cmap-head ~ .cmap-head{margin-top:2.6rem; padding-top:2rem; border-top:1px solid var(--rule)}
-
 /* Research Highlights: each topic's introduction, then its cards in a row
    that scrolls sideways. A card is the site's ordinary grey .card — title,
    figure, then links and year, top to bottom; the introduction does the telling — newest
@@ -727,117 +638,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   background:color-mix(in srgb, var(--ink) 6%, transparent); border-radius:6px;
   padding:.08em .4em; white-space:nowrap; transition:color .15s, background-color .15s}
 .micro:hover,.micro:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
-.cmap-list{list-style:none; margin:1.6rem 0 0; padding:0;
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(19rem,1fr)); gap:1.2rem}
-/* `display` on the element beats the user agent's [hidden]{display:none}, so a
-   grid that sets one is never hidden by the attribute alone. Both of these are
-   toggled with `hidden`, so both have to say it themselves. */
-.cmap-list[hidden], .cmap-list ol[hidden]{display:none}
-.cmap-list > li{
-  border-left:3px solid oklch(.55 .16 var(--h)); padding-left:.7rem;
-}
-.cmap-list h3{margin:0 0 .35rem; font-size:.92rem}
-.cmap-list ol{list-style:none; margin:0; padding:0; display:grid; gap:.5rem}
-.cmap-list ol li{font-size:.8rem; line-height:1.45}
-.cmap-when{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-right:.4rem}
-.cmap-where{color:var(--ink-2)}
-.cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
-.cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
-.cmap-papers li{font-size:.76rem; margin-top:.15rem}
-.cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
-
-:root:not([data-theme="light"]) {
-  @media (prefers-color-scheme: dark) {
-    .cmap-trail{stroke:oklch(.74 .15 var(--h))}
-    .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
-    .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
-    .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
-  }
-}
-:root[data-theme="dark"] .cmap-trail{stroke:oklch(.74 .15 var(--h))}
-:root[data-theme="dark"] .cmap-pin circle{stroke:oklch(.74 .15 var(--h))}
-:root[data-theme="dark"] .cmap-pin circle.is-shared{fill:oklch(.74 .15 var(--h))}
-:root[data-theme="dark"] .cmap-list > li{border-left-color:oklch(.74 .15 var(--h))}
-
-/* The map's person picker. */
-.cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.8rem 0 0}
-.cmap-pick label{
-  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
-  text-transform:uppercase; color:var(--ink-faint);
-}
-
-/* With one person selected the list is a single record rather than a grid of
-   thirty-four, so it should not be laid out as columns. */
-.cmap[data-only]:not([data-only=""]) .cmap-list{grid-template-columns:1fr}
-
-/* Sits on each person's record rather than under the map, because that is
-   where the claim is actually made: this is their career as ORCID has it, not
-   as it was. Orange rather than the site's blue — it is a caveat, not a link. */
-/* The WIP tag's shape and weight, in orange rather than the site's blue —
-   same kind of label, different kind of thing to say. */
-.cmap-partial{
-  margin-left:auto; white-space:nowrap;
-  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
-  color:#a35c05; background:#fff8ee; border:1px solid #f6dcb4;
-  border-radius:.25rem; padding:.1rem .38rem;
-}
-:root:not([data-theme="light"]) {
-  @media (prefers-color-scheme: dark) {
-    .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
-  }
-}
-:root[data-theme="dark"] .cmap-partial{color:#f5cb9a; background:#43301a; border-color:#7a5626}
-
-/* ORCID's own green, because it is their mark and a reader recognises it
-   faster than any label would explain it. */
-.cmap-orcid{float:right; margin:0 0 .2rem .5rem; line-height:0; color:#A6CE39}
-.cmap-orcid .ico{width:15px; height:15px; fill:currentColor; display:block}
-.cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}
-
-/* A pin is pressable, so it should look it. */
-.cmap-pin, .cmap-trail{cursor:pointer}
-
-/* ── The conference map ──────────────────────────────────────────────────────
-   Shares every class with the collaborator map above; what follows is only the
-   handful of things a map of talks needs and a map of people does not. */
-
-/* A conference pin's radius carries its count, so it comes from the model as
-   --r rather than from a fixed rule. Written back through CSS because the
-   collaborator map's `r` above would otherwise flatten every pin to one size —
-   the `r` attribute in the markup is still what a stylesheet-less render uses.
-   Part-transparent so overlapping cities read as overlapping rather than as one
-   blob, which is what Cambridge and New York do at this scale. */
-.cmap--conf .cmap-pin circle{r:var(--r); fill:oklch(.55 .16 var(--h) / .72)}
-.cmap--conf .cmap-pin:hover circle,
-.cmap--conf .cmap-pin:focus-visible circle,
-.cmap--conf[data-hover] .cmap-pin:not([style*="opacity"]) circle{
-  r:calc(var(--r) * 1.45); fill-opacity:1
-}
-@media (max-width:44rem){
-  /* The phone rule above doubles a three-unit pin; the same generosity here,
-     applied to a size that already varies. */
-  .cmap--conf .cmap-pin circle{r:calc(var(--r) * 1.7); stroke-width:3}
-}
-
-/* Filled and unstroked, because a conference pin is: a 2px stroke on a circle
-   this small is most of the circle, and the two keys stopped being comparable. */
-.cmap-key--conf circle{fill:var(--ink-mute); stroke:none}
-
-.cmap-count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); font-weight:400}
-.cmap-kind{display:inline-block; margin-left:.4rem; font-size:.68rem; color:var(--ink-mute);
-  text-transform:lowercase; font-variant:small-caps; letter-spacing:.02em}
-
-/* The talks the map cannot show. Collapsed, because they are a footnote to it —
-   but present, because dropping them would make the map read as complete. */
-.cmap-off{margin:1.2rem 0 0; display:grid; gap:.5rem}
-.cmap-off details{border-left:2px solid var(--ink-faint); padding:0 0 0 .7rem}
-.cmap-off summary{font-size:.8rem; color:var(--ink-2); cursor:pointer}
-.cmap-off summary:hover, .cmap-off summary:focus-visible{color:var(--accent)}
-.cmap-off ol{list-style:none; margin:.5rem 0 0; padding:0; display:grid; gap:.5rem}
-.cmap-off ol li{font-size:.8rem; line-height:1.45}
-.cmap-off .cmap-note{margin:.5rem 0 0}
-.cmap-off code{font-size:.9em}
-
 
 /* ---------- publications: topic menu, and the mobile author fold ---------- */
 .ttlgroup{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap}
@@ -876,3 +676,57 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Jumped to from /publications/ and from a synthesis card: land clear of the
    sticky nav, not underneath it. */
 .hl-topic,.hl-card{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+
+/* ---------- shared with the CV ----------
+   Rules that cv/page.css used to carry but that other pages rely on too: the
+   contents rail (/publications/ reuses it for years), the dated row's gutter
+   and detail links (the home page's Background is built from .tl rows), the
+   mini software cards (/software/'s long tail), and the divider in a .more
+   row. They live here so a page that is not the CV still gets them now that
+   the CV's own sheets load only with the CV. */
+
+/* The builder sits on the CV's preset row but is a different kind of action —
+   a divider and a touch of weight keep it from reading as a fifth preset. */
+.more .sep{color:var(--rule-strong); margin:0 .5rem}
+
+/* The institution's own site sits in the date gutter, under the years — it
+   belongs to the row as a whole, not alongside a paper or a dataset. */
+.tl .when{display:flex; flex-direction:column; align-items:flex-start; gap:.3rem}
+/* detail-line links read as links, not as decoration */
+.tl .sub a{color:var(--accent)}
+.tl .sub a:hover{text-decoration:underline; text-underline-offset:2px}
+@media (min-width:56rem){
+  .tl{position:relative}
+}
+
+.card--mini{position:relative}
+.card--mini .name{display:flex; align-items:center; gap:.45rem}
+.cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
+
+/* Contents rail, on the CV and on /publications/. Hidden by default and shown
+   only when the viewport is wide enough to hold it in the left margin without
+   moving the content column: 49rem of column plus ~13rem of rail and its gap
+   on each side. Below that the page is unchanged rather than reflowed. */
+.cvtoc{display:none}
+@media (min-width:78rem){
+  .cvtoc{
+    display:block; position:fixed; top:6.5rem;
+    right:calc(50% + 24.5rem + 2rem); width:12.5rem;
+    max-height:calc(100vh - 9rem); overflow-y:auto;
+  }
+  .cvtoc ol{list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:.32rem}
+  /* The rail sits in the left margin, but its rule runs down the right edge and
+     the labels are right-aligned — so the marker and the text both point at the
+     content column they belong to. */
+  .cvtoc{text-align:right}
+  .cvtoc a{
+    display:block; font-size:.78rem; line-height:1.3; color:var(--ink-faint);
+    border-right:2px solid var(--rule); padding:.1rem .6rem .1rem 0;
+    transition:color .15s, border-color .15s;
+  }
+  .cvtoc a:hover{color:var(--ink-2); text-decoration:none; border-color:var(--rule-strong)}
+  .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
+}
+/* /publications/ uses the rail for years; a jump must clear the sticky nav. */
+.entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}

@@ -1,10 +1,10 @@
 /* What /cv/builder/ adds to the CV: a tick box on every entry and every
  * elaboration line, the per-section selectors, and the compile controls.
  *
- * Layered over cv/page.css rather than replacing it — the builder renders the
- * complete CV through the same component, so every rule here assumes the
- * reading view underneath it and only adds the column, the control or the
- * dimming that picking needs.
+ * Loaded by the builder page alone. Layered over cv/page.css rather than
+ * replacing it — the builder renders the complete CV through the same
+ * component, so every rule here assumes the reading view underneath it and
+ * only adds the column, the control or the dimming that picking needs.
  */
 
 /* CV builder */
@@ -68,7 +68,6 @@
 .tl--pick.tl--pub > .btns--icon{grid-column:4}
 .tl--pick > .itembox{align-self:start; margin:.28rem 0 0}
 .cvsechead .groupbox,.cvsechead .itembox{margin:0 .1rem 0 0; align-self:center}
-.card--mini .name{display:flex; align-items:center; gap:.45rem}
 .card--mini .name .itembox{margin:0}
 .itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
 /* Unticked entries stay legible but recede, so the shape of the selection is
