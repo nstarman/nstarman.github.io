@@ -67,21 +67,22 @@ const bodyLinks = (item) => links(item).filter((l) => !inGutter(item, l));
 
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
-// of one. `first` is where the run's map button goes.
+// of one.
 const isTalks = (s) => s.items.length > 0 && s.items.every((item) => item.type === 'presentation');
 const runs = [];
 cv.sections.forEach((s, i) => {
   const talks = isTalks(s);
   const last = runs.at(-1);
-  if (talks && last?.talks) last.sections.push({ s, i, first: false });
-  else runs.push({ talks, sections: [{ s, i, first: true }] });
+  if (talks && last?.talks) last.sections.push({ s, i });
+  else runs.push({ talks, sections: [{ s, i }] });
 });
 
 // The gutter map a heading's button opens, if it has one: the collaborators
-// on Publications, the conferences on the first heading of a run of talks.
-const mapFor = (s, first) => {
+// on Publications, the conferences on every talk heading — the map spans the
+// run, so the reader may meet it from any of them.
+const mapFor = (s) => {
   if (s.id === 'publications') return { id: 'cv-collab-map', words: 'where my collaborators have worked' };
-  if (first && isTalks(s)) return { id: 'cv-conf-map', words: 'where I have given talks' };
+  if (isTalks(s)) return { id: 'cv-conf-map', words: 'where I have given talks' };
   return null;
 };
 
@@ -109,7 +110,7 @@ const money = (a) => {
 </nav>
 
 {runs.map((run) => {
-  const sections = run.sections.map(({ s, i, first }) => {
+  const sections = run.sections.map(({ s, i }) => {
     // A collapsed section is a <details>: the disclosure is native, so it needs
     // no script and keeps working with JavaScript off. Every section takes the
     // same wrapper either way, so the spacing rules see one shape.
@@ -170,15 +171,15 @@ const money = (a) => {
         {/* In the `}` gutter, centred on the column where each paper's source
             link sits, so it reads as part of that column rather than as another
             control on the heading row. Publications, for the people in these
-            bylines, and the first talk heading, for the places in the run of
-            talk sections it starts. The button is rendered here because it
+            bylines, and each talk heading, for the places in the run of talk
+            sections they share. The button is rendered here because it
             belongs to this row; what it does is in lib/minipick.js, with the map
             it opens and with the panel's own copy of it. */}
-        {mapFor(s, first) && (
+        {mapFor(s) && (
           <button type="button" class="cvminibtn" aria-expanded="false"
-                  aria-controls={mapFor(s, first).id}
-                  aria-label={`Show ${mapFor(s, first).words}`}
-                  title={`Show ${mapFor(s, first).words}`}>
+                  aria-controls={mapFor(s).id}
+                  aria-label={`Show ${mapFor(s).words}`}
+                  title={`Show ${mapFor(s).words}`}>
             <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-map" /></svg>
           </button>
         )}

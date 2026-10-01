@@ -68,18 +68,25 @@ export function wireMiniMap(id = 'cv-collab-map') {
   // paper's source mark sits — it cannot live inside an aside that is
   // positioned into the margin. Its behaviour can, and does, so all of the
   // map's client code is this file.
-  // Found by what it controls, as there is one per map.
-  const btn = document.querySelector(`.cvminibtn[aria-controls="${id}"]`);
+  // Found by what they control. The conference map has one on every talk
+  // heading it spans, and all of them must agree on whether it is open.
+  const btns = [...document.querySelectorAll(`.cvminibtn[aria-controls="${id}"]`)];
+  // The one last used, so closing from the panel hands focus back to it.
+  let opener = btns[0];
   // `hidden` rather than a class, so with the map closed a screen reader is
   // told the same thing the eye is, and `aria-expanded` says which way it is.
   const setOpen = (open) => {
     aside.hidden = !open;
-    btn?.setAttribute('aria-expanded', String(open));
     const words = `${open ? 'Hide' : 'Show'} ${aside.dataset.words}`;
-    btn?.setAttribute('aria-label', words);
-    btn?.setAttribute('title', words);
+    for (const btn of btns) {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', words);
+      btn.setAttribute('title', words);
+    }
   };
-  btn?.addEventListener('click', () => setOpen(aside.hidden));
+  for (const btn of btns) {
+    btn.addEventListener('click', () => { opener = btn; setOpen(aside.hidden); });
+  }
 
   // The panel's own copy of the button only ever shuts it — it is inside the
   // thing it hides. Focus goes back to the heading's button, because closing
@@ -87,7 +94,7 @@ export function wireMiniMap(id = 'cv-collab-map') {
   // because the point of the second button is that the heading is far above.
   aside.querySelector('.cvmini-shut')?.addEventListener('click', () => {
     setOpen(false);
-    btn?.focus({ preventScroll: true });
+    opener?.focus({ preventScroll: true });
   });
 
   // Watch the attribute rather than calling markRows from the handler above:
