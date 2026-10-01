@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import LinkIcons from '../components/LinkIcons.astro';
-import { byType, links, resolve } from '../lib/data.js';
+import { byType, links, resolve, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
@@ -11,15 +11,8 @@ const papers = byType('publication').filter((p) => p.highlight);
 const highlights = [...byType('highlight'), ...papers];
 const anchor = (id) => `hl-${id}`;
 
-// The order the groups appear in; a topic with no card yet is skipped. A topic
-// left out of this list is not shown at all: `software` cards wait here.
-const topics = [
-  ['extragalactic', 'Extragalactic'],
-  ['galactic', 'Galactic'],
-  ['cmb', 'Cosmic Microwave Background'],
-  ['dm-direct-detection', 'Dark Matter Direct Detection'],
-];
-const groups = topics
+// A topic with no card yet is skipped.
+const groups = HIGHLIGHT_TOPICS
   .map(([key, label]) => ({ key, label, items: highlights.filter((i) => i.highlight.topic === key) }))
   .filter((g) => g.items.length > 0);
 

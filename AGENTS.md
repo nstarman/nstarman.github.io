@@ -153,7 +153,7 @@ and the links out. Every paper can have one: give the publication a
 
 `topic` groups the card on the page and is required: `extragalactic` · `galactic`
 · `cmb` · `dm-direct-detection` · `software`. A topic with no card is not shown; a new topic
-is a schema change plus the list in `src/pages/research.astro`. `software` is
+is a schema change plus `HIGHLIGHT_TOPICS` in `src/lib/data.js`. `software` is
 deliberately absent from that list: a card under it is written and kept, but
 not shown until the topic is added there.
 

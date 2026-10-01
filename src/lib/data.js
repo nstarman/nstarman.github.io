@@ -55,6 +55,16 @@ export const byType = (...types) => items.filter((i) => types.includes(i.type));
 export const featured = (...types) => byType(...types).filter((i) => i.featured);
 export const resolve = (id) => byId.get(id);
 
+// Research-highlight topics in the order /research/ shows them; a topic left
+// out is not shown at all: `software` cards wait here. Anchored there as
+// `#hl-topic-<key>`, which /publications/ links to.
+export const HIGHLIGHT_TOPICS = [
+  ['extragalactic', 'Extragalactic'],
+  ['galactic', 'Galactic'],
+  ['cmb', 'Cosmic Microwave Background'],
+  ['dm-direct-detection', 'Dark Matter Direct Detection'],
+];
+
 /** "Nathaniel" -> "N."; "Adrian M." -> "A. M."  */
 function initials(given) {
   return given
