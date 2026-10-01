@@ -651,6 +651,8 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 }
 
 .cmap-head{margin-top:2rem}
+/* A rule between the research page's sections, not above the first. */
+.cmap-head ~ .cmap-head{margin-top:2.6rem; padding-top:2rem; border-top:1px solid var(--rule)}
 
 /* Research Highlights: a list of cards, figure on the left and the words
    beside it. Stacked on a phone, where a side column would leave neither room. */
