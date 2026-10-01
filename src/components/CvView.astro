@@ -126,6 +126,11 @@ const money = (a) => {
                  checked={s.items.every((i) => isPicked(i.id))}
                  aria-label={`Include every ${s.heading} entry`} />
         )}
+        {pick && s.key && (
+          <input type="checkbox" class="itembox" value={s.key}
+                 checked={isPicked(s.key)}
+                 aria-label={`Include ${s.heading}`} />
+        )}
         <h3 class="cvsection" id={s.id}>{s.heading}</h3>
         {collapsed && <span class="cvcount">{s.items.length}</span>}
         {/* Publications only, and only in the picker. The section checkbox is all

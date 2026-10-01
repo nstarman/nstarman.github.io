@@ -66,6 +66,12 @@ describe('resolve', () => {
     const picked = resolve('complete', only).sections.flatMap((s) => s.items);
     expect(picked.map((i) => i.id)).toEqual(['mit-postdoc']);
   });
+
+  it('selects a list section whole, by its list: key', () => {
+    const ids = (only) => resolve('complete', only).sections.map((s) => s.id);
+    expect(ids(new Set(['mit-postdoc']))).not.toContain('peer-review');
+    expect(ids(new Set(['list:peer-review']))).toContain('peer-review');
+  });
 });
 
 describe('memberIds', () => {
@@ -73,7 +79,7 @@ describe('memberIds', () => {
     // Filtering on `cvs` alone would pre-check items a limit then discards, and
     // "start from 2P, compile" would not reproduce the two-page CV.
     for (const name of presetNames) {
-      const rendered = resolve(name).sections.flatMap((s) => s.items.map((i) => i.id));
+      const rendered = resolve(name).sections.flatMap((s) => (s.key ? [s.key] : s.items.map((i) => i.id)));
       expect(memberIds(name)).toEqual(rendered);
     }
   });

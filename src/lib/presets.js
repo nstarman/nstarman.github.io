@@ -35,9 +35,12 @@ export function resolve(name, only) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
-    // A list section has no items to select — it renders its entries verbatim.
+    // A list section has no items — it renders its entries verbatim — so the
+    // builder selects it whole, by a key no item id can take (ids have no colon).
     if (section.list) {
+      const key = `list:${section.list}`;
       return {
+        key,
         id: section.id,
         heading: section.heading,
         groupBy: null,
@@ -46,7 +49,7 @@ export function resolve(name, only) {
         collapsed: section.collapsed ?? false,
         page: null,
         items: [],
-        entries: lists.get(section.list) ?? [],
+        entries: !only || only.has(key) ? lists.get(section.list) ?? [] : [],
         dropped: 0,
       };
     }
@@ -118,7 +121,7 @@ export function resolve(name, only) {
  * the two-page CV.
  */
 export function memberIds(name) {
-  return resolve(name).sections.flatMap((s) => s.items.map((i) => i.id));
+  return resolve(name).sections.flatMap((s) => (s.key ? [s.key] : s.items.map((i) => i.id)));
 }
 
 /**

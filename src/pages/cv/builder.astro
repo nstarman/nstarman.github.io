@@ -19,7 +19,7 @@ const startLevel = preset(START).detail;
 // "start from NP, compile" quietly puts back a line the NP CV does not have.
 const startsComplete = Boolean(preset(START).includeAll);
 const membership = Object.fromEntries(presetNames.map((n) => [n, memberIds(n)]));
-const total = cv.sections.reduce((n, s) => n + s.items.length, 0);
+const total = memberIds('complete').length;
 // Stamped into a saved selection so it can be taken back to the data it names.
 const site = buildInfo();
 ---
