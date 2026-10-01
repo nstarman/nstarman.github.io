@@ -13,6 +13,7 @@
 // has to be compared afterwards.
 
 import fs from 'node:fs';
+import { readItems } from './lib/items.mjs';
 import { execFileSync } from 'node:child_process';
 
 const OUT = 'config/contributions.json';
@@ -73,9 +74,7 @@ async function discover() {
 /** Repos already rendered as a Software card: they are not "also contributed to". */
 function alreadyShown() {
   const shown = new Set();
-  for (const f of fs.readdirSync('data')) {
-    if (!f.endsWith('.json')) continue;
-    const r = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
+  for (const { item: r } of readItems()) {
     if (r.type !== 'software') continue;
     for (const l of r.links ?? []) {
       const m = /^https:\/\/github\.com\/([^/]+\/[^/#?]+)/.exec(l.url ?? '');

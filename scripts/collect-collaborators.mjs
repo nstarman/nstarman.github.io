@@ -16,6 +16,7 @@
 // summary says how many are in that position.
 
 import fs from 'node:fs';
+import { readItems } from './lib/items.mjs';
 
 const OUT = 'config/collaborators.json';
 const API = 'https://pub.orcid.org/v3.0';
@@ -23,9 +24,7 @@ const API = 'https://pub.orcid.org/v3.0';
 /** Every ORCID that appears as an author in the database, with a display name. */
 function collaborators() {
   const found = new Map();
-  for (const f of fs.readdirSync('data')) {
-    if (!f.endsWith('.json')) continue;
-    const rec = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
+  for (const { item: rec } of readItems()) {
     for (const a of rec.authors ?? []) {
       // His own record is the site's, not a collaborator's.
       if (a.me || !a.orcid) continue;
