@@ -1,0 +1,68 @@
+name: Refresh Astropy voting members
+
+# Astropy publishes its active voting members on its public team page. Keep a
+# reviewed snapshot here: the site remains reproducible, while this annual job
+# detects changes without querying Astropy during a site build.
+on:
+  schedule:
+    # 1 September at 06:30 UTC, before the annual collaborator refresh at 07:00.
+    - cron: "30 6 1 9 *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-astropy-voting-members
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-astropy-voting-members
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - uses: typst-community/setup-typst@v5
+        with:
+          typst-version: "0.15.1"
+
+      - name: Scrape the Astropy team page
+        run: node scripts/scrape-astropy-voting-members.mjs
+
+      - name: Verify the snapshot
+        run: npm test
+
+      - name: Open a pull request if the membership changed
+        run: |
+          if git diff --quiet -- config/astropy-voting-members.json; then
+            echo "Astropy voting membership is unchanged." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          repo=${{ github.repository }}
+          base=$(git rev-parse HEAD)
+          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
+            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
+
+          sha=$(gh api "repos/$repo/contents/config/astropy-voting-members.json?ref=$BRANCH" -q .sha 2>/dev/null || true)
+          gh api -X PUT "repos/$repo/contents/config/astropy-voting-members.json" \
+            -f message="Refresh Astropy voting members" \
+            -f branch="$BRANCH" \
+            -f content="$(base64 < config/astropy-voting-members.json | tr -d '\n')" \
+            ${sha:+-f sha="$sha"} --silent
+
+          year=$(date -u +%Y)
+          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
+            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+                 --title "Refresh Astropy voting members (${year})" \
+                 --body "Updated from https://www.astropy.org/team by the annual refresh workflow."
