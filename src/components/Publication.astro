@@ -5,7 +5,7 @@ import { authors, venueLine, year, links, authorPosition, venueUrl } from '../li
 import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
 
-const { item, brief = false, maxAuthors = 8, abstract = false } = Astro.props;
+const { item, brief = false, maxAuthors = 8, abstract = false, anchor } = Astro.props;
 
 const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
 const venue = venueLine(item);
@@ -18,8 +18,9 @@ const pending = item.status !== 'published' ? item.status : null;
 // the outermost element — that is what gets hidden.
 const pos = authorPosition(item);
 ---
-<article class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ' entry--unpub' : ''}`}
+<article id={anchor} class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ' entry--unpub' : ''}`}
          data-pos={pos ?? undefined}
+         data-year={year(item) || undefined}
          data-tags={item.tags?.length ? item.tags.join(' ') : undefined}>
   <div class="body">
     <div class="ttl">
