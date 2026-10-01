@@ -663,7 +663,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
 .hl-card img{display:block; width:100%; aspect-ratio:4/3; object-fit:contain;
   border-radius:10px; background:#fff; padding:.4rem}
-.hl-card h4{margin:0; line-height:1.35}
+.hl-card h5{margin:0; line-height:1.35}
 .hl-refs{margin:.2rem 0 0; padding-left:1.1rem; font-size:.85rem}
 @media (max-width:34rem){
   .hl-card{grid-template-columns:1fr; gap:.45rem}
@@ -813,3 +813,4 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   #posmore:checked ~ .h2row .pubprofiles{flex-wrap:wrap}
   #posmore:checked ~ .h2row .pubprofiles .pubfilter{display:inline-grid; order:9; width:100%}
 }
+.hl-topic{margin:1.6rem 0 0}

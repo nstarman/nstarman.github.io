@@ -93,6 +93,7 @@
   "internal": "Checked against arXiv:2606.21774 on 2026-08-25: 298 listed authors, of whom the first ten after the Euclid Collaboration byline are the science authors — through D. Scott, who is the last one recorded here. Everyone after him is the alphabetical collaboration roll (Altieri, Andreon, Auricchio, ...), who signed the paper rather than worked on it, and is deliberately not tracked as a collaborator. David Martinez-Delgado belongs in this list and is not yet on the arXiv version — add him, and extend the cut-off to him, when his name appears.",
   "citekey": "Euclid+Starkman+:2026:stream-halo-geometry",
   "highlight": {
+    "topic": "extragalactic",
     "image": "highlights/euclid-eggs-pilot.webp",
     "alt": "Stellar stream tracks from 13 Euclid galaxies, drawn as magenta curves and stacked over one host galaxy, as if every stream orbits a common center.",
     "title": "The geometry of dark matter halos from Euclid streams",
