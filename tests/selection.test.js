@@ -3,7 +3,7 @@
 // to say so, not throw from inside the DOM code that called it.
 
 import { describe, expect, it } from 'vitest';
-import { encode, decode, SelectionError, FORMAT, VERSION } from '../src/lib/selection.js';
+import { encode, decode, loadReport, SelectionError, FORMAT, VERSION } from '../src/lib/selection.js';
 
 const site = { commit: 'a'.repeat(40), short: 'aaaaaaa', dirty: false };
 
@@ -110,5 +110,41 @@ describe('tolerating the merely odd', () => {
 
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
+  });
+});
+
+describe('loadReport', () => {
+  const here = { commit: 'b'.repeat(40), short: 'bbbbbbb' };
+  const sel = (items, over = {}) => ({ items: new Set(items), style: null, site, ...over });
+  const known = new Set(['x', 'y']);
+
+  it('counts what was restored', () => {
+    const r = loadReport(sel(['x']), known, site, true);
+    expect(r.message).toBe('Loaded 1 entry.');
+    expect(r.missing).toEqual([]);
+  });
+
+  it('says how to recover entries a newer build dropped', () => {
+    const r = loadReport(sel(['x', 'gone', 'lost']), known, here, true);
+    expect(r.missing).toEqual(['gone', 'lost']);
+    expect(r.message).toBe('Loaded 1 entry. 2 entries no longer exist here. '
+      + 'Saved from aaaaaaa; this site is bbbbbbb. '
+      + `git checkout ${site.commit} && npm run build to recover them.`);
+  });
+
+  it('calls missing entries removed when the build is the same one', () => {
+    expect(loadReport(sel(['gone']), known, site, true).message)
+      .toBe('Loaded 0 entries. 1 entry no longer exists here. They were removed from the database.');
+  });
+
+  it('notes a different build even when everything resolves', () => {
+    expect(loadReport(sel(['x', 'y']), known, here, true).message)
+      .toBe('Loaded 2 entries. Saved from aaaaaaa; every entry still resolves.');
+  });
+
+  it('owns up to an unknown style and a dirty build', () => {
+    const r = loadReport(sel(['x'], { style: 'neon', site: { ...site, dirty: true } }), known, site, false);
+    expect(r.message).toBe('Loaded 1 entry. Its style "neon" is not one this page offers; using Default. '
+      + 'That build had uncommitted changes.');
   });
 });

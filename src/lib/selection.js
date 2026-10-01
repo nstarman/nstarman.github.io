@@ -9,6 +9,8 @@
 // as hostile — wrong shape, wrong types, absurd sizes — and fails with a
 // sentence a person can act on rather than a TypeError from three frames down.
 
+import { plural } from './inline.js';
+
 export const FORMAT = 'starkman-cv-selection';
 export const VERSION = 1;
 
@@ -101,6 +103,42 @@ export function decode(text) {
       dirty: !!site.dirty,
     },
   };
+}
+
+/**
+ * What to tell the reader after loading `sel` into a page that offers the
+ * entries in `known` and was built from `here` (buildInfo()).
+ *
+ * @param {boolean} styleKnown whether the page offers the file's style
+ * @returns {{ message: string, missing: string[] }}
+ */
+export function loadReport(sel, known, here, styleKnown) {
+  const missing = [...sel.items].filter((id) => !known.has(id));
+  const restored = sel.items.size - missing.length;
+  const parts = [`Loaded ${plural(restored, 'entry', 'entries')}.`];
+  // A style this build does not have is worth saying out loud — the PDF
+  // would silently come out in a different design otherwise.
+  if (!styleKnown) {
+    parts.push(`Its style "${sel.style ?? 'default'}" is not one this page offers; using Default.`);
+  }
+  // The commit is why the file carries one. If entries have gone missing,
+  // the fix is mechanical, so say what it is rather than only that it broke.
+  const from = sel.site.commit;
+  const moved = from && here.commit && from !== here.commit;
+  const saved = `Saved from ${sel.site.short ?? from?.slice(0, 7)}`;
+  if (missing.length) {
+    parts.push(`${plural(missing.length, 'entry', 'entries')} no longer ${missing.length === 1 ? 'exists' : 'exist'} here.`);
+    if (moved) {
+      parts.push(`${saved}; this site is ${here.short}.`);
+      parts.push(`git checkout ${from} && npm run build to recover ${missing.length === 1 ? 'it' : 'them'}.`);
+    } else {
+      parts.push('They were removed from the database.');
+    }
+  } else if (moved) {
+    parts.push(`${saved}; every entry still resolves.`);
+  }
+  if (sel.site.dirty) parts.push('That build had uncommitted changes.');
+  return { message: parts.join(' '), missing };
 }
 
 export { SelectionError };
