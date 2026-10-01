@@ -418,6 +418,21 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .entry--full .venueline .venue{font-style:italic; color:var(--ink-2)}
 .entry--full .abstract{color:var(--ink-2)}
 
+/* The highlight on a publication: figure and words only, smaller than on
+   /research/. The abstract folds behind a disclosure, as .contribs does. */
+.hl-card--pub{grid-template-columns:9rem 1fr; align-items:center; margin-top:.6rem}
+.absmore{margin-top:.45rem}
+@media (max-width:34rem){ .hl-card--pub{grid-template-columns:1fr} }
+.absmore summary{
+  cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.absmore summary::-webkit-details-marker{display:none}
+.absmore summary::before{content:"\25B8"; color:var(--ink-faint); transition:transform .15s ease}
+.absmore[open] summary::before{transform:rotate(90deg)}
+.absmore summary:hover{color:var(--ink)}
+
 /* Same on the publications list and the home page's short list, so a year means
    the same thing wherever a paper is shown. */
 .entry--unpub .yr{font-style:italic}

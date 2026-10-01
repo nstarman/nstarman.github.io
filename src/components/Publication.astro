@@ -3,6 +3,7 @@
 // `paper` button stacked in the right-hand column, everything else dropped.
 import { authors, venueLine, year, links, authorPosition, venueUrl } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
+import { spans } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
 
 const { item, brief = false, maxAuthors = 8, abstract = false } = Astro.props;
@@ -54,13 +55,25 @@ const pos = authorPosition(item);
       </p>
     )}
 
+    {/* The research card without its title or links — the title above
+        already is the way into the paper. */}
+    {abstract && item.highlight && (
+      <div class="card hl-card hl-card--pub">
+        <img src={`/${item.highlight.image}`} alt={item.highlight.alt} loading="lazy" />
+        <p>{spans(item.highlight.description, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+      </div>
+    )}
+
     {abstract && item.abstract && (
-      <p class="abstract">
-        {/* Only the MathML Temml produced is set as HTML; the surrounding prose
-            stays ordinary text and is escaped as usual. */}
-        {mathParts(item.abstract).map((part) =>
-          part.maths ? <Fragment set:html={part.html} /> : part.text)}
-      </p>
+      <details class="absmore">
+        <summary>Abstract</summary>
+        <p class="abstract">
+          {/* Only the MathML Temml produced is set as HTML; the surrounding prose
+              stays ordinary text and is escaped as usual. */}
+          {mathParts(item.abstract).map((part) =>
+            part.maths ? <Fragment set:html={part.html} /> : part.text)}
+        </p>
+      </details>
     )}
   </div>
 
