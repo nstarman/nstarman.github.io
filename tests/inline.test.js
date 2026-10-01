@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines } from '../src/lib/inline.js';
+import { spans, plain, lines, detailLines, plural } from '../src/lib/inline.js';
 
 describe('spans', () => {
   it('leaves prose alone', () => {
@@ -83,5 +83,13 @@ describe('detailLines', () => {
   it('omits the parts an item does not have', () => {
     expect(detailLines({ details: 'only this' })).toHaveLength(1);
     expect(detailLines({})).toEqual([]);
+  });
+});
+
+describe('plural', () => {
+  it('counts with a regular or given plural', () => {
+    expect(plural(1, 'talk')).toBe('1 talk');
+    expect(plural(3, 'talk')).toBe('3 talks');
+    expect(plural(0, 'entry', 'entries')).toBe('0 entries');
   });
 });

@@ -1,11 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
-import { byType, authorPosition, year } from '../lib/data.js';
+import { byType, positionStops, year } from '../lib/data.js';
 import person from '/config/person.json';
 
-// In-preparation papers stay out of the public list — they still appear in the
-// full CV, which has its own In Preparation section.
 // In-preparation papers stay out of the public list — they still appear in the
 // full CV, which has its own In Preparation section.
 // No status grouping: every unpublished entry already carries a status pill, so
@@ -17,13 +15,7 @@ const all = byType('publication').filter((p) => p.status !== 'in-prep');
 // Stops for the author-position filter, built from the data rather than fixed:
 // a stop that selects the same papers as the one before it, or as "All", is a
 // stop that does nothing. Today that leaves All / 1st / 2nd.
-const positions = all.map(authorPosition).filter((n) => n != null);
-const stops = [];
-for (let n = 1; n <= 4; n += 1) {
-  const count = positions.filter((p) => p <= n).length;
-  const previous = stops.length ? stops[stops.length - 1].count : 0;
-  if (count > previous && count < positions.length) stops.push({ n, count });
-}
+const stops = positionStops(all);
 
 // Topic filter: every tag in use, most common first. Slugs read fine as labels
 // except acronyms.

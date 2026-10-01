@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import LinkIcons from '../components/LinkIcons.astro';
-import { byType, links, resolve, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { byType, links, primaryLink, resolve, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
@@ -18,10 +18,7 @@ const groups = HIGHLIGHT_TOPICS
 
 // A synthesis's papers link to their cards; a paper without one, out to the paper.
 const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
-const mainHref = (item) => {
-  const all = links(item);
-  return (all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint') ?? all[0])?.url;
-};
+const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 ---
 <Base title="Research — Nathaniel Starkman">
   <main>

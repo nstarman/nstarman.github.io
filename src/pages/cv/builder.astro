@@ -83,6 +83,7 @@ const site = buildInfo();
   <script>
     import { cvModel } from '../../lib/cvmodel.js';
     import { encode, decode } from '../../lib/selection.js';
+    import { plural } from '../../lib/inline.js';
     // The whole template, not just cv.typ: it imports lib/theme.typ and
     // lib/styles.typ, and typst.ts resolves those against the same virtual root.
     // Globbed rather than listed, so adding a module — or a style — needs no
@@ -228,7 +229,6 @@ const site = buildInfo();
     // ── save & load ───────────────────────────────────────────────────────
     // A long selection is real work, and it is only ever one reload from gone.
 
-    const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
     /** What is ticked right now: entries, and which lines of each. */
     const currentLines = () => {

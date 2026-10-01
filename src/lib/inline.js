@@ -38,6 +38,9 @@ export function spans(text, base = '') {
   return out;
 }
 
+/** "1 talk", "3 talks", "2 entries". */
+export const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
 /** The same text with the link syntax stripped, for places that cannot link. */
 export const plain = (text) => (text ?? '').replace(LINK, '$1');
 

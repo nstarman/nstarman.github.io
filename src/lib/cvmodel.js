@@ -7,7 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
-import { authors, venueLine, dateLabel, links, resolve as item0, softwarePaper, REL_ICON, relKey } from './data.js';
+import { authors, venueLine, dateLabel, links, money, softwarePaper, REL_ICON, relKey } from './data.js';
 import { spans, detailLines } from './inline.js';
 
 /**
@@ -30,13 +30,6 @@ function groupsOf(items, field) {
     .map(([value, label]) => ({ label, items: items.filter((i) => i[field] === value) }))
     .filter((g) => g.items.length > 0);
 }
-
-const money = (a) => {
-  if (!a) return null;
-  const n = (v) => v.toLocaleString('en-US');
-  const span = a.valueMax ? `${n(a.value)}\u2013${n(a.valueMax)}` : n(a.value);
-  return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
-};
 
 /**
  * The line under the title, as bold/plain spans. Spans rather than a marked-up

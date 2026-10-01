@@ -15,6 +15,9 @@ import {
   dateLabel,
   links,
   relKey,
+  positionStops,
+  money,
+  primaryLink,
 } from '../src/lib/data.js';
 
 describe('the database', () => {
@@ -292,5 +295,51 @@ describe('softwarePaper', () => {
     expect(withPaper).toEqual(
       ['astropy', 'macro-lightning-code', 'phasecurvefit', 'potamides', 'trackstream', 'unxt'],
     );
+  });
+});
+
+describe('positionStops', () => {
+  const at = (...ns) => ns.map((n) => ({ authorPosition: n }));
+
+  it('keeps only stops that cut the list', () => {
+    // 1 and 2 each admit more papers; 3 admits nothing new; 4 admits them all.
+    expect(positionStops(at(1, 2, 2, 4)).map((s) => s.n)).toEqual([1, 2]);
+  });
+
+  it('counts what each stop admits', () => {
+    expect(positionStops(at(1, 1, 3, 9))).toEqual([{ n: 1, count: 2 }, { n: 3, count: 3 }]);
+  });
+
+  it('offers nothing when every paper is first-author, or there are none', () => {
+    expect(positionStops(at(1, 1))).toEqual([]);
+    expect(positionStops([])).toEqual([]);
+  });
+
+  it('ignores items with no position', () => {
+    expect(positionStops([...at(1, 2), {}, { authors: [] }]).map((s) => s.n)).toEqual([1]);
+  });
+});
+
+describe('money', () => {
+  it('formats a figure, a range and an annual amount', () => {
+    expect(money({ currency: 'USD', value: 120000 })).toBe('USD 120,000');
+    expect(money({ currency: 'CAD', value: 20000, valueMax: 30000, perAnnum: true }))
+      .toBe('CAD 20,000\u201330,000 p.a.');
+  });
+
+  it('is null when there is no amount', () => {
+    expect(money(undefined)).toBeNull();
+  });
+});
+
+describe('primaryLink', () => {
+  it('prefers the article, then the preprint', () => {
+    const both = { links: [{ rel: 'code', url: 'c' }, { rel: 'preprint', url: 'p' }, { rel: 'paper', url: 'a' }] };
+    expect(primaryLink(both).url).toBe('a');
+    expect(primaryLink({ arxiv: '2401.00001' }).rel).toBe('preprint');
+  });
+
+  it('will not fall back to code', () => {
+    expect(primaryLink({ links: [{ rel: 'code', url: 'c' }] })).toBeNull();
   });
 });
