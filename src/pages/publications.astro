@@ -10,7 +10,12 @@ import person from '/config/person.json';
 // "Submitted" / "Published" headings would say it twice. One list, newest first.
 // the same ADS and arXiv profile links the home page carries
 const profiles = person.contacts.filter((c) => ['ads', 'arxiv'].includes(c.icon));
-const all = byType('publication').filter((p) => p.status !== 'in-prep');
+const pubs = byType('publication').filter((p) => p.status !== 'in-prep');
+// A proceeding names its full paper (`preliminaryOf`) and is listed under it,
+// not on its own. If that paper is in-prep and so absent, it stands alone.
+const shown = new Set(pubs.map((p) => p.id));
+const all = pubs.filter((p) => !shown.has(p.preliminaryOf));
+const earlier = (p) => pubs.filter((q) => q.preliminaryOf === p.id);
 
 // Stops for the author-position filter, built from the data rather than fixed:
 // a stop that selects the same papers as the one before it, or as "All", is a
@@ -87,7 +92,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
           </span>
         </div>
         <div class="entries">
-          {all.map((item, i) => <Publication item={item} abstract anchor={year(item) !== year(all[i - 1] ?? {}) ? `y-${year(item)}` : undefined} />)}
+          {all.map((item, i) => <Publication item={item} abstract earlier={earlier(item)} anchor={year(item) !== year(all[i - 1] ?? {}) ? `y-${year(item)}` : undefined} />)}
         </div>
 
       </div>

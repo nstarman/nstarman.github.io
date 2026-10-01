@@ -225,6 +225,11 @@ uses BibTeX-native names (`journal`, `booktitle`, `publisher`, `school`,
 `citekey` defaults to `id`; set it only to preserve a key already cited
 elsewhere.
 
+A workshop or conference proceeding of a paper that exists in full sets
+`preliminaryOf` to that paper's id. `/publications/` then lists it as an
+"Earlier version" under the full paper rather than as its own entry; BibTeX
+keeps both. Set it on the proceeding, never on the paper.
+
 `bibcode` is the 19-character ADS identifier, e.g. `2022ApJ...935..167A`. The
 ADS URL derives from it, so **do not add a separate link for ADS**. Omit it
 until the paper is actually on ADS. `arxiv` is the bare number

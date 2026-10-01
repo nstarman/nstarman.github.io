@@ -8,7 +8,7 @@ import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 
-const { item, brief = false, maxAuthors = 8, abstract = false, anchor } = Astro.props;
+const { item, brief = false, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
 
 const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
 const venue = venueLine(item);
@@ -73,6 +73,13 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
         </p>
       </details>
     )}
+
+    {earlier.map((e) => {
+      const l = primaryLink(e);
+      return (
+        <p class="earlier">Earlier version: {l ? <a href={l.url}>{venueLine(e)}</a> : venueLine(e)} · {year(e)}</p>
+      );
+    })}
   </div>
 
   {brief && (

@@ -440,6 +440,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 /* Same on the publications list and the home page's short list, so a year means
    the same thing wherever a paper is shown. */
+.earlier{margin:.45rem 0 0; font-size:.78rem; color:var(--ink-mute)}
 .entry--unpub .yr{font-style:italic}
 
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
