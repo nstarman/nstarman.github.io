@@ -11,14 +11,17 @@ describe('the collaborator database', () => {
   });
 
   it('only lists people who actually appear as authors', () => {
-    // The database is derived from data/; an entry with no paper behind it
-    // means someone was removed and the database was not rebuilt.
+    // The database is derived from data/ and from the papers that thank him;
+    // an entry with no paper behind it means someone was removed and the
+    // database was not rebuilt.
     const authored = new Set();
+    const acks = JSON.parse(fs.readFileSync('config/acknowledgements.json', 'utf8')).papers;
     for (const f of fs.readdirSync('data')) {
       if (!f.endsWith('.json')) continue;
       const rec = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
       for (const a of rec.authors ?? []) if (a.orcid && !a.me) authored.add(a.orcid);
     }
+    for (const rec of acks) for (const a of rec.authors) if (a.orcid) authored.add(a.orcid);
     expect(doc.people.filter((p) => !authored.has(p.orcid)).map((p) => p.name)).toEqual([]);
   });
 

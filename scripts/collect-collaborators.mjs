@@ -5,11 +5,17 @@
 // "where was this person when we wrote that paper" for any paper, without
 // storing the answer once per paper and watching the copies drift.
 //
-// Only people already named in data/*.json are looked up, and only their ORCID
-// is sent — no key, no token, nothing about them goes the other way.
+// Only people already named in data/*.json, or as authors of a paper that
+// thanks him (config/acknowledgements.json), are looked up, and only their
+// ORCID is sent — no key, no token, nothing about them goes the other way.
 //
 //   node scripts/collect-collaborators.mjs           # rewrite the database
+//   node scripts/collect-collaborators.mjs --new     # look up only people not yet in it
 //   node scripts/collect-collaborators.mjs --check   # exit 1 if it would change
+//
+// `--new` is what the monthly acknowledgements refresh runs: it adds whoever a
+// new paper brought in without re-reading everyone else's history, which is
+// the yearly refresh's job and gets read as an issue, not merged as a PR.
 //
 // ORCID is self-reported and often incomplete: a person may list nothing at
 // all. That is recorded as an empty history rather than guessed at, and the
@@ -21,10 +27,12 @@ import { readItems } from './lib/items.mjs';
 const OUT = 'config/collaborators.json';
 const API = 'https://pub.orcid.org/v3.0';
 
-/** Every ORCID that appears as an author in the database, with a display name. */
+/** Every ORCID that appears as an author in the database, or on a paper that
+ *  acknowledges him, with a display name. */
 function collaborators() {
   const found = new Map();
-  for (const { item: rec } of readItems()) {
+  const acks = JSON.parse(fs.readFileSync('config/acknowledgements.json', 'utf8')).papers;
+  for (const rec of [...readItems().map((r) => r.item), ...acks]) {
     for (const a of rec.authors ?? []) {
       // His own record is the site's, not a collaborator's.
       if (a.me || !a.orcid) continue;
@@ -154,9 +162,17 @@ async function history(id) {
   return out.sort((a, b) => (b.start ?? '').localeCompare(a.start ?? ''));
 }
 
+const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
+const known = new Map((prev ? JSON.parse(prev).people : []).map((p) => [p.orcid, p]));
+const onlyNew = process.argv.includes('--new');
+
 const people = [];
 const found = collaborators();
 for (const [id, name] of [...found].sort((a, b) => a[1].localeCompare(b[1]))) {
+  if (onlyNew && known.has(id)) {
+    people.push({ ...known.get(id), name });
+    continue;
+  }
   let affiliations = [];
   try {
     affiliations = await history(id);
@@ -193,7 +209,6 @@ const doc = {
 };
 
 const next = `${JSON.stringify(doc, null, 2)}\n`;
-const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
 
 if (process.argv.includes('--check')) {
   if (next === prev) {

@@ -1,0 +1,102 @@
+name: Refresh acknowledgements
+
+# Papers that thank him in their acknowledgements appear on ADS whenever
+# someone else publishes, so this asks once a month and opens a pull request
+# when the list has moved. The PR also carries whoever those papers bring onto
+# the collaborator map, and where they work.
+#
+# Every new paper arrives with guessed topics. The PR is where they are
+# checked: the Topics filter on /publications/ is only as right as they are.
+#
+# Needs the ADS_TOKEN secret — a free token from
+# https://ui.adsabs.harvard.edu/user/settings/token.
+
+on:
+  schedule:
+    # 06:30 UTC on the 1st, after refresh-contributions.
+    - cron: "30 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-acknowledgements
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-acknowledgements
+      FILES: config/acknowledgements.json config/collaborators.json config/places.json
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - id: collect
+        name: Collect
+        env:
+          ADS_TOKEN: ${{ secrets.ADS_TOKEN }}
+        run: |
+          node scripts/collect-acknowledgements.mjs | tee /tmp/collect.txt
+          # Only people a new paper brought in; everyone else's history is the
+          # yearly refresh-collaborators issue's business.
+          node scripts/collect-collaborators.mjs --new
+          node scripts/geocode-places.mjs
+
+      # A pull request opened with the workflow token does not trigger CI, so
+      # the gates run here and their outcome goes in the PR body. A paper the
+      # guess found no topic for fails them, which is the point.
+      - id: gates
+        if: always() && steps.collect.outcome == 'success'
+        continue-on-error: true
+        run: npm test
+
+      - name: Open a pull request if the list moved
+        if: always() && steps.collect.outcome == 'success'
+        env:
+          GATES: ${{ steps.gates.outcome }}
+        run: |
+          if git diff --quiet -- $FILES; then
+            echo "No new acknowledgements." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          repo=${{ github.repository }}
+          base=$(git rev-parse HEAD)
+
+          # Committing through the contents API rather than `git push`: those
+          # commits are signed by GitHub, which the branch ruleset requires.
+          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
+            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
+
+          for f in $FILES; do
+            git diff --quiet -- "$f" && continue
+            sha=$(gh api "repos/$repo/contents/$f?ref=$BRANCH" -q .sha 2>/dev/null || true)
+            gh api -X PUT "repos/$repo/contents/$f" \
+              -f message="Refresh $(basename "$f")" \
+              -f branch="$BRANCH" \
+              -f content="$(base64 < "$f" | tr -d '\n')" \
+              ${sha:+-f sha="$sha"} --silent
+          done
+
+          body=$'Found by `scripts/collect-acknowledgements.mjs`, run monthly by `.github/workflows/refresh-acknowledgements.yml`.\n\n'
+          new=$(grep '^  new:' /tmp/collect.txt | sed 's/^  new: /- /' || true)
+          if [ -n "$new" ]; then
+            body+=$'**New**, with guessed topics — check them, and edit `tags` in `config/acknowledgements.json`:\n\n'
+            body+="$new"$'\n\n'
+          fi
+          body+="Tests on this branch: **$GATES**."$'\n\n'
+          body+=$'A paper that thanks someone else goes in `exclude` in the same file.'
+
+          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
+            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+                 --title "Refresh the acknowledgements list" --body "$body"

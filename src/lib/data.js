@@ -13,6 +13,8 @@ const modules = import.meta.glob('/data/*.json', { eager: true });
 
 // Generated from ORCID; see scripts/collect-collaborators.mjs.
 import collaborators from '/config/collaborators.json';
+// Generated from ADS; see scripts/collect-acknowledgements.mjs.
+import acknowledgements from '/config/acknowledgements.json';
 
 /**
  * Partial dates (YYYY, YYYY-MM, YYYY-MM-DD) compare correctly as strings, so a
@@ -349,3 +351,14 @@ export function links(item) {
   };
   return out.sort((a, b) => rank(a) - rank(b));
 }
+
+/**
+ * Papers that thank him in their acknowledgements, newest first: the Assists
+ * on /publications/. Not items — he did not write them — but given `links`
+ * so links() and primaryLink() read them like one. arXiv's own DOI prefix is a
+ * preprint, which `arxiv` already links, not a journal article.
+ */
+export const assists = acknowledgements.papers.map((p) => ({
+  ...p,
+  links: p.doi && !p.doi.startsWith('10.48550/') ? [{ rel: 'paper', url: `https://doi.org/${p.doi}` }] : [],
+}));

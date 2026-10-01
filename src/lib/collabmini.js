@@ -36,11 +36,11 @@ export function miniMap() {
     // Every paper with this person, wherever they were standing.
     // `unplacedPapers` are still collaborations — their ORCID just does not say
     // where they were. Newest first, because picking someone scrolls the CV to
-    // the first of them.
+    // the first of them. Not assists: those are not in the CV, so have no row.
     const papers = [...new Map([
       ...person.pins.flatMap((p) => p.papers),
       ...person.unplacedPapers,
-    ].map((q) => [q.id, q.date])).entries()]
+    ].filter((q) => !q.assist).map((q) => [q.id, q.date])).entries()]
       .sort(([, a], [, b]) => b.localeCompare(a))
       .map(([id]) => id);
     return { c, name: lastFirst(person.name), places: [...at.values()], papers };

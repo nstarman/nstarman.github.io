@@ -244,7 +244,7 @@
         },
         {
           "organization": "Rutgers University",
-          "city": "Pistcataway",
+          "city": "New Brunswick",
           "region": "NJ",
           "country": "US",
           "role": "Associate Professor",
@@ -254,7 +254,7 @@
         },
         {
           "organization": "Rutgers University",
-          "city": "Pistcataway",
+          "city": "New Brunswick",
           "region": "NJ",
           "country": "US",
           "role": "Assistant Professor",
@@ -547,6 +547,22 @@
       ]
     },
     {
+      "orcid": "0000-0002-5151-0006",
+      "name": "David N. Spergel",
+      "affiliations": [
+        {
+          "organization": "Simons Foundation",
+          "city": "New York",
+          "region": "New York",
+          "country": "US",
+          "role": "President",
+          "kind": "employment",
+          "start": "2017-08",
+          "end": null
+        }
+      ]
+    },
+    {
       "orcid": "0000-0002-1544-1381",
       "name": "Dylan Folsom",
       "affiliations": [
@@ -666,6 +682,22 @@
           "kind": "education",
           "start": "2016-09",
           "end": "2020-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0009-0005-7981-4406",
+      "name": "Enoch Ko",
+      "affiliations": [
+        {
+          "organization": "University of Cambridge",
+          "city": "Cambridge",
+          "region": "Cambridgeshire",
+          "country": "GB",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
         }
       ]
     },
@@ -946,6 +978,42 @@
       ]
     },
     {
+      "orcid": "0000-0001-7194-1324",
+      "name": "Jack Setford",
+      "affiliations": [
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "Postdoctoral Fellow",
+          "kind": "employment",
+          "start": "2018-09",
+          "end": null
+        },
+        {
+          "organization": "University of Sussex",
+          "city": "Brighton",
+          "region": "Brighton and Hove",
+          "country": "GB",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2014-09",
+          "end": "2018-06"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "Oxfordshire",
+          "country": "GB",
+          "role": "MPhys",
+          "kind": "education",
+          "start": "2010-09",
+          "end": "2014-07"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0001-8042-5794",
       "name": "Jacob Nibauer",
       "affiliations": [
@@ -975,6 +1043,42 @@
       "orcid": "0000-0002-1956-1305",
       "name": "Jagjit Singh Sidhu",
       "affiliations": []
+    },
+    {
+      "orcid": "0000-0002-5612-3427",
+      "name": "Jenny E. Greene",
+      "affiliations": [
+        {
+          "organization": "Harvard University",
+          "city": "Cambridge",
+          "region": "MA",
+          "country": "US",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2001-09",
+          "end": "2006-05"
+        },
+        {
+          "organization": "Yale University",
+          "city": "New Haven",
+          "region": "CT",
+          "country": "US",
+          "role": "Bachelor of Science",
+          "kind": "education",
+          "start": "1996-09",
+          "end": "2000-06"
+        },
+        {
+          "organization": "Princeton University",
+          "city": "Princeton",
+          "region": "New Jersey",
+          "country": "US",
+          "role": "Professor",
+          "kind": "employment",
+          "start": null,
+          "end": null
+        }
+      ]
     },
     {
       "orcid": "0000-0003-3613-0854",
@@ -1055,7 +1159,7 @@
         {
           "organization": "University of Oxford",
           "city": "Oxford",
-          "region": "England",
+          "region": "Oxfordshire",
           "country": "GB",
           "role": "DPhil (doctorate)",
           "kind": "education",
@@ -1065,7 +1169,7 @@
         {
           "organization": "University of Oxford",
           "city": "Oxford",
-          "region": "England",
+          "region": "Oxfordshire",
           "country": "GB",
           "role": "MPhys",
           "kind": "education",
@@ -1122,7 +1226,7 @@
     },
     {
       "orcid": "0000-0001-6244-6727",
-      "name": "K. Johnston",
+      "name": "Kathryn V. Johnston",
       "affiliations": [
         {
           "organization": "Columbia University",
@@ -1393,7 +1497,7 @@
         {
           "organization": "University of Oxford",
           "city": "Oxford",
-          "region": "England",
+          "region": "Oxfordshire",
           "country": "GB",
           "role": null,
           "kind": "education",
@@ -1417,6 +1521,213 @@
           "end": null
         }
       ]
+    },
+    {
+      "orcid": "0000-0001-7039-9078",
+      "name": "Matt J. Jarvis",
+      "affiliations": [
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "Oxfordshire",
+          "country": "GB",
+          "role": "Professor of Astrophysics and Fellow of St. Cross College",
+          "kind": "employment",
+          "start": "2014-08",
+          "end": null
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "Oxfordshire",
+          "country": "GB",
+          "role": "University Lecturer and Fellow of St. Cross College",
+          "kind": "employment",
+          "start": "2012-10",
+          "end": "2014-07"
+        },
+        {
+          "organization": "University of Hertfordshire",
+          "city": "Hatfield",
+          "region": "Hertfordshire",
+          "country": "GB",
+          "role": "Reader in Astrophysics",
+          "kind": "employment",
+          "start": "2009-04",
+          "end": "2012-09"
+        },
+        {
+          "organization": "University of Hertfordshire",
+          "city": "Hatfield",
+          "region": "Hertfordshire",
+          "country": "GB",
+          "role": "Senior Lecturer & RCUK Academic Fellow",
+          "kind": "employment",
+          "start": "2007-01",
+          "end": "2009-04"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "Oxfordshire",
+          "country": "GB",
+          "role": "Postdoctoral Researcher",
+          "kind": "employment",
+          "start": "2002-12",
+          "end": "2006-12"
+        },
+        {
+          "organization": "Leiden University",
+          "city": "Leiden",
+          "region": null,
+          "country": "NL",
+          "role": "Postdoctoral Research Fellow",
+          "kind": "employment",
+          "start": "2000-10",
+          "end": "2002-11"
+        },
+        {
+          "organization": "University of Oxford",
+          "city": "Oxford",
+          "region": "Oxfordshire",
+          "country": "GB",
+          "role": "DPhil in Astrophysics",
+          "kind": "education",
+          "start": "1997-10",
+          "end": "2000-09"
+        },
+        {
+          "organization": "University of Birmingham",
+          "city": "Birmingham",
+          "region": null,
+          "country": "GB",
+          "role": "MPhys in Physics with Astrophysics",
+          "kind": "education",
+          "start": "1993-09",
+          "end": "1997-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-6257-2341",
+      "name": "Monica Valluri",
+      "affiliations": [
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Associate Director",
+          "kind": "employment",
+          "start": "2021-09",
+          "end": "2025-05"
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Research Professor",
+          "kind": "employment",
+          "start": "2017-09",
+          "end": null
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Associate Research Professor",
+          "kind": "employment",
+          "start": "2011-09",
+          "end": "2017-08"
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Assistant Research Scientist",
+          "kind": "employment",
+          "start": "2007-08",
+          "end": "2011-09"
+        },
+        {
+          "organization": "University of Chicago",
+          "city": "Chicago",
+          "region": "IL",
+          "country": "US",
+          "role": "Assistant Director",
+          "kind": "employment",
+          "start": "2002-04",
+          "end": "2007-07"
+        },
+        {
+          "organization": "University of Chicago",
+          "city": "Chicago",
+          "region": "IL",
+          "country": "US",
+          "role": "Senior Research Associate",
+          "kind": "employment",
+          "start": "2001",
+          "end": "2007"
+        },
+        {
+          "organization": "University of Chicago",
+          "city": "Chicago",
+          "region": "IL",
+          "country": "US",
+          "role": "Research Scientist",
+          "kind": "employment",
+          "start": "1999",
+          "end": "2001"
+        },
+        {
+          "organization": "Rutgers University",
+          "city": "New Brunswick",
+          "region": "NJ",
+          "country": "US",
+          "role": "Postdoctoral Research Associate",
+          "kind": "employment",
+          "start": "1996",
+          "end": "1999"
+        },
+        {
+          "organization": "Columbia University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Postdoctoral Research Associate",
+          "kind": "employment",
+          "start": "1994",
+          "end": "1996"
+        },
+        {
+          "organization": "Indian Institute of Science",
+          "city": "Bangalore",
+          "region": "Karnataka",
+          "country": "IN",
+          "role": "Ph. D. in Astrophysics",
+          "kind": "education",
+          "start": "1987-08",
+          "end": "1993-12"
+        },
+        {
+          "organization": "Birla Institute of Technology and Science",
+          "city": "Pilani",
+          "region": "Rajasthan",
+          "country": "IN",
+          "role": "MSc. Physics",
+          "kind": "education",
+          "start": "1983-08",
+          "end": "1987-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0009-0003-7613-3109",
+      "name": "Neil Ash",
+      "affiliations": []
     },
     {
       "orcid": "0000-0003-1714-7415",
@@ -1505,6 +1816,22 @@
           "role": null,
           "kind": "employment",
           "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0001-9852-9954",
+      "name": "Oleg Y. Gnedin",
+      "affiliations": [
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": "2006-09",
           "end": null
         }
       ]
@@ -1796,6 +2123,11 @@
       ]
     },
     {
+      "orcid": "0000-0002-6314-1607",
+      "name": "Tariq Yasin",
+      "affiliations": []
+    },
+    {
       "orcid": "0000-0002-9427-5448",
       "name": "Timothy E. Pickering",
       "affiliations": [
@@ -1868,6 +2200,62 @@
           "kind": "education",
           "start": "1988-09",
           "end": "1992-07"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5970-2563",
+      "name": "Yingtian Chen",
+      "affiliations": [
+        {
+          "organization": "The Ohio State University",
+          "city": "Columbus",
+          "region": "Ohio",
+          "country": "US",
+          "role": "Postdoctoral Researcher",
+          "kind": "employment",
+          "start": "2026-10",
+          "end": null
+        },
+        {
+          "organization": "University of Michigan",
+          "city": "Ann Arbor",
+          "region": "MI",
+          "country": "US",
+          "role": "Ph.D. candidate",
+          "kind": "education",
+          "start": "2020-09",
+          "end": "2026-08"
+        },
+        {
+          "organization": "Massachusetts Institute of Technology",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Visiting Researcher",
+          "kind": "education",
+          "start": "2019-07",
+          "end": "2019-08"
+        },
+        {
+          "organization": "Peking University",
+          "city": "Beijing",
+          "region": null,
+          "country": "CN",
+          "role": "B. S. in Physics",
+          "kind": "education",
+          "start": "2016-09",
+          "end": "2020-07"
+        },
+        {
+          "organization": "Chengdu Experimental Foreign Languages School",
+          "city": "Chengdu",
+          "region": "Sichuan",
+          "country": "CN",
+          "role": "Middle & High School",
+          "kind": "education",
+          "start": "2010-09",
+          "end": "2016-07"
         }
       ]
     }

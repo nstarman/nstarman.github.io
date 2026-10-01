@@ -13,6 +13,14 @@ import { collaboratorMap, map } from '../lib/collabmap.js';
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
 const trails = people.filter((p) => p.pins.length > 1);
+// "2 papers together, 1 assist" — an assist is a paper of theirs that thanks me.
+const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
+const together = (papers) => {
+  const assists = papers.filter((p) => p.assist).length;
+  const written = papers.length - assists;
+  return [written && `${plural(written, 'paper')} together`, assists && plural(assists, 'assist')]
+    .filter(Boolean).join(', ');
+};
 const label = (pin) =>
   [pin.organization, pin.place].filter(Boolean).join(' — ')
   + ` (${pin.start}${pin.end ? `–${pin.end}` : '–present'})`;
@@ -22,7 +30,7 @@ const label = (pin) =>
   <figcaption>
     <span class="cmap-key cmap-key--shared">
       <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
-      wrote something together
+      wrote or assisted on a paper together
     </span>
     <span class="cmap-key">
       <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" /></svg>
@@ -52,9 +60,7 @@ const label = (pin) =>
     {pins.map((pin) => (
       <g class="cmap-pin" data-c={people.indexOf(pin.person)} style={`--h:${pin.person.hue}`}>
         {/* <title> is the native tooltip and the accessible name at once. */}
-        <title>{pin.person.name} — {label(pin)}{pin.papers.length
-          ? `; ${pin.papers.length} paper${pin.papers.length > 1 ? 's' : ''} together`
-          : ''}</title>
+        <title>{pin.person.name} — {label(pin)}{pin.papers.length ? `; ${together(pin.papers)}` : ''}</title>
         <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)}
                 r={pin.papers.length ? 4.5 : 3} class={pin.papers.length ? 'is-shared' : ''} />
       </g>
@@ -93,7 +99,7 @@ const label = (pin) =>
                   {pin.papers.map((paper) => (
                     <li>{paper.url
                       ? <a href={paper.url}>{paper.title}</a>
-                      : <span>{paper.title}</span>}</li>
+                      : <span>{paper.title}</span>}{paper.assist && <span class="cmap-assist"> — assist</span>}</li>
                   ))}
                 </ul>
               )}
@@ -102,8 +108,7 @@ const label = (pin) =>
         </ol>
         {p.unplacedPapers.length > 0 && (
           <p class="cmap-note" hidden>
-            {p.unplacedPapers.length} more paper{p.unplacedPapers.length > 1 ? 's' : ''} together,
-            written when their ORCID record names no post.
+            Also {together(p.unplacedPapers)}, from when their ORCID record names no post.
           </p>
         )}
       </li>
