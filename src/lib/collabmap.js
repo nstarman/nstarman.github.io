@@ -13,13 +13,14 @@ import collaborators from '/config/collaborators.json';
 import places from '/config/places.json';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
-import { byType, venueUrl, links } from './data.js';
+import { byType, venueUrl, links, assists, primaryLink } from './data.js';
 
 // Re-exported because the map's callers and tests have always reached for them
 // here, and where the maths lives is not their concern.
 export { map, project, toXY, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT };
 
-/** Papers we co-wrote, by the author's ORCID. */
+/** Papers we co-wrote, and papers of theirs that thank me (`assist`), by the
+ *  author's ORCID. */
 function papersByAuthor() {
   const out = new Map();
   for (const pub of byType('publication')) {
@@ -35,6 +36,15 @@ function papersByAuthor() {
         title: pub.title,
         date: String(pub.date.start),
         url: venueUrl(pub) ?? preprint?.url ?? null,
+      });
+    }
+  }
+  for (const a of assists) {
+    for (const au of a.authors) {
+      if (!au.orcid) continue;
+      if (!out.has(au.orcid)) out.set(au.orcid, []);
+      out.get(au.orcid).push({
+        id: a.bibcode, title: a.title, date: a.date, url: primaryLink(a)?.url ?? null, assist: true,
       });
     }
   }

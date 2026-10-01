@@ -17,6 +17,11 @@
       "lon": -84.3898,
       "matched": "Atlanta, Fulton County, Georgia, United States"
     },
+    "Birla Institute of Technology and Science": {
+      "lat": 28.3639,
+      "lon": 75.587,
+      "matched": "by hand: BITS Pilani campus, Pilani, Rajasthan, India"
+    },
     "Boston, MA, USA": {
       "lat": 42.3588,
       "lon": -71.0578,
@@ -87,6 +92,11 @@
       "lon": -1.0161,
       "matched": "Centro de Estudios de Física del Cosmos de Aragón, VF-TE-02, Arcos de las Salinas, Gúdar-Javalambre, Teruel, Aragón, España"
     },
+    "Chengdu Experimental Foreign Languages School": {
+      "lat": 30.6587,
+      "lon": 104.0648,
+      "matched": "by hand: Chengdu, Sichuan, China (city centre; the school was not found)"
+    },
     "Cleveland, OH, USA": {
       "lat": 41.4997,
       "lon": -81.6937,
@@ -156,6 +166,11 @@
       "lat": 40.7683,
       "lon": -73.9644,
       "matched": "Hunter College, 695, Park Avenue, Carnegie Hill, Manhattan Community Board 8, Manhattan, New York County, New York, 10065, United States"
+    },
+    "Indian Institute of Science": {
+      "lat": 13.0222,
+      "lon": 77.5672,
+      "matched": "Indian Institute of Science, CV Raman Road, Subedarpalya, Bengaluru West City Corporation, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560012, India"
     },
     "Institute for Advanced Study": {
       "lat": 40.3323,
@@ -282,6 +297,11 @@
       "lon": -118.1442,
       "matched": "Pasadena, Los Angeles County, California, United States"
     },
+    "Peking University": {
+      "lat": 39.9869,
+      "lon": 116.3059,
+      "matched": "by hand: main Yanyuan campus, Haidian, Beijing (Nominatim matched the Changping campus)"
+    },
     "Pittsburgh, PA, USA": {
       "lat": 40.4407,
       "lon": -80.0026,
@@ -382,6 +402,11 @@
       "lon": 12.5202,
       "matched": "Danmarks Tekniske Universitet, Carlshøjvej, Fuglevad, Lundtofte, Kongens Lyngby, Lyngby-Taarbæk Kommune, Region Hovedstaden, 2800, Danmark"
     },
+    "The Ohio State University": {
+      "lat": 40.0057,
+      "lon": -83.0287,
+      "matched": "The Ohio State University, 281, West Lane Avenue, Carmenton, Columbus, Franklin County, Ohio, 43210, United States"
+    },
     "The University of Chicago": {
       "lat": 41.7913,
       "lon": -87.6008,
@@ -447,6 +472,11 @@
       "lon": -110.9517,
       "matched": "University of Arizona, North Queen Avenue, Tucson, Pima County, Arizona, 85721, United States"
     },
+    "University of Birmingham": {
+      "lat": 52.4504,
+      "lon": -1.932,
+      "matched": "University of Birmingham Edgbaston Campus, New Fosse Way, Bournbrook, Metchley, Birmingham, West Midlands, England, B15 2SY, United Kingdom"
+    },
     "University of Bologna": {
       "lat": 44.4983,
       "lon": 11.3545,
@@ -492,6 +522,11 @@
       "lon": 25.0177,
       "matched": "Helsingin yliopisto, Vallila, Keskinen suurpiiri, Helsinki, Helsingin seutukunta, Uusimaa, Manner-Suomi, 00790, Suomi / Finland"
     },
+    "University of Hertfordshire": {
+      "lat": 51.7517,
+      "lon": -0.239,
+      "matched": "University of Hertfordshire, Hertford Road, Essendon, Welwyn Hatfield, Hertfordshire, England, AL9 5RE, United Kingdom"
+    },
     "University of Manchester": {
       "lat": 53.466,
       "lon": -2.2331,
@@ -531,6 +566,11 @@
       "lat": 56.3399,
       "lon": -2.8118,
       "matched": "University of St Andrews, North Street, Ladyhead, St Andrews, Fife, Alba / Scotland, KY16 9AJ, United Kingdom"
+    },
+    "University of Sussex": {
+      "lat": 50.8694,
+      "lon": -0.0888,
+      "matched": "University of Sussex Health Centre, Refectory Road, Coldean, Brighton, Brighton and Hove, England, BN1 9RW, United Kingdom"
     },
     "University of Tartu": {
       "lat": 58.381,

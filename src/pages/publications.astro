@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
-import { byType, positionStops, year } from '../lib/data.js';
+import LinkIcons from '../components/LinkIcons.astro';
+import { byType, positionStops, year, assists, displayName, links, primaryLink } from '../lib/data.js';
 import person from '/config/person.json';
 
 // In-preparation papers stay out of the public list — they still appear in the
@@ -21,11 +22,18 @@ const stops = positionStops(all);
 // except acronyms.
 const LABELS = { cmb: 'CMB', jax: 'JAX', 'milky-way': 'Milky Way', 'machine-learning': 'Machine learning' };
 const label = (t) => LABELS[t] ?? (t[0].toUpperCase() + t.slice(1).replace(/-/g, ' '));
+// Assists count too: the filter applies to them as well.
 const counts = {};
-for (const p of all) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
+for (const p of [...all, ...assists]) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
 // Years for the left rail, newest first like the list itself.
 const years = [...new Set(all.map(year))].filter(Boolean);
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+
+// "J. Nibauer & S. Pearson", "J. Nibauer et al." — a card has room for a byline, not a list.
+const byline = (a) => {
+  const names = a.authors.map(displayName);
+  return names.length > 2 ? `${names[0]} et al.` : names.join(' & ');
+};
 ---
 <Base title="Publications — Nathaniel Starkman">
   <main>
@@ -51,7 +59,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
             <details class="tagmenu">
               <summary>Topics<span id="tagcount"></span></summary>
               <div class="tagpanel" role="group" aria-label="Filter by topic">
-                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
+                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length + assists.length}</small></label>
                 {tags.map((t) => (
                   <label><input type="checkbox" class="tagbox" value={t} /> {label(t)} <small>{counts[t]}</small></label>
                 ))}
@@ -90,6 +98,28 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
           {all.map((item, i) => <Publication item={item} abstract anchor={year(item) !== year(all[i - 1] ?? {}) ? `y-${year(item)}` : undefined} />)}
         </div>
 
+        {/* Papers that thank me, from scripts/collect-acknowledgements.mjs.
+            Outside .entries, so the author-position filter never reaches them;
+            the topic filter does. */}
+        {assists.length > 0 && (
+          <div class="assists">
+            <h3 id="assists">Assists</h3>
+            <p class="lede">Papers that thank me in their acknowledgements.</p>
+            <div class="soft">
+              {assists.map((a) => {
+                const href = primaryLink(a)?.url;
+                return (
+                  <article class="card card--mini assist" data-tags={a.tags.length ? a.tags.join(' ') : undefined}>
+                    <div class="name">{href ? <a href={href}>{a.title}</a> : a.title}</div>
+                    <p>{byline(a)} · {a.venue} {a.date.slice(0, 4)}</p>
+                    <LinkIcons links={links(a)} />
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
       </div>
     </section>
   </main>
@@ -107,10 +137,13 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
     const on = boxes.filter((b) => b.checked).map((b) => b.value);
     all.checked = !on.length;
     document.getElementById('tagcount').textContent = on.length ? ` · ${on.length}` : '';
-    document.querySelectorAll('.entry--full').forEach((e) => {
+    document.querySelectorAll('.entry--full, .assist').forEach((e) => {
       const has = (e.dataset.tags ?? '').split(' ');
       e.classList.toggle('tagoff', on.length > 0 && !on.some((t) => has.includes(t)));
     });
+    // A heading over no cards is a heading over nothing.
+    const assists = document.querySelector('.assists');
+    if (assists) assists.hidden = !assists.querySelector('.assist:not(.tagoff)');
   };
   all.addEventListener('change', () => { boxes.forEach((b) => (b.checked = false)); apply(); });
   boxes.forEach((b) => b.addEventListener('change', apply));

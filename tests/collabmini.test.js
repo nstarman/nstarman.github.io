@@ -67,9 +67,11 @@ describe('the CV gutter map', () => {
   });
 
   it('marks every shared paper, including the ones ORCID cannot place', () => {
+    // Not assists: those are papers of theirs that thank him, with no CV row.
+    const ours = (q) => !q.assist;
     for (const e of entries) {
-      const placed = who(e).pins.flatMap((pin) => pin.papers.map((q) => q.id));
-      const unplaced = who(e).unplacedPapers.map((q) => q.id);
+      const placed = who(e).pins.flatMap((pin) => pin.papers.filter(ours).map((q) => q.id));
+      const unplaced = who(e).unplacedPapers.filter(ours).map((q) => q.id);
       expect(new Set(e.papers)).toEqual(new Set([...placed, ...unplaced]));
       // The ids go into one space-separated attribute, so an id with a space
       // in it would silently mark two rows and miss the one it meant.

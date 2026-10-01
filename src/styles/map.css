@@ -110,6 +110,7 @@
 .cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
 .cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
 .cmap-papers li{font-size:.76rem; margin-top:.15rem}
+.cmap-assist{color:var(--ink-mute)}
 .cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
 
 :root:not([data-theme="light"]) {
