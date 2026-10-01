@@ -211,6 +211,32 @@ export function authors(item, max = Infinity) {
   return { shown, etal: all.length > (elide ? meAt + 1 : max), collaboration: item.collaboration };
 }
 
+/**
+ * Author-position stops for a "first author / first two / …" filter. A stop
+ * that admits the same papers as the one before it, or as all of them, is a
+ * control that does nothing — with positions 1, 2 and 4 that leaves 1 and 2.
+ * Items with no position (not a publication, or no author marked `me`) are
+ * ignored.
+ */
+export function positionStops(items) {
+  const positions = items.map(authorPosition).filter((n) => n != null);
+  const stops = [];
+  for (let n = 1; n <= 4; n += 1) {
+    const count = positions.filter((p) => p <= n).length;
+    const previous = stops.length ? stops[stops.length - 1].count : 0;
+    if (count > previous && count < positions.length) stops.push({ n, count });
+  }
+  return stops;
+}
+
+/** "USD 10,000", "CAD 20,000\u201330,000 p.a.", or null. */
+export function money(a) {
+  if (!a) return null;
+  const n = (v) => v.toLocaleString('en-US');
+  const span = a.valueMax ? `${n(a.value)}\u2013${n(a.valueMax)}` : n(a.value);
+  return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
+}
+
 /** "The Astrophysical Journal 979, 155" */
 export function venueLine(item) {
   const v = item.venue;
@@ -266,6 +292,17 @@ export const REL_ICON = {
   code: 'github', docs: 'docs', data: 'data', slides: 'slides',
   event: 'link', homepage: 'link',
 };
+
+/**
+ * The one link a title points at: the article, else the preprint, else null.
+ * No fallback to code or docs — a paper's title linking to its repository
+ * would be a surprise, and a submitted paper with nothing public stays a bare
+ * title rather than a dead '#'.
+ */
+export function primaryLink(item) {
+  const all = links(item);
+  return all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint') ?? null;
+}
 
 /**
  * Links for rendering, in REL_ORDER. The ADS entry is synthesised from

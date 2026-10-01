@@ -13,11 +13,11 @@
 // Markup only. The arithmetic is lib/confmini.js and the behaviour is the same
 // lib/minipick.js the collaborator map uses.
 import { confMini, map } from '../lib/confmini.js';
+import { plural } from '../lib/inline.js';
 
 /** The talks this CV renders — the map pins those and no others. */
 const { ids } = Astro.props;
 const { entries, dots, placed, offMap } = confMini(ids);
-const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 ---
 
 <aside class="cvmini" id="cv-conf-map" data-words="where I have given talks" hidden>

@@ -10,10 +10,10 @@
 // form a screen reader, a keyboard, or a small phone can actually use, and it
 // is where the talk titles live in full.
 import { conferenceMap, map } from '../lib/confmap.js';
+import { plural } from '../lib/inline.js';
 
 const conf = conferenceMap();
 const { pins, unsettled, unplaced } = conf;
-const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 // Everything that is deliberately not a pin, in one place so the page can own
 // up to it in one sentence rather than two.
