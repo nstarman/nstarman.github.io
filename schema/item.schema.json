@@ -706,6 +706,10 @@
           "default": false,
           "description": "Bolds the name. Set on exactly one author."
         },
+        "student": {
+          "enum": ["undergraduate", "graduate"],
+          "description": "A student I supervised or helped advise on this paper, and at what level. Colours the name and marks it † (undergraduate) or ‡ (graduate). A fact about the paper, so set it per paper."
+        },
         "orcid": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"

@@ -73,7 +73,8 @@ const paperOf = (sw) => {
  *
  * Deliberately carries no ORCID link. The author model has one, but the PDF is
  * the only consumer of this byline and it stays unlinked — so the span never
- * gets a `url` key that cv.typ would have to decide what to do with.
+ * gets a `url` key that cv.typ would have to decide what to do with. A student
+ * of mine carries their level, which cv.typ colours.
  */
 function byline(item) {
   const { shown, etal, collaboration } = authors(item, 6);
@@ -81,7 +82,7 @@ function byline(item) {
   if (collaboration) out.push({ t: `${collaboration}, `, b: false });
   shown.forEach((a, i) => {
     if (i > 0) out.push({ t: ', ', b: false });
-    out.push({ t: a.name, b: Boolean(a.me) });
+    out.push({ t: a.name, b: Boolean(a.me), student: a.student });
   });
   if (etal) out.push({ t: ', et al', b: false });
   return out;

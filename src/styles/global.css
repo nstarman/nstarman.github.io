@@ -3,6 +3,7 @@
   --ink:#12161C; --ink-2:#2A313C; --ink-mute:#5A6472; --ink-faint:#8A93A1;
   --rule:#E2E6EC; --rule-strong:#CFD6E0;
   --accent:#2A5DA8; --accent-soft:#EAF0F9; --accent-line:#7FA6D9;
+  --stu-ug:#1E7F5C; --stu-grad:#8A4FB0;
   --serif:"Newsreader",ui-serif,Georgia,serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -19,6 +20,7 @@
     --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
     --rule:#222A37; --rule-strong:#313B4B;
     --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
+  --stu-ug:#5FC79B; --stu-grad:#C29AE6;
   }
 }
 :root[data-theme="dark"]{
@@ -26,6 +28,7 @@
   --ink:#E5E9F0; --ink-2:#C6CEDA; --ink-mute:#8B96A8; --ink-faint:#697384;
   --rule:#222A37; --rule-strong:#313B4B;
   --accent:#84AEEC; --accent-soft:#152134; --accent-line:#3E5F92;
+  --stu-ug:#5FC79B; --stu-grad:#C29AE6;
 }
 
 *{box-sizing:border-box}
@@ -556,6 +559,9 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 
 .authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
+/* A student of mine, by level — Byline and the key on /publications/. */
+.stu--undergraduate{color:var(--stu-ug)} .stu--graduate{color:var(--stu-grad)}
+.stukey{font-size:.85em; color:var(--ink-mute); margin:.25rem 0 1rem}
 .tl{scroll-margin-top:5rem}
 
 /* Which part of the site you are in — the same outlined pill the CV length
