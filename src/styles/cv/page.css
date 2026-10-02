@@ -44,7 +44,7 @@
   .h2row:has(.cvlengths) .ttlgroup{margin-right:auto}
   .h2row:has(.cvlengths) .sep{margin:0}
   .h2row .cvlengths{display:none}
-  #lenmore:checked ~ .h2row .cvlengths{display:inline-flex; order:9; width:100%}
+  #lenmore:checked ~ .h2row .cvlengths{display:inline-grid; order:9; width:100%}
 }
 
 /* The institution's own site sits in the date gutter, under the years (the
@@ -122,24 +122,30 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 }
 .cvsechead .cvsection{margin:0; padding:0; border:0}
 
-/* Segmented length control. Each segment is its own pill; the active one is
-   outlined in the accent rather than filled, so nothing on the page competes
-   with the content for weight. */
-.cvtoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
+/* Segmented length control, the same slider as the filters on /publications/:
+   one track, a thumb under the current length. Each page is its own URL, so
+   the thumb is placed by --i (the current length's index) rather than by a
+   radio. */
+.cvtoggle{
+  position:relative; display:inline-grid; grid-auto-flow:column; grid-auto-columns:1fr;
+  flex:none; align-items:center; isolation:isolate; border-radius:999px; padding:2px;
+  background:var(--sunk);
+}
+.cvtoggle::before{
+  content:""; position:absolute; z-index:-1; top:2px; bottom:2px; left:2px;
+  width:calc((100% - 4px) / var(--stops, 1)); border-radius:999px;
+  background:var(--ground); box-shadow:0 1px 2px rgb(0 0 0 / .12);
+  transform:translateX(calc(var(--i, 0) * 100%));
+  transition:transform .18s cubic-bezier(.4,0,.2,1);
+}
+@media (prefers-reduced-motion:reduce){ .cvtoggle::before{transition:none} }
 .cvtoggle a{
-  font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
-  padding:.14rem .5rem; line-height:1.4; transition:.15s;
+  text-align:center; white-space:nowrap; border-radius:999px;
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.02em; text-transform:uppercase;
+  color:var(--ink-mute); padding:.12rem .6rem; line-height:1.4; transition:color .18s ease;
 }
-.cvtoggle a:hover{color:var(--ink); border-color:var(--rule-strong); text-decoration:none}
-.cvtoggle a.on{
-  color:var(--accent); border-color:var(--accent-line); font-weight:500;
-  background:transparent;
-}
-.cvtoggle a.on:hover{color:var(--accent); border-color:var(--accent)}
-
-/* The one at the top of the page is the primary control, so it stays legible. */
-.cvtoggle--main a{font-size:.72rem; padding:.2rem .6rem}
+.cvtoggle a:hover{color:var(--ink); text-decoration:none}
+.cvtoggle a.on{color:var(--ink)}
 
 /* The CV's controls, condensed into the header once the originals scroll away.
    Download on the left, length on the right. */
@@ -158,7 +164,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
   height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
 }
-.cvbar .cvtoggle--main a{font-size:.66rem; padding:.16rem .5rem}
+.cvbar .cvtoggle--main a{font-size:.66rem; padding:.1rem .5rem}
 /* Nothing in the bar may wrap: it has a fixed height. On a phone the download
    is just "PDF", here and in the heading row, which is what makes the rest fit
    on one line. */
@@ -195,3 +201,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 .plainlist{margin:.1rem 0 0; padding:0 0 0 1.1rem; list-style:disc}
 .plainlist li{font-size:.95rem; color:var(--ink-2); line-height:1.55; margin:.15rem 0}
 .plainlist li::marker{color:var(--ink-faint)}
+
+/* The builder's slot holds a button, not lengths: no track, no thumb. */
+.cvtoggle:has(> button){background:none; padding:0}
+.cvtoggle:has(> button)::before{display:none}

@@ -7,6 +7,7 @@ import { presetNames, preset } from '../lib/presets.js';
 
 const { current, pdf = null } = Astro.props;
 const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
+const style = `--stops:${presetNames.length};--i:${Math.max(0, presetNames.indexOf(current))}`;
 const onBuilder = current === 'builder';
 ---
 <div class="cvbar" aria-hidden="true">
@@ -21,7 +22,7 @@ const onBuilder = current === 'builder';
         ? <span class="cvtoggle cvtoggle--main">
             <button class="btn" type="button" id="savebar" tabindex="-1">Save Selection</button>
           </span>
-        : <span class="cvtoggle cvtoggle--main">
+        : <span class="cvtoggle cvtoggle--main" style={style}>
             {presetNames.map((n) => (
               <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
             ))}
@@ -46,7 +47,7 @@ const onBuilder = current === 'builder';
   {!onBuilder && (
     <span class="more">
       <label for="lenmore" class="lenmore" title="CV length">{preset(current).label}&nbsp;<span aria-hidden="true">▾</span></label>
-      <span class="cvtoggle cvtoggle--main cvlengths" role="group" aria-label="CV length">
+      <span class="cvtoggle cvtoggle--main cvlengths" style={style} role="group" aria-label="CV length">
         {presetNames.map((n) => (
           <a href={href(n)} class={n === current ? 'on' : ''}
              aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
