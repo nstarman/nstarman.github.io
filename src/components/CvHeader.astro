@@ -3,9 +3,11 @@
 // it scrolls away. Shared by /cv/<preset>/ and /tools/cv/, the builder, which
 // keeps the heading and the condensed bar but none of the length links: it is
 // a tool, reached from /tools/, not another length of the CV.
-import { presetNames, preset } from '../lib/presets.js';
+import { presetNames as names, preset } from '../lib/presets.js';
 
 const { current, pdf = null } = Astro.props;
+// Shortest first, so the scale reads 1P → 2P → NP → All.
+const presetNames = [...names].reverse();
 const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
 const vars = `--stops:${presetNames.length};--i:${Math.max(0, presetNames.indexOf(current))}`;
 const onBuilder = current === 'builder';
