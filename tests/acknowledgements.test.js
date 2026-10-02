@@ -3,17 +3,15 @@
 // paper can be rendered as a card and is reachable through the Topics filter.
 
 import { describe, expect, it } from 'vitest';
-import fs from 'node:fs';
+import doc from '/config/acknowledgements.json';
+import { items } from '../src/lib/data.js';
 
-const doc = JSON.parse(fs.readFileSync('config/acknowledgements.json', 'utf8'));
 
 // The Topics menu on /publications/: the tags of his own listed papers. An
 // assist under any other topic would be unreachable, since the menu neither
 // lists nor counts topics the assists alone use.
 const vocabulary = new Set();
-for (const f of fs.readdirSync('data')) {
-  if (!f.endsWith('.json')) continue;
-  const rec = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
+for (const rec of items) {
   if (rec.type !== 'publication' || rec.status === 'in-prep') continue;
   for (const t of rec.tags ?? []) vocabulary.add(t);
 }

@@ -3,10 +3,11 @@
 // unique, and does not contain anything the exclude list says to drop.
 
 import { describe, expect, it } from 'vitest';
-import fs from 'node:fs';
+import doc from '/config/contributions.json';
+import exclusions from '/config/contributions-exclude.json';
+import { items } from '../src/lib/data.js';
 
-const doc = JSON.parse(fs.readFileSync('config/contributions.json', 'utf8'));
-const excluded = new Set(JSON.parse(fs.readFileSync('config/contributions-exclude.json', 'utf8')).exclude);
+const excluded = new Set(exclusions.exclude);
 
 describe('the contributions list', () => {
   it('has repositories', () => {
@@ -41,9 +42,7 @@ describe('the contributions list', () => {
     // Those are rendered as cards in the tiers above; listing them again as
     // "also contributed to" would say the same thing twice.
     const carded = new Set();
-    for (const f of fs.readdirSync('data')) {
-      if (!f.endsWith('.json')) continue;
-      const rec = JSON.parse(fs.readFileSync(`data/${f}`, 'utf8'));
+    for (const rec of items) {
       if (rec.type !== 'software') continue;
       for (const l of rec.links ?? []) {
         const m = /^https:\/\/github\.com\/([^/]+\/[^/#?]+)/.exec(l.url ?? '');
