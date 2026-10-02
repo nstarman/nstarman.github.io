@@ -15,13 +15,19 @@ import { collaboratorMap, lastFirst } from './collabmap.js';
 export { map } from './collabmap.js';
 
 /** One dot per place per person, one trail per person who moved, and the paper
- *  ids each person shares with me — the three things the gutter map draws. */
-export function miniMap() {
-  const people = collaboratorMap();
+ *  ids each person shares with me — the three things the gutter map draws.
+ *
+ *  @param {string[]} [ids] the papers this CV renders. Someone with none of them
+ *    is dropped, as confMini drops a place with no talk listed: a name in the
+ *    picker that lights up nothing beside it is a question with no answer.
+ *    Omitted, everyone is kept. */
+export function miniMap(ids) {
+  const inCv = (q) => !ids || ids.includes(q.id);
 
   // Within a person, four posts at one institution are one dot. Across people
   // the dots stack, which is why they are drawn opaque: two collaborators at
   // the same institution should read as one place, not as a darker one.
+  const people = collaboratorMap();
   const entries = people.map((person, c) => {
     const at = new Map();
     for (const pin of person.pins) {
@@ -30,7 +36,7 @@ export function miniMap() {
         x: pin.x.toFixed(1),
         y: pin.y.toFixed(1),
         // Shared if anything was written during any post there.
-        shared: (at.get(key)?.shared ?? false) || pin.papers.length > 0,
+        shared: (at.get(key)?.shared ?? false) || pin.papers.some(inCv),
       });
     }
     // Every paper with this person, wherever they were standing.
@@ -40,11 +46,11 @@ export function miniMap() {
     const papers = [...new Map([
       ...person.pins.flatMap((p) => p.papers),
       ...person.unplacedPapers,
-    ].filter((q) => !q.assist).map((q) => [q.id, q.date])).entries()]
+    ].filter((q) => !q.assist && inCv(q)).map((q) => [q.id, q.date])).entries()]
       .sort(([, a], [, b]) => b.localeCompare(a))
       .map(([id]) => id);
     return { c, name: lastFirst(person.name), places: [...at.values()], papers };
-  });
+  }).filter((e) => !ids || e.papers.length > 0);
 
   // Surname first, so the picker reads like an index rather than a list of
   // first names — the same order the CV's own references are scanned in. `c`
@@ -65,6 +71,6 @@ export function miniMap() {
     trails: entries
       .filter((e) => e.places.length > 1)
       .map((e) => ({ c: e.c, points: e.places.map((pl) => `${pl.x},${pl.y}`).join(' ') })),
-    label: `${people.length} collaborators`,
+    label: `${entries.length} collaborators`,
   };
 }

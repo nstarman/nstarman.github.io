@@ -15,7 +15,9 @@
 // lib/minipick.js, the same split CollabMap.astro makes.
 import { miniMap, map } from '../lib/collabmini.js';
 
-const { entries, dots, trails, label } = miniMap();
+/** The papers this CV renders — the picker offers only people on one of them. */
+const { ids } = Astro.props;
+const { entries, dots, trails, label } = miniMap(ids);
 ---
 
 <aside class="cvmini" id="cv-collab-map" data-words="where my collaborators have worked" hidden>

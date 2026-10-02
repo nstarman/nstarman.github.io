@@ -91,4 +91,16 @@ describe('the CV gutter map', () => {
     // Someone has more than one paper with me, or this proves nothing.
     expect(entries.some((e) => e.papers.length > 1)).toBe(true);
   });
+
+  it('offers only the people on a paper this CV renders', () => {
+    // One paper: its co-authors stay, everyone else goes, and what they keep is
+    // just that paper — so the picker never names someone who lights up nothing.
+    const one = entries.find((e) => e.papers.length > 1).papers[0];
+    const cut = miniMap([one]);
+    expect(cut.entries.map((e) => e.c).sort())
+      .toEqual(entries.filter((e) => e.papers.includes(one)).map((e) => e.c).sort());
+    for (const e of cut.entries) expect(e.papers).toEqual([one]);
+    expect(cut.entries.length).toBeLessThan(entries.length);
+    expect(miniMap([]).entries).toEqual([]);
+  });
 });
