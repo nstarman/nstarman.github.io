@@ -1,4 +1,5 @@
 ---
+import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
@@ -24,13 +25,16 @@ const total = memberIds('complete').length;
 // Stamped into a saved selection so it can be taken back to the data it names.
 const site = buildInfo();
 // What the client script needs from the build, as one data island: each
-// preset's members, its detail level, and whether it prints the complete-only
-// lines (only the complete CV does).
+// preset's members, its detail level, whether it prints the complete-only
+// lines (only the complete CV does), and the faces to compile with. Those are
+// whatever public/fonts/ holds — the folder scripts/build-cv-pdfs.sh compiles
+// with too — so a face added there needs no list updating here.
 const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
   site,
+  fonts: fs.readdirSync('public/fonts').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/${f}`),
 };
 ---
 <Base title="CV builder — Nathaniel Starkman">
@@ -92,7 +96,7 @@ const builderData = {
     import { compilePdf } from '../../lib/typstcompile.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE } =
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
     const subs = () => [...document.querySelectorAll('.subbox')];
@@ -336,7 +340,7 @@ const builderData = {
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
-        const pdf = await compilePdf(model, status);
+        const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
 

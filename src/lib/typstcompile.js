@@ -13,22 +13,9 @@ const TEMPLATE = import.meta.glob('/cv/**/*.typ', { eager: true, query: '?raw', 
 // Bundled at build time rather than fetched, so compiling stays one round trip.
 const ASSETS = import.meta.glob('/cv/assets/*', { eager: true, query: '?url', import: 'default' });
 
-// Self-hosted, and the same faces the CI build uses — otherwise the browser
-// PDF would quietly differ from the downloadable one.
-const FONTS = [
-  '/fonts/NewCM10-Regular.otf',
-  '/fonts/NewCM10-Bold.otf',
-  '/fonts/NewCM10-Italic.otf',
-  '/fonts/NewCM10-BoldItalic.otf',
-  // the marks: same three the LaTeX CV set
-  '/fonts/FontAwesome5Free-Solid-900.otf',
-  '/fonts/FontAwesome5Brands-Regular-400.otf',
-  '/fonts/academicons.otf',
-];
-
 let typst = null;
 
-async function loadCompiler() {
+async function loadCompiler(fonts) {
   // Dynamic, so the ~10 MB of wasm never touches any other route.
   const [{ $typst }, { preloadRemoteFonts }, wasm] = await Promise.all([
     import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs'),
@@ -37,20 +24,23 @@ async function loadCompiler() {
   ]);
   $typst.setCompilerInitOptions({
     getModule: () => wasm.default,
-    beforeBuild: [preloadRemoteFonts(FONTS)],
+    beforeBuild: [preloadRemoteFonts(fonts)],
   });
   return $typst;
 }
 
 /**
  * @param {object} model  cvModel() output, with `style` set
+ * @param {string[]} fonts  URLs of the faces to load, read once on first use:
+ *   every .otf in public/fonts/, the same files the CI build compiles with,
+ *   so the browser PDF cannot quietly differ from the downloadable one
  * @param {(msg: string) => void} [onStatus]  progress for the page to show
  * @returns {Promise<Uint8Array>} the PDF
  */
-export async function compilePdf(model, onStatus = () => {}) {
+export async function compilePdf(model, fonts, onStatus = () => {}) {
   if (!typst) {
     onStatus('Loading the Typst compiler…');
-    typst = await loadCompiler();
+    typst = await loadCompiler(fonts);
   }
   onStatus('Compiling…');
   // cv/ is the compilation root in both runtimes, so cv/lib/styles.typ is

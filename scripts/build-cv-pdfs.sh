@@ -15,13 +15,10 @@ command -v "$TYPST" >/dev/null || { echo "typst not found (set TYPST=/path/to/ty
 
 # Every face the CV sets is vendored in public/fonts/ and served from the site,
 # so the PDF is the same wherever it is built. --ignore-system-fonts makes that
-# a rule rather than a hope: a missing file fails here instead of quietly
-# substituting whatever the build machine happens to have installed.
-FONTS=(NewCM10-Regular.otf NewCM10-Bold.otf NewCM10-Italic.otf NewCM10-BoldItalic.otf
-       FontAwesome5Free-Solid-900.otf FontAwesome5Brands-Regular-400.otf academicons.otf)
-for f in "${FONTS[@]}"; do
-  [ -f "public/fonts/$f" ] || { echo "missing font: public/fonts/$f"; exit 1; }
-done
+# a rule rather than a hope. A face the template names that public/fonts/ does
+# not hold is "unknown" to Typst, which only warns and substitutes — so that
+# warning fails the build below. The folder is the list: the in-browser builder
+# loads whatever .otf files it holds, and nothing names them twice.
 TYPST_ARGS=(--root . --font-path public/fonts --ignore-system-fonts)
 
 shopt -s nullglob
@@ -32,7 +29,12 @@ trap 'rm -f cv/cv.json' EXIT
 for model in "${models[@]}"; do
   preset="$(basename "$model" .json)"
   cp "$model" cv/cv.json
-  "$TYPST" compile "${TYPST_ARGS[@]}" cv/cv.typ "dist/cv/starkman-cv-$preset.pdf"
+  out="$("$TYPST" compile "${TYPST_ARGS[@]}" cv/cv.typ "dist/cv/starkman-cv-$preset.pdf" 2>&1)" \
+    || { echo "$out"; exit 1; }
+  [ -z "$out" ] || echo "$out"
+  if grep -q "unknown font family" <<<"$out"; then
+    echo "  $preset names a face public/fonts/ does not hold"; exit 1
+  fi
   pages="$("$TYPST" query "${TYPST_ARGS[@]}" cv/cv.typ '<none>' --field value 2>/dev/null || true)"
   # Also into public/, so the dev server serves the same PDFs the built site
   # does — dist/ is not on any dev route, so "Download PDF" was dead there.
