@@ -8,7 +8,7 @@
 // screen reader, a keyboard, or a small phone can actually use, and it is where
 // the paper titles live in full.
 import '../styles/map.css';
-import { collaboratorMap, map } from '../lib/collabmap.js';
+import { collaboratorMap, lastFirst, map } from '../lib/collabmap.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
@@ -71,7 +71,7 @@ const label = (pin) =>
     <label for="cmap-who">Show</label>
     <select id="cmap-who" class="cmap-who btn btn--sel">
       <option value="">Everyone</option>
-      {people.map((p, i) => <option value={String(i)}>{p.name}</option>)}
+      {people.map((p, i) => <option value={String(i)}>{lastFirst(p.name)}</option>)}
     </select>
     <span class="cmap-partial"
           title="Mostly scraped from public ORCID records: it shows what each person has chosen to publish there, so posts can be missing, undated, or out of date.">May be incomplete / wrong</span>
@@ -87,7 +87,7 @@ const label = (pin) =>
            aria-label={`${p.name} on ORCID`} title={`${p.name} on ORCID — ${p.orcid}`}>
           <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-orcid" /></svg>
         </a>
-        <h3>{p.name}</h3>
+        <h3>{lastFirst(p.name)}</h3>
         <ol hidden>
           {p.pins.map((pin) => (
             <li>

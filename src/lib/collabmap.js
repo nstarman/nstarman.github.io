@@ -113,7 +113,7 @@ export function collaboratorMap() {
     });
   }
 
-  people.sort((a, b) => a.name.localeCompare(b.name));
+  people.sort((a, b) => lastFirst(a.name).localeCompare(lastFirst(b.name)));
   people.forEach((p, i) => { p.hue = hueFor(i); });
   spread(people.flatMap((p) => p.pins));
   return people;

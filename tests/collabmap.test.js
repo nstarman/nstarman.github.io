@@ -195,6 +195,13 @@ describe('surname-first names', () => {
   });
 });
 
+describe('collaborator order', () => {
+  it('is by surname, the way the list prints it', () => {
+    const names = collaboratorMap().map((p) => lastFirst(p.name));
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
+  });
+});
+
 describe('collabHref', () => {
   it('sends a co-author on the map to their entry, and anyone else nowhere', () => {
     const [first] = people;
