@@ -124,7 +124,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `highlight` | `highlight`, `refs` | — |
 
 `status`: `in-prep` · `submitted` · `accepted` · `published`
-`kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended`
+`kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended` · `accepted`
 `tier`: `major` · `minor`
 
 **`tier`** exists because the CV separates *Major Fellowships & Awards* and
@@ -133,7 +133,10 @@ those four buckets, and `config/presets.json` maps each to a heading.
 
 **`presentation`** covers everything that used to be split across "Invited
 Talks", "Selected Presentations" and "Conferences & Workshops" — `kind` carries
-the distinction, including `attended` for a meeting where you presented nothing.
+the distinction, including `attended` for a meeting where you presented
+nothing, and `accepted` for a talk accepted but never given because you could
+not go. An `accepted` talk has no `location` — you were never there — and the
+map leaves it off.
 
 ### Research highlights
 

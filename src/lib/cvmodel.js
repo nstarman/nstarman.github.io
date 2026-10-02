@@ -90,6 +90,7 @@ function byline(item) {
 
 function trailing(item) {
   if (item.declined) return 'declined';
+  if (item.kind === 'accepted') return 'not attended';
   if (item.amount && item.type !== 'award') {
     return money(item.amount);
   }

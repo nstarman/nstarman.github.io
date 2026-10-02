@@ -14,12 +14,13 @@ const talksOn = (preset) => resolve(preset).sections
 
 describe('the CV gutter conference map', () => {
   it('pins every placed talk when given every talk', () => {
-    const all = [...full.pins.flatMap((p) => p.talks), ...full.unsettled, ...full.unplaced]
+    const all = [...full.pins.flatMap((p) => p.talks), ...full.unsettled, ...full.unplaced,
+      ...full.accepted]
       .map((t) => t.id);
     const mini = confMini(all);
     expect(mini.entries.map((e) => e.place)).toEqual(full.pins.map((p) => p.place));
     expect(mini.placed).toBe(full.talks);
-    expect(mini.offMap).toBe(full.total - full.talks);
+    expect(mini.offMap).toBe(full.total - full.talks - full.accepted.length);
   });
 
   it('pins only the talks a shorter CV lists, and counts the rest', () => {

@@ -404,14 +404,15 @@
         ],
         "properties": {
           "kind": {
-            "description": "Separates invited talks from contributed ones, posters, organising, and plain attendance — the distinction the CV's separate sections used to carry.",
+            "description": "Separates invited talks from contributed ones, posters, organising, and plain attendance — the distinction the CV's separate sections used to carry. `accepted` is a talk accepted but never given, because I could not attend.",
             "enum": [
               "invited",
               "contributed",
               "poster",
               "seminar",
               "organizer",
-              "attended"
+              "attended",
+              "accepted"
             ]
           },
           "event": {
