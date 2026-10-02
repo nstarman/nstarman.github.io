@@ -9,6 +9,12 @@
   "title": "macro_lightning",
   "summary": "Constrain macroscopic dark matter with lightning",
   "details": "Constraints on macroscopic dark matter from lightning, on Earth and Jupiter. Released with the PRD paper.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/macro-lightning-code.webp",
+    "alt": "The macro_lightning logo: a dotted track through a cloud, ending below it in a black macro trailing a blue wake inside a yellow channel.",
+    "description": "Constraints on macroscopic dark matter from the lightning it would trigger, on Earth and on Jupiter, released with the paper."
+  },
   "repo": "nstarman/macro_lightning",
   "role": "lead developer",
   "links": [
