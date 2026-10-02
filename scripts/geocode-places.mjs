@@ -17,6 +17,7 @@
 // honoured below.
 
 import fs from 'node:fs';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { readItems } from './lib/items.mjs';
 
 const OUT = 'config/places.json';
@@ -85,7 +86,7 @@ for (const org of missing) {
   } catch (err) {
     console.log(`  failed: ${org} (${err.message})`);
   }
-  await new Promise((r) => setTimeout(r, 1100));
+  await sleep(1100);
 }
 
 fs.writeFileSync(OUT, `${JSON.stringify({

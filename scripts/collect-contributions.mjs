@@ -13,6 +13,7 @@
 // has to be compared afterwards.
 
 import fs from 'node:fs';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { readItems } from './lib/items.mjs';
 import { execFileSync } from 'node:child_process';
 
@@ -33,7 +34,6 @@ const PERIODS = [
 const token = process.env.GITHUB_TOKEN
   || execFileSync('gh', ['auth', 'token'], { encoding: 'utf8' }).trim();
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function api(path) {
   for (let attempt = 0; attempt < 4; attempt += 1) {

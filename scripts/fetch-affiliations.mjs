@@ -17,6 +17,7 @@
 // gives no ORCID for most authors, and initials vary between the two sources.
 
 import fs from 'node:fs';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { readItems } from './lib/items.mjs';
 
 const dry = process.argv.includes('--dry-run');
@@ -65,7 +66,7 @@ for (const { path, text, item: rec } of readItems()) {
     filled += 1;
   }
   if (next !== text && !dry) fs.writeFileSync(path, next);
-  await new Promise((r) => setTimeout(r, 300));
+  await sleep(300);
 }
 
 console.log(`  ${dry ? 'would fill' : 'filled'} ${filled} author affiliation(s)`);

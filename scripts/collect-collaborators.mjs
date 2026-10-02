@@ -22,6 +22,7 @@
 // summary says how many are in that position.
 
 import fs from 'node:fs';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { readItems } from './lib/items.mjs';
 
 const OUT = 'config/collaborators.json';
@@ -156,7 +157,7 @@ async function history(id) {
       });
     }
     }
-    await new Promise((r) => setTimeout(r, 200));
+    await sleep(200);
   }
   // Newest first, undated last — the same order ORCID shows them in.
   return out.sort((a, b) => (b.start ?? '').localeCompare(a.start ?? ''));
@@ -180,7 +181,7 @@ for (const [id, name] of [...found].sort((a, b) => a[1].localeCompare(b[1]))) {
     console.error(`  ${name}: ${err.message}`);
   }
   people.push({ orcid: id, name, affiliations });
-  await new Promise((r) => setTimeout(r, 250));
+  await sleep(250);
 }
 
 // Make every institution agree with itself, across everyone's history.
