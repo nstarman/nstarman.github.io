@@ -10,8 +10,9 @@
 /* CV builder */
 .builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
 .builderbar--go{margin-top:.2rem}
-.builderbar .bl{font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
-  text-transform:uppercase; color:var(--ink-faint); margin-right:.2rem}
+/* A label is bold and in full ink, as the Embed Builder's are, so it reads
+   apart from the buttons it labels. */
+.builderbar .bl{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); margin-right:.2rem}
 .builderbar .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto;
   font-variant-numeric:tabular-nums}
 .btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
