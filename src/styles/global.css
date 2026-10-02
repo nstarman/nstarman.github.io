@@ -368,8 +368,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 }
 .entry--full .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
   line-height:1.4; text-wrap:balance}
-.entry--full .ttl a{color:var(--ink)}
-.entry--full .ttl a:hover{color:var(--accent)}
 .entry--full .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
 .entry--full .meta .me{color:var(--ink-2); font-weight:500}
 .entry--full .venueline{margin:.1rem 0 0; font-size:.88rem; color:var(--ink-mute)}

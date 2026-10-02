@@ -28,8 +28,9 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
          data-tags={item.tags?.length ? item.tags.join(' ') : undefined}>
   <div class="body">
     <div class="ttl">
-      {/* No link at all before a submitted paper reaches arXiv: a bare title, not a dead '#'. */}
-      {paper ? <a href={paper.url}>{item.title}</a> : item.title}
+      {/* Only the landing page links the title; the full entry has its link
+          trail. No link before a submitted paper reaches arXiv, not a dead '#'. */}
+      {brief && paper ? <a href={paper.url}>{item.title}</a> : item.title}
       {pending && <span class="statustag">{pending}</span>}
     </div>
 
@@ -49,7 +50,7 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
       </p>
     )}
 
-    {/* The research card without its title or links — the title above
+    {/* The research card without its title or links — the link trail
         already is the way into the paper. */}
     {abstract && item.highlight && (
       <div class="card hl-card hl-card--pub" id={`hl-${item.id}`}>
