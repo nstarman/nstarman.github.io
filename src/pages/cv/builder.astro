@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
+import CvToc from '../../components/CvToc.astro';
 import '../../styles/cv/builder.css';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
@@ -42,6 +43,7 @@ const builderData = {
     <section>
       <div class="wrap">
         <CvHeader current="builder" />
+        <CvToc sections={cv.sections} />
 
         <p class="lede">
           Tick what you want and compile a PDF in your browser. Nothing is sent anywhere —

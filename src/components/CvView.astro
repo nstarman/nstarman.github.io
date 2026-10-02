@@ -68,13 +68,9 @@ const mapFor = (s) => {
 ---
 {!pick && <CvHeader current={cv.name} pdf={`/cv/starkman-cv-${cv.name}.pdf`} />}
 
-{!pick && (
-  <p class="pdfrow">
-    <a class="btn" href={`/cv/starkman-cv-${cv.name}.pdf`}>Download PDF</a>
-  </p>
-)}
-
-<CvToc sections={cv.sections} />
+{/* The builder places its own, above its controls, so that on a narrow screen
+    the strip it becomes sits under the heading rather than below the toolbar. */}
+{!pick && <CvToc sections={cv.sections} />}
 
 {runs.map((run) => {
   const sections = run.sections.map(({ s, i }) => {

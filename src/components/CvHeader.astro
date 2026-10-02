@@ -11,7 +11,7 @@ const onBuilder = current === 'builder';
 <div class="cvbar" aria-hidden="true">
   <div class="wrap">
     {pdf
-      ? <a class="btn" href={pdf} tabindex="-1">Download PDF</a>
+      ? <a class="btn" href={pdf} tabindex="-1"><span class="dl">Download </span>PDF</a>
       : <span class="spacer"></span>}
     <span class="more">
       {onBuilder
@@ -41,10 +41,18 @@ const onBuilder = current === 'builder';
   </div>
 </div>
 
+{/* Phones only: opens the length toggle, which collapses behind the current
+    length there, as the author-position filter does on /publications/. */}
+<input type="checkbox" id="lenmore" class="posradio" aria-label="Show CV lengths" />
+
 <div class="h2row">
-  <h2>Curriculum Vitae</h2>
+  <div class="ttlgroup">
+    <h2>Curriculum Vitae</h2>
+    {pdf && <a class="btn" href={pdf}><span class="dl">Download </span>PDF</a>}
+  </div>
   <span class="more">
-    <span class="cvtoggle cvtoggle--main" role="group" aria-label="CV length">
+    <label for="lenmore" class="lenmore" title="CV length">{onBuilder ? 'length' : preset(current).label}&nbsp;<span aria-hidden="true">▾</span></label>
+    <span class="cvtoggle cvtoggle--main cvlengths" role="group" aria-label="CV length">
       {presetNames.map((n) => (
         <a href={href(n)} class={n === current ? 'on' : ''}
            aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
@@ -63,9 +71,7 @@ const onBuilder = current === 'builder';
   // past, so the length toggle, the download and the builder stay reachable
   // without scrolling back up.
   const bar = document.querySelector('.cvbar');
-  // The builder has no download row, so fall back to the heading itself.
-  const rows = document.querySelectorAll('.pdfrow, .h2row');
-  const controls = rows[rows.length - 1];
+  const controls = document.querySelector('.h2row');
 
   if (bar && controls) {
     const NAV = 52; // the sticky nav's height

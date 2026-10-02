@@ -45,7 +45,7 @@
 /* A glyph rather than a word, so the padding is even and the box is square-ish
    instead of stretched by uppercase letter-spacing that no longer applies. */
 .posbtn--icon{display:inline-flex; align-items:center; padding:.05rem .35rem; letter-spacing:0}
-.posbtn--icon .ico{width:11px; height:11px; fill:currentColor; display:block}
+.posbtn--icon .ico{width:.6875rem; height:.6875rem; fill:currentColor; display:block}
 
 /* In the builder the first heading follows a row of controls rather than the
    page heading, and 1rem is the same gap the list uses internally — so the
@@ -93,3 +93,8 @@
 /* An unticked line stays readable but recedes — the same bargain the unticked
    entries make, so a selection reads as one picture. */
 .sub.is-off{opacity:.35}
+
+/* Narrow screens: the contents strip sits between the heading and the lede. */
+@media (max-width:77.99rem){
+  .cvtoc ~ .lede{margin-top:.9rem}  /* ~, not +: the rail's script sits between them */
+}
