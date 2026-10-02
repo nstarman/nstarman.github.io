@@ -93,3 +93,8 @@
 /* An unticked line stays readable but recedes — the same bargain the unticked
    entries make, so a selection reads as one picture. */
 .sub.is-off{opacity:.35}
+
+/* Narrow screens: the contents strip sits between the heading and the lede. */
+@media (max-width:77.99rem){
+  .cvtoc ~ .lede{margin-top:.9rem}  /* ~, not +: the rail's script sits between them */
+}
