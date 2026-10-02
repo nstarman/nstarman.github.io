@@ -8,7 +8,7 @@ import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 
-const { item, brief = false, maxAuthors = 8, abstract = false, anchor } = Astro.props;
+const { item, brief = false, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
 
 const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
 const venue = venueLine(item);
@@ -73,6 +73,17 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
         </p>
       </details>
     )}
+
+    {/* A micro-card: the proceeding's title, venue and year, with its links. */}
+    {earlier.map((e) => (
+      <div class="card micro-card">
+        <div class="body">
+          <div class="ttl">{e.title}</div>
+          <p class="venueline"><Venue item={e} /><span class="dot">·</span><span class="yr">{year(e)}</span></p>
+        </div>
+        <LinkIcons links={links(e)} />
+      </div>
+    ))}
   </div>
 
   {brief && (

@@ -160,7 +160,7 @@ not shown until the topic is added there.
 
 Each topic opens with an introduction, written in `HIGHLIGHT_TOPICS`, that
 tells the story its papers belong to. Where it mentions a paper it writes
-`[](item:<id>)`, and that becomes a text-sized micro-card named by the paper's
+`[](item:<id>)`, and that becomes a text-sized inline-card named by the paper's
 `microTitle` and linking to its card. The cards then run in a row that scrolls
 sideways, newest first, with prev/next buttons. A paper added to a topic
 should be worked into its introduction, not just appended to the row.
@@ -224,6 +224,11 @@ uses BibTeX-native names (`journal`, `booktitle`, `publisher`, `school`,
 `series`, `volume`, `number`, `pages`, `address`) so the mapping is direct.
 `citekey` defaults to `id`; set it only to preserve a key already cited
 elsewhere.
+
+A workshop or conference proceeding of a paper that exists in full sets
+`preliminaryOf` to that paper's id. `/publications/` then lists it as an
+micro-card (title, venue, year, links) under the full paper rather than as its own entry; BibTeX
+keeps both. Set it on the proceeding, never on the paper.
 
 `bibcode` is the 19-character ADS identifier, e.g. `2022ApJ...935..167A`. The
 ADS URL derives from it, so **do not add a separate link for ADS**. Omit it

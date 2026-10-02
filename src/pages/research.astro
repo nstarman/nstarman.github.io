@@ -20,9 +20,9 @@ const groups = HIGHLIGHT_TOPICS
 const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
 const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 
-// An intro's `[](item:id)` becomes that paper's micro-card. A typo fails the
+// An intro's `[](item:id)` becomes that paper's inline-card. A typo fails the
 // build rather than rendering a card that points nowhere.
-const micro = (s) => {
+const inlineCard = (s) => {
   const p = resolve(s.item);
   if (!p) throw new Error(`research highlights: [](item:${s.item}) names no item`);
   const name = s.t || p.highlight?.microTitle || p.highlight?.miniTitle || p.title;
@@ -49,8 +49,8 @@ const micro = (s) => {
           {g.intro?.map((para) => (
             <p class="hl-intro">{spans(para, '/cv/').map((s) => {
               if (s.item) {
-                const m = micro(s);
-                return <a class="micro" href={m.href}>{m.name}</a>;
+                const m = inlineCard(s);
+                return <a class="inline-card" href={m.href}>{m.name}</a>;
               }
               return s.url ? <a href={s.url}>{s.t}</a> : s.t;
             })}</p>

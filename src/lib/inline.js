@@ -12,7 +12,7 @@
 // another entry on the same CV — the CV cross-references itself (a position
 // citing the grants that funded it) and a bare URL cannot express that.
 // `[](item:some-id)`, with no text, is for /research/'s topic introductions:
-// the span carries `item`, and the page fills in that paper's micro-title.
+// the span carries `item`, and the page fills in that paper's microTitle.
 const LINK = /\[([^\]]*)\]\((https?:\/\/[^)\s]+|item:[a-z0-9-]+)\)/g;
 
 // `base` is where the cross-referenced entry lives. Empty on the CV, which

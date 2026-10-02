@@ -18,6 +18,12 @@ describe('the database', () => {
     expect(dangling).toEqual([]);
   });
 
+  it('resolves every preliminaryOf to a publication', () => {
+    const bad = items.filter((i) => i.preliminaryOf
+      && items.find((j) => j.id === i.preliminaryOf)?.type !== 'publication');
+    expect(bad.map((i) => i.id)).toEqual([]);
+  });
+
   it('resolves every [text](item:id) cross-link', () => {
     const dangling = items.flatMap((i) =>
       [i.details, i.summary].flat()

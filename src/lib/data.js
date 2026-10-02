@@ -62,7 +62,7 @@ export const resolve = (id) => byId.get(id);
 // `#hl-topic-<key>`, which /publications/ links to.
 //
 // The third entry is the topic's introduction, one string per paragraph.
-// `[](item:<id>)` puts that paper's micro-card into the sentence, named by its
+// `[](item:<id>)` puts that paper's inline-card into the sentence, named by its
 // `highlight.microTitle` and linking to its card below.
 export const HIGHLIGHT_TOPICS = [
   ['extragalactic', 'Extragalactic', [

@@ -192,6 +192,11 @@
             "type": "string",
             "pattern": "^[A-Za-z][A-Za-z0-9_:+.-]*$"
           },
+          "preliminaryOf": {
+            "description": "Id of the full paper this one is an earlier, shorter version of — a workshop or conference proceeding. /publications/ lists it under that paper instead of as an entry of its own; the BibTeX file keeps both. Set it on the proceeding, not on the paper.",
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
           "venue": {
             "$ref": "#/$defs/venue"
           },
@@ -592,7 +597,7 @@
           "minLength": 2
         },
         "microTitle": {
-          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized micro-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
+          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized inline-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
           "type": "string",
           "minLength": 2,
           "maxLength": 32
