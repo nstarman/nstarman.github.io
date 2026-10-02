@@ -18,6 +18,12 @@
     }
   ],
   "details": "Characterize a stream's track with minimal prior knowledge. Astropy-powered.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/characterizing-stream-tracks.webp",
+    "alt": "A simulated stellar stream from a 47 Tucanae-like progenitor, looping around the Galactic centre in Galactocentric x–y coordinates. Blue and orange lines trace the fitted path of each tidal arm, wrapped in grey uncertainty ellipses that grow largest at the arms’ sparse far ends.",
+    "description": "Characterizes a stellar stream's track, arm by arm and with uncertainties, from minimal prior knowledge. Astropy-powered."
+  },
   "refs": [
     "characterizing-stream-tracks"
   ]
