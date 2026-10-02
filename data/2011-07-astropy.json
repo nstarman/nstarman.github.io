@@ -15,6 +15,12 @@
   "title": "Astropy",
   "summary": "Astronomy in Python",
   "details": "The community core package for astronomy in Python. The collaboration received the 2025 AAS Lancelot M. Berkeley Prize, a 2023 IOP Publishing Top Cited Paper Award and the 2022 ADASS software prize.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/astropy-v5-paper.webp",
+    "alt": "The Astropy logo: a white spiral on an orange-to-red oval.",
+    "description": "The community core package for astronomy in Python, and an ecosystem of packages built on it."
+  },
   "repo": "astropy/astropy",
   "role": "Core developer · Coordination Committee · Strategic Planning",
   "links": [
