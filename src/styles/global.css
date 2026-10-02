@@ -104,7 +104,7 @@ section + section > .wrap{border-top:1px solid var(--rule)}
 .lede{font-size:1.04rem; color:var(--ink-2); margin:0 0 .7rem}
 .lede + .lede{margin-top:0}
 h2{
-  font-family:var(--serif); font-weight:500; font-size:1.28rem; margin:0 0 .95rem;
+  font-family:var(--serif); font-weight:500; font-size:1.6rem; margin:0 0 .95rem;
   letter-spacing:-.01em;
 }
 /* Centred, not baseline. The right-hand side is a cluster of controls — pills,
@@ -644,7 +644,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .tagmenu summary{
   list-style:none; cursor:pointer; user-select:none; white-space:nowrap;
   font-family:var(--mono); font-size:.7rem; color:var(--ink-mute);
-  border:1px solid var(--accent-line); border-radius:2rem; padding:.2rem .6rem;
+  border:1px solid var(--accent-line); border-radius:2rem; padding:.2rem .6rem; line-height:1;
 }
 .tagmenu summary::-webkit-details-marker{display:none}
 .tagmenu summary::after{content:" ▾"}
