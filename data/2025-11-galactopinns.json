@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "galactopinns",
+  "type": "software",
+  "tier": "other",
+  "cvs": [],
+  "date": {
+    "start": "2025-11",
+    "present": true
+  },
+  "title": "galactoPINNs",
+  "summary": "Physics-informed neural networks for galactic potentials",
+  "repo": "charlottemyers/galactoPINNs",
+  "links": [
+    {
+      "rel": "code",
+      "url": "https://github.com/charlottemyers/galactoPINNs"
+    }
+  ],
+  "tags": [
+    "jax",
+    "machine-learning"
+  ],
+  "refs": [
+    "pinns-mnras"
+  ]
+}
