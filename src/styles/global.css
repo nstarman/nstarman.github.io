@@ -431,6 +431,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .micro-card{display:flex; align-items:flex-start; gap:1rem; margin-top:.6rem; padding:.6rem .9rem}
 .micro-card .body{flex:1; min-width:0}
 .micro-card .ttl{font-size:.88rem; font-weight:500; color:var(--ink)}
+.micro-card .meta{margin:.1rem 0 0; font-size:.82rem}
 .micro-card .venueline{margin:.1rem 0 0; font-size:.82rem; color:var(--ink-mute)}
 .micro-card .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
 .micro-card .btns--icon{flex:none; flex-direction:row; gap:.35rem; margin:0}
