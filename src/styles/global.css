@@ -649,7 +649,16 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Assists: papers that thank him, under his own, set apart by a rule. */
 .assists{margin-top:2.6rem; padding-top:2rem; border-top:1px solid var(--rule)}
 .assists[hidden]{display:none}
-.assists h3{margin:0 0 .3rem}
+.assists h3{margin:0 0 .3rem; scroll-margin-top:calc(var(--nav-h) + .75rem)}
+/* Tall enough for its heading to scroll to the top, as .cvsec--last does on
+   the CV: otherwise the page bottoms out with it stranded mid-screen. The
+   7rem tail is what sits below it (the wrap's padding and the footer), and
+   the 2rem back is its own top padding, which border-box counts in. */
+.assists{
+  --tail:7rem;
+  min-height:calc(100vh - var(--nav-h) - .75rem - var(--tail) + 2rem);
+  min-height:calc(100svh - var(--nav-h) - .75rem - var(--tail) + 2rem);
+}
 
 .posmore{display:none; font-family:var(--mono); font-size:.66rem; color:var(--ink-faint);
   cursor:pointer; white-space:nowrap}
