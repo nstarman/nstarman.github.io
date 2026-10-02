@@ -89,6 +89,7 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
 
     <footer>
       <div class="wrap">
+        <span>&copy; {built.getFullYear()} Nathaniel Starkman</span>
         {/* The tools — the CV builder and the like — are for me and the odd
             visitor who goes looking, so they live down here rather than in
             the nav. */}
@@ -98,7 +99,6 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
           <span class="sep" aria-hidden="true">|</span>
           <a href="https://github.com/nstarman/nstarman.github.io/commits/main">Last updated <time datetime={updated}>{updatedLabel}</time></a>
         </span>
-        <span>&copy; {built.getFullYear()} Nathaniel Starkman</span>
       </div>
     </footer>
 
