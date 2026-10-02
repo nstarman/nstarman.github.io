@@ -198,7 +198,7 @@ const mapFor = (s) => {
           right margin and sticks while the section is on screen, so the section's
           own box is what stops it: past the last publication it scrolls away with
           everything else rather than following the reader down the page. */}
-      {s.id === 'publications' && <CollabMini />}
+      {s.id === 'publications' && <CollabMini ids={s.items.map((item) => item.id)} />}
     </Wrap>
     );
   });
