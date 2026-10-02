@@ -747,17 +747,20 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 @media (max-width:77.99rem){
   :root:has(.cvtoc){--toc-h:2.3rem}
   .cvtoc{
-    display:block; position:sticky; top:var(--nav-h); z-index:8;
+    display:block; position:sticky; top:calc(var(--nav-h) - 1px); z-index:8;
     max-width:var(--wide); margin-inline:auto; padding-inline:1.5rem;
     background:color-mix(in srgb,var(--ground) 92%,transparent); backdrop-filter:blur(8px);
   }
   .wrap > .cvtoc{padding-inline:0}
+  /* The strip carries its own top rule, so it is ruled before anything sits
+     above it; stuck, it rides 1px high so that rule lands on the bar's own
+     bottom rule instead of doubling it. */
   /* The CV's condensed controls take the slot under the nav when they show. */
-  :root:has(.cvbar.is-on) .cvtoc{top:calc(var(--nav-h) + var(--cvbar-h))}
+  :root:has(.cvbar.is-on) .cvtoc{top:calc(var(--nav-h) + var(--cvbar-h) - 1px)}
   .cvtoc ol{
     position:relative; list-style:none; margin:0; padding:0;
     display:flex; align-items:stretch; gap:1.1rem; height:var(--toc-h);
-    overflow-x:auto; scrollbar-width:none; border-bottom:1px solid var(--rule);
+    overflow-x:auto; scrollbar-width:none; border-block:1px solid var(--rule);
   }
   .cvtoc ol::-webkit-scrollbar{display:none}
   .cvtoc li{flex:none; display:flex}
@@ -780,7 +783,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
     position:fixed; top:auto; bottom:0; left:0; right:0; max-width:none;
     padding:0 1.5rem env(safe-area-inset-bottom); border-top:1px solid var(--rule);
   }
-  .cvtoc ol{height:2.6rem; border-bottom:0}
+  .cvtoc ol{height:2.6rem; border-block:0}
   .cvtoc a{border-bottom:0; border-top:2px solid transparent}
   .cvtoc a.is-current{border-color:var(--accent)}
   :root:has(.cvtoc) footer{padding-bottom:2.6rem}
