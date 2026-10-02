@@ -462,9 +462,15 @@ footer .wrap a{color:inherit}
    itself on hover and focus. */
 /* A mark with no button around it. The profile pills are places to go; this is
    a file to take, so it reads as a glyph rather than another destination. */
-.baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
-.baremark .ico{width:1.0625rem; height:1.0625rem; fill:currentColor; display:block}
-.baremark:hover, .baremark:focus-visible{color:var(--accent)}
+.baremark{
+  width:1.75rem; height:1.75rem; border-radius:32%;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--ink-faint); border:1px solid var(--rule-strong); transition:color .15s, border-color .15s;
+}
+.baremark .ico{width:1.2rem; height:.9rem; text-transform:none; letter-spacing:0; fill:currentColor; display:block}
+.baremark .ico text{fill:var(--ink-faint)}
+.baremark:hover, .baremark:focus-visible{color:var(--accent); border-color:var(--accent); text-decoration:none}
+.baremark:hover .ico text, .baremark:focus-visible .ico text{fill:var(--accent)}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
 /* Two stops, All first and selected: the list's own state is every package, and

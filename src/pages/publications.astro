@@ -97,11 +97,11 @@ const byline = (a) => {
                 <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${c.icon}`} /></svg>
               </a>
             ))}
-            {/* The brace alone, no button around it — the profiles are places to
+            {/* A download arrow over "bib" in a squircle, not a circle — the profiles are places to
                 go, this is a file to take. */}
             <a class="baremark" href="/nstarkman_publications.bib"
                aria-label="BibTeX" title="Every publication as BibTeX">
-              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-bibtex" /></svg>
+              <svg class="ico" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><path fill-opacity=".18" d="M11 1h10v9h5L16 23 6 10h5Z"/><text x="16" y="15" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700">bib</text></svg>
             </a>
           </span>
         </div>
