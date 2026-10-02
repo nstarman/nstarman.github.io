@@ -67,6 +67,7 @@ const inlineCard = (s) => {
             {g.items.map((item) => {
               const h = item.highlight;
               const href = mainHref(item);
+              const figHref = item.type === 'publication' ? `/publications/#${anchor(item.id)}` : href;
               const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
               // Bold only the papers I led or was second on. Past third the
               // place is just "nth", unless the record states it on purpose.
@@ -77,8 +78,10 @@ const inlineCard = (s) => {
                   {/* Three areas — title, figure, footer — on rows the whole
                       carousel shares, so every card's lines up. */}
                   <h5 class:list={['name', pos > 2 && 'name--minor']}>{href ? <a href={href}>{h.miniTitle ?? item.title}</a> : (h.miniTitle ?? item.title)}</h5>
-                  {href
-                    ? <a class="hl-fig" href={href} tabindex="-1"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
+                  {/* A paper's figure goes to its card on /publications/; a
+                      synthesis has none there, so its figure follows the title. */}
+                  {figHref
+                    ? <a class="hl-fig" href={figHref} tabindex="-1"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
                     : <img class="hl-fig" src={`/${h.image}`} alt={h.alt} loading="lazy" />}
                   <div class="hl-foot">
                     {refs.length > 0 && (

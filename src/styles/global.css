@@ -743,3 +743,6 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 }
 /* /publications/ uses the rail for years; a jump must clear the sticky nav. */
 .entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}
+/* A figure on /research/ jumps to the paper's card here; leave room for the
+   title, byline and venue above it. */
+.hl-card--pub{scroll-margin-top:calc(var(--nav-h) + 7rem)}

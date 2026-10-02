@@ -52,7 +52,7 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
     {/* The research card without its title or links — the title above
         already is the way into the paper. */}
     {abstract && item.highlight && (
-      <div class="card hl-card hl-card--pub">
+      <div class="card hl-card hl-card--pub" id={`hl-${item.id}`}>
         <img src={`/${item.highlight.image}`} alt={item.highlight.alt} loading="lazy" />
         <div class="hl-body">
           <p><Inline text={item.highlight.description} base="/cv/" /></p>
