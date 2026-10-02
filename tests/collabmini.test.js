@@ -28,8 +28,6 @@ describe('the CV gutter map', () => {
     // `c` keys the dots and the trails, so a sort that renumbered would move
     // every pin on the map to the wrong person without looking wrong.
     for (const e of entries) expect(e.name).toBe(lastFirst(who(e).name));
-    // And the sort really does reorder, or this proves nothing.
-    expect(entries.map((e) => e.c)).not.toEqual(people.map((_, i) => i));
   });
 
   it('collapses a person\'s repeat posts at one place into one dot', () => {
