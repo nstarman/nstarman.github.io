@@ -185,10 +185,11 @@
   text(size: 6.2pt, fill: accent, tracking: 0.4pt, weight: "medium", upper(status)),
 )
 
-// A student of mine, by level — the same two colours as the website.
+// A student of mine, by level — the same colours and marks as the website.
 #let stucolour = (undergraduate: rgb("#1E7F5C"), graduate: rgb("#8A4FB0"))
+#let stumark = (undergraduate: "†", graduate: "‡")
 #let bolded(sp) = sp.map(s => if s.b { strong(s.t) } else if s.at("student", default: none) != none {
-  text(fill: stucolour.at(s.student), s.t)
+  text(fill: stucolour.at(s.student))[#s.t#super(stumark.at(s.student))]
 } else { s.t }).join()
 #let linked(sp) = sp.map(s => if "url" in s and not s.url.starts-with("#") {
   link(s.url)[#s.t]
@@ -267,8 +268,8 @@
 #let publications(section) = {
   if section.items.any(i => i.byline.any(s => s.at("student", default: none) != none)) {
     text(size: 9pt, fill: faint)[Students I supervised or advised:
-      #text(fill: stucolour.undergraduate)[undergraduate],
-      #text(fill: stucolour.graduate)[graduate].]
+      #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
+      #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
     v(if tight { 3pt } else { 6.6pt })
   }
   let n = 0

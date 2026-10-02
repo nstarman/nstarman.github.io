@@ -1,7 +1,8 @@
 ---
 // The names from authors(): the owner bold, a co-author linked to their entry
 // on the collaborator map, or to their ORCID when the map has no post for them.
-// A student of mine is coloured by level; the key is on /publications/.
+// A student of mine is coloured and marked by level — † undergraduate,
+// ‡ graduate, so colour is never the only cue. The key is on /publications/.
 // The collaboration and "et al." stay with the caller, because the CV and the
 // publication list punctuate them differently.
 import { collabHref } from '../lib/collabmap.js';
@@ -9,6 +10,7 @@ import { collabHref } from '../lib/collabmap.js';
 const { shown } = Astro.props;
 const href = (a) => collabHref(a.orcid) ?? a.url;
 const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
+const mark = { undergraduate: '†', graduate: '‡' };
 ---
 {shown.map((a, i) => (
   <>{i > 0 && ', '}{a.me
@@ -16,5 +18,5 @@ const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
     : <span class={a.student ? `stu--${a.student}` : undefined}
             title={a.student ? `${level[a.student]} student I supervised or advised` : undefined}>{href(a)
         ? <a class="authorlink" href={href(a)}>{a.name}</a>
-        : a.name}</span>}</>
+        : a.name}{a.student && <sup>{mark[a.student]}</sup>}</span>}</>
 ))}
