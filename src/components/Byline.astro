@@ -1,13 +1,17 @@
 ---
-// The names from authors(): the owner bold, a co-author linked to their ORCID.
+// The names from authors(): the owner bold, a co-author linked to their entry
+// on the collaborator map, or to their ORCID when the map has no post for them.
 // The collaboration and "et al." stay with the caller, because the CV and the
 // publication list punctuate them differently.
+import { collabHref } from '../lib/collabmap.js';
+
 const { shown } = Astro.props;
+const href = (a) => collabHref(a.orcid) ?? a.url;
 ---
 {shown.map((a, i) => (
   <>{i > 0 && ', '}{a.me
     ? <span class="me">{a.name}</span>
-    : a.url
-      ? <a class="authorlink" href={a.url}>{a.name}</a>
+    : href(a)
+      ? <a class="authorlink" href={href(a)}>{a.name}</a>
       : a.name}</>
 ))}

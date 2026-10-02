@@ -60,7 +60,13 @@ function wire(fig) {
   };
 
   pick.addEventListener('change', () => show(pick.value));
-  show('');
+
+  // A byline links to /research/?collab=<orcid>#collaborators: the fragment
+  // brings the map into view, and this picks that person on it.
+  const asked = new URLSearchParams(location.search).get('collab');
+  const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.orcid === asked);
+  pick.value = li ? li.dataset.c : '';
+  show(pick.value);
 
   fig.addEventListener('pointerover', (e) => mark(e.target));
   fig.addEventListener('pointerleave', () => mark(null));
