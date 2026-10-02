@@ -134,7 +134,7 @@
     }
   },
   "complete": {
-    "label": "Complete",
+    "label": "All",
     "detail": "full",
     "includeAll": true,
     "sections": [
