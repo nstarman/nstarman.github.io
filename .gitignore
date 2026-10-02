@@ -19,6 +19,8 @@ cv/cv.json
 __pycache__/
 
 # The compiler wasm and fonts are vendored for the CV builder route only.
+# gzipped compiler wasm, from scripts/gzip-compiler.mjs
+src/generated/
 
 # generated from data/ and schema/ by scripts/publish-data.mjs
 public/records/

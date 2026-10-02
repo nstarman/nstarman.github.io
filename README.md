@@ -207,8 +207,9 @@ builds the site and the four PDFs and deploys them to Cloudflare Pages, then
 posts the URL as a sticky comment. GitHub Pages serves one deployment per repository and that one
 is production, which is why previews live elsewhere. The job skips rather than
 fails when the Cloudflare secrets are absent, so a fork does not see a red
-tick. One page cannot work there: `/cv/builder/` needs a 27 MiB compiler wasm
-and Cloudflare refuses any file over 25 MiB.
+tick. Cloudflare refuses any file over 25 MiB, which is why the 27 MiB Typst
+compiler wasm ships gzipped (`scripts/gzip-compiler.mjs`) and the CV builder
+inflates it in the browser.
 
 **Jekyll never runs.** Source "GitHub Actions" serves the uploaded artifact
 verbatim, so Astro's underscore-prefixed `_astro/` is untouched — the live site
