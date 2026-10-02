@@ -84,3 +84,22 @@ describe('memberIds', () => {
     }
   });
 });
+
+describe('shared sections', () => {
+  const pubs = (name) => preset(name).sections.find((s) => s.id === 'publications');
+
+  it('gives every preset the one shared definition', () => {
+    for (const name of presetNames) {
+      expect(pubs(name).heading).toBe('Publications');
+      expect(pubs(name).match).toEqual({ type: 'publication' });
+    }
+  });
+
+  it('lets a preset override a key, and null remove one', () => {
+    expect(pubs('np').limit).toBeUndefined();
+    expect(pubs('1page').limit).toBe(5);
+    expect(pubs('np').groupBy).toBe('status');
+    expect(pubs('1page').groupBy).toBeNull();
+    expect(resolve('1page').sections.find((s) => s.id === 'publications').groupBy).toBeNull();
+  });
+});

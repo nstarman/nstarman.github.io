@@ -21,10 +21,23 @@ function matches(item, match) {
 
 export const presetNames = Object.keys(presets).filter((k) => !k.startsWith('$'));
 
+/**
+ * A preset's sections name one of `$sections` by id, written once so the
+ * presets cannot drift apart, or override just the keys that differ there:
+ * `{ "id": "publications", "limit": 5 }`. `null` removes a key, as
+ * `"groupBy": null` does for the one-page CV.
+ */
+function section(ref) {
+  const { id } = typeof ref === 'string' ? { id: ref } : ref;
+  const shared = presets.$sections[id];
+  if (!shared) throw new Error(`Unknown CV section "${id}". Define it in $sections in config/presets.json.`);
+  return { id, ...shared, ...(typeof ref === 'string' ? {} : ref) };
+}
+
 export function preset(name) {
   const spec = presets[name];
   if (!spec) throw new Error(`Unknown CV preset "${name}". Known: ${presetNames.join(', ')}`);
-  return spec;
+  return { ...spec, sections: spec.sections.map(section) };
 }
 
 /**
