@@ -68,12 +68,6 @@ const mapFor = (s) => {
 ---
 {!pick && <CvHeader current={cv.name} pdf={`/cv/starkman-cv-${cv.name}.pdf`} />}
 
-{!pick && (
-  <p class="pdfrow">
-    <a class="btn" href={`/cv/starkman-cv-${cv.name}.pdf`}>Download PDF</a>
-  </p>
-)}
-
 <CvToc sections={cv.sections} />
 
 {runs.map((run) => {

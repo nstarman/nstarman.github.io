@@ -29,8 +29,23 @@
   margin:1.6rem 0 .3rem; padding-bottom:.3rem; border-bottom:1px solid var(--rule);
 }
 .cvsection:first-of-type{margin-top:1rem}
-.pdfrow{display:flex; align-items:center; justify-content:flex-start; gap:.7rem;
-  flex-wrap:wrap; margin:0 0 .4rem}
+/* The length toggle collapses behind the current length on a phone; the label
+   opens it onto a row of its own under the title. Same as .posmore. */
+.lenmore{display:none; font-family:var(--mono); font-size:.66rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-faint); cursor:pointer; white-space:nowrap}
+#lenmore:checked ~ .h2row .lenmore{color:var(--accent)}
+#lenmore:focus-visible ~ .h2row .lenmore{outline:2px solid var(--accent); outline-offset:2px}
+@media (max-width:44rem){
+  .lenmore{display:inline}
+  /* .more dissolves so the opened lengths can take a full row of the heading
+     row, while the label and Build stay on the title's line. */
+  .h2row:has(.cvlengths){flex-wrap:wrap; justify-content:flex-start; gap:.4rem .5rem}
+  .h2row .more:has(.cvlengths){display:contents}
+  .h2row:has(.cvlengths) .ttlgroup{margin-right:auto}
+  .h2row:has(.cvlengths) .sep{margin:0}
+  .h2row .cvlengths{display:none}
+  #lenmore:checked ~ .h2row .cvlengths{display:inline-flex; order:9; width:100%}
+}
 
 /* The institution's own site sits in the date gutter, under the years (the
    gutter itself is in global.css). */
@@ -148,11 +163,12 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 }
 .cvbar .cvtoggle--main a, .cvbar .cvtoggle--main .tog{font-size:.66rem; padding:.16rem .5rem}
 /* Nothing in the bar may wrap: it has a fixed height. On a phone the download
-   is just "PDF", which is what makes the rest fit on one line. */
+   is just "PDF", here and in the heading row, which is what makes the rest fit
+   on one line. */
 .cvbar .wrap > *, .cvbar .cvtoggle a, .cvbar .cvtoggle .tog{white-space:nowrap}
 @media (max-width:34rem){
   .cvbar .wrap{gap:.5rem}
-  .cvbar .dl{display:none}
+  .dl{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .cvbar{transition:opacity .18s ease}
