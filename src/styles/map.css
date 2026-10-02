@@ -102,6 +102,11 @@
 .cmap-list > li{
   border-left:3px solid oklch(.55 .16 var(--h)); padding-left:.7rem;
 }
+/* Arrived at from a byline on /publications/; mappick.js clears it once the
+   map is used any other way. */
+.cmap-list > li.is-arrived{
+  outline:1.5px solid oklch(.6 .16 var(--h) / .7); outline-offset:.4rem; border-radius:.2rem;
+}
 .cmap-list h3{margin:0 0 .35rem; font-size:.92rem}
 .cmap-list ol{list-style:none; margin:0; padding:0; display:grid; gap:.5rem}
 .cmap-list ol li{font-size:.8rem; line-height:1.45}

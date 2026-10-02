@@ -59,7 +59,10 @@ function wire(fig) {
     else fig.dataset.hover = only;
   };
 
-  pick.addEventListener('change', () => show(pick.value));
+  // The highlight marks whoever a byline sent the reader to; any other use of
+  // the map is the reader's own choice, and clears it.
+  const unmark = () => { for (const li of all('.cmap-list > li.is-arrived')) li.classList.remove('is-arrived'); };
+  pick.addEventListener('change', () => { unmark(); show(pick.value); });
 
   // A byline links to /research/?collab=<orcid>#collaborators: the fragment
   // brings the map into view, and this picks that person on it.
@@ -67,6 +70,7 @@ function wire(fig) {
   const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.orcid === asked);
   pick.value = li ? li.dataset.c : '';
   show(pick.value);
+  li?.classList.add('is-arrived');
 
   fig.addEventListener('pointerover', (e) => mark(e.target));
   fig.addEventListener('pointerleave', () => mark(null));
@@ -82,6 +86,7 @@ function wire(fig) {
   fig.addEventListener('click', (e) => {
     const owner = e.target.closest?.('.cmap-pin, .cmap-trail');
     if (!owner) return;
+    unmark();
     pick.value = pick.value === owner.dataset.c ? '' : owner.dataset.c;
     show(pick.value);
     // Selecting hides everything else, so the thing being pointed at is no
