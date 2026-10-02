@@ -6,7 +6,7 @@ import Base from '../../layouts/Base.astro';
 const tools = [
   {
     href: '/tools/cv/',
-    name: 'CV builder',
+    name: 'CV Builder',
     text: 'The complete CV with a tick box on every entry and line. Choose what goes in, then compile your own PDF in the browser.',
   },
 ];
@@ -18,10 +18,11 @@ const tools = [
         <div class="h2row"><h2>Tools</h2></div>
         <div class="soft">
           {tools.map((t) => (
-            <div class="card">
-              <div class="name"><a href={t.href}>{t.name}</a></div>
+            /* The whole card is the link: it is the only thing to do with it. */
+            <a class="card toolcard" href={t.href}>
+              <span class="name">{t.name}</span>
               <p>{t.text}</p>
-            </div>
+            </a>
           ))}
         </div>
       </div>

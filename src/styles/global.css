@@ -233,6 +233,10 @@ h2{
 .card .name a{color:var(--ink)}
 .card .name a:hover{color:var(--accent)}
 .card p{margin:0; font-size:.88rem; color:var(--ink-mute); line-height:1.5}
+/* A card that is itself a link, on /tools/: the title takes the hover. */
+a.card{color:inherit}
+a.card:hover{text-decoration:none; background:color-mix(in srgb, var(--ink) 5%, transparent)}
+a.card:hover .name{color:var(--accent)}
 
 /* ---------- page break marker (mockup only) ---------- */
 
