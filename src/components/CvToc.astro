@@ -42,9 +42,7 @@ const { sections } = Astro.props;
   // other fifteen copies are gone.
   const KEY = 'cv:anchor';
 
-  // `.build` is excluded: the builder is a different document, not this one at
-  // another length, and it opens at the top on purpose.
-  for (const a of document.querySelectorAll('.cvtoggle--main a:not(.build)')) {
+  for (const a of document.querySelectorAll('.cvtoggle--main a')) {
     a.addEventListener('click', () => {
       if (!heads.length) return;
       sessionStorage.setItem(KEY, JSON.stringify(anchorTrail(rects(), gap())));

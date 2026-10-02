@@ -126,23 +126,20 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
    outlined in the accent rather than filled, so nothing on the page competes
    with the content for weight. */
 .cvtoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
-/* `.tog` is a segment that is not a link — the Build segment on the builder
-   itself, which would only reload the page. It shares every rule with the
-   anchors so the two cannot drift apart visually. */
-.cvtoggle a, .cvtoggle .tog{
+.cvtoggle a{
   font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
   padding:.14rem .5rem; line-height:1.4; transition:.15s;
 }
 .cvtoggle a:hover{color:var(--ink); border-color:var(--rule-strong); text-decoration:none}
-.cvtoggle a.on, .cvtoggle .tog.on{
+.cvtoggle a.on{
   color:var(--accent); border-color:var(--accent-line); font-weight:500;
   background:transparent;
 }
 .cvtoggle a.on:hover{color:var(--accent); border-color:var(--accent)}
 
 /* The one at the top of the page is the primary control, so it stays legible. */
-.cvtoggle--main a, .cvtoggle--main .tog{font-size:.72rem; padding:.2rem .6rem}
+.cvtoggle--main a{font-size:.72rem; padding:.2rem .6rem}
 
 /* The CV's controls, condensed into the header once the originals scroll away.
    Download on the left, length on the right. */
@@ -161,11 +158,11 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
   height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
 }
-.cvbar .cvtoggle--main a, .cvbar .cvtoggle--main .tog{font-size:.66rem; padding:.16rem .5rem}
+.cvbar .cvtoggle--main a{font-size:.66rem; padding:.16rem .5rem}
 /* Nothing in the bar may wrap: it has a fixed height. On a phone the download
    is just "PDF", here and in the heading row, which is what makes the rest fit
    on one line. */
-.cvbar .wrap > *, .cvbar .cvtoggle a, .cvbar .cvtoggle .tog{white-space:nowrap}
+.cvbar .wrap > *, .cvbar .cvtoggle a{white-space:nowrap}
 @media (max-width:34rem){
   .cvbar .wrap{gap:.5rem}
   .dl{display:none}
@@ -176,12 +173,6 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 
 /* The builder has no download, so the toggle still sits right. */
 .cvbar .spacer{flex:1}
-
-/* "Build custom" is a different kind of action, so it keeps the accent even
-   when inactive — but it is a toggle segment like the rest, so its size,
-   padding and pill come from .cvtoggle and cannot drift from them. */
-.cvtoggle a.build, .cvtoggle .tog.build{color:var(--accent)}
-.cvtoggle a.build:hover{color:var(--accent); border-color:var(--accent)}
 
 /* Source link. Every CV entry is one record in data/, and the mark in the right
    margin opens it. Hidden below the width that can hold it outside the column,

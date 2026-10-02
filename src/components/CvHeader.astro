@@ -1,8 +1,8 @@
 ---
 // The CV pages' heading row, and the condensed copy that joins the header once
-// it scrolls away. Shared by /cv/<preset>/ and /tools/cv/ so the builder is
-// visibly the same document at a different length. The CV pages do not link to
-// the builder: it lives with the other tools, reached from the footer.
+// it scrolls away. Shared by /cv/<preset>/ and /tools/cv/, the builder, which
+// keeps the heading and the condensed bar but none of the length links: it is
+// a tool, reached from /tools/, not another length of the CV.
 import { presetNames, preset } from '../lib/presets.js';
 
 const { current, pdf = null } = Astro.props;
@@ -16,10 +16,8 @@ const onBuilder = current === 'builder';
       : <span class="spacer"></span>}
     <span class="more">
       {onBuilder
-        /* Jumping to a fixed-length CV mid-build would discard the selection
-           without warning, so the condensed bar offers Save Selection in that slot
-           instead. The lengths stay in the heading row, which means leaving
-           this page is something you scroll back up to do deliberately. */
+        /* The builder has no lengths to jump to; the slot offers Save
+           Selection instead. */
         ? <span class="cvtoggle cvtoggle--main">
             <button class="btn" type="button" id="savebar" tabindex="-1">Save Selection</button>
           </span>
@@ -28,48 +26,34 @@ const onBuilder = current === 'builder';
               <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
             ))}
           </span>}
-      {onBuilder && (
-        <>
-          <span class="sep">|</span>
-          {/* Not a link on the builder itself. It only ever led back to this
-              page, and the persistent bar sits under the pointer the whole time
-              you are working down the list — one stray click reloaded it and
-              took the selection with it. */}
-          <span class="cvtoggle cvtoggle--main">
-            <span class="tog build on" aria-current="page">Build</span>
-          </span>
-        </>
-      )}
     </span>
   </div>
 </div>
 
-{/* Phones only: opens the length toggle, which collapses behind the current
-    length there, as the author-position filter does on /publications/. */}
-<input type="checkbox" id="lenmore" class="posradio" aria-label="Show CV lengths" />
+{/* The builder is a tool, not a fourth length: it carries none of the length
+    links, only its own heading. */}
+{!onBuilder && (
+  /* Phones only: opens the length toggle, which collapses behind the current
+     length there, as the author-position filter does on /publications/. */
+  <input type="checkbox" id="lenmore" class="posradio" aria-label="Show CV lengths" />
+)}
 
 <div class="h2row">
   <div class="ttlgroup">
     <h2>Curriculum Vitae</h2>
     {pdf && <a class="btn" href={pdf}><span class="dl">Download </span>PDF</a>}
   </div>
-  <span class="more">
-    <label for="lenmore" class="lenmore" title="CV length">{onBuilder ? 'length' : preset(current).label}&nbsp;<span aria-hidden="true">▾</span></label>
-    <span class="cvtoggle cvtoggle--main cvlengths" role="group" aria-label="CV length">
-      {presetNames.map((n) => (
-        <a href={href(n)} class={n === current ? 'on' : ''}
-           aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
-      ))}
+  {!onBuilder && (
+    <span class="more">
+      <label for="lenmore" class="lenmore" title="CV length">{preset(current).label}&nbsp;<span aria-hidden="true">▾</span></label>
+      <span class="cvtoggle cvtoggle--main cvlengths" role="group" aria-label="CV length">
+        {presetNames.map((n) => (
+          <a href={href(n)} class={n === current ? 'on' : ''}
+             aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
+        ))}
+      </span>
     </span>
-    {onBuilder && (
-      <>
-        <span class="sep">|</span>
-        <span class="cvtoggle cvtoggle--main">
-          <a href="/tools/cv/" class="build on" aria-current="page">Build</a>
-        </span>
-      </>
-    )}
-  </span>
+  )}
 </div>
 
 <script>
