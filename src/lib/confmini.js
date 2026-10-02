@@ -25,10 +25,13 @@ const MINI = 3;
  */
 export function confMini(ids) {
   const shown = new Set(ids);
+  const full = conferenceMap();
+  // Never given, so neither on the map nor waiting to be.
+  const never = full.accepted.filter((t) => shown.has(t.id)).length;
 
   // Filtered after conferenceMap() has spread its pins, so a place sits where
   // the full map puts it whichever of its neighbours this CV happens to list.
-  const entries = conferenceMap().pins
+  const entries = full.pins
     .map((pin) => ({ ...pin, talks: pin.talks.filter((t) => shown.has(t.id)) }))
     .filter((pin) => pin.talks.length > 0)
     .map((pin, c) => ({
@@ -49,6 +52,6 @@ export function confMini(ids) {
     // with eight — the same painting order the full map uses.
     dots: [...entries].sort((a, b) => b.r - a.r),
     placed,
-    offMap: shown.size - placed,
+    offMap: shown.size - placed - never,
   };
 }

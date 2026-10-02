@@ -42,6 +42,7 @@ const KIND = {
   seminar: 'seminar',
   organizer: 'organised',
   attended: 'attended',
+  accepted: 'accepted, not attended',
 };
 
 /** Area, not radius, carries the count — a place with four talks should look
@@ -73,6 +74,8 @@ const newestFirst = (a, b) => b.date.localeCompare(a.date);
  * talks given online, at ONLINE_AT. `unsettled` still carry a location string
  * the geocoder refuses — `TO, CA` reads as California, so it is left off
  * rather than guessed at. `unplaced` have no location recorded yet at all.
+ * `accepted` were never given — I could not go — so there is no place to put
+ * them, and they are not waiting for one either.
  *
  * Every talk lands in exactly one of the three, and the page says so: a map
  * that quietly drops seventeen talks is worse than one that admits to them.
@@ -80,11 +83,13 @@ const newestFirst = (a, b) => b.date.localeCompare(a.date);
 export function conferenceMap() {
   const unsettled = [];
   const unplaced = [];
+  const accepted = [];
   const here = new Map();
 
   for (const item of byType('presentation')) {
     const talk = talkOf(item);
     const loc = item.location;
+    if (item.kind === 'accepted') { accepted.push(talk); continue; }
     if (!loc) { unplaced.push(talk); continue; }
     if (!coords(loc)) { unsettled.push({ ...talk, location: loc }); continue; }
     if (!here.has(loc)) here.set(loc, []);
@@ -110,8 +115,9 @@ export function conferenceMap() {
     pins,
     unsettled,
     unplaced,
+    accepted,
     talks: pins.reduce((n, p) => n + p.talks.length, 0),
-    total: unsettled.length + unplaced.length
+    total: unsettled.length + unplaced.length + accepted.length
       + pins.reduce((n, p) => n + p.talks.length, 0),
   };
 }

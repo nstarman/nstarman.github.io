@@ -17,9 +17,16 @@ describe('the conference map', () => {
       ...cmap.pins.flatMap((p) => p.talks.map((t) => t.id)),
       ...cmap.unsettled.map((t) => t.id),
       ...cmap.unplaced.map((t) => t.id),
+      ...cmap.accepted.map((t) => t.id),
     ];
     expect(ids.length).toBe(all.length);
     expect(new Set(ids).size).toBe(all.length);
+  });
+
+  it('leaves off a talk that was accepted but never given', () => {
+    const accepted = byType('presentation').filter((i) => i.kind === 'accepted');
+    expect(accepted.length).toBeGreaterThan(0);
+    expect(cmap.accepted.map((t) => t.id).sort()).toEqual(accepted.map((i) => i.id).sort());
   });
 
   it('places every pin inside the map', () => {
