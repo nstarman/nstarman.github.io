@@ -23,7 +23,12 @@
   "details": "Fit a curve through phase-space points — streams, orbits, trajectories.",
   "highlight": {
     "topic": "software",
-    "image": "highlights/phasecurvefit-joss.webp",
+    "image": "highlights/phasecurvefit.webp",
+    "source": {
+      "repo": "GalacticDynamics/phasecurvefit",
+      "path": "docs/_static/favicon.png",
+      "sha": "0aafe61feb42cf9602ffec30722ce4a27b3ca2b8"
+    },
     "alt": "The phasecurvefit logo: noisy points along a self-crossing looped curve, coloured by their fitted order from red through yellow to blue, with the learned mean path drawn as a black line.",
     "description": "Fits a curve through points in phase space — a stellar stream, an orbit, a trajectory — ordering them along it."
   },

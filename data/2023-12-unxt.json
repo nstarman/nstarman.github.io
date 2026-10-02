@@ -17,7 +17,12 @@
   "details": "Unit-aware quantities that survive jit, grad and vmap.",
   "highlight": {
     "topic": "software",
-    "image": "highlights/unxt-joss.webp",
+    "image": "highlights/unxt.webp",
+    "source": {
+      "repo": "GalacticDynamics/unxt",
+      "path": "docs/_static/favicon.png",
+      "sha": "dd3223573672d5af47ab347c27d5faeb2071be72"
+    },
     "alt": "The unxt logo: a ruler crossed with a green pencil on a blue square.",
     "description": "Unit-aware quantities for JAX: they carry their units through jitted, differentiated and vectorized code, with astropy.units under the hood."
   },

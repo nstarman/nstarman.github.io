@@ -28,6 +28,11 @@
   "highlight": {
     "topic": "software",
     "image": "highlights/spexial.svg",
+    "source": {
+      "repo": "JAXtronomy/spexial",
+      "path": "docs/_static/favicon.svg",
+      "sha": "41cefb96c1bdd5fb74aaf70c7e1f938a52410e11"
+    },
     "alt": "The spexial logo: a capital Gamma shaded from teal through blue to purple on a dark rounded square.",
     "description": "scipy.special in JAX: special functions on the scipy API, filling gaps such as zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions."
   }

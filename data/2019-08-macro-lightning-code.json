@@ -12,6 +12,11 @@
   "highlight": {
     "topic": "software",
     "image": "highlights/macro-lightning-code.webp",
+    "source": {
+      "repo": "nstarman/macro_lightning",
+      "path": "docs/_static/favicon.png",
+      "sha": "543c6ddc350bc7c156d0fa9a93c47b4c93ff00eb"
+    },
     "alt": "The macro_lightning logo: a dotted track through a cloud, ending below it in a black macro trailing a blue wake inside a yellow channel.",
     "description": "Constraints on macroscopic dark matter from the lightning it would trigger, on Earth and on Jupiter, released with the paper."
   },

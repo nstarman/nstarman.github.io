@@ -1,0 +1,63 @@
+name: Refresh software figures
+
+# A software item's figure can be mirrored from the package's own repository —
+# its `highlight.source`. When the package changes that file, this re-makes the
+# figure and opens a pull request, so the change, and anything the script does
+# to the image, is reviewed like any other. It never pushes to the default
+# branch. Items without a `source` have custom images and are left alone.
+
+on:
+  schedule:
+    # 06:00 UTC on Mondays. Logos change rarely; weekly keeps a new one from
+    # waiting long without polling often.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-software-figures
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-software-figures
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: sudo apt-get install -y --no-install-recommends webp
+
+      - name: Sync
+        run: node scripts/sync-software-figures.mjs | tee changed.txt
+
+      - name: Verify the site still builds
+        run: |
+          npm run test:schema
+          npm run build
+          npm run test:links
+
+      - name: Open a pull request if a figure moved
+        run: |
+          files=$(git status --porcelain -- data public/highlights | cut -c4-)
+          if [ -z "$files" ]; then
+            echo "Every mirrored figure is current." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          body=$'Re-made by `scripts/sync-software-figures.mjs`, run weekly by `.github/workflows/refresh-software-figures.yml`, because the upstream file changed:\n\n'
+          body+=$(sed 's/^/- /' changed.txt)
+          body+=$'\n\nTo stop mirroring a figure, remove its `highlight.source`.'
+
+          # shellcheck disable=SC2086 # one path per word
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the software figures" "$body" $files

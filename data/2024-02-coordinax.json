@@ -17,7 +17,12 @@
   "details": "Vectors, frames and transformations — differentiable, and unit-aware via unxt.",
   "highlight": {
     "topic": "software",
-    "image": "highlights/coordinax-paper.webp",
+    "image": "highlights/coordinax.webp",
+    "source": {
+      "repo": "GalacticDynamics/coordinax",
+      "path": "docs/_static/favicon.png",
+      "sha": "8ed309f5b1ac3d23bf65e97b09854398d4507d78"
+    },
     "alt": "The coordinax logo: a ruler crossed with a green arrow on a blue square.",
     "description": "Coordinates in JAX: vectors, frames and the transformations between them, differentiable and unit-aware through unxt."
   },
