@@ -40,10 +40,9 @@ jobs:
           cache: npm
       - run: npm ci
 
-      # schema + bibtex, so a bad item never reaches a deploy
+      # Every gate, so a bad item never reaches a deploy. Its build step leaves
+      # dist/ in place, which is what the PDFs and the upload below use.
       - run: npm test
-
-      - run: npm run build
 
       - uses: typst-community/setup-typst@v5
         with:
