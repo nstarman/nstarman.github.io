@@ -13,7 +13,7 @@
 // contracts hold in either style only because the layout is shared.
 //
 // Adding one is an entry in STYLES and an <option> in
-// src/pages/cv/builder.astro. Nothing in cv.typ changes: it names no font, no
+// src/pages/tools/cv.astro. Nothing in cv.typ changes: it names no font, no
 // glyph and no style, and asks `styled()` for whichever one cv.json chose.
 
 #import "theme.typ": accent

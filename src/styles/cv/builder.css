@@ -1,4 +1,4 @@
-/* What /cv/builder/ adds to the CV: a tick box on every entry and every
+/* What /tools/cv/ adds to the CV: a tick box on every entry and every
  * elaboration line, the per-section selectors, and the compile controls.
  *
  * Loaded by the builder page alone. Layered over cv/page.css rather than
