@@ -58,6 +58,9 @@
     "pages": "253"
   },
   "doi": "10.3847/1538-4357/ad94f2",
+  "arxiv": "2311.16960",
+  "primaryClass": "astro-ph.GA",
+  "bibcode": "2025ApJ...980..253S",
   "links": [
     {
       "rel": "paper",
