@@ -141,8 +141,8 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){ .cvtoggle::before{transition:none} }
 .cvtoggle a{
   text-align:center; white-space:nowrap; border-radius:999px;
-  font-family:var(--mono); font-size:.7rem; letter-spacing:.02em; text-transform:uppercase;
-  color:var(--ink-mute); padding:.12rem .6rem; line-height:1.4; transition:color .18s ease;
+  font-family:var(--mono); font-size:.64rem; letter-spacing:0; text-transform:uppercase;
+  color:var(--ink-mute); padding:.1rem .35rem; line-height:1.4; transition:color .18s ease;
 }
 .cvtoggle.is-dragging::before{transition:none}
 .cvtoggle:has(a){touch-action:pan-y; user-select:none}
@@ -166,7 +166,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
   height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
 }
-.cvbar .cvtoggle--main a{font-size:.66rem; padding:.1rem .5rem}
+.cvbar .cvtoggle--main a{font-size:.6rem}
 /* Nothing in the bar may wrap: it has a fixed height. On a phone the download
    is just "PDF", here and in the heading row, which is what makes the rest fit
    on one line. */
