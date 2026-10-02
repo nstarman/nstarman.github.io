@@ -251,7 +251,7 @@ footer .wrap a{color:inherit}
 footer .wrap .toolsbtn, .toolsbtn{border:1px solid var(--accent-line); border-radius:2rem; padding:.18rem .55rem;
   letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
 footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-decoration:none}
-.toolsback{display:flex; justify-content:flex-end; margin-top:.6rem; height:0; font-family:var(--mono); font-size:.72rem}
+.toolsback{display:flex; justify-content:flex-end; align-items:flex-start; margin-top:.6rem; height:0; font-family:var(--mono); font-size:.72rem}
 
 @media (max-width:34rem){
   /* Tight enough that the name, the four links and the theme toggle all fit
