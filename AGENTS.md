@@ -112,7 +112,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `type` | also required | also accepted |
 |---|---|---|
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
-| `software` | — | `repo`, `authors`, `version`, `role`, `doi` |
+| `software` | — | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `role`, `location` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder` |
