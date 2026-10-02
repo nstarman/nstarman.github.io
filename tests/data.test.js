@@ -8,7 +8,7 @@ import {
   resolve,
   authorPosition,
   venueUrl,
-  softwarePaper,
+  softwarePapers,
   displayName,
   authors,
   venueLine,
@@ -257,10 +257,10 @@ describe('venueUrl', () => {
   });
 });
 
-describe('softwarePaper', () => {
+describe('softwarePapers', () => {
   it('follows a package\'s ref to its paper', () => {
     for (const id of ['unxt', 'astropy', 'trackstream', 'macro-lightning-code']) {
-      expect(softwarePaper(resolve(id)), id).toBeTruthy();
+      expect(softwarePapers(resolve(id)), id).not.toEqual([]);
     }
   });
 
@@ -268,12 +268,12 @@ describe('softwarePaper', () => {
     // REL_ORDER ranks `ads` and `preprint` above `paper`, which is right for a
     // trail of marks and wrong when only one link is being chosen: this used to
     // send Astropy to ADS and macro_lightning to arXiv.
-    expect(softwarePaper(resolve('astropy')).url).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
-    expect(softwarePaper(resolve('macro-lightning-code')).url).toContain('journals.aps.org');
+    expect(softwarePapers(resolve('astropy'))[0].url).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
+    expect(softwarePapers(resolve('macro-lightning-code'))[0].url).toContain('journals.aps.org');
   });
 
   it('falls back to what exists when the paper is not published', () => {
-    const p = softwarePaper(resolve('phasecurvefit'));
+    const [p] = softwarePapers(resolve('phasecurvefit'));
     expect(p.status).toBe('submitted');
     expect(p.url).toBeTruthy();
   });
@@ -282,19 +282,31 @@ describe('softwarePaper', () => {
     // coordinax refs unxt — a sibling, not a paper.
     const coordinax = resolve('coordinax');
     expect(coordinax.refs).toContain('unxt');
-    expect(softwarePaper(coordinax)).toBeNull();
+    expect(softwarePapers(coordinax)).toEqual([]);
   });
 
-  it('is null for a package with no refs at all', () => {
-    expect(softwarePaper(resolve('quax'))).toBeNull();
-    expect(softwarePaper({})).toBeNull();
+  it('is empty for a package with no refs at all', () => {
+    expect(softwarePapers(resolve('quax'))).toEqual([]);
+    expect(softwarePapers({})).toEqual([]);
   });
 
   it('finds exactly the packages that have one', () => {
-    const withPaper = byType('software').filter(softwarePaper).map((s) => s.id).sort();
+    const withPaper = byType('software').filter((s) => softwarePapers(s).length).map((s) => s.id).sort();
     expect(withPaper).toEqual(
       ['astropy', 'galactopinns', 'macro-lightning-code', 'phasecurvefit', 'potamides', 'trackstream', 'unxt'],
     );
+  });
+
+  it('dates each paper by its own year, apart from the repository', () => {
+    // The package's date is when the repo started; the paper's is its own.
+    const [p] = softwarePapers(resolve('macro-lightning-code'));
+    expect(p.year).toBe(String(resolve('macro-lightning').date.start).slice(0, 4));
+    expect(p.label).toBe(`paper ${p.year}`);
+  });
+
+  it('lists every paper a package refs, oldest first', () => {
+    const sw = { refs: ['unxt-joss', 'macro-lightning'] };
+    expect(softwarePapers(sw).map((p) => p.id)).toEqual(['macro-lightning', 'unxt-joss']);
   });
 });
 

@@ -72,7 +72,10 @@
     glyph: (name, size: 1em, fill: accent) => icon(name, size: size, fill: fill),
     solo: (name, word, size: 1em, fill: accent) => icon(name, size: size, fill: fill),
     trail: (links, size: 1em, tint: accent) => links
-      .map(l => link(l.url, icon(l.icon, size: size, fill: tint)))
+      // A software package's paper carries its year beside the mark.
+      .map(l => link(l.url, if l.at("year", default: none) != none {
+        [#icon(l.icon, size: size, fill: tint)#h(1.5pt)#text(size: size * 0.86, fill: tint, l.year)]
+      } else { icon(l.icon, size: size, fill: tint) }))
       .join(h(3pt)),
   ),
 

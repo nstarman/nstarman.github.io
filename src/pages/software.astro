@@ -1,10 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
-import { byType, softwarePaper } from '../lib/data.js';
+import { byType, softwarePapers } from '../lib/data.js';
 
 const all = byType('software');
-const withPaper = all.filter(softwarePaper).length;
+const withPaper = all.filter((s) => softwarePapers(s).length).length;
 ---
 <Base title="Software — Nathaniel Starkman">
   <main>
