@@ -1,0 +1,30 @@
+---
+// /tools/ — the things built on the database rather than shown from it. Out of
+// the nav on purpose: reached from the footer.
+import Base from '../../layouts/Base.astro';
+
+const tools = [
+  {
+    href: '/tools/cv/',
+    name: 'CV builder',
+    text: 'The complete CV with a tick box on every entry and line. Choose what goes in, then compile your own PDF in the browser.',
+  },
+];
+---
+<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database.">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="h2row"><h2>Tools</h2></div>
+        <div class="soft">
+          {tools.map((t) => (
+            <div class="card">
+              <div class="name"><a href={t.href}>{t.name}</a></div>
+              <p>{t.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>

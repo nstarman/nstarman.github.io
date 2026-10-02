@@ -237,10 +237,16 @@ h2{
 /* ---------- page break marker (mockup only) ---------- */
 
 footer{margin-top:1rem}
-footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; gap:1rem;
+footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; align-items:center; gap:1rem;
   flex-wrap:wrap; font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
   border-top:1px solid var(--rule)}
 footer .wrap a{color:inherit}
+.footmeta{display:flex; align-items:center; gap:.6rem}
+/* The nav's outlined pill, so it reads as a way somewhere rather than a line
+   of small print. */
+footer .wrap .toolsbtn{border:1px solid var(--accent-line); border-radius:2rem; padding:.18rem .55rem;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+footer .wrap .toolsbtn:hover{border-color:var(--accent); text-decoration:none}
 
 @media (max-width:34rem){
   /* Tight enough that the name, the four links and the theme toggle all fit

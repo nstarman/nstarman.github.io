@@ -1,7 +1,8 @@
 ---
 // The CV pages' heading row, and the condensed copy that joins the header once
-// it scrolls away. Shared by /cv/<preset>/ and /cv/builder/ so the builder is
-// visibly the same document at a different length, not a separate tool.
+// it scrolls away. Shared by /cv/<preset>/ and /tools/cv/ so the builder is
+// visibly the same document at a different length. The CV pages do not link to
+// the builder: it lives with the other tools, reached from the footer.
 import { presetNames, preset } from '../lib/presets.js';
 
 const { current, pdf = null } = Astro.props;
@@ -27,16 +28,18 @@ const onBuilder = current === 'builder';
               <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
             ))}
           </span>}
-      <span class="sep">|</span>
-      <span class="cvtoggle cvtoggle--main">
-        {onBuilder
-          /* Not a link on the builder itself. It only ever led back to this
-             page, and the persistent bar sits under the pointer the whole time
-             you are working down the list — one stray click reloaded it and
-             took the selection with it. */
-          ? <span class="tog build on" aria-current="page">Build</span>
-          : <a href="/cv/builder/" class="build" tabindex="-1">Build</a>}
-      </span>
+      {onBuilder && (
+        <>
+          <span class="sep">|</span>
+          {/* Not a link on the builder itself. It only ever led back to this
+              page, and the persistent bar sits under the pointer the whole time
+              you are working down the list — one stray click reloaded it and
+              took the selection with it. */}
+          <span class="cvtoggle cvtoggle--main">
+            <span class="tog build on" aria-current="page">Build</span>
+          </span>
+        </>
+      )}
     </span>
   </div>
 </div>
@@ -58,11 +61,14 @@ const onBuilder = current === 'builder';
            aria-current={n === current ? 'true' : undefined}>{preset(n).label}</a>
       ))}
     </span>
-    <span class="sep">|</span>
-    <span class="cvtoggle cvtoggle--main">
-      <a href="/cv/builder/" class={onBuilder ? 'build on' : 'build'}
-         aria-current={onBuilder ? 'page' : undefined}>Build</a>
-    </span>
+    {onBuilder && (
+      <>
+        <span class="sep">|</span>
+        <span class="cvtoggle cvtoggle--main">
+          <a href="/tools/cv/" class="build on" aria-current="page">Build</a>
+        </span>
+      </>
+    )}
   </span>
 </div>
 

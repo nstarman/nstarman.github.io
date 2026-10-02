@@ -66,7 +66,7 @@ can use: the home page carries no CV and no map, and the CV carries no map from
 | [`src/styles/map.css`](src/styles/map.css) | `CollabMap.astro`, `ConfMap.astro` | the two world maps on `/research/` |
 | [`src/styles/cv/page.css`](src/styles/cv/page.css) | `CvView.astro` | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the sticky bar, the length toggle, the source marks |
 | [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | `CvView.astro` | the collaborator and conference maps in the CV's right margin, and the tint on a row that answers what was picked in one — a paper written with that person, a talk given in that place |
-| [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | `src/pages/cv/builder.astro` | what `/cv/builder/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
+| [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | `src/pages/tools/cv.astro` | what `/tools/cv/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
 
 Order is the cascade: `Base.astro` loads `global.css` before any page or
 component adds its own, so the site comes first and the CV layers on top of it.
@@ -81,7 +81,7 @@ alone has (`.tl--pub`, `.tl--unpub`, `.tl--pick`) sit under `cv/`.
 
 ## The CV
 
-The four pre-built PDFs and the in-browser builder at `/cv/builder/` compile the
+The four pre-built PDFs and the in-browser builder at `/tools/cv/` compile the
 same template from the same render model, so the PDF and the site cannot
 disagree about what a preset contains. Under CI the Typst CLI reads `cv.json`
 off disk; in the browser typst.ts is handed the same filename through its
@@ -135,7 +135,7 @@ nothing else.
 restated, so a style cannot answer those two inconsistently. Everything else is
 shared — the same type, the same spacing, the same sections, off the same
 model — which is why adding a style is that entry plus an `<option>` in
-`src/pages/cv/builder.astro`, touches `cv.typ` not at all, and never becomes a
+`src/pages/tools/cv.astro`, touches `cv.typ` not at all, and never becomes a
 second template.
 
 ## Generated data
