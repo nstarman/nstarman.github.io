@@ -463,7 +463,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    a file to take, so it reads as a glyph rather than another destination. */
 .baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
 .baremark .ico{width:2.5rem; height:1.875rem; text-transform:none; letter-spacing:0; fill:currentColor; display:block}
-.baremark .ico text{fill:var(--ink-2)}
+.baremark .ico text{fill:var(--ink-mute)}
 .baremark:hover, .baremark:focus-visible{color:var(--accent)}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
