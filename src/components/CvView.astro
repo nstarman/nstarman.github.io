@@ -4,7 +4,7 @@
 import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
-import { links, softwarePaper, positionStops } from '../lib/data.js';
+import { links, softwarePapers, positionStops } from '../lib/data.js';
 import { detailLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
@@ -16,7 +16,7 @@ import CvTimelineItem from './CvTimelineItem.astro';
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
 function paperCut(section) {
-  const withPaper = section.items.filter(softwarePaper).length;
+  const withPaper = section.items.filter((i) => softwarePapers(i).length).length;
   return withPaper > 0 && withPaper < section.items.length;
 }
 
@@ -171,7 +171,7 @@ const mapFor = (s) => {
               <div class="name">
                 {pick && (
                   <input type="checkbox" class="itembox" value={item.id}
-                         data-paper={softwarePaper(item) ? 'yes' : undefined}
+                         data-paper={softwarePapers(item).length ? 'yes' : undefined}
                          checked={isPicked(item.id)}
                          aria-label={`Include ${item.title}`} />
                 )}
@@ -180,7 +180,7 @@ const mapFor = (s) => {
                   : item.title}
               </div>
               {item.summary && <p>{item.summary}</p>}
-              <LinkIcons links={links(item)} />
+              <LinkIcons links={[...softwarePapers(item), ...links(item)]} />
             </div>
           ))}
         </div>

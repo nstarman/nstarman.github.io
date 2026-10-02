@@ -368,9 +368,13 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
   background:var(--surface); transition:.15s;
 }
 .iconbtn .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
+.iconyear{font-size:.72rem; line-height:1; font-variant-numeric:tabular-nums}
 /* Dense contexts — CV rows, the software long tail — take a smaller mark. */
 .tl .iconbtn,.card--mini .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
 .tl .iconbtn .ico,.card--mini .iconbtn .ico{width:.75rem; height:.75rem}
+/* A software package's paper carries its year beside the mark. */
+.iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear),.card--mini .iconbtn:has(.iconyear){
+  width:auto; padding:0 .4rem; gap:.25rem}
 .iconbtn:hover,.iconbtn:focus-visible{
   color:var(--ground); background:var(--ink); border-color:var(--ink);
   text-decoration:none;

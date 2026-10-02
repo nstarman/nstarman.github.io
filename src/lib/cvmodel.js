@@ -7,7 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
-import { authors, venueLine, dateLabel, links, money, softwarePaper, REL_ICON, relKey } from './data.js';
+import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey } from './data.js';
 import { spans, detailLines } from './inline.js';
 
 /**
@@ -64,10 +64,7 @@ function subject(item) {
  */
 /** One definition, in lib/data.js, so the PDF and the website cannot disagree
  *  about which packages have a paper. The template wants an `icon`. */
-const paperOf = (sw) => {
-  const p = softwarePaper(sw);
-  return p ? { ...p, icon: 'paper' } : null;
-};
+const papersOf = (sw) => softwarePapers(sw).map((p) => ({ ...p, icon: 'paper' }));
 
 /** The byline, with the CV's owner bold.
  *
@@ -160,10 +157,10 @@ export function cvModel(presetName, only, keepLine) {
             label: l.label ?? l.rel,
             icon: REL_ICON[relKey(l)] ?? 'link',
           }));
-          const paper = item.type === 'software' ? paperOf(item) : null;
+          const papers = item.type === 'software' ? papersOf(item) : [];
           // Second, so the grid still titles the package with its repository
-          // and the paper leads the trail.
-          return paper ? [own[0], paper, ...own.slice(1)].filter(Boolean) : own;
+          // and the papers lead the trail.
+          return papers.length ? [own[0], ...papers, ...own.slice(1)].filter(Boolean) : own;
         })(),
       })),
     })),
