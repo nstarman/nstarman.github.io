@@ -144,6 +144,8 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   font-family:var(--mono); font-size:.7rem; letter-spacing:.02em; text-transform:uppercase;
   color:var(--ink-mute); padding:.12rem .6rem; line-height:1.4; transition:color .18s ease;
 }
+.cvtoggle.is-dragging::before{transition:none}
+.cvtoggle:has(a){touch-action:pan-y; user-select:none}
 .cvtoggle a:hover{color:var(--ink); text-decoration:none}
 .cvtoggle a.on{color:var(--ink)}
 
