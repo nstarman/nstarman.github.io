@@ -462,8 +462,8 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 /* A mark with no button around it. The profile pills are places to go; this is
    a file to take, so it reads as a glyph rather than another destination. */
 .baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
-.baremark .ico{width:2.5rem; height:1.875rem; text-transform:none; letter-spacing:0; fill:currentColor; display:block}
-.baremark .ico text{fill:var(--ink-mute)}
+.baremark .ico{width:1.667rem; height:1.25rem; text-transform:none; letter-spacing:0; fill:currentColor; display:block}
+.baremark .ico text{fill:var(--ink-faint)}
 .baremark:hover, .baremark:focus-visible{color:var(--accent)}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
