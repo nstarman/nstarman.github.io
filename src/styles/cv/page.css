@@ -40,12 +40,12 @@
   justify-content:center; border-radius:.25rem; color:var(--ink-faint);
   border:1px solid var(--rule); transition:.15s;
 }
-.homelink .ico{width:11px; height:11px; fill:currentColor; display:block}
+.homelink .ico{width:.6875rem; height:.6875rem; fill:currentColor; display:block}
 .homelink:hover{color:var(--ground); background:var(--ink); border-color:var(--ink)}
 /* Clears both sticky bars, plus a little room so the heading is not flush
    against the bar's rule. 4.5rem covered only the nav, so every in-page jump
    landed the heading 22px under .cvbar with 4px of its descenders showing. */
-.cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + 0.75rem)}
+.cvsection{scroll-margin-top:calc(var(--nav-h) + var(--cvbar-h) + var(--toc-h) + 0.75rem)}
 
 /* The last section gets enough room for its heading to be scrolled to the top
    like every other one. Without it the page bottoms out with the final sections
@@ -102,7 +102,7 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 /* The page's icon stands in for its name. Inline rather than block, because it
    sits between two words and has to share their baseline. */
 .seclink .ico{
-  width:12px; height:12px; fill:currentColor;
+  width:.75rem; height:.75rem; fill:currentColor;
   display:inline-block; vertical-align:-1px;
 }
 .cvsechead .cvsection{margin:0; padding:0; border:0}
@@ -147,6 +147,13 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   height:var(--cvbar-h); padding-block:0; border-bottom:1px solid var(--rule);
 }
 .cvbar .cvtoggle--main a, .cvbar .cvtoggle--main .tog{font-size:.66rem; padding:.16rem .5rem}
+/* Nothing in the bar may wrap: it has a fixed height. On a phone the download
+   is just "PDF", which is what makes the rest fit on one line. */
+.cvbar .wrap > *, .cvbar .cvtoggle a, .cvbar .cvtoggle .tog{white-space:nowrap}
+@media (max-width:34rem){
+  .cvbar .wrap{gap:.5rem}
+  .cvbar .dl{display:none}
+}
 @media (prefers-reduced-motion:reduce){
   .cvbar{transition:opacity .18s ease}
 }

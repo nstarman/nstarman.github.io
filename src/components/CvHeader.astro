@@ -11,7 +11,7 @@ const onBuilder = current === 'builder';
 <div class="cvbar" aria-hidden="true">
   <div class="wrap">
     {pdf
-      ? <a class="btn" href={pdf} tabindex="-1">Download PDF</a>
+      ? <a class="btn" href={pdf} tabindex="-1"><span class="dl">Download </span>PDF</a>
       : <span class="spacer"></span>}
     <span class="more">
       {onBuilder

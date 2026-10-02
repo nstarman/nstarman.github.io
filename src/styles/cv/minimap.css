@@ -44,7 +44,7 @@
   }
   .cvminibtn:hover, .cvminibtn:focus-visible,
   .cvmini-shut:hover, .cvmini-shut:focus-visible{opacity:1; color:var(--accent)}
-  .cvminibtn .ico, .cvmini-shut .ico{width:15px; height:15px; fill:currentColor; display:block}
+  .cvminibtn .ico, .cvmini-shut .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
   /* Lit while the map is open, which for the panel's copy is always: it is
      inside the thing it closes. */
   .cvminibtn[aria-expanded="true"], .cvmini-shut{opacity:1; color:var(--accent)}

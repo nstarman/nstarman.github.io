@@ -73,7 +73,7 @@
       }
     },
     "conferences": {
-      "heading": "Conferences & Workshops",
+      "heading": "Conferences",
       "icon": "conferences",
       "match": {
         "type": "presentation",

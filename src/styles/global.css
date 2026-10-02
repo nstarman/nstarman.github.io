@@ -32,9 +32,15 @@
 }
 
 *{box-sizing:border-box}
+/* Wide screens scale the whole page rather than widening the column: every
+   length is in rem, so the measure stays the same number of characters and the
+   layout keeps its proportions. 16px up to 1280px wide, rising to 20px at
+   2080px and capped there. Media queries are unaffected — their rem is always
+   the browser default. */
+html{font-size:clamp(100%, .6rem + .5vw, 125%)}
 body{
   margin:0; background:var(--ground); color:var(--ink);
-  font-family:var(--sans); font-size:16px; line-height:1.55;
+  font-family:var(--sans); font-size:1rem; line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
 a{color:var(--accent); text-decoration:none}
@@ -60,7 +66,7 @@ nav ul a:hover{color:var(--accent); text-decoration:none}
 /* Long labels blow out the bar on a phone, so Publications and Software fall
    back to their mark. The word stays in the DOM, clipped, so the link keeps
    its name for screen readers. */
-.navico{display:none; width:14px; height:14px; fill:currentColor}
+.navico{display:none; width:.875rem; height:.875rem; fill:currentColor}
 @media (max-width:34rem){
   nav ul a:has(.navico){display:flex; align-items:center}
   .navico{display:block}
@@ -74,7 +80,7 @@ header{position:relative; overflow:hidden}
 header .wrap{position:relative; display:flex; gap:1.75rem; align-items:flex-start;
   padding-block:2.75rem 1.35rem; flex-wrap:wrap}
 .portrait{
-  width:112px; height:112px; border-radius:50%; object-fit:cover; flex:none;
+  width:7rem; height:7rem; border-radius:50%; object-fit:cover; flex:none;
   border:1px solid var(--rule-strong); background:var(--surface);
 }
 .ident{display:flex; flex-direction:column; gap:.55rem; min-width:15rem; flex:1}
@@ -92,7 +98,7 @@ h1{
   color:var(--ink-mute); border:1px solid var(--rule-strong);
   background:var(--ground); transition:.15s;
 }
-.pill .ico{width:15px; height:15px; fill:currentColor; display:block}
+.pill .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 .pill:hover,.pill:focus-visible{
   color:var(--ground); background:var(--ink); border-color:var(--ink);
   text-decoration:none;
@@ -346,10 +352,10 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   color:var(--ink-mute); border:1px solid var(--rule-strong);
   background:var(--surface); transition:.15s;
 }
-.iconbtn .ico{width:15px; height:15px; fill:currentColor; display:block}
+.iconbtn .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 /* Dense contexts — CV rows, the software long tail — take a smaller mark. */
 .tl .iconbtn,.card--mini .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
-.tl .iconbtn .ico,.card--mini .iconbtn .ico{width:12px; height:12px}
+.tl .iconbtn .ico,.card--mini .iconbtn .ico{width:.75rem; height:.75rem}
 .iconbtn:hover,.iconbtn:focus-visible{
   color:var(--ground); background:var(--ink); border-color:var(--ink);
   text-decoration:none;
@@ -380,14 +386,19 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .entry--full .abstract{max-width:none; margin:.55rem 0 0}
 .entry--full .btns--icon{flex:none; flex-direction:column; gap:.35rem; margin:.15rem 0 0}
 
+/* On a phone the column of buttons becomes a row, and it sits under the
+   venue rather than after everything: .body dissolves so its parts and the
+   buttons share one flex column, and the card and below are ordered after. */
 @media (max-width:34rem){
-  .entry--full{flex-direction:column; gap:.6rem}
-  .entry--full .btns--icon{flex-direction:row}
+  .entry--full{flex-direction:column; align-items:stretch; gap:0}
+  .entry--full .body{display:contents}
+  .entry--full .btns--icon{flex-direction:row; margin-top:.5rem}
+  .entry--full .body > :is(.hl-card, .absmore, .micro-card){order:1}
 }
 /* ADS and arXiv on the publications page, same pills as the home page. */
 .pubprofiles{display:flex; align-items:center; gap:.5rem}
 .pubprofiles .pill{width:1.75rem; height:1.75rem}
-.pubprofiles .pill .ico{width:13px; height:13px}
+.pubprofiles .pill .ico{width:.8125rem; height:.8125rem}
 
 /* The year in the landing gutter reads as the Background section's date column
    does — same face, size and weight, because they are the same kind of thing.
@@ -415,7 +426,10 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .hl-context:hover{color:var(--accent)}
 .absmore{margin-top:.45rem}
-@media (max-width:34rem){ .hl-card--pub{grid-template-columns:1fr} }
+@media (max-width:34rem){
+  .hl-card--pub{grid-template-columns:1fr}
+  .hl-card.hl-card--pub img{width:min(100%,14rem); justify-self:center}  /* beats .hl-card img, which comes later */
+}
 .absmore summary{
   cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none;
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
@@ -444,7 +458,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 /* A mark with no button around it. The profile pills are places to go; this is
    a file to take, so it reads as a glyph rather than another destination. */
 .baremark{display:inline-flex; align-items:center; color:var(--ink-faint); transition:color .15s}
-.baremark .ico{width:17px; height:17px; fill:currentColor; display:block}
+.baremark .ico{width:1.0625rem; height:1.0625rem; fill:currentColor; display:block}
 .baremark:hover, .baremark:focus-visible{color:var(--accent)}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
@@ -519,7 +533,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
    stops beside it, so the two segments are the same height and the thumb does
    not have to grow to cover one of them. */
 .pubfilter label:has(> .ico){display:flex; align-items:center; justify-content:center}
-.pubfilter label .ico{width:13px; height:13px; fill:currentColor; display:block}
+.pubfilter label .ico{width:.8125rem; height:.8125rem; fill:currentColor; display:block}
 
 /* Where the thumb sits, and which label is lit. "All" is first, so the stops
    read left to right as no-limit, then tightening. */
@@ -580,7 +594,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   background:none; border:0; border-radius:50%; cursor:pointer;
   color:var(--ink-faint); transition:color .15s, transform .35s ease;
 }
-.themetoggle .ico{width:14px; height:14px; fill:currentColor; display:block}
+.themetoggle .ico{width:.875rem; height:.875rem; fill:currentColor; display:block}
 .themetoggle:hover{color:var(--accent)}
 :root[data-theme="dark"] .themetoggle{transform:rotate(180deg)}
 @media (prefers-color-scheme: dark){
@@ -611,7 +625,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl-foot{display:grid; grid-template-columns:1fr auto; align-items:end; gap:.4rem}
 .hl-foot .btns--icon{grid-column:1; margin:0; padding:0; gap:.25rem}
 .hl-foot .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
-.hl-foot .iconbtn .ico{width:12px; height:12px}
+.hl-foot .iconbtn .ico{width:.75rem; height:.75rem}
 .hl-foot .hl-refs{grid-column:1 / -1}
 .hl-year{grid-column:2; font-family:var(--mono); font-size:.72rem;
   letter-spacing:.04em; color:var(--ink-faint)}
@@ -661,7 +675,13 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 /* Assists: papers that thank him, under his own, set apart by a rule. */
 .assists{margin-top:2.6rem; padding-top:2rem; border-top:1px solid var(--rule)}
 .assists[hidden]{display:none}
-.assists h3{margin:0 0 .3rem; scroll-margin-top:calc(var(--nav-h) + .75rem)}
+.assists h3{margin:0 0 .3rem; scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + .75rem)}
+/* Wide enough, the lede joins the heading's line behind a rule. */
+@media (min-width:44rem){
+  .assists-head{display:flex; align-items:baseline; gap:.75rem; margin-bottom:.7rem}
+  .assists-head > *{margin:0}
+  .assists-head .lede{border-left:1px solid var(--rule-strong); padding-left:.75rem}
+}
 /* Tall enough for its heading to scroll to the top, as .cvsec--last does on
    the CV: otherwise the page bottoms out with it stranded mid-screen. The
    7rem tail is what sits below it (the wrap's padding and the footer), and
@@ -720,6 +740,51 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
    moving the content column: 49rem of column plus ~13rem of rail and its gap
    on each side. Below that the page is unchanged rather than reflowed. */
 .cvtoc{display:none}
+/* Narrower than that, the rail becomes a strip of the same links, scrolling
+   sideways, that sticks under the site nav. --toc-h is its height, which every
+   in-page jump adds to its scroll margin. */
+:root{--toc-h:0px}
+@media (max-width:77.99rem){
+  :root:has(.cvtoc){--toc-h:2.3rem}
+  .cvtoc{
+    display:block; position:sticky; top:var(--nav-h); z-index:8;
+    max-width:var(--wide); margin-inline:auto; padding-inline:1.5rem;
+    background:color-mix(in srgb,var(--ground) 92%,transparent); backdrop-filter:blur(8px);
+  }
+  .wrap > .cvtoc{padding-inline:0}
+  /* The CV's condensed controls take the slot under the nav when they show. */
+  :root:has(.cvbar.is-on) .cvtoc{top:calc(var(--nav-h) + var(--cvbar-h))}
+  .cvtoc ol{
+    position:relative; list-style:none; margin:0; padding:0;
+    display:flex; align-items:stretch; gap:1.1rem; height:var(--toc-h);
+    overflow-x:auto; scrollbar-width:none; border-bottom:1px solid var(--rule);
+  }
+  .cvtoc ol::-webkit-scrollbar{display:none}
+  .cvtoc li{flex:none; display:flex}
+  .cvtoc li[hidden]{display:none}
+  .cvtoc a{
+    display:flex; align-items:center; white-space:nowrap;
+    font-size:.78rem; color:var(--ink-faint); border-bottom:2px solid transparent;
+  }
+  .cvtoc a:hover{color:var(--ink-2); text-decoration:none}
+  .cvtoc a.is-current{color:var(--ink); border-color:var(--accent); font-weight:500}
+  .cvtoc .toc-assists{border-left:1px solid var(--rule-strong); padding-left:1.1rem;
+    margin-block:.55rem}
+}
+/* On a phone the strip moves to the bottom of the screen, under the thumb, and
+   leaves the top to the nav (and the CV's controls). Out of the flow, so it no
+   longer adds to the jump offset; the footer makes room for it instead. */
+@media (max-width:34rem){
+  :root:has(.cvtoc){--toc-h:0px}
+  .cvtoc, :root:has(.cvbar.is-on) .cvtoc{
+    position:fixed; top:auto; bottom:0; left:0; right:0; max-width:none;
+    padding:0 1.5rem env(safe-area-inset-bottom); border-top:1px solid var(--rule);
+  }
+  .cvtoc ol{height:2.6rem; border-bottom:0}
+  .cvtoc a{border-bottom:0; border-top:2px solid transparent}
+  .cvtoc a.is-current{border-color:var(--accent)}
+  :root:has(.cvtoc) footer{padding-bottom:2.6rem}
+}
 @media (min-width:78rem){
   .cvtoc{
     display:block; position:fixed; top:6.5rem;
@@ -748,7 +813,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   }
 }
 /* /publications/ uses the rail for years; a jump must clear the sticky nav. */
-.entry--full{scroll-margin-top:calc(var(--nav-h) + 0.75rem)}
+.entry--full{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 0.75rem)}
 /* A figure on /research/ jumps to the paper's card here; leave room for the
    title, byline and venue above it. */
-.hl-card--pub{scroll-margin-top:calc(var(--nav-h) + 7rem)}
+.hl-card--pub{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 7rem)}

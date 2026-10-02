@@ -44,7 +44,7 @@ const byline = (a) => {
 ---
 <Base title="Publications — Nathaniel Starkman">
   <main>
-    {/* Year rail: styled by .cvtoc (shared with the CV), shown only on wide screens. */}
+    {/* Year rail: styled by .cvtoc (shared with the CV) — a left rail on wide screens, a strip under the nav below. */}
     <nav class="cvtoc" aria-label="Publications by year">
       <ol>
         {years.map((y) => <li><a href={`#y-${y}`} data-year={y}>{y}</a></li>)}
@@ -117,8 +117,10 @@ const byline = (a) => {
             the topic filter does. */}
         {assists.length > 0 && (
           <div class="assists">
-            <h3 id="assists">Assists</h3>
-            <p class="lede">Papers that thank me in their acknowledgements.</p>
+            <div class="assists-head">
+              <h3 id="assists">Assists</h3>
+              <p class="lede">Papers that thank me in their acknowledgements</p>
+            </div>
             <div class="soft">
               {assists.map((a) => {
                 const href = primaryLink(a)?.url;
@@ -174,15 +176,21 @@ const byline = (a) => {
   const firstOf = (y) => shown().find((e) => e.dataset.year === y);
   // The same rule as the CV's section rail (lib/scrollspy.js): the last paper
   // within 120px of the top, which allows a pixel past its 119px gap.
+  // On a narrow screen the rail is a strip stuck under the nav, which pushes
+  // that line down by its own height.
+  const rail = document.querySelector('.cvtoc');
+  const strip = () => (rail && getComputedStyle(rail).position === 'sticky' ? rail.offsetHeight : 0);
+  let was = null;
   const spy = () => {
     const vis = shown();
+    const line = 119 + strip();
     const cur = currentSection(
-      vis.map((e) => ({ id: e.dataset.year, top: e.getBoundingClientRect().top })), 119);
+      vis.map((e) => ({ id: e.dataset.year, top: e.getBoundingClientRect().top })), line);
     const have = new Set(vis.map((e) => e.dataset.year));
     // Or once the page bottoms out: the section is shorter than the viewport,
     // so its heading never climbs as far as a year's does.
     const bottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
-    const inAck = Boolean(ack && !ack.hidden && (ack.getBoundingClientRect().top <= 120 || bottom));
+    const inAck = Boolean(ack && !ack.hidden && (ack.getBoundingClientRect().top <= line + 1 || bottom));
     for (const a of links) {
       a.parentElement.hidden = !have.has(a.dataset.year);
       a.classList.toggle('is-current', !inAck && a.dataset.year === cur);
@@ -191,6 +199,13 @@ const byline = (a) => {
       ackLink.parentElement.hidden = ack.hidden;
       ackLink.classList.toggle('is-current', inAck);
     }
+    // Keep the current link in view in the strip; the rail does not scroll sideways.
+    const now = rail?.querySelector('a.is-current');
+    if (now && now !== was) {
+      const ol = now.closest('ol');
+      ol.scrollLeft = now.offsetLeft - (ol.clientWidth - now.offsetWidth) / 2;
+    }
+    was = now;
   };
   document.querySelector('.cvtoc')?.addEventListener('click', (e) => {
     const a = e.target.closest('a[data-year]');

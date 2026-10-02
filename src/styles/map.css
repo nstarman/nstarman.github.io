@@ -61,10 +61,10 @@
 /* The legend shows the two pins rather than describing them; a sentence
    explaining a shape the reader can simply be shown is a sentence too many. */
 .cmap-key{display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap}
-.cmap-key svg{width:11px; height:11px; background:none; border-radius:0; flex:none}
+.cmap-key svg{width:.6875rem; height:.6875rem; background:none; border-radius:0; flex:none}
 .cmap-key circle{stroke:var(--ink-mute); stroke-width:2; fill:var(--ground)}
 .cmap-key--shared circle{fill:var(--ink-mute)}
-.cmap-key--trail svg{width:22px}
+.cmap-key--trail svg{width:1.375rem}
 /* Opposite the legend on the same line: it names the drawing, the keys name
    what is drawn on it. */
 .cmap-proj{margin-left:auto; white-space:nowrap;
@@ -163,7 +163,7 @@
 /* ORCID's own green, because it is their mark and a reader recognises it
    faster than any label would explain it. */
 .cmap-orcid{float:right; margin:0 0 .2rem .5rem; line-height:0; color:#A6CE39}
-.cmap-orcid .ico{width:15px; height:15px; fill:currentColor; display:block}
+.cmap-orcid .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 .cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}
 
 /* A pin is pressable, so it should look it. */
