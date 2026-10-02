@@ -10,6 +10,12 @@
   },
   "title": "galactoPINNs",
   "summary": "Physics-informed neural networks for galactic potentials",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/pinns-mnras.webp",
+    "alt": "Orbits of a test particle in a Milky Way–LMC system, integrated in the true potential, a near-true analytic model, and three neural-network models. The most complete neural-network models track the true orbit almost exactly, while the near-true analytic model drifts away from it.",
+    "description": "Physics-informed neural networks for galactic potentials, learning only the corrections to an analytic model from stellar kinematics."
+  },
   "repo": "charlottemyers/galactoPINNs",
   "links": [
     {
