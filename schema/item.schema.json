@@ -270,6 +270,10 @@
             "type": "integer",
             "description": "Position within the `headline` tier. Lower first; items without it count as 0 and keep their newest-first order, so a positive value sends one to the end."
           },
+          "highlight": {
+            "$ref": "#/$defs/highlight",
+            "description": "The package's figure, for its card where a card shows one — its logo, say. The topic is `software`, which /research/ does not list."
+          },
           "role": {
             "type": "string"
           },
