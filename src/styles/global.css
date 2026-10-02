@@ -155,7 +155,7 @@ h2{
   align-items:flex-end; gap:.42rem;
 }
 .entry--brief .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
-  line-height:1.4; text-wrap:balance}
+  line-height:1.4; text-wrap:pretty}
 .entry--brief .ttl a{color:var(--ink)}
 .entry--brief .ttl a:hover{color:var(--accent)}
 .entry--brief .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
@@ -367,7 +367,7 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
 .entry--full .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
-  line-height:1.4; text-wrap:balance}
+  line-height:1.4; text-wrap:pretty}
 .entry--full .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
 .entry--full .meta .me{color:var(--ink-2); font-weight:500}
 .entry--full .venueline{margin:.1rem 0 0; font-size:.88rem; color:var(--ink-mute)}
