@@ -241,7 +241,6 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
   flex-wrap:wrap; font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
   border-top:1px solid var(--rule)}
 footer .wrap a{color:inherit}
-footer .wrap a:hover{text-decoration:underline}
 
 @media (max-width:34rem){
   /* Tight enough that the name, the four links and the theme toggle all fit
