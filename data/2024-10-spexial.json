@@ -24,5 +24,11 @@
   "tags": [
     "jax"
   ],
-  "details": "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions."
+  "details": "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/spexial.svg",
+    "alt": "The spexial logo: a capital Gamma shaded from teal through blue to purple on a dark rounded square.",
+    "description": "scipy.special in JAX: special functions on the scipy API, filling gaps such as zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions."
+  }
 }
