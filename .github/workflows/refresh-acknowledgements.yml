@@ -70,24 +70,6 @@ jobs:
             exit 0
           fi
 
-          repo=${{ github.repository }}
-          base=$(git rev-parse HEAD)
-
-          # Committing through the contents API rather than `git push`: those
-          # commits are signed by GitHub, which the branch ruleset requires.
-          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
-            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
-
-          for f in $FILES; do
-            git diff --quiet -- "$f" && continue
-            sha=$(gh api "repos/$repo/contents/$f?ref=$BRANCH" -q .sha 2>/dev/null || true)
-            gh api -X PUT "repos/$repo/contents/$f" \
-              -f message="Refresh $(basename "$f")" \
-              -f branch="$BRANCH" \
-              -f content="$(base64 < "$f" | tr -d '\n')" \
-              ${sha:+-f sha="$sha"} --silent
-          done
-
           body=$'Found by `scripts/collect-acknowledgements.mjs`, run monthly by `.github/workflows/refresh-acknowledgements.yml`.\n\n'
           new=$(grep '^  new:' /tmp/collect.txt | sed 's/^  new: /- /' || true)
           if [ -n "$new" ]; then
@@ -97,6 +79,4 @@ jobs:
           body+="Tests on this branch: **$GATES**."$'\n\n'
           body+=$'A paper that thanks someone else goes in `exclude` in the same file.'
 
-          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
-            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
-                 --title "Refresh the acknowledgements list" --body "$body"
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the acknowledgements list" "$body" $FILES

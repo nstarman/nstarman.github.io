@@ -49,20 +49,6 @@ jobs:
             exit 0
           fi
 
-          repo=${{ github.repository }}
-          base=$(git rev-parse HEAD)
-          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
-            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
-
-          sha=$(gh api "repos/$repo/contents/config/astropy-voting-members.json?ref=$BRANCH" -q .sha 2>/dev/null || true)
-          gh api -X PUT "repos/$repo/contents/config/astropy-voting-members.json" \
-            -f message="Refresh Astropy voting members" \
-            -f branch="$BRANCH" \
-            -f content="$(base64 < config/astropy-voting-members.json | tr -d '\n')" \
-            ${sha:+-f sha="$sha"} --silent
-
-          year=$(date -u +%Y)
-          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
-            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
-                 --title "Refresh Astropy voting members (${year})" \
-                 --body "Updated from https://www.astropy.org/team by the annual refresh workflow."
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh Astropy voting members ($(date -u +%Y))" \
+            "Updated from https://www.astropy.org/team by the annual refresh workflow." \
+            config/astropy-voting-members.json

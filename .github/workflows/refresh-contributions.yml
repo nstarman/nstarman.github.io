@@ -66,21 +66,6 @@ jobs:
           new_only=$(comm -23 <(echo "$added") <(echo "$gone"))
           count=$(python3 -c "import json;print(len(json.load(open('config/contributions.json'))['repos']))")
 
-          repo=${{ github.repository }}
-          base=$(git rev-parse HEAD)
-
-          # Committing through the contents API rather than `git push`: those
-          # commits are signed by GitHub, which the branch ruleset requires.
-          gh api "repos/$repo/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$base" \
-            || gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" -f sha="$base" -F force=true
-
-          sha=$(gh api "repos/$repo/contents/config/contributions.json?ref=$BRANCH" -q .sha 2>/dev/null || true)
-          gh api -X PUT "repos/$repo/contents/config/contributions.json" \
-            -f message="Refresh the contributions list" \
-            -f branch="$BRANCH" \
-            -f content="$(base64 < config/contributions.json | tr -d '\n')" \
-            ${sha:+-f sha="$sha"} --silent
-
           body=$'Found by `scripts/collect-contributions.mjs`, run monthly by `.github/workflows/refresh-contributions.yml`.\n\n'
           if [ -n "$new_only" ]; then
             body+=$'**New:**\n'
@@ -90,6 +75,5 @@ jobs:
           body+="The list now holds $count repositories."$'\n\n'
           body+=$'To drop one, add it to `config/contributions-exclude.json` — do not edit the generated file.'
 
-          gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN \
-            || gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
-                 --title "Refresh the contributions list" --body "$body"
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the contributions list" "$body" \
+            config/contributions.json
