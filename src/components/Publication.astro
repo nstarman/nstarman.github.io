@@ -31,7 +31,7 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
       {/* Only the landing page links the title; the full entry has its link
           trail. No link before a submitted paper reaches arXiv, not a dead '#'. */}
       {brief && paper ? <a href={paper.url}>{item.title}</a> : item.title}
-      {pending && <span class="statustag">{pending}</span>}
+      {brief && pending && <span class="statustag">{pending}</span>}
     </div>
 
     <p class="meta">
@@ -41,12 +41,15 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
       {brief && venue && <> · <Venue item={item} /></>}
     </p>
 
-    {!brief && (venue || item.arxiv) && (
+    {/* The full entry carries its status here, beside the venue it is
+        submitted to or accepted by, rather than in the title. */}
+    {!brief && (venue || item.arxiv || pending) && (
       <p class="venueline">
         <Venue item={item} />
         {venue && <span class="dot">·</span>}
         {!venue && item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}
         <span class="yr">{year(item)}</span>
+        {pending && <span class="statustag">{pending}</span>}
       </p>
     )}
 
