@@ -15,6 +15,12 @@
   "title": "potamides",
   "summary": "Constrain gravitational potentials from stellar stream curvature",
   "details": "A JAX package that fits stream tracks with splines and compares their curvature directly to a potential's accelerations. Co-led with Sirui Wu.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/potamides-joss.webp",
+    "alt": "Relative likelihood of a halo’s y-axis flattening, q₂, from a Potamides tutorial: a flat plateau from about 0.7 to 1.55 that contains the true value, q₂ = 1, falling to zero on either side.",
+    "description": "Fits stream tracks with splines in JAX and compares their curvature directly to a potential's accelerations."
+  },
   "repo": "xggs-dev/potamides",
   "role": "co-lead developer",
   "refs": [
