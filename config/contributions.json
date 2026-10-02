@@ -297,13 +297,6 @@
       "description": "A Wadler–Lindig pretty printer for Python"
     },
     {
-      "repo": "charlottemyers/galactoPINNs",
-      "url": "https://github.com/charlottemyers/galactoPINNs",
-      "first": "2026-01-26",
-      "prs": 3,
-      "description": null
-    },
-    {
       "repo": "jorenham/optype",
       "url": "https://github.com/jorenham/optype",
       "first": "2026-01-28",
