@@ -15,6 +15,12 @@
   "title": "galax",
   "summary": "Galactic dynamics in JAX",
   "details": "Orbit integration, potentials and stream generation — GPU-accelerated and fully differentiable.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/galax.webp",
+    "alt": "The galax logo, the GalacticDynamics mark: a spiral galaxy on a dark disk, circled by a dark ring, between a teal < and a purple > code bracket.",
+    "description": "Galactic dynamics in JAX: potentials, orbit integration and stream generation, GPU-accelerated and fully differentiable."
+  },
   "repo": "GalacticDynamics/galax",
   "role": "lead developer",
   "doi": "10.5281/zenodo.11553485",
