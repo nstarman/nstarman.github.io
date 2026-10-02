@@ -22,7 +22,7 @@ const pos = authorPosition(item);
 // Only a topic /research/ actually shows has a section to link to.
 const topic = HIGHLIGHT_TOPICS.find(([key]) => key === item.highlight?.topic);
 ---
-<article id={anchor} class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ' entry--unpub' : ''}`}
+<article id={anchor} class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ` entry--unpub entry--${pending}` : ''}`}
          data-pos={pos ?? undefined}
          data-year={year(item) || undefined}
          data-tags={item.tags?.length ? item.tags.join(' ') : undefined}>

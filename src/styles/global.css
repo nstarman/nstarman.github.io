@@ -432,6 +432,8 @@ footer .wrap{padding-block:1.5rem; display:flex; justify-content:space-between; 
 .micro-card .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
 .micro-card .btns--icon{flex:none; flex-direction:row; gap:.35rem; margin:0}
 .entry--unpub .yr{font-style:italic}
+/* Submitted is less settled than accepted, so it sits a step fainter. */
+.entry--submitted{opacity:.72}
 
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
    would turn a byline into a wall of links, so it reads as text and only shows
