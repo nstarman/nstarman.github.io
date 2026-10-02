@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
+import { collaboratorMap, collabHref, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
   from '../src/lib/collabmap.js';
 
 const people = collaboratorMap();
@@ -192,5 +192,14 @@ describe('surname-first names', () => {
     expect(lastFirst('C. E. Brasseur')).toBe('Brasseur, C. E.');
     // A mononym has nothing to move.
     expect(lastFirst('Cher')).toBe('Cher');
+  });
+});
+
+describe('collabHref', () => {
+  it('sends a co-author on the map to their entry, and anyone else nowhere', () => {
+    const [first] = people;
+    expect(collabHref(first.orcid)).toBe(`/research/?collab=${first.orcid}#collaborators`);
+    expect(collabHref('0000-0000-0000-0000')).toBeNull();
+    expect(collabHref(null)).toBeNull();
   });
 });

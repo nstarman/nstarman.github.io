@@ -66,7 +66,8 @@ for (const page of pages) {
     }
     if (!href.startsWith('/')) continue; // relative links: none are emitted today
 
-    const [target, hash] = href.split('#');
+    // A static host ignores the query; the page and the fragment are what must exist.
+    const [target, hash] = href.replace(/\?[^#]*/, '').split('#');
     checked += 1;
     if (!exists(target)) {
       if (target.endsWith('.pdf') && !pdfsBuilt) {

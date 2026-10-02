@@ -81,7 +81,7 @@ const label = (pin) =>
 
   <ol class="cmap-list">
     {people.map((p) => (
-      <li data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
+      <li data-orcid={p.orcid} data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
         {/* Where the record came from, and the way to check it. */}
         <a class="cmap-orcid" href={`https://orcid.org/${p.orcid}`}
            aria-label={`${p.name} on ORCID`} title={`${p.name} on ORCID — ${p.orcid}`}>

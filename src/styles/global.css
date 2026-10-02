@@ -677,9 +677,9 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   #posmore:checked ~ .h2row .pubprofiles .pubfilter{display:inline-grid; order:9; width:100%}
 }
 .hl-topic{margin:1.6rem 0 0}
-/* Jumped to from /publications/ and from a synthesis card: land clear of the
-   sticky nav, not underneath it. */
-.hl-topic,.hl-card{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+/* Jumped to from /publications/ (a byline lands on #collaborators) and from a
+   synthesis card: land clear of the sticky nav, not underneath it. */
+.cmap-head,.hl-topic,.hl-card{scroll-margin-top:calc(var(--nav-h) + 1rem)}
 
 /* ---------- shared with the CV ----------
    Rules that cv/page.css used to carry but that other pages rely on too: the

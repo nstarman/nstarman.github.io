@@ -221,6 +221,7 @@ export function authors(item, max = Infinity) {
   const shown = picked.map((a) => a === null ? ELLIPSIS : ({
     name: displayName(a),
     me: Boolean(a.me),
+    orcid: a.me ? null : (a.orcid ?? null),
     url: a.me ? null : orcidUrl(a.orcid),
     affiliation: a.me ? null : (a.affiliation ?? affiliationAt(a.orcid, at)?.organization ?? null),
   }));

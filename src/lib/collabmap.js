@@ -118,3 +118,11 @@ export function collaboratorMap() {
   spread(people.flatMap((p) => p.pins));
   return people;
 }
+
+let mapped;
+/** A co-author on the map at /research/, picked there by mappick.js from the
+ *  query; null for someone the map has no post for. */
+export function collabHref(orcid) {
+  mapped ??= new Set(collaboratorMap().map((p) => p.orcid));
+  return mapped.has(orcid) ? `/research/?collab=${orcid}#collaborators` : null;
+}
