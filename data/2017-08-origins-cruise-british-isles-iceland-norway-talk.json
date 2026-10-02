@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "origins-cruise-british-isles-iceland-norway-talk",
+  "type": "presentation",
+  "cvs": [],
+  "date": {
+    "start": "2017-08"
+  },
+  "title": "Origins Cruise to the British Isles, Iceland and Norway (Talk)",
+  "kind": "invited",
+  "details": "The Life and Death of the Universe: An Overview Lecture on Cosmology",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://origins.case.edu/2016/11/14/norway/"
+    }
+  ]
+}
