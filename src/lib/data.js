@@ -205,7 +205,7 @@ export function affiliationAt(orcid, date) {
   return held.reduce((best, a) => (a.start > best.start ? a : best));
 }
 
-const ELLIPSIS = { name: '…', me: false, url: null, affiliation: null };
+const ELLIPSIS = { name: '…', me: false, student: null, url: null, affiliation: null };
 
 export function authors(item, max = Infinity) {
   const all = item.authors ?? [];
@@ -221,6 +221,7 @@ export function authors(item, max = Infinity) {
   const shown = picked.map((a) => a === null ? ELLIPSIS : ({
     name: displayName(a),
     me: Boolean(a.me),
+    student: a.student ?? null,
     orcid: a.me ? null : (a.orcid ?? null),
     url: a.me ? null : orcidUrl(a.orcid),
     affiliation: a.me ? null : (a.affiliation ?? affiliationAt(a.orcid, at)?.organization ?? null),

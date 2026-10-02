@@ -105,6 +105,9 @@ const byline = (a) => {
             </a>
           </span>
         </div>
+        <p class="stukey">Students I supervised or advised:{' '}
+          <span class="stu--undergraduate">undergraduate</span>,{' '}
+          <span class="stu--graduate">graduate</span>.</p>
         <div class="entries">
           {all.map((item, i) => <Publication item={item} abstract earlier={earlier(item)} anchor={year(item) !== year(all[i - 1] ?? {}) ? `y-${year(item)}` : undefined} />)}
         </div>
