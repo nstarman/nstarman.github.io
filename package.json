@@ -5,9 +5,9 @@
   "description": "nstarkman.space — website, CV database, and the CV builder.",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/publish-data.mjs",
+    "predev": "node scripts/publish-data.mjs && node scripts/gzip-compiler.mjs",
     "dev": "astro dev",
-    "prebuild": "node scripts/publish-data.mjs",
+    "prebuild": "node scripts/publish-data.mjs && node scripts/gzip-compiler.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "validate": "node scripts/validate.mjs schema/item.schema.json \"data/*.json\"",

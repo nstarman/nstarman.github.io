@@ -16,17 +16,31 @@ const ASSETS = import.meta.glob('/cv/assets/*', { eager: true, query: '?url', im
 let typst = null;
 
 async function loadCompiler(fonts) {
-  // Dynamic, so the ~10 MB of wasm never touches any other route.
+  // Dynamic, so the ~11 MB of wasm never touches any other route.
   const [{ $typst }, { preloadRemoteFonts }, wasm] = await Promise.all([
     import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs'),
     import('@myriaddreamin/typst.ts'),
-    import('@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url'),
+    // Gzipped by scripts/gzip-compiler.mjs: raw, it is over Cloudflare's
+    // 25 MiB file limit.
+    import('/src/generated/typst_ts_web_compiler_bg.wasm.gz?url'),
   ]);
   $typst.setCompilerInitOptions({
-    getModule: () => wasm.default,
+    getModule: () => fetchWasm(wasm.default),
     beforeBuild: [preloadRemoteFonts(fonts)],
   });
   return $typst;
+}
+
+// The bytes, not a Response: a host that sends the .gz with
+// Content-Encoding: gzip has the browser inflate it already, so check the magic
+// number rather than trusting the extension.
+async function fetchWasm(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: ${res.status}`);
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (bytes[0] !== 0x1f || bytes[1] !== 0x8b) return bytes;
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
 /**

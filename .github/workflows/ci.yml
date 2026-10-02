@@ -131,11 +131,11 @@ jobs:
       # The production domain must not follow the preview: CNAME in the
       # artifact would try to claim nstarkman.space on Cloudflare too.
       #
-      # Cloudflare Pages also refuses any file over 25 MiB, and the Typst
-      # compiler wasm the CV builder loads is 27 MiB. GitHub Pages serves it,
-      # so this costs the preview one page — /cv/builder/ says "Compile failed"
-      # there — rather than costing the live site anything. Matched by size,
-      # not by name: the built filename carries a content hash.
+      # Cloudflare Pages also refuses any file over 25 MiB. The Typst compiler
+      # wasm is 27 MiB raw, so scripts/gzip-compiler.mjs ships it gzipped
+      # (~11 MiB); this drop is a backstop that reports anything else that
+      # grows past the limit. Matched by size, not by name: built filenames
+      # carry a content hash.
       - if: steps.guard.outputs.ready == 'true'
         run: |
           rm -f dist/CNAME
@@ -174,9 +174,6 @@ jobs:
 
             Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
             Updated on every push to this pull request.
-
-            `/cv/builder/` cannot compile here — its 27 MiB wasm is over Cloudflare's
-            25 MiB file limit. Every other page is the real build.
 
   # The one required check. Branch protection cannot require a job that never
   # ran — a missing check reads as "expected", not as a pass — but it also
