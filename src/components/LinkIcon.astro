@@ -3,9 +3,9 @@
 // software package's paper carries beside it.
 import { REL_ICON, relKey } from '../lib/data.js';
 
-const { link: l } = Astro.props;
+const { link: l, ...attrs } = Astro.props;
 ---
-<li data-rel={relKey(l)}>
+<li data-rel={relKey(l)} {...attrs}>
   <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
     <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} /></svg>
     {l.year && <span class="iconyear" aria-hidden="true">{l.year}</span>}

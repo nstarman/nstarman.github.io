@@ -1,9 +1,10 @@
 ---
+import { PRESET, embedHref as mainHref } from '../lib/cards.js';
 import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import Card from '../components/Card.astro';
-import { byType, links, primaryLink, resolve, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { byType, resolve, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
@@ -16,7 +17,6 @@ const groups = HIGHLIGHT_TOPICS
   .map(([key, label, intro]) => ({ key, label, intro, items: highlights.filter((i) => i.highlight.topic === key) }))
   .filter((g) => g.items.length > 0);
 
-const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 
 // An intro's `[](item:id)` becomes that paper's inline-card. A typo fails the
 // build rather than rendering a card that points nowhere.
@@ -62,7 +62,7 @@ const inlineCard = (s) => {
             <button type="button" class="iconbtn" data-step="1" aria-label={`Next ${g.label} highlight`}>›</button>
           </div>
           <div class="hl" role="region" aria-label={`${g.label} highlights`} tabindex="0">
-            {g.items.map((item) => <Card item={item} preset="size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,ads,doi,preprint,repo,code:fit-look:titleweight=medium,titleface=mono" id={anchor(item.id)} heading="h5" />)}
+            {g.items.map((item) => <Card item={item} preset={PRESET.carousel} id={anchor(item.id)} heading="h5" />)}
           </div>
           </div>
           </>)}

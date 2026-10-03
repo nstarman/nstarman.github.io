@@ -1,5 +1,6 @@
 ---
 // One publication, as /publications/ lists it.
+import { PRESET } from '../lib/cards.js';
 import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
@@ -46,7 +47,7 @@ const pos = authorPosition(item);
         already is the way into the paper — in the lighter tint, with the way
         to its topic on /research/. */}
     {abstract && item.highlight && (
-      <Card item={item} preset="size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light"
+      <Card item={item} preset={PRESET.paperHighlight}
             id={`hl-${item.id}`} />
     )}
 
@@ -63,7 +64,7 @@ const pos = authorPosition(item);
     )}
 
     {/* Each proceeding of this paper, as a strip under it. */}
-    {earlier.map((e) => <Card item={e} id={`pub-${e.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right" maxAuthors={maxAuthors} />)}
+    {earlier.map((e) => <Card item={e} id={`pub-${e.id}`} preset={PRESET.proceeding} maxAuthors={maxAuthors} />)}
   </div>
 
   <LinkIcons links={trail} />

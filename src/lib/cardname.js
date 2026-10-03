@@ -179,6 +179,9 @@
 //              buttongap = 0–32 px, or 0–100%   the space between the link
 //                buttons, in px or a share of a button's size; left off, a
 //                third of the text's height
+//              partgap = 0–32 px, to a tenth   the space above each part —
+//                the title, figure, authors, venue, text and buttons; left
+//                off, as the layout has it
 //              frame = none · a step · 0–32 px    the white around a figure,
 //                its corners then following the card's; none, the bare
 //                image; left off, as it is
@@ -203,7 +206,8 @@
 // in it. Lists use commas, which survive a URL query where "+" would not.
 //
 // No imports: the Card Builder bundles this, and the embed page inlines
-// parseName's own source, so the grammar is written once.
+// the source of parseName, placeOf and cardFace, so the grammar, and what a
+// name makes of a card, are written once.
 
 export const LOOKS = ['minor', 'compact', 'standard', 'feature', 'display'];
 export const DIALS = ['textsize', 'padding', 'corners', 'buttons'];
@@ -231,9 +235,9 @@ export const FIXED_MIN = 120;
 export const FIXED_MAX = 1600;
 export const FIXED_MIN_HEIGHT = 40;
 
+/** Where a paper button may link, paper:<label>:<to>. */
+export const PAPER_TO = ['journal', 'arxiv', 'ads', 'site'];
 export const SPACE_TRACKS = ['top_left', 'top_center', 'top_right', 'title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom', 'left_center', 'center_right'];
-/** The areas my position, the year and the context link may sit in. */
-export const PLACE_AT = ['top', 'left', 'center', 'right', 'bottom'];
 
 /** Where my position (part 'pos'), the year or the context link sits:
  *  { area, v, h }, and strip where that is a strip of the card's padding — as
@@ -254,16 +258,16 @@ export function placeOf(spec, part) {
 }
 
 /** The tracks set, in a fixed order. */
-const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${t}=${space[t]}`).join(',');
+const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t] != null && space[t] !== '').map((t) => `${t}=${space[t]}`).join(',');
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text = 'none', extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, partGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
   const set = DIALS.filter((d) => dials[d] && !(width === 'fill' && dials[d] === 'standard'));
-  const same = set.length === DIALS.length && DIALS.every((d) => dials[d] === dials.textsize);
+  const same = set.length === DIALS.length && LOOKS.includes(dials.textsize) && DIALS.every((d) => dials[d] === dials.textsize);
   const tuned = [
     ...(same ? [dials.textsize] : set.map((d) => `${d}=${dials[d]}`)),
     ...(dials.titlesize ? [`titlesize=${dials.titlesize}`] : []),
@@ -273,6 +277,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...['title', ...FACES].filter((p) => fonts[p]).map((p) => `${p}face=${fonts[p]}`),
     ...(frame ? [`frame=${frame}`] : []),
     ...(buttonGap != null ? [`buttongap=${buttonGap}`] : []),
+    ...(partGap != null ? [`partgap=${partGap}`] : []),
     ...(background !== 'normal' ? [`background=${background}`] : []),
   ];
   // A small part's place, written where it departs from its own left out:
@@ -308,7 +313,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
     `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
     ...(paperButton ? [`paper:${paperButton.label}${paperButton.to ? `:${paperButton.to}` : ''}${paperButton.color ? `:${paperButton.color}` : ''}`] : []),
-    ...(space && Object.keys(space).length ? [`space:${spaceList(space)}`] : []),
+    ...(space && spaceList(space) ? [`space:${spaceList(space)}`] : []),
     ...(tuned.length ? [`look:${tuned.join(',')}`] : []),
   ].join('-');
 }
@@ -367,7 +372,7 @@ export function parseName(name) {
         const width = !end && ((m && (m[1] === 'min' ? +m[2] <= 800 : +m[2] >= 5 && +m[2] <= 95)) || xs[j] === 'buttons');
         const height = end && m && m[1] === 'min' && +m[2] <= 400;
         if (width && !side.width) side.width = xs[j];
-        else if (height && !side.height) side.height = +m[2];
+        else if (height && side.height == null) side.height = +m[2];
         else if (!end && one(xs[j], ['top', 'bottom']) && !side[xs[j]]) side[xs[j]] = true;
         else throw new Error('"' + name + '": no such area, ' + parts[i]);
       }
@@ -447,6 +452,13 @@ export function parseName(name) {
       if (!/^[A-Za-z0-9]{1,16}$/.test(kv[1] || '') || j !== kv.length) throw new Error('"' + name + '": no such paper button, ' + parts[i]);
       spec.paperButton = { label: kv[1], ...(to && { to }), ...(color && { color }) };
     } else if (key === 'buttons' && /^(all|none|[a-z]+(,[a-z]+)*)$/.test(kv[1] || '')) {
+      // The keys: a link's — its rel, or ads — or a part's, each once; empty
+      // as often as asked; or all, or none, alone.
+      const ks = kv[1] === 'all' || kv[1] === 'none' ? [] : kv[1].split(',');
+      for (let j = 0; j < ks.length; j += 1) {
+        if (!one(ks[j], ['paper', 'preprint', 'doi', 'repo', 'code', 'docs', 'data', 'slides', 'event', 'homepage', 'ads', 'empty', 'paperbutton', 'year', 'position', 'context'])) throw new Error('"' + name + '": no such button, ' + ks[j]);
+        if (ks[j] !== 'empty' && ks.indexOf(ks[j]) !== j) throw new Error('"' + name + '": ' + ks[j] + ' is given twice');
+      }
       // The keys; then so many to a row, or fit; then the area and the place
       // in it — in a side, up and down then across; else across.
       const r = kv.slice(2);
@@ -475,8 +487,9 @@ export function parseName(name) {
       spec.text = kv[1];
     } else if (key === 'extras') {
       const xs = kv[1] === 'none' ? [] : kv[1].split(',');
-      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], ['venue', 'status', 'position', 'year', 'role', 'context'])) throw new Error('"' + name + '": no such extra, ' + xs[j]);
-      spec.extras = xs;
+      const all = ['venue', 'status', 'position', 'year', 'role', 'context'];
+      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], all) || xs.indexOf(xs[j]) !== j) throw new Error('"' + name + '": no such extra, or given twice, ' + xs[j]);
+      spec.extras = all.filter((x) => one(x, xs));
     } else if (key === 'space') {
       spec.space = {};
       const xs = kv[1].split(',');
@@ -504,6 +517,7 @@ export function parseName(name) {
         else if (/^(title|body|authors|venue|position|year|context)style$/.test(s[0]) && one(s[1], ['normal', 'italic'])) { if (s[1] === 'italic') (spec.styles = spec.styles || {})[s[0].slice(0, -5)] = 'italic'; }
         else if (/^(title|body|authors|venue|position|year|context)face$/.test(s[0]) && one(s[1], ['sans', 'serif', 'mono'])) (spec.fonts = spec.fonts || {})[s[0].slice(0, -4)] = s[1];
         else if (s[0] === 'buttongap' && ((/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32) || (/^(0|[1-9][0-9]?|100)%$/.test(s[1])))) spec.buttonGap = s[1];
+        else if (s[0] === 'partgap' && /^(0|[1-9][0-9]?)(\.[0-9])?$/.test(s[1]) && +s[1] <= 32) spec.partGap = s[1];
         else if (s[0] === 'frame' && (one(s[1], ['none'].concat(steps)) || (/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32))) spec.frame = s[1];
         else if (one(s[0], ['padding', 'corners', 'buttons']) && /^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 64 && +s[1] >= (s[0] === 'buttons' ? 12 : 0)) spec.dials[s[0]] = s[1];
         else if (s[0] === 'background' && one(s[1], ['none', 'light', 'normal', 'dark'])) spec.background = s[1];
@@ -542,4 +556,169 @@ export function parseName(name) {
     if (spec.title === 'full') spec.rest = 'split';
   }
   return spec;
+}
+
+/** What a card's name makes of an item: every data attribute and custom
+ *  property the stylesheet reads — each key always there, undefined where
+ *  unset, so the embed page can clear what a name leaves out — and the
+ *  buttons' list in the name's order, with each part's slot in the buttons'
+ *  box. Given the spec and what the item has (cardFacts in cards.js), never
+ *  the item: Card.astro draws from it and the embed page applies it, so the
+ *  two cannot disagree. Self-contained but for placeOf, as parseName: the
+ *  embed page runs a copy of both. */
+export function cardFace(spec, f) {
+  var u;
+  var has = function (x) { return spec.extras.indexOf(x) >= 0; };
+  var num = function (v) { return /^[0-9]/.test(v || '') ? +v : null; };
+  var step = function (d) { return num(spec.dials[d]) == null ? spec.dials[d] : u; };
+  var sides = spec.sides || {};
+  var fig = spec.figure !== 'none' && f.figure;
+  // A figure's own width, in its column: a share of it, or px, never wider.
+  var figPx = typeof spec.figureSize === 'string' && /px$/.test(spec.figureSize) ? parseInt(spec.figureSize, 10) : null;
+  var figW = !fig || spec.figureSize === 'auto' ? null : figPx ? 'min(' + figPx + 'px, 100%)' : spec.figureSize + '%';
+  // A side's width: a share of the card; at least so many px — and at least
+  // its figure's, where that is px — growing to fit; or as wide as its
+  // buttons. Unset, a figure of px sets the least.
+  var sideCol = function (side) {
+    var w = (sides[side] || {}).width, here = fig && spec.figure === side;
+    if (w && w.indexOf('share=') === 0) return w.slice(6) + '%';
+    if (w && w.indexOf('min=') === 0) return 'minmax(' + Math.max(+w.slice(4), here ? figPx || 0 : 0) + 'px, auto)';
+    if (w === 'buttons') return spec.foot === side ? 'auto' : null;
+    return here && figPx ? 'minmax(' + figPx + 'px, auto)' : null;
+  };
+  var wins = [];
+  ['left', 'right'].forEach(function (s) { ['top', 'bottom'].forEach(function (a) { if ((sides[s] || {})[a]) wins.push(s + '-' + a); }); });
+  // The byline, and my position, the year and the context link.
+  var counted = typeof spec.authors === 'number';
+  var bylined = (spec.authors === 'short' || spec.authors === 'full' || counted) && f.byline;
+  var posShown = has('position') && f.place, yearShown = has('year') && f.year, ctxShown = has('context') && f.context;
+  var inList = function (k) { return spec.links !== 'all' && spec.links.indexOf(k) >= 0; };
+  var at = { pos: placeOf(spec, 'pos'), year: placeOf(spec, 'year'), context: placeOf(spec, 'context') };
+  var together = posShown && yearShown && !inList('year') && !inList('position') && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
+  var shows = { buttons: null, stamp: posShown && !inList('position'), year: yearShown && !together && !inList('year'), context: ctxShown && !inList('context') };
+  // The paper button, where the name asks and it has somewhere to link; its
+  // item in the list where shown — or, on the embed page, which draws every
+  // part, wherever it has somewhere to link. It is so many buttons wide.
+  var pb = spec.paperButton && f.paper[spec.paperButton.to || 'auto'] ? spec.paperButton : null;
+  var paperLi = !!pb || (f.every && ['auto', 'journal', 'arxiv', 'ads', 'site'].some(function (k) { return f.paper[k]; }));
+  var pn = !pb || pb.label === 'icon' ? 1 : Math.ceil(0.27 * pb.label.length + 0.62);
+  // The buttons' list as the name orders it: the paper button — first,
+  // unless it says where, paperbutton — the links by key, each empty one a
+  // button's room, each part it lists; then the rest, hidden.
+  var cells = { year: yearShown, position: posShown, context: ctxShown };
+  var seq = [];
+  if (paperLi && !inList('paperbutton')) seq.push({ paper: true });
+  if (spec.links === 'all') f.keys.forEach(function (k, i) { seq.push({ link: i }); });
+  else {
+    spec.links.forEach(function (k) {
+      if (k === 'empty') seq.push({ empty: true });
+      else if (k === 'paperbutton') { if (paperLi) seq.push({ paper: true }); }
+      else if (k in cells) { if (cells[k]) seq.push({ cell: k }); }
+      else f.keys.forEach(function (key, i) { if (key === k) seq.push({ link: i }); });
+    });
+    f.keys.forEach(function (key, i) { if (spec.links.indexOf(key) < 0) seq.push({ link: i }); });
+  }
+  seq.forEach(function (x) { x.kept = x.paper ? !!pb : x.empty || !!x.cell || spec.links === 'all' || spec.links.indexOf(f.keys[x.link]) >= 0; });
+  // Counted as the room they take: the paper button so many buttons wide,
+  // a part none — a row of its own in a grid — the rest one each; a row
+  // never narrower than the paper button.
+  var room = function (x) { return x.paper ? pn : x.cell ? 0 : 1; };
+  // The buttons are in their slot where any is kept; a list with none is
+  // after the slots, hidden.
+  shows.buttons = seq.some(function (x) { return x.kept; });
+  var shown = seq.reduce(function (n, x) { return n + (x.kept ? room(x) : 0); }, 0);
+  var per = spec.perRow === 'fit' || !shown ? null : Math.max(pb ? pn : 1, Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown))));
+  var side = spec.foot === 'left' || spec.foot === 'right';
+  var railAt = spec.railAlign || (side ? spec.foot : 'left');
+  // On a right rail, a short last row sits at the right: its first button
+  // starts so many columns in. Rows run on from the last part listed among
+  // the buttons, which is a row of its own.
+  var skip = null, last = [];
+  seq.forEach(function (x) { if (x.kept) last = x.cell ? [] : last.concat([x]); });
+  var run = last.reduce(function (n, x) { return n + room(x); }, 0);
+  var short = per && railAt === 'right' ? run % per : 0;
+  if (short) { var n = 0; last.forEach(function (x) { if (n === run - short) skip = x; n += room(x); }); }
+  if (skip) skip.skip = true;
+  // Each part's slot along the buttons' box, and its place across it; or,
+  // hidden or in a strip of the card's padding, none.
+  var placed = { buttons: { area: spec.foot, v: side ? spec.footEnd || 'top' : 'bottom', h: railAt }, stamp: at.pos, year: at.year, context: at.context };
+  var END = { top: 'start', left: 'start', center: 'center', bottom: 'end', right: 'end' };
+  var slot = {}, cross = {}, strip = {}, strips = [];
+  ['buttons', 'stamp', 'year', 'context'].forEach(function (k) {
+    var p = placed[k];
+    cross[k] = END[side ? p.h : p.v];
+    slot[k] = shows[k] && !p.strip ? END[side ? p.v : p.h] : null;
+    if (shows[k] && p.strip) { strip[k] = { area: p.area, h: p.h }; if (strips.indexOf(p.area) < 0) strips.push(p.area); }
+  });
+  var railEmpty = !f.refs && !shown && !seq.some(function (x) { return x.cell; }) && !['stamp', 'year', 'context'].some(function (k) { return slot[k]; });
+  // An area the name gives that nothing is in is there all the same, empty.
+  var holds = {
+    left: (fig && spec.figure === 'left') || (spec.foot === 'left' && !railEmpty),
+    right: (fig && spec.figure === 'right') || (spec.foot === 'right' && !railEmpty),
+    top: (spec.titleAt === 'top' && spec.title !== 'none') || strips.indexOf('top') >= 0,
+    bottom: (spec.foot === 'bottom' && !railEmpty) || strips.indexOf('bottom') >= 0,
+  };
+  var empty = ['left', 'right', 'top', 'bottom'].filter(function (a) { return sides[a] && !holds[a]; });
+  var yes = function (b) { return b ? '' : u; };
+  var rows = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom'];
+  var data = {
+    size: '', w: spec.width === 'fill' ? 'fill' : 'px', h: spec.height === 'fit' ? 'fit' : 'px',
+    textsize: step('textsize'), titlesize: step('titlesize'), padding: step('padding'), corners: step('corners'), buttons: step('buttons'),
+    titleweight: spec.titleWeight === 'mine' ? (f.lead ? 'bold' : 'regular') : spec.titleWeight,
+    frame: spec.frame ? (/^[0-9]/.test(spec.frame) ? '' : spec.frame) : u,
+    background: spec.background === 'normal' ? u : spec.background,
+    vflex: yes(rows.some(function (t) { return (spec.space || {})[t] === 'flex'; })),
+    title: spec.title === 'full' ? u : spec.title,
+    titleat: spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : u,
+    titlealign: spec.titleAlign, titlev: spec.titleAt === 'top' ? spec.titleV : u,
+    titlestatus: yes(spec.titleStatus && f.tstatus),
+    rest: spec.title === 'full' && spec.rest === 'split' && f.split ? 'split' : u,
+    text: spec.text, textalign: spec.textAlign,
+    fig: fig ? spec.figure : u, figw: yes(figW), figh: fig && spec.figure !== 'center' ? spec.figureH : u,
+    figslot: fig && spec.figure === 'center' ? spec.figureSlot : u, figv: fig && spec.figure !== 'center' ? spec.figureAlign : u,
+    wins: wins.join(' ') || u, empty: empty.join(' ') || u,
+    authors: bylined ? (counted ? 'count' : spec.authors) : u, students: bylined && spec.marks === 'plain' ? 'plain' : u,
+    pos: yes(posShown), year: yes(yearShown), yearwith: yes(together), context: yes(ctxShown),
+    role: yes(has('role') && f.role), status: yes(has('status') && f.status),
+    venue: yes(has('venue') && f.venue), venuename: spec.venueName, venueundated: yes(spec.venueDate === false),
+    venuenoarxiv: yes(spec.venueArxiv === false), varxiv: yes(f.varxiv), venuealign: spec.venueAlign, venueat: spec.venueAt,
+    venuefirst: yes((spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst),
+    vsplit: yes(spec.venueAt === 'beside' && spec.venueSplit),
+    paperbtn: yes(pb), paperlabel: pb && pb.label === 'icon' ? 'icon' : u, papercolor: pb ? pb.color : u,
+    foot: spec.foot, footend: spec.footEnd, railalign: spec.railAlign, rail: railEmpty ? 'empty' : u,
+    strips: strips.join(' ') || u,
+    per: yes(per),
+  };
+  var w = spec.width !== 'fill', h = spec.height !== 'fit';
+  var dial = function (d) { return num(spec.dials[d]); };
+  var style = {
+    '--wpx': w ? spec.width + 'px' : u, '--hpx': h ? spec.height + 'px' : u, '--aw': w && h ? spec.width : u, '--ah': w && h ? spec.height : u,
+    '--fs': dial('textsize') != null ? dial('textsize') + 'px' : u, '--ts': dial('titlesize') != null ? dial('titlesize') + 'px' : u,
+    '--pad-t': dial('padding') != null ? dial('padding') + 'px' : u, '--pad-x': dial('padding') != null ? dial('padding') + 'px' : u, '--pad-b': dial('padding') != null ? dial('padding') + 'px' : u,
+    '--rad': dial('corners') != null ? dial('corners') + 'px' : u,
+    '--ib': dial('buttons') != null ? dial('buttons') + 'px' : u, '--ii': dial('buttons') != null ? dial('buttons') / 2 + 'px' : u,
+    '--pn': pb ? pn : u,
+    '--vsplit': spec.venueAt === 'beside' && spec.venueSplit ? (/px$/.test(spec.venueSplit) ? spec.venueSplit : spec.venueSplit + '%') : u,
+    '--frame': /^[0-9]/.test(spec.frame || '') ? spec.frame + 'px' : u,
+    '--bgap': spec.buttonGap != null ? (/%$/.test(spec.buttonGap) ? 'calc(var(--ib) * ' + parseInt(spec.buttonGap, 10) / 100 + ')' : spec.buttonGap + 'px') : u,
+    '--hT': (sides.top || {}).height != null ? sides.top.height + 'px' : u, '--hB': (sides.bottom || {}).height != null ? sides.bottom.height + 'px' : u,
+    '--figw': figW || u, '--colL': sideCol('left') || u, '--colR': sideCol('right') || u,
+    '--gr': spec.partGap != null ? spec.partGap + 'px' : u,
+    '--per': per || u, '--skip': skip ? per - short : u,
+  };
+  ['title', 'body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
+    if (p !== 'title') {
+      style['--fs-' + p] = (spec.sizes || {})[p] ? spec.sizes[p] + 'px' : u;
+      style['--fw-' + p] = (spec.weights || {})[p] ? { regular: 400, medium: 500, bold: 600 }[spec.weights[p]] : u;
+    }
+    style['--fst-' + p] = (spec.styles || {})[p];
+    style['--ff-' + p] = (spec.fonts || {})[p] ? 'var(--' + spec.fonts[p] + ')' : u;
+  });
+  // space: a track between two slots, a length or flex — a row taking what
+  // is left (100fr), a column sharing the width with the words (1fr).
+  ['top_left', 'top_center', 'top_right', 'title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom', 'left_center', 'center_right'].forEach(function (t) {
+    var v = (spec.space || {})[t];
+    style['--sp-' + t] = !v ? u : v !== 'flex' ? v + 'px' : rows.indexOf(t) >= 0 ? '100fr' : '1fr';
+  });
+  return { data: data, style: style, seq: seq, slot: slot, cross: cross, strip: strip, paper: pb };
 }
