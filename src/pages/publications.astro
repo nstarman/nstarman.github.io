@@ -118,7 +118,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
             </div>
             <div class="soft">
               {assists.map((a) => (
-                <Card item={assistItem(a)} preset="size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor"
+                <Card item={assistItem(a)} preset="size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono"
                       class="assist" data-tags={a.tags.length ? a.tags.join(' ') : undefined} />
               ))}
             </div>
