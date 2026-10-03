@@ -618,7 +618,7 @@
               "pattern": "^[\\w.-]+/[\\w.-]+$"
             },
             "path": {
-              "description": "The file in that repository. PNG becomes WebP at quality 85; SVG is copied as is.",
+              "description": "The file in that repository, PNG or SVG. `image`'s extension picks what is made: a .webp at quality 85 (an SVG drawn 512 px wide), or for an SVG source, an .svg copied as is.",
               "type": "string",
               "pattern": "\\.(png|svg)$"
             },
