@@ -250,7 +250,10 @@ describe('card names', () => {
     expect(parseName('size:fill:fit-text:none-look:frame=none').frame).toBe('none');
     expect(parseName('size:fill:fit-text:none-look:frame=feature').frame).toBe('feature');
     expect(formatName({ text: 'none', titleWeight: 'regular', frame: 'none', buttonGap: '0' })).toMatch(/-look:titleweight=regular,frame=none,buttongap=0$/);
-    for (const bad of ['look:titleweight=heavy', 'look:frame=33', 'look:frame=012', 'look:buttongap=33', 'look:buttongap=x']) {
+    // Or a share of a button's size.
+    expect(parseName('size:fill:fit-text:none-look:buttongap=50%').buttonGap).toBe('50%');
+    expect(formatName({ text: 'none', buttonGap: '100%' })).toMatch(/-look:buttongap=100%$/);
+    for (const bad of ['look:titleweight=heavy', 'look:frame=33', 'look:frame=012', 'look:buttongap=33', 'look:buttongap=x', 'look:buttongap=101%', 'look:buttongap=5%%']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });
@@ -302,6 +305,15 @@ describe('card names', () => {
     expect(formatName(parseName('size:fill:fit-text:none-figure:center:title:40'))).toContain('-figure:center:40-');
     for (const bad of ['figure:center:rail:40', 'figure:left:top:authors:40', 'figure:center:authors']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
+    }
+  });
+
+  it('set the text across the center, at its own size and weight', () => {
+    expect(parseName('size:fill:fit-text:summary:center-look:bodysize=13.5,bodyweight=medium')).toMatchObject({ text: 'summary', textAlign: 'center', bodySize: '13.5', bodyWeight: 'medium' });
+    expect(parseName('size:fill:fit-text:details:left').textAlign).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-text:details:right-look:bodyweight=bold'))).toMatch(/-text:details:right-.*-look:bodyweight=bold$/);
+    for (const bad of ['text:none:center', 'text:summary:middle', 'look:bodysize=41', 'look:bodysize=7', 'look:bodyweight=mine']) {
+      expect(() => parseName(`size:fill:fit-text:summary-${bad}`.replace('-text:summary-text', '-text'))).toThrow();
     }
   });
 

@@ -78,6 +78,8 @@
 //                                          where they have one; left off, words
 //   text     none · summary · details     (the record's own tiers; none is
 //                                          the title alone)
+//            …:center · …:right           then across the center: left (the
+//            e.g. text:summary:center     default, left off), centered or right
 //   extras   none, or any of venue (where and when it appeared), status (a
 //            paper not yet out — submitted, accepted — as a pill on the
 //            venue line), position (my author position, "1st"), year (the
@@ -135,8 +137,13 @@
 //              titleweight = regular · medium · bold      the title's weight;
 //                or mine, bold where I am first author and regular
 //                otherwise; left off, medium, or regular past second author
-//              buttongap = 0–32 px    the space between the link buttons;
-//                left off, a third of the text's height
+//              bodysize = 8–40 px, to a tenth   the text's own size — the
+//                summary's or details' — left off, the card's text size
+//              bodyweight = regular · medium · bold   the text's weight; left
+//                off, regular
+//              buttongap = 0–32 px, or 0–100%   the space between the link
+//                buttons, in px or a share of a button's size; left off, a
+//                third of the text's height
 //              frame = none · a step · 0–32 px    the white around a figure,
 //                its corners then following the card's; none, the bare
 //                image; left off, as it is
@@ -213,7 +220,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, frame, buttonGap, space, dials = {}, background = 'normal' }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, bodySize, bodyWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal' }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -223,6 +230,8 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(same ? [dials.textsize] : set.map((d) => `${d}=${dials[d]}`)),
     ...(dials.titlesize ? [`titlesize=${dials.titlesize}`] : []),
     ...(titleWeight ? [`titleweight=${titleWeight}`] : []),
+    ...(bodySize ? [`bodysize=${bodySize}`] : []),
+    ...(bodyWeight ? [`bodyweight=${bodyWeight}`] : []),
     ...(frame ? [`frame=${frame}`] : []),
     ...(buttonGap != null ? [`buttongap=${buttonGap}`] : []),
     ...(background !== 'normal' ? [`background=${background}`] : []),
@@ -252,7 +261,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
       return `area:${s}` + (set ? `:${set}` : '');
     }),
     authors === 'none' ? 'authors:none' : `authors:${authors}:${marks}` + (authorLink ? `:${authorLink}` : ''),
-    `text:${text}`,
+    `text:${text}` + (textAlign && textAlign !== 'left' && text !== 'none' ? `:${textAlign}` : ''),
     `extras:${EXTRAS.filter((e) => extras.includes(e)).join(',') || 'none'}`,
     ...(extras.includes('context') && place('context', contextAt) ? [`context${place('context', contextAt)}`] : []),
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
@@ -322,6 +331,10 @@ export function parseName(name) {
         else throw new Error('"' + name + '": no such area, ' + parts[i]);
       }
       spec.sides = { ...spec.sides, [kv[1]]: side };
+    } else if (key === 'text' && kv.length === 3 && one(kv[1], ['summary', 'details']) && one(kv[2], ['left', 'center', 'right'])) {
+      // The text, then across the center: left, centered or right.
+      spec.text = kv[1];
+      if (kv[2] !== 'left') spec.textAlign = kv[2];
     } else if (key === 'title') {
       // full[:whole|split], short, nick or none; any but none may then link,
       // :link, :site, :ads or :journal, then sit at the :top, across the
@@ -407,7 +420,9 @@ export function parseName(name) {
         else if (s[0] === 'textsize' && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) spec.dials.textsize = s[1];
         else if (s[0] === 'titlesize' && (one(s[1], steps) || (/^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 60))) spec.dials.titlesize = s[1];
         else if (s[0] === 'titleweight' && one(s[1], ['regular', 'medium', 'bold', 'mine'])) spec.titleWeight = s[1];
-        else if (s[0] === 'buttongap' && /^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32) spec.buttonGap = s[1];
+        else if (s[0] === 'bodysize' && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) spec.bodySize = s[1];
+        else if (s[0] === 'bodyweight' && one(s[1], ['regular', 'medium', 'bold'])) spec.bodyWeight = s[1];
+        else if (s[0] === 'buttongap' && ((/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32) || (/^(0|[1-9][0-9]?|100)%$/.test(s[1])))) spec.buttonGap = s[1];
         else if (s[0] === 'frame' && (one(s[1], ['none'].concat(steps)) || (/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32))) spec.frame = s[1];
         else if (one(s[0], ['padding', 'corners', 'buttons']) && /^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 64 && +s[1] >= (s[0] === 'buttons' ? 12 : 0)) spec.dials[s[0]] = s[1];
         else if (s[0] === 'background' && one(s[1], ['none', 'light', 'normal', 'dark'])) spec.background = s[1];

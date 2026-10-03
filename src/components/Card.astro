@@ -73,8 +73,10 @@ const style = [
   spec.width !== 'fill' && spec.height !== 'fit' && `--aw:${spec.width};--ah:${spec.height}`,
   px('textsize') != null && `--fs:${px('textsize')}px`,
   px('titlesize') != null && `--ts:${px('titlesize')}px`,
+  spec.bodySize && `--bs:${spec.bodySize}px`,
   /^\d/.test(spec.frame ?? '') && `--frame:${spec.frame}px`,
-  spec.buttonGap != null && `--bgap:${spec.buttonGap}px`,
+  // The gap between the buttons: px, or a share of a button's size.
+  spec.buttonGap != null && `--bgap:${spec.buttonGap.endsWith('%') ? `calc(var(--ib) * ${parseInt(spec.buttonGap, 10) / 100})` : `${spec.buttonGap}px`}`,
   spec.sides?.top?.height != null && `--hT:${spec.sides.top.height}px`,
   spec.sides?.bottom?.height != null && `--hB:${spec.sides.bottom.height}px`,
   // space: a track between two slots, a length or flex, as --sp-<a>_<b>.
@@ -186,7 +188,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-textsize={step('textsize')} data-titlesize={step('titlesize')} data-titleweight={spec.titleWeight === 'mine' ? (pos === 1 ? 'bold' : 'regular') : spec.titleWeight} data-vflex={vflex ? '' : undefined} data-frame={spec.frame ? (/^\d/.test(spec.frame) ? '' : spec.frame) : undefined} data-padding={step('padding')}
          data-corners={step('corners')} data-buttons={step('buttons')}
          data-title={spec.title === 'full' ? undefined : spec.title}
-         data-titleat={spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : undefined} data-titlealign={spec.titleAlign} data-titlestatus={spec.titleStatus && titleStatus(item) ? '' : undefined}
+         data-titleat={spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : undefined} data-titlealign={spec.titleAlign} data-textalign={spec.textAlign} data-bodyweight={spec.bodyWeight} data-titlestatus={spec.titleStatus && titleStatus(item) ? '' : undefined}
          data-wins={wins || undefined} data-empty={empty || undefined}
          data-authors={bylined && byline ? (counted ? 'count' : spec.authors) : undefined}
          data-students={bylined && spec.marks === 'plain' && byline ? 'plain' : undefined}

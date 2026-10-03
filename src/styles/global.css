@@ -460,6 +460,13 @@ a.card:hover .name{color:var(--accent)}
 /* title:…:center|right — the title across its area. */
 .card[data-titlealign="center"] > .c-name{text-align:center}
 .card[data-titlealign="right"] > .c-name{text-align:right}
+/* text:…:center|right, and look:bodysize and bodyweight — the summary's or
+   details' place across the center, its own size, and its weight. */
+.card[data-textalign="center"] > .c-text{text-align:center}
+.card[data-textalign="right"] > .c-text{text-align:right}
+.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--bs, 1em)}
+.card[data-bodyweight="medium"] > .c-text :is(.c-sum, .c-det){font-weight:500}
+.card[data-bodyweight="bold"] > .c-text :is(.c-sum, .c-det){font-weight:600}
 /* title:…:status — the pill after the title, sized with it, never bold. */
 .c-tstatus{font-size:.6em; font-weight:400; vertical-align:.15em; white-space:nowrap}
 .card[data-size][data-titleat="top"][data-wins~="left-top"] > .c-name{grid-column-start:3}

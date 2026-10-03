@@ -71,6 +71,10 @@ const apply = `(function (parseName, placeOf, can) {
   if (spec.titleAt === 'top' && spec.title !== 'none') d.titleat = 'top'; else delete d.titleat;
   if (spec.titleAlign) d.titlealign = spec.titleAlign; else delete d.titlealign;
   if (spec.titleStatus && can.tstatus) d.titlestatus = ''; else delete d.titlestatus;
+  // The text across the center, its own size and its weight.
+  if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
+  if (spec.bodyWeight) d.bodyweight = spec.bodyWeight; else delete d.bodyweight;
+  if (spec.bodySize) card.style.setProperty('--bs', spec.bodySize + 'px'); else card.style.removeProperty('--bs');
   // The corners each side wins over the top and bottom areas, area:<side>:top,bottom.
   var wins = [];
   ['left', 'right'].forEach(function (side) { ['top', 'bottom'].forEach(function (a) { if (((spec.sides || {})[side] || {})[a]) wins.push(side + '-' + a); }); });
@@ -173,7 +177,8 @@ const apply = `(function (parseName, placeOf, can) {
   // The title's weight, and the frame around the figure: a step, or px.
   // mine: bold where I am first author, regular otherwise.
   if (spec.titleWeight) d.titleweight = spec.titleWeight === 'mine' ? (can.lead ? 'bold' : 'regular') : spec.titleWeight; else delete d.titleweight;
-  if (spec.buttonGap != null) card.style.setProperty('--bgap', spec.buttonGap + 'px'); else card.style.removeProperty('--bgap');
+  // The gap between the buttons: px, or a share of a button's size.
+  if (spec.buttonGap != null) card.style.setProperty('--bgap', /%$/.test(spec.buttonGap) ? 'calc(var(--ib) * ' + parseInt(spec.buttonGap, 10) / 100 + ')' : spec.buttonGap + 'px'); else card.style.removeProperty('--bgap');
   var framePx = /^[0-9]/.test(spec.frame || '');
   if (spec.frame) d.frame = framePx ? '' : spec.frame; else delete d.frame;
   if (framePx) card.style.setProperty('--frame', spec.frame + 'px'); else card.style.removeProperty('--frame');
