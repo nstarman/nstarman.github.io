@@ -20,5 +20,16 @@
   "tags": [
     "jax"
   ],
-  "details": "replace, fields and asdict, generalized to any object rather than just dataclasses."
+  "details": "replace, fields and asdict, generalized to any object rather than just dataclasses.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/dataclassish.webp",
+    "source": {
+      "repo": "GalacticDynamics/dataclassish",
+      "path": "docs/_static/favicon.svg",
+      "sha": "d69744cbe8f77798cab6acd7adf887b5b3ad2749"
+    },
+    "alt": "The dataclassish logo: a purple brace opening three fields, each a purple dot and a wavy teal tilde, beside a plain navy box.",
+    "description": "Tools from dataclasses, for everything: replace, fields and asdict, generalized from dataclasses to any Python object through multiple dispatch."
+  }
 }
