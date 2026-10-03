@@ -20,5 +20,16 @@
   "tags": [
     "jax"
   ],
-  "details": "OOP interfaces and vectorization for Diffrax."
+  "details": "OOP interfaces and vectorization for Diffrax.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/diffraxtra.webp",
+    "source": {
+      "repo": "GalacticDynamics/diffraxtra",
+      "path": "docs/_static/favicon.svg",
+      "sha": "06e3966dc029715365b4dd11c0bcca3b7a0edeb3"
+    },
+    "alt": "The diffraxtra logo: diffrax's, an integral sign cut out of a black rounded square, with a big plus cut out beside it.",
+    "description": "Extras for diffrax: a pre-configured, callable differential-equation solver, and dense interpolation that evaluates batched solutions at arrays of times."
+  }
 }
