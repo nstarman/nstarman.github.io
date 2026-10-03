@@ -194,7 +194,7 @@ const apply = `(function (parseName, placeOf, can) {
   // name asks — and with nowhere to go, none. It is the first of the
   // buttons, in their list.
   var pb = card.querySelector('.c-paperbtn'), pbt = spec.paperButton, pbHref = pb && pbt && pb.dataset[pbt.to || 'auto'];
-  if (pbHref) { d.paper = ''; pb.setAttribute('href', pbHref); pb.querySelector('.c-pword').textContent = pbt.label === 'icon' ? 'paper' : pbt.label; } else delete d.paper;
+  if (pbHref) { d.paperbtn = ''; pb.setAttribute('href', pbHref); pb.querySelector('.c-pword').textContent = pbt.label === 'icon' ? 'paper' : pbt.label; } else delete d.paperbtn;
   if (pbHref && pbt.label === 'icon') d.paperlabel = 'icon'; else delete d.paperlabel;
   if (pbHref && pbt.color) d.papercolor = pbt.color; else delete d.papercolor;
   var btnsAt = { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') };
@@ -236,7 +236,7 @@ const apply = `(function (parseName, placeOf, can) {
   }
   // A button shown: the paper button where it is on; a link, where kept; an
   // empty one or a part, where listed.
-  var on = function (li) { return li.classList.contains('c-paperli') ? 'paper' in d : spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; };
+  var on = function (li) { return li.classList.contains('c-paperli') ? 'paperbtn' in d : spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; };
   // The buttons to a row: as many as fit, so many — no more than are shown —
   // or as near square as the ones shown go.
   // Counted as the room they take: the paper button so many buttons wide —

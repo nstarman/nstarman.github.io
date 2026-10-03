@@ -356,7 +356,7 @@ a.card:hover .name{color:var(--accent)}
 .card[data-papercolor="grey"] .c-paperbtn{color:var(--ink-mute); border-color:var(--rule); background:var(--surface)}
 .card[data-papercolor="grey"] .c-paperbtn:is(:hover, :focus-visible){color:var(--ground); background:var(--ink); border-color:var(--ink)}
 .card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
-.card:not([data-paper]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
+.card:not([data-paperbtn]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
@@ -623,7 +623,7 @@ a.card:hover .name{color:var(--accent)}
 
 /* data-links names the links to keep, from the closed `rel` vocabulary. */
 .card[data-links] .c-foot li{display:none}
-.card[data-links][data-paper] .c-foot li.c-paperli{display:block}
+.card[data-links][data-paperbtn] .c-foot li.c-paperli{display:block}
 .card[data-links~="paper"] li[data-rel="paper"], .card[data-links~="preprint"] li[data-rel="preprint"],
 .card[data-links~="doi"] li[data-rel="doi"], .card[data-links~="repo"] li[data-rel="repo"],
 .card[data-links~="code"] li[data-rel="code"], .card[data-links~="docs"] li[data-rel="docs"],
