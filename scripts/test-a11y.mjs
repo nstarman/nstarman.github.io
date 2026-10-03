@@ -1,4 +1,4 @@
-// Every link must have an href, and every link and heading an accessible name.
+// Every link must have an href, and every link, button and heading an accessible name.
 //
 // A name can come from inner text, aria-label, aria-labelledby, an <img alt>,
 // or an <svg><title>. A `title` attribute alone does not count: it is not
@@ -60,6 +60,7 @@ function check(file) {
 
   scan(/<(a\b[^>]*)>([\s\S]*?)<\/a>/g, 'link');
   scan(/<(h[1-6]\b[^>]*)>([\s\S]*?)<\/h[1-6]>/g, 'heading');
+  scan(/<(button\b[^>]*)>([\s\S]*?)<\/button>/g, 'button');
   return problems;
 }
 
@@ -75,7 +76,7 @@ for (const file of html()) {
 
 if (total === 0) {
   const n = html().length;
-  console.log(`  ok       every link and heading across ${n} pages has an accessible name`);
+  console.log(`  ok       every link, button and heading across ${n} pages has an accessible name`);
 } else {
   console.log(`\n  ${total} element(s) without an accessible name`);
 }
