@@ -1,0 +1,13 @@
+---
+// The venue line's words: the journal's name, full and short, linked or not;
+// the year; and where the paper stands, as a pill. A preprint with no venue
+// yet is placed by its arXiv number, as on /publications/. The card sets
+// them on their own line and again after the authors, and shows one.
+import Venue from './Venue.astro';
+import { venueLine, year } from '../lib/data.js';
+import { hasStatus } from '../lib/cards.js';
+
+const { item, link = true } = Astro.props;
+---
+{venueLine(item) ? <><span class="c-vfull"><Venue item={item} link={link} /></span>{venueLine(item, { short: true }) !== venueLine(item) && <span class="c-vshort"><Venue item={item} short link={link} /></span>}<span class="dot">·</span></>
+  : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>{hasStatus(item) && <span class="statustag c-status">{item.status}</span>}

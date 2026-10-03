@@ -10,14 +10,14 @@
 //
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
-import { authors, year, links, resolve, authorPosition, softwarePapers, venueLine, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, hasStatus, hasYear, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, placeOf, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
 import Inline from './Inline.astro';
 import Byline from './Byline.astro';
-import Venue from './Venue.astro';
+import VenueBits from './VenueBits.astro';
 
 // Anything else given — a class, data-tags for a page's filter — goes on the
 // card itself.
@@ -203,7 +203,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-pos={posShown ? '' : undefined}
          data-strips={strips || undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
-         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-venueat={spec.venueAt} data-venuefirst={spec.venueAt === 'authors' && spec.venueFirst ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
          data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-background={spec.background === 'normal' ? undefined : spec.background}
@@ -246,22 +246,21 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
 
   {byline && (
     <p class="c-by">
+      <span class="c-byvenue c-byvenue--before"><VenueBits item={item} link={spec.venueLink !== false} /><span class="c-bysep">·</span></span>
       {['tight', 'short', 'full'].map((len) => (
         <span class={`c-by-${len}`}>{byline[len].collaboration && <>{byline[len].collaboration}, </>}<Byline shown={byline[len].shown} links={spec.authorLink || false} />{byline[len].etal && <>, et al.</>}</span>
       ))}
       {counts.map((n) => authors(item, n, { fill: true })).map((b, i) => (
         <span class="c-by-n" data-n={counts[i]} hidden={counts[i] !== count}>{b.collaboration && <>{b.collaboration}, </>}<Byline shown={b.shown} links={spec.authorLink || false} />{b.etal && <>, et al.</>}</span>
       ))}
+      <span class="c-byvenue c-byvenue--after"><span class="c-bysep">·</span><VenueBits item={item} link={spec.venueLink !== false} /></span>
     </p>
   )}
 
-  {/* The venue extra: where and when it appeared. A preprint with no venue yet
-      is placed by its arXiv number, as on /publications/. */}
+  {/* The venue extra: where and when it appeared, on its own line — or after
+      the authors, on theirs (venue:…:authors), drawn there too. */}
   {item.type === 'publication' && (
-    <p class="c-venue">
-      {venueLine(item) ? <><Venue item={item} /><span class="dot">·</span></>
-        : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>{hasStatus(item) && <span class="statustag c-status">{item.status}</span>}
-    </p>
+    <p class="c-venue"><VenueBits item={item} link={spec.venueLink !== false} /></p>
   )}
 
   {((isSoftware && item.role) || sum || det) && (

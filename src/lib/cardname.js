@@ -70,6 +70,8 @@
 //   authors  none · short · full · 1–20   a paper's byline: none, the first
 //                                          three and "et al.", up to eight, or
 //                                          up to so many, authors:5;
+//            …:fit                        fewer, where they would run past one
+//                                          line — the venue after them too;
 //            …:plain · …:marked           marked colours my students and gives
 //                                          them † and ‡; plain, the default, not
 //            …:orcid · …:site             each co-author a link: to their ORCID,
@@ -85,6 +87,15 @@
 //            venue line), position (my author position, "1st"), year (the
 //            year), role (my role in a package),
 //            context (a link to its topic on /research/)
+//   venue    full · short           the venue line, where extras has it: the
+//            …:unlinked             journal's name in full or short (ApJ,
+//            …:undated              config/journals.json); not a link to the
+//            …:above                article; without its year; its own line
+//            …:center · …:right     above the authors' rather than below;
+//            …:authors              across the center, left left off — or,
+//            e.g. venue:short:right in place of the last two, after the
+//                                   authors, on their line — or, :authors:
+//                                   before, before them
 //   context  <place>                where the context link sits, e.g.
 //            e.g. context:bottom:right  context:bottom:right
 //   position <place>                where my author position sits
@@ -225,7 +236,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {} }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, venueName, venueLink, venueDate, venueAlign, venueAt, venueFirst, authorsFit }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -264,9 +275,10 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
       const set = [sides[s].width, sides[s].height != null && `min=${sides[s].height}`, sides[s].top && 'top', sides[s].bottom && 'bottom'].filter(Boolean).join(',');
       return `area:${s}` + (set ? `:${set}` : '');
     }),
-    authors === 'none' ? 'authors:none' : `authors:${authors}:${marks}` + (authorLink ? `:${authorLink}` : ''),
+    authors === 'none' ? 'authors:none' : `authors:${authors}${authorsFit ? ':fit' : ''}:${marks}` + (authorLink ? `:${authorLink}` : ''),
     `text:${text}` + (textAlign && textAlign !== 'left' && text !== 'none' ? `:${textAlign}` : ''),
     `extras:${EXTRAS.filter((e) => extras.includes(e)).join(',') || 'none'}`,
+    ...(extras.includes('venue') && (venueName === 'short' || venueLink === false || venueDate === false || venueAlign || venueAt) ? [`venue:${venueName || 'full'}${venueLink === false ? ':unlinked' : ''}${venueDate === false ? ':undated' : ''}${venueAt === 'above' ? ':above' : ''}${venueAt === 'authors' ? `:authors${venueFirst ? ':before' : ''}` : venueAlign ? `:${venueAlign}` : ''}`] : []),
     ...(extras.includes('context') && place('context', contextAt) ? [`context${place('context', contextAt)}`] : []),
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
@@ -362,14 +374,36 @@ export function parseName(name) {
       if (v && v !== 'top') spec.titleV = v;
       if (align && align !== 'left') spec.titleAlign = align;
       if (pill) spec.titleStatus = true;
-    } else if (key === 'authors' && (one(kv[1], ['short', 'full']) || (/^[1-9][0-9]?$/.test(kv[1]) && +kv[1] <= 20)) && kv.length <= 4) {
-      // The length, then its marking, then where the names link, if anywhere.
+    } else if (key === 'authors' && (one(kv[1], ['short', 'full']) || (/^[1-9][0-9]?$/.test(kv[1]) && +kv[1] <= 20)) && kv.length <= 5) {
+      // The length, then :fit — fewer names where they would run past one
+      // line — then its marking, then where the names link, if anywhere.
+      const fit = kv[2] === 'fit';
       const link = kv.length > 2 && one(kv[kv.length - 1], ['orcid', 'site']) ? kv[kv.length - 1] : false;
-      const m = kv.slice(2, link ? -1 : undefined);
+      const m = kv.slice(fit ? 3 : 2, link ? -1 : undefined);
       if (m.length > 1 || (m.length && !one(m[0], ['marked', 'plain']))) throw new Error('"' + name + '": no such student marking, ' + parts[i]);
       spec.authors = one(kv[1], ['short', 'full']) ? kv[1] : +kv[1];
+      if (fit) spec.authorsFit = true;
       spec.marks = m[0] || 'plain';
       spec.authorLink = link;
+    } else if (key === 'venue') {
+      // The venue line: full or short, then :unlinked, then :undated, then
+      // :above the authors' line rather than below it, then across the
+      // center, left, center or right — or, in place of both, after the
+      // authors, on their line.
+      let j = 1;
+      const at = (xs) => (j < kv.length && one(kv[j], xs) ? kv[j++] : null);
+      const n = at(['full', 'short']), unlinked = at(['unlinked']), undated = at(['undated']), above = at(['above']);
+      const align = at(above ? ['left', 'center', 'right'] : ['left', 'center', 'right', 'authors']);
+      // On the authors' line, after them, or :before them.
+      const before = align === 'authors' && at(['before']);
+      if (!n || j !== kv.length) throw new Error('"' + name + '": no such venue, ' + parts[i]);
+      if (above) spec.venueAt = 'above';
+      if (before) spec.venueFirst = true;
+      if (n === 'short') spec.venueName = 'short';
+      if (unlinked) spec.venueLink = false;
+      if (undated) spec.venueDate = false;
+      if (align === 'authors') spec.venueAt = 'authors';
+      else if (align && align !== 'left') spec.venueAlign = align;
     } else if ((key === 'context' || key === 'year' || key === 'position') && kv.length >= 2) {
       // A place — settled once the buttons' area is known.
       spec[(key === 'position' ? 'pos' : key) + 'At'] = kv.slice(1);

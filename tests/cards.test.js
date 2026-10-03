@@ -327,6 +327,31 @@ describe('card names', () => {
     expect(formatName(s)).toMatch(/-look:authorssize=12\.5,venueweight=medium,positionsize=10,yearsize=9,contextweight=bold$/);
   });
 
+  it('fit the byline to one line, where the name asks', () => {
+    expect(parseName('size:fill:fit-authors:full:fit:marked:orcid-text:none')).toMatchObject({ authors: 'full', authorsFit: true, marks: 'marked', authorLink: 'orcid' });
+    expect(parseName('size:fill:fit-authors:5:plain-text:none').authorsFit).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-authors:short:fit-text:none'))).toContain('-authors:short:fit:plain-');
+    for (const bad of ['authors:full:plain:fit', 'authors:none:fit', 'authors:fit']) expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
+  });
+
+  it('set the venue line short, undated and across, where extras has it', () => {
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:undated:right')).toMatchObject({ venueName: 'short', venueDate: false, venueAlign: 'right' });
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:unlinked:undated'))).toContain('-venue:full:unlinked:undated-');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:center'))).toContain('-extras:venue-venue:full:center-');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:left'))).not.toContain('-venue:');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:none-venue:short'))).not.toContain('-venue:');
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors')).toMatchObject({ venueAt: 'authors' });
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:above:right')).toMatchObject({ venueAt: 'above', venueAlign: 'right' });
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors:before')).toMatchObject({ venueAt: 'authors', venueFirst: true });
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors:before'))).toContain('-venue:short:authors:before-');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:above'))).toContain('-venue:full:undated:above-');
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors').venueAlign).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:authors'))).toContain('-venue:full:undated:authors-');
+    for (const bad of ['venue:abbr', 'venue:short:right:undated', 'venue:undated', 'venue:full:middle', 'venue:full:undated:unlinked', 'venue:full:authors:right', 'venue:full:above:authors', 'venue:full:right:above', 'venue:full:before', 'venue:full:right:before', 'venue:full:authors:after']) {
+      expect(() => parseName(`size:fill:fit-text:none-extras:venue-${bad}`)).toThrow();
+    }
+  });
+
   it('put a status pill after the title, where the name asks', () => {
     expect(parseName('size:fill:fit-text:none-title:full:split:link:status:top:top:center')).toMatchObject({ titleLink: 'link', titleStatus: true, titleAt: 'top', titleAlign: 'center' });
     expect(parseName('size:fill:fit-text:none-title:short').titleStatus).toBeUndefined();

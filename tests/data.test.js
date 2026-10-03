@@ -358,3 +358,13 @@ describe('primaryLink', () => {
     expect(primaryLink({ links: [{ rel: 'code', url: 'c' }] })).toBeNull();
   });
 });
+
+describe('venueLine, short', () => {
+  it('names every journal in data/ short, and keeps the rest of the line', () => {
+    const withVenue = items.filter((i) => i.venue?.journal || i.venue?.booktitle);
+    for (const i of withVenue) expect(venueLine(i, { short: true }), i.id).not.toBe(venueLine(i));
+    const apj = { venue: { journal: 'The Astrophysical Journal', volume: '979', pages: '155' } };
+    expect(venueLine(apj, { short: true })).toBe('ApJ 979, 155');
+    expect(venueLine({ venue: { journal: 'Unheard Of' } }, { short: true })).toBe('Unheard Of');
+  });
+});

@@ -8,7 +8,7 @@ import Base from '../../layouts/Base.astro';
 import NumBox from '../../components/NumBox.astro';
 import Place from '../../components/Place.astro';
 import TextLook from '../../components/TextLook.astro';
-import { items, relKey, splitTitle } from '../../lib/data.js';
+import { items, relKey, splitTitle, venueLine, venueUrl } from '../../lib/data.js';
 import {
   LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
@@ -76,7 +76,7 @@ const data = {
   // The builder's own default first, then the website's cards.
   presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
   items: Object.fromEntries(pool.map((i) => [i.id, {
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
   }])),
 };
 ---
@@ -325,12 +325,34 @@ const data = {
           <fieldset class="eb-row" id="eb-authors-row" data-tune="authors" hidden>
             <legend class="eb-key">Authors</legend>
             <span class="eb-sub">
+              {/* Their area, beside the venue's, where it shows: their own
+                  line above it or below it, or one line shared, the venue after
+                  them — the Published row's area, from this side. */}
+              <span class="eb-dim" id="eb-aarea-key">area</span>
+              <span class="eb-px" id="eb-aarea">
+                <select name="authorsline" class="eb-menu" aria-label="The authors' area, beside the venue's">
+                  <option value="above" title="A line of their own, above the venue's" selected>above published</option>
+                  <option value="below" title="A line of their own, below the venue's">below published</option>
+                  <option value="shared" title="One line, shared with the venue">with published</option>
+                </select>
+                {/* Sharing a line with the venue, which comes first. */}
+                <span class="eb-dim eb-inkey" id="eb-aorder-key">order</span>
+                <select name="authorsorder" id="eb-aorder" class="eb-menu" aria-label="The authors before or after the venue, on their line">
+                  <option value="before" selected>before published</option>
+                  <option value="after">after published</option>
+                </select>
+              </span>
               <span class="eb-dim">length</span>
               <span class="eb-pair">
                 <span class="pilltoggle">
                   {AUTHORS.map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="authors" value={v} />{v}</label>)}
                   {/* So many names: a choice like the others, its number typed. */}
                   <label class="eb-px" title={`So many names, 1–${AUTHORS_MAX}, keeping mine`}><input type="radio" class="posradio" name="authors" value="n" /><NumBox name="authorsn" min="1" max={AUTHORS_MAX} by={1} from="5" placeholder="#" label="Number of names" /></label>
+                </span>
+                {/* Fewer names, to the length chosen, where they would run past
+                    one line — the venue after them, where it is, included. */}
+                <span class="pilltoggle eb-checks">
+                  <label title="Fewer names where they would run past one line, the venue after them included"><input type="checkbox" class="eb-check" name="authorsfit" />fit</label>
                 </span>
               </span>
               <span class="eb-dim" id="eb-marks-key">students</span>
@@ -357,9 +379,44 @@ const data = {
           <fieldset class="eb-row" id="eb-venue-row" data-tune="venue" hidden>
             <legend class="eb-key">Published</legend>
             <span class="eb-sub">
-              <span class="eb-dim" id="eb-vstatus-key">show</span>
-              <span class="pilltoggle eb-checks" id="eb-vstatus">
-                <label title="Where it stands — submitted or accepted — as a pill at the end of the venue line"><input type="checkbox" class="eb-check" name="extra" value="status" />status</label>
+              {/* First, as every part has, its area: a line of its own in the
+                  center, below the authors' or above it, and its position
+                  across it; or the authors' line, shared, after them — at
+                  their right, and only there. The Authors row's area is the
+                  same choice, from their side. */}
+              <span class="eb-dim">area</span>
+              <span class="eb-px">
+                <select name="venueline" class="eb-menu" aria-label="The area the venue sits in">
+                  <option value="below" title="A line of its own, below the authors'" selected>below authors</option>
+                  <option value="above" title="A line of its own, above the authors'">above authors</option>
+                  <option value="authors" title="The authors' line, after them">with authors</option>
+                </select>
+                <span class="eb-dim eb-inkey" id="eb-vpos-key">position</span>
+                <span id="eb-vpos"><Place h="venuealign" label="The venue line's position" /></span>
+                {/* Sharing the authors' line, which comes first. */}
+                <span class="eb-dim eb-inkey" id="eb-vorder-key">order</span>
+                <select name="venueorder" id="eb-vorder" class="eb-menu" aria-label="The venue before or after the authors, on their line">
+                  <option value="after" selected>after authors</option>
+                  <option value="before">before authors</option>
+                </select>
+              </span>
+              {/* The journal's name in full or short, where it has a short one. */}
+              <span class="eb-dim" id="eb-vname-key">length</span>
+              <span class="pilltoggle" id="eb-vname" role="radiogroup" aria-label="The journal's name">
+                <label title="The journal's name in full"><input type="radio" class="posradio" name="venuename" value="full" checked />full</label>
+                <label id="eb-vname-short" title="The journal's short name"><input type="radio" class="posradio" name="venuename" value="short" />short</label>
+              </span>
+              {/* Whether the journal's name links to the article, where it has one. */}
+              <span class="eb-dim" id="eb-vlink-key">link</span>
+              <span class="pilltoggle" id="eb-vlink" role="radiogroup" aria-label="Where the journal's name links">
+                <label title="The journal's name as words"><input type="radio" class="posradio" name="venuelink" value="none" />none</label>
+                <label title="The journal's name a link to the article"><input type="radio" class="posradio" name="venuelink" value="journal" checked />journal</label>
+              </span>
+              {/* The year, and where the paper stands as a pill. */}
+              <span class="eb-dim">show</span>
+              <span class="pilltoggle eb-checks">
+                <label title="The year it appeared"><input type="checkbox" class="eb-check" name="venuedate" checked />date</label>
+                <label id="eb-vstatus" title="Where it stands — submitted or accepted — as a pill at the end of the venue line"><input type="checkbox" class="eb-check" name="extra" value="status" />status</label>
               </span>
               <span class="eb-dim">size</span>
               <span class="eb-px"><TextLook name="venue" label="The venue line's" /></span>
@@ -629,7 +686,7 @@ const data = {
   import { AUTHORS_MAX, DIALS, FACES, FIGURE_SLOTS, SPACE_TRACKS, formatName, parseName, placeOf } from '../../lib/cardname.js';
   // Where each part with a size and weight of its own is drawn, to show what
   // an empty size comes to.
-  const FACE_Q = { body: '.c-text :is(.c-sum, .c-det)', authors: '.c-by', venue: '.c-venue', position: '.c-place', year: ':is(.c-yr, .c-year)', context: '.c-context' };
+  const FACE_Q = { body: '.c-text :is(.c-sum, .c-det)', authors: '.c-by', venue: ':is(.c-venue, .c-byvenue)', position: '.c-place', year: ':is(.c-yr, .c-year)', context: '.c-context' };
 
   const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
   const form = document.getElementById('eb');
@@ -693,6 +750,10 @@ const data = {
   // the side's foot beside the words' last line: there they have no up and
   // down of their own.
   const stackedIn = (a) => el('eb-figure-on').checked && !!items[form.elements.card.value].figure && form.elements.figat.value === a;
+  // The venue's area beside the authors', as the Published row and the
+  // Authors row each name it: below the authors is the authors above it.
+  const V2A = { below: 'above', above: 'below', authors: 'shared' };
+  const A2V = { above: 'below', below: 'above', shared: 'authors' };
   // A part's place as the form has it: a strip's area and across it, or the
   // buttons' area, up and down and across.
   const placed = (f, k) => {
@@ -785,6 +846,15 @@ const data = {
     form.elements.titleat.value = c.titleAt ?? 'center';
     form.elements.titlealign.value = c.titleAlign ?? 'left';
     form.elements.titlev.value = c.titleV ?? 'top';
+    setRadio('venuename', c.venueName ?? 'full');
+    setRadio('venueline', c.venueAt ?? 'below');
+    setRadio('authorsline', V2A[c.venueAt ?? 'below']);
+    form.elements.venueorder.value = c.venueFirst ? 'before' : 'after';
+    form.elements.authorsorder.value = c.venueFirst ? 'after' : 'before';
+    form.elements.authorsfit.checked = !!c.authorsFit;
+    setRadio('venuelink', c.venueLink === false ? 'none' : 'journal');
+    form.elements.venuedate.checked = c.venueDate !== false;
+    form.elements.venuealign.value = c.venueAlign ?? 'left';
     form.elements.titlestatus.checked = !!c.titleStatus;
     form.elements.textalign.value = c.textAlign ?? 'left';
     for (const p of FACES) {
@@ -828,7 +898,7 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueAt: f.get('venueline') !== 'below' ? f.get('venueline') : undefined, venueFirst: f.get('venueline') === 'authors' && f.get('venueorder') === 'before' ? true : undefined, venueAlign: f.get('venueline') !== 'authors' && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
       extras: f.getAll('extra').filter((x) => has(items[id], x)), links: on.length === all.length ? 'all' : on, perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
@@ -891,7 +961,13 @@ const data = {
     el('eb-titlev').hidden = form.elements.titleat.value !== 'top';
     // A status pill belongs to a paper that has one to show.
     el('eb-tstatus').hidden = !s.it.tstatus;
-    el('eb-vstatus').hidden = el('eb-vstatus-key').hidden = !s.it.status;
+    el('eb-vstatus').hidden = !s.it.status;
+    el('eb-vname').hidden = el('eb-vname-key').hidden = !s.it.vshort;
+    el('eb-vlink').hidden = el('eb-vlink-key').hidden = !s.it.vlink;
+    el('eb-vpos').hidden = el('eb-vpos-key').hidden = form.elements.venueline.value === 'authors';
+    el('eb-vorder').hidden = el('eb-vorder-key').hidden = el('eb-aorder').hidden = el('eb-aorder-key').hidden = form.elements.venueline.value !== 'authors';
+    el('eb-aarea').hidden = el('eb-aarea-key').hidden = !(s.it.venue && [...form.querySelectorAll('[name=extra]')].some((b) => b.value === 'venue' && b.checked));
+    if (s.it.vshort) el('eb-vname-short').title = `The journal's short name: ${s.it.vshort}`;
     // whole | split belongs to a full title that has a short title inside it.
     el('eb-rest').hidden = !(form.elements.title.value === 'full' && s.it.split);
     // The title's link pills, named for this item, where it has the place.
@@ -1219,6 +1295,14 @@ const data = {
       for (const [k] of SMALL) if (!form.elements[`${k}at`].value) resetPlace(k);
     } else if (/^(pos|year|ctx)at$/.test(e.target.name)) {
       resetPlace(e.target.name.slice(0, -2));
+    } else if (e.target.name === 'venueline') {
+      form.elements.authorsline.value = V2A[e.target.value]; // the same choice, from the authors' side
+    } else if (e.target.name === 'authorsline') {
+      form.elements.venueline.value = A2V[e.target.value];
+    } else if (e.target.name === 'venueorder') {
+      form.elements.authorsorder.value = e.target.value === 'before' ? 'after' : 'before'; // the same order, from the authors' side
+    } else if (e.target.name === 'authorsorder') {
+      form.elements.venueorder.value = e.target.value === 'before' ? 'after' : 'before';
     } else if (FACES.some((p) => e.target.name === `${p}by`)) {
       form.elements[`${e.target.name.slice(0, -2)}size`].value = ''; // by text: no size of its own
     } else if (e.target.name === 'bgapu') {
@@ -1284,7 +1368,12 @@ const data = {
     ['.c-foot .iconbtn', ['foot']],
     ['.c-fig', ['figure']],
     ['.c-name', ['title']],
-    ['.c-by', ['authors']],
+    // The authors' line is an area apart from what is in it: the names, the
+    // authors', and the venue after them, the venue's — the line itself
+    // outlined, its own room bringing up nothing.
+    ['.c-byvenue', ['venue']],
+    [':is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n)', ['authors']],
+    ['.c-by', []],
     ['.c-text', ['text']],
     // My position and the year are parts of their own, together or apart.
     ['.c-place', ['position']],
@@ -1945,7 +2034,7 @@ const data = {
   // links the item has not got stay off, as with a preset.
   const THEMES = ['auto', 'light', 'dark'];
   const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
-  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'venueName', 'venueLink', 'venueDate', 'venueAlign', 'venueAt', 'venueFirst', 'authorsFit', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
   el('eb-export').addEventListener('click', () => {
     const s = spec();
     const c = parseName(s.slug);

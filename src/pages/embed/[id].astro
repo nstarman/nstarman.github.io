@@ -72,6 +72,16 @@ const apply = `(function (parseName, placeOf, can) {
   if (spec.titleAlign) d.titlealign = spec.titleAlign; else delete d.titlealign;
   if (spec.titleAt === 'top' && spec.titleV) d.titlev = spec.titleV; else delete d.titlev;
   if (spec.titleStatus && can.tstatus) d.titlestatus = ''; else delete d.titlestatus;
+  // The venue line: the journal's short name, without its year, across.
+  if (spec.venueName) d.venuename = spec.venueName; else delete d.venuename;
+  if (spec.venueDate === false) d.venueundated = ''; else delete d.venueundated;
+  // Unlinked, the journal's name is words: its link loses its address.
+  [].forEach.call(card.querySelectorAll('a.venuelink'), function (a) {
+    if (spec.venueLink === false) a.removeAttribute('href'); else if (a.dataset.href) a.setAttribute('href', a.dataset.href);
+  });
+  if (spec.venueAlign) d.venuealign = spec.venueAlign; else delete d.venuealign;
+  if (spec.venueAt) d.venueat = spec.venueAt; else delete d.venueat;
+  if (spec.venueAt === 'authors' && spec.venueFirst) d.venuefirst = ''; else delete d.venuefirst;
   // The text across the center; and each part's own size and weight.
   if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
   ['body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
@@ -122,7 +132,23 @@ const apply = `(function (parseName, placeOf, can) {
   // asked for, or the whole list where it asks for more.
   var cuts = card.querySelectorAll('.c-by-n');
   var pick = counted ? Math.min(spec.authors, cuts.length) : 0;
-  [].forEach.call(cuts, function (c) { c.hidden = +c.dataset.n !== pick; });
+  var show = function (n) { [].forEach.call(cuts, function (c) { c.hidden = +c.dataset.n !== n; }); };
+  show(pick);
+  // authors:…:fit — the most names, to the length asked, that keep the byline,
+  // and the venue after it, to one line; again as the card's width changes.
+  if (bylined && spec.authorsFit && cuts.length) {
+    var most = Math.min(counted ? spec.authors : spec.authors === 'short' ? 3 : 8, cuts.length);
+    var fit = function () {
+      var by = card.querySelector('.c-by'), line = parseFloat(getComputedStyle(by).lineHeight);
+      d.authors = 'count';
+      for (var n = most; n >= 1; n -= 1) { show(n); if (by.getBoundingClientRect().height < line * 1.5) break; }
+    };
+    // Once the rest of the name is applied — the sides set the words' width —
+    // and before the first paint.
+    requestAnimationFrame(fit);
+    addEventListener('resize', fit);
+    if (document.fonts) document.fonts.ready.then(fit);
+  }
   if (bylined && spec.marks === 'plain') d.students = 'plain'; else delete d.students;
   // Each co-author a link — to their ORCID, or to our papers on the
   // collaborator map — or words, as the name asks and as they have one.

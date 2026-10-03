@@ -272,14 +272,20 @@ a.card:hover .name{color:var(--accent)}
 /* look:<part>size and <part>weight, each part's own (--fs-<part>,
    --fw-<part>), or as it is. My name never lighter than the rest. */
 .card[data-size] .c-by{font-size:var(--fs-authors, 1em); font-weight:var(--fw-authors, 400)}
-.card[data-size] .c-venue{font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400)}
+.card[data-size] :is(.c-venue, .c-byvenue){font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400)}
 .c-by .me{color:var(--ink-2); font-weight:max(500, var(--fw-authors, 400))}
 /* authors:…:plain — my students set like any other co-author, no colour, no † or ‡. */
 .card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate){color:inherit}
 .card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate) sup{display:none}
 .card[data-size] .c-text .c-role{font-family:var(--mono); font-size:.78em; letter-spacing:.09em; text-transform:uppercase; color:var(--accent)}
-.c-venue .dot{margin:0 .4em; color:var(--ink-faint)}
-.c-venue .yr{font-family:var(--mono); font-size:.92em; font-variant-numeric:tabular-nums}
+:is(.c-venue, .c-byvenue) .dot, .c-bysep{margin:0 .4em; color:var(--ink-faint)}
+:is(.c-venue, .c-byvenue) .yr{font-family:var(--mono); font-size:.92em; font-variant-numeric:tabular-nums}
+/* venue:short, :undated, :center|right — the journal's short name where it
+   has one, the line without its year, and the line across the center. */
+.card:not([data-venuename="short"]) .c-vshort, .card[data-venuename="short"] :is(.c-venue, .c-byvenue):has(.c-vshort) .c-vfull,
+.card[data-venueundated] :is(.c-venue, .c-byvenue) :is(.dot, .yr){display:none}
+.card[data-venuealign="center"] > .c-venue{text-align:center}
+.card[data-venuealign="right"] > .c-venue{text-align:right}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
 .c-fig img{display:block; width:100%; aspect-ratio:16/10; object-fit:contain;
   border-radius:10px; background:#fff; padding:.3rem}
@@ -444,6 +450,9 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size] > .c-name{grid-area:var(--rowT) / 3}
 .card[data-size] > .c-by{grid-area:var(--rowB) / 3}
 .card[data-size] > .c-venue{grid-area:var(--rowV) / 3}
+/* venue:…:above — the venue's line and the authors' change places. */
+.card[data-size][data-venueat="above"] > .c-by{grid-row-start:var(--rowV)}
+.card[data-size][data-venueat="above"] > .c-venue{grid-row-start:var(--rowB)}
 .card[data-size] > .c-text{grid-area:var(--rowX) / 3; min-height:0; overflow:hidden}
 .card[data-size][data-fig="center"] > .c-fig{grid-area:var(--rowF) / 3; align-self:stretch}
 /* figure:center:<slot> — the center's parts take its five row slots in
@@ -469,8 +478,8 @@ a.card:hover .name{color:var(--accent)}
    at the side's foot, not in a row of their own under everything: the card
    as high as the words or the side stacked, the higher. */
 .card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"]):not([data-text="none"]) > .c-text,
-.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"][data-venue] > .c-venue,
-.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:not([data-venue])[data-authors] > .c-by,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"][data-venue]:is(:not([data-venueat]), :not([data-authors])) > .c-venue,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:is(:not([data-venue]), [data-venueat])[data-authors] > .c-by,
 .card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:not([data-venue]):not([data-authors]):not([data-titleat="top"]) > .c-name{grid-row-end:13}
 .card[data-size][data-foot="center"] > .c-foot{grid-area:12 / 3}
 .card[data-size][data-foot="bottom"] > .c-foot{grid-area:14 / 1 / 15 / 6}
@@ -539,6 +548,11 @@ a.card:hover .name{color:var(--accent)}
 .card[data-authors="short"][data-textsize="minor"] .c-by-short,
 .card:not([data-pos]) .c-stamp,
 .card:not([data-venue]) > .c-venue,
+/* venue:…:authors — the venue after the byline, on its line, where there is
+   one; its own line then empty. */
+.card:is(:not([data-venue]), :not([data-venueat="authors"])) .c-byvenue,
+.card[data-venuefirst] .c-byvenue--after, .card:not([data-venuefirst]) .c-byvenue--before,
+.card[data-venueat="authors"][data-authors] > .c-venue,
 .card:not([data-status]) .c-status,
 .card:not([data-titlestatus]) .c-tstatus,
 .card:not([data-context]) .c-context,
@@ -939,7 +953,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* The venue, linked to the article at the journal. Same restraint as an author
    link: it reads as the citation it is, and shows it is a link on hover. */
 .venuelink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
-.venuelink:hover, .venuelink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
+.venuelink[href]:hover, .venuelink[href]:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 
 .authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}

@@ -15,6 +15,8 @@ const modules = import.meta.glob('/data/*.json', { eager: true });
 import collaborators from '/config/collaborators.json';
 // Generated from ADS; see scripts/collect-acknowledgements.mjs.
 import acknowledgements from '/config/acknowledgements.json';
+// Each journal's short name, "ApJ" for "The Astrophysical Journal", by hand.
+import journals from '/config/journals.json';
 
 /**
  * Partial dates (YYYY, YYYY-MM, YYYY-MM-DD) compare correctly as strings, so a
@@ -283,11 +285,13 @@ export function money(a) {
   return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
 }
 
-/** "The Astrophysical Journal 979, 155" */
-export function venueLine(item) {
+/** "The Astrophysical Journal 979, 155"; short, "ApJ 979, 155", where
+ * config/journals.json has the journal's short name. */
+export function venueLine(item, { short = false } = {}) {
   const v = item.venue;
   if (!v) return '';
-  const title = v.journal ?? v.booktitle ?? v.school ?? '';
+  const full = v.journal ?? v.booktitle ?? v.school ?? '';
+  const title = short ? journals[full] ?? full : full;
   const tail = [v.volume, v.pages].filter(Boolean).join(', ');
   return [title, tail].filter(Boolean).join(' ');
 }
