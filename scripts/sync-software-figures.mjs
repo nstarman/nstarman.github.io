@@ -14,15 +14,21 @@
 //   node scripts/sync-software-figures.mjs --check   # exits 1 if any would change
 //
 // Everything done to an upstream image happens here, so it is reviewed with the
-// pull request that applies it. Today: SVG is copied as is; PNG becomes WebP
-// at quality 85, which is how the figures already here were made. Needs `cwebp`
-// (brew install webp, apt-get install webp).
+// pull request that applies it. The record's `image` picks the format: an SVG
+// is copied as is to an .svg; to a .webp, an SVG is rasterized SIZE px wide and
+// a PNG is converted, both at quality 85, which is how the figures already here
+// were made. A large SVG (a painted logo can be 160 KB) is better as a WebP: a
+// card shows it at one size. Needs `cwebp` for PNGs (brew install webp,
+// apt-get install webp).
 
 import fs from 'node:fs';
 import os from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import sharp from 'sharp';
 import { readItems } from './lib/items.mjs';
+
+const SIZE = 512; // px, the width a rasterized SVG is drawn at
 
 const check = process.argv.includes('--check');
 const token = process.env.GITHUB_TOKEN
@@ -39,9 +45,15 @@ async function fetchFile({ repo, path }) {
 }
 
 /** Write `bytes`, the file at upstream `path`, to `out` in out's format. */
-function convert(bytes, path, out) {
+async function convert(bytes, path, out) {
   if (path.endsWith('.svg') && out.endsWith('.svg')) return fs.writeFileSync(out, bytes);
-  if (!(path.endsWith('.png') && out.endsWith('.webp'))) {
+  if (path.endsWith('.svg') && out.endsWith('.webp')) {
+    // Drawn at least twice SIZE wide, then scaled down, so edges are smooth.
+    let density = 72;
+    while ((await sharp(bytes, { density }).metadata()).width < 2 * SIZE) density *= 2;
+    return sharp(bytes, { density }).resize(SIZE).webp({ quality: 85 }).toFile(out);
+  }
+  if (!path.endsWith('.png') || !out.endsWith('.webp')) {
     throw new Error(`${path} -> ${out}: no conversion for that pair; add one here`);
   }
   const tmp = join(fs.mkdtempSync(join(os.tmpdir(), 'figure-')), 'in.png');
@@ -60,7 +72,7 @@ for (const { path, item } of readItems()) {
   stale += 1;
   console.log(`${item.id}: ${source.repo}/${source.path} ${source.sha?.slice(0, 7) ?? 'new'} -> ${upstream.sha.slice(0, 7)}`);
   if (check) continue;
-  convert(upstream.bytes, source.path, out);
+  await convert(upstream.bytes, source.path, out);
   source.sha = upstream.sha;
   fs.writeFileSync(path, JSON.stringify(item, null, 2) + '\n');
 }

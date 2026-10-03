@@ -17,7 +17,7 @@
   "details": "Orbit integration, potentials and stream generation — GPU-accelerated and fully differentiable.",
   "highlight": {
     "topic": "software",
-    "image": "highlights/galax.svg",
+    "image": "highlights/galax.webp",
     "source": {
       "repo": "GalacticDynamics/galax",
       "path": "docs/_static/favicon.svg",
