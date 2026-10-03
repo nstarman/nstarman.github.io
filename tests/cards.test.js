@@ -368,6 +368,8 @@ describe('card names', () => {
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:unlinked:undated'))).toContain('-venue:full:unlinked:undated-');
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:noarxiv:authors'))).toContain('-venue:full:undated:noarxiv:authors-');
     expect(parseName('size:fill:fit-text:none-look:yearstyle=italic,titlestyle=normal').styles).toEqual({ year: 'italic' });
+    expect(formatName(parseName('size:fill:fit-text:none-look:yearface=serif,titleface=mono'))).toMatch(/-look:titleface=mono,yearface=serif$/);
+    expect(() => parseName('size:fill:fit-text:none-look:titleface=comic')).toThrow();
     expect(formatName(parseName('size:fill:fit-text:none-look:yearstyle=italic,venuestyle=italic'))).toMatch(/-look:venuestyle=italic,yearstyle=italic$/);
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:center'))).toContain('-extras:venue-venue:full:center-');
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:left'))).not.toContain('-venue:');

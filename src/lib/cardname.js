@@ -174,6 +174,8 @@
 //                year and context; left off, as the card has it
 //              <part>style = normal · italic   a part's slant, for those and
 //                the title; left off, normal
+//              <part>face = sans · serif · mono   a part's face, for those and
+//                the title; left off, its own
 //              buttongap = 0–32 px, or 0–100%   the space between the link
 //                buttons, in px or a share of a button's size; left off, a
 //                third of the text's height
@@ -256,7 +258,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -268,6 +270,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(titleWeight ? [`titleweight=${titleWeight}`] : []),
     ...FACES.flatMap((p) => [sizes[p] && `${p}size=${sizes[p]}`, weights[p] && `${p}weight=${weights[p]}`].filter(Boolean)),
     ...['title', ...FACES].filter((p) => styles[p] === 'italic').map((p) => `${p}style=italic`),
+    ...['title', ...FACES].filter((p) => fonts[p]).map((p) => `${p}face=${fonts[p]}`),
     ...(frame ? [`frame=${frame}`] : []),
     ...(buttonGap != null ? [`buttongap=${buttonGap}`] : []),
     ...(background !== 'normal' ? [`background=${background}`] : []),
@@ -499,6 +502,7 @@ export function parseName(name) {
         else if (/^(body|authors|venue|position|year|context)size$/.test(s[0]) && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) (spec.sizes = spec.sizes || {})[s[0].slice(0, -4)] = s[1];
         else if (/^(body|authors|venue|position|year|context)weight$/.test(s[0]) && one(s[1], ['regular', 'medium', 'bold'])) (spec.weights = spec.weights || {})[s[0].slice(0, -6)] = s[1];
         else if (/^(title|body|authors|venue|position|year|context)style$/.test(s[0]) && one(s[1], ['normal', 'italic'])) { if (s[1] === 'italic') (spec.styles = spec.styles || {})[s[0].slice(0, -5)] = 'italic'; }
+        else if (/^(title|body|authors|venue|position|year|context)face$/.test(s[0]) && one(s[1], ['sans', 'serif', 'mono'])) (spec.fonts = spec.fonts || {})[s[0].slice(0, -4)] = s[1];
         else if (s[0] === 'buttongap' && ((/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32) || (/^(0|[1-9][0-9]?|100)%$/.test(s[1])))) spec.buttonGap = s[1];
         else if (s[0] === 'frame' && (one(s[1], ['none'].concat(steps)) || (/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32))) spec.frame = s[1];
         else if (one(s[0], ['padding', 'corners', 'buttons']) && /^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 64 && +s[1] >= (s[0] === 'buttons' ? 12 : 0)) spec.dials[s[0]] = s[1];

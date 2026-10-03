@@ -89,6 +89,7 @@ const apply = `(function (parseName, placeOf, can) {
   if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
   ['title', 'body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
     if ((spec.styles || {})[p]) card.style.setProperty('--fst-' + p, spec.styles[p]); else card.style.removeProperty('--fst-' + p);
+    if ((spec.fonts || {})[p]) card.style.setProperty('--ff-' + p, 'var(--' + spec.fonts[p] + ')'); else card.style.removeProperty('--ff-' + p);
   });
   ['body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
     var sz = (spec.sizes || {})[p], w = (spec.weights || {})[p];

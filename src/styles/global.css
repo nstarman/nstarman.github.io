@@ -259,7 +259,8 @@ a.card:hover .name{color:var(--accent)}
 
 /* Package names are code, so they are set in mono; paper titles are prose. */
 .c-name{margin:0; font-size:var(--ts, 1.08em); font-weight:500; line-height:1.35; color:var(--ink); overflow-wrap:anywhere}
-.card[data-type="software"] .c-name{font-family:var(--mono)}
+.card[data-size] .c-name{font-family:var(--ff-title, var(--sans))}
+.card[data-type="software"] .c-name{font-family:var(--ff-title, var(--mono))}
 .c-name--minor{font-weight:400}
 /* title:full:split — the part of the full title that is not its short title. */
 .card[data-rest="split"] .c-t-rest{font-weight:400}
@@ -271,8 +272,8 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size] :is(.c-by, .c-venue){margin:0; line-height:1.5; color:var(--ink-mute)}
 /* look:<part>size and <part>weight, each part's own (--fs-<part>,
    --fw-<part>), or as it is. My name never lighter than the rest. */
-.card[data-size] .c-by{font-size:var(--fs-authors, 1em); font-weight:var(--fw-authors, 400); font-style:var(--fst-authors, normal)}
-.card[data-size] :is(.c-venue, .c-byvenue){font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400); font-style:var(--fst-venue, normal)}
+.card[data-size] .c-by{font-size:var(--fs-authors, 1em); font-weight:var(--fw-authors, 400); font-style:var(--fst-authors, normal); font-family:var(--ff-authors, var(--sans))}
+.card[data-size] :is(.c-venue, .c-byvenue){font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400); font-style:var(--fst-venue, normal); font-family:var(--ff-venue, var(--sans))}
 .c-by .me{color:var(--ink-2); font-weight:max(500, var(--fw-authors, 400))}
 /* authors:…:plain — my students set like any other co-author, no colour, no † or ‡. */
 .card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate){color:inherit}
@@ -358,9 +359,9 @@ a.card:hover .name{color:var(--accent)}
 .card:not([data-paper]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
-.c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal)}
-.c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal)}
-.c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal)}
+.c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
+.c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
+.c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 /* A strip: my position, the year or the context link in the top area, or
    the bottom one where the buttons are not. A strip of the card's padding is
    made for it, and it sits there, at the left, center or right, clear of
@@ -380,7 +381,7 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size][data-rail="empty"] > .c-foot, .card[data-size][data-rail="empty"] > .c-foot > .c-slot{display:contents}
 .card[data-size][data-rail="empty"] > .c-foot :is(.c-refs, .btns){display:none}
 /* The context extra: the way to the paper's topic on /research/. */
-.c-context{font-family:var(--mono); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); font-style:var(--fst-context, normal); letter-spacing:.06em;
+.c-context{font-family:var(--ff-context, var(--mono)); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); font-style:var(--fst-context, normal); letter-spacing:.06em;
   text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .c-context:hover{color:var(--accent); text-decoration:none}
 
@@ -534,7 +535,7 @@ a.card:hover .name{color:var(--accent)}
    details' place across the center, its own size, and its weight. */
 .card[data-textalign="center"] > .c-text{text-align:center}
 .card[data-textalign="right"] > .c-text{text-align:right}
-.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--fs-body, 1em); font-weight:var(--fw-body, 400); font-style:var(--fst-body, normal)}
+.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--fs-body, 1em); font-weight:var(--fw-body, 400); font-style:var(--fst-body, normal); font-family:var(--ff-body, var(--sans))}
 .card[data-size] > .c-name{font-style:var(--fst-title, normal)}
 /* title:…:status — the pill after the title, sized with it, never bold. */
 .c-tstatus{font-size:.6em; font-weight:400; vertical-align:.15em; white-space:nowrap}

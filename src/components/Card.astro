@@ -83,6 +83,7 @@ const style = [
   ...Object.entries(spec.sizes ?? {}).map(([k, v]) => `--fs-${k}:${v}px`),
   ...Object.entries(spec.weights ?? {}).map(([k, v]) => `--fw-${k}:${{ regular: 400, medium: 500, bold: 600 }[v]}`),
   ...Object.entries(spec.styles ?? {}).map(([k, v]) => `--fst-${k}:${v}`),
+  ...Object.entries(spec.fonts ?? {}).map(([k, v]) => `--ff-${k}:var(--${v})`),
   /^\d/.test(spec.frame ?? '') && `--frame:${spec.frame}px`,
   // The gap between the buttons: px, or a share of a button's size.
   spec.buttonGap != null && `--bgap:${spec.buttonGap.endsWith('%') ? `calc(var(--ib) * ${parseInt(spec.buttonGap, 10) / 100})` : `${spec.buttonGap}px`}`,
