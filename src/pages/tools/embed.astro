@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import { items, relKey, splitTitle } from '../../lib/data.js';
 import {
-  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasContext, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasContext, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
 
 const pool = items.filter((i) => CARD_TYPES.includes(i.type));
@@ -69,7 +69,7 @@ const data = {
   // The builder's own default first, then the website's cards.
   presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
   items: Object.fromEntries(pool.map((i) => [i.id, {
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? placeOf(ownLink(i)) : null, site: siteHref(i)?.replace(/#.*/, '') ?? null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) ? 'journal' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), status: hasStatus(i) ? i.status : null, context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? placeOf(ownLink(i)) : null, site: siteHref(i)?.replace(/#.*/, '') ?? null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) ? 'journal' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
   }])),
 };
 ---
@@ -601,6 +601,7 @@ const data = {
     const it = items[id];
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
+      + x(it.status, 'status', `Its status, ${it.status}, on the venue line`)
       + x(it.context, 'context', 'A link to its topic on /research/');
     el('eb-extras-drop').hidden = !extras.innerHTML;
     el('eb-links').innerHTML = it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
@@ -608,7 +609,7 @@ const data = {
 
   // A preset as it comes out for this item: the extras it has not got drop,
   // so an item with no figure still matches the default.
-  const has = (it, x) => ({ figure: it.figure, venue: it.venue, role: it.role, context: it.context })[x];
+  const has = (it, x) => ({ figure: it.figure, venue: it.venue, status: it.status, role: it.role, context: it.context })[x];
   // The byline as this item can have it: none with no authors, and none for a
   // position it has not got.
   const authorsFor = (it, a) => (!it.byline || (a === 'position' && !it.pos) ? 'none' : a);

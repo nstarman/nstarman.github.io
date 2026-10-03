@@ -95,8 +95,10 @@
 //            e.g. authors:position:right:top  right, top or bottom
 //   text     none · summary · details     (the record's own tiers; none is
 //                                          the title alone)
-//   extras   none, or any of venue (where and when it appeared), role (my
-//            role in a package), context (a link to its topic on /research/)
+//   extras   none, or any of venue (where and when it appeared), status (a
+//            paper not yet out — submitted, accepted — as a pill on the
+//            venue line), role (my role in a package), context (a link to
+//            its topic on /research/)
 //   context  rail                   the context link in the rail, the default
 //            <x>:<y>                or out of it, in a corner of the card —
 //            e.g. context:right:bottom  left or right, top or bottom — so a
@@ -175,7 +177,7 @@ export const AUTHORS = ['none', 'short', 'full', 'position'];
 /** The most names authors:<n> asks for. */
 export const AUTHORS_MAX = 20;
 export const TEXTS = ['none', 'summary', 'details'];
-export const EXTRAS = ['venue', 'role', 'context'];
+export const EXTRAS = ['venue', 'status', 'role', 'context'];
 export const BACKGROUNDS = ['none', 'light', 'normal', 'dark'];
 /** A set width or height is between these, in px. */
 export const FIXED_MIN = 120;
@@ -343,7 +345,7 @@ export function parseName(name) {
       spec.text = kv[1];
     } else if (key === 'extras') {
       const xs = kv[1] === 'none' ? [] : kv[1].split(',');
-      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], ['venue', 'role', 'context'])) throw new Error('"' + name + '": no such extra, ' + xs[j]);
+      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], ['venue', 'status', 'role', 'context'])) throw new Error('"' + name + '": no such extra, ' + xs[j]);
       spec.extras = xs;
     } else if (key === 'space') {
       spec.space = {};

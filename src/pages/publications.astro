@@ -1,8 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
-import LinkIcons from '../components/LinkIcons.astro';
-import { byType, positionStops, year, assists, displayName, links, primaryLink } from '../lib/data.js';
+import Card from '../components/Card.astro';
+import { byType, positionStops, year, assists, assistItem } from '../lib/data.js';
 import person from '/config/person.json';
 
 // In-preparation papers stay out of the public list — they still appear in the
@@ -36,11 +36,6 @@ for (const p of all) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) 
 const years = [...new Set(all.map(year))].filter(Boolean);
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
 
-// "J. Nibauer & S. Pearson", "J. Nibauer et al." — a card has room for a byline, not a list.
-const byline = (a) => {
-  const names = a.authors.map(displayName);
-  return names.length > 2 ? `${names[0]} et al.` : names.join(' & ');
-};
 ---
 <Base title="Publications — Nathaniel Starkman">
   <main>
@@ -122,16 +117,10 @@ const byline = (a) => {
               <p class="lede">Papers that thank me in their acknowledgements</p>
             </div>
             <div class="soft">
-              {assists.map((a) => {
-                const href = primaryLink(a)?.url;
-                return (
-                  <article class="card card--mini assist" data-tags={a.tags.length ? a.tags.join(' ') : undefined}>
-                    <div class="name">{href ? <a href={href}>{a.title}</a> : a.title}</div>
-                    <p>{byline(a)} · {a.venue} {a.date.slice(0, 4)}</p>
-                    <LinkIcons links={links(a)} />
-                  </article>
-                );
-              })}
+              {assists.map((a) => (
+                <Card item={assistItem(a)} preset="size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor"
+                      class="assist" data-tags={a.tags.length ? a.tags.join(' ') : undefined} />
+              ))}
             </div>
           </div>
         )}

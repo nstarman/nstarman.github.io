@@ -11,7 +11,7 @@
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
 import { authors, year, links, resolve, authorPosition, softwarePapers, venueLine, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, hasContext, AUTHORS_MAX } from '../lib/cards.js';
+import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, hasStatus, hasContext, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
@@ -19,7 +19,9 @@ import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 
-const { item, preset, id, heading = 'div', maxAuthors = 8, allCounts = false } = Astro.props;
+// Anything else given — a class, data-tags for a page's filter — goes on the
+// card itself.
+const { item, preset, id, heading = 'div', maxAuthors = 8, allCounts = false, class: cls, ...attrs } = Astro.props;
 const spec = parseName(preset);
 const COL_TRACKS = ['left_words', 'words_right'];
 const has = (x) => spec.extras.includes(x);
@@ -152,7 +154,7 @@ const stampInRail = !isSoftware && !(posShown && spec.posX) && (posShown || (spe
 const railEmpty = !refs.length && !shown && !stampInRail && !(contextShown && !spec.contextX);
 const foot = spec.foot;
 ---
-<article class="card" id={id}
+<article class:list={['card', cls]} id={id} {...attrs}
          data-type={item.type} data-foot={foot} data-footend={spec.footEnd} data-rail={railEmpty ? 'empty' : undefined} data-railalign={spec.railAlign} data-text={spec.text}
          data-size data-w={spec.width === 'fill' ? 'fill' : 'px'} data-h={spec.height === 'fit' ? 'fit' : 'px'} style={style}
          data-textsize={step('textsize')} data-titlesize={step('titlesize')} data-titleweight={spec.titleWeight === 'mine' ? (pos === 1 ? 'bold' : 'regular') : spec.titleWeight} data-vflex={vflex ? '' : undefined} data-frame={spec.frame ? (/^\d/.test(spec.frame) ? '' : spec.frame) : undefined} data-padding={step('padding')}
@@ -173,6 +175,7 @@ const foot = spec.foot;
          data-posy={spec.authors === 'position' && place && spec.posX ? spec.posY : undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
          data-venue={has('venue') && item.type === 'publication' ? '' : undefined}
+         data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-ctxx={contextShown && spec.contextX ? spec.contextX : undefined}
          data-ctxy={contextShown && spec.contextX ? spec.contextY : undefined}
@@ -227,7 +230,7 @@ const foot = spec.foot;
   {item.type === 'publication' && (
     <p class="c-venue">
       {venueLine(item) ? <><Venue item={item} /><span class="dot">·</span></>
-        : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>
+        : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>{hasStatus(item) && <span class="statustag c-status">{item.status}</span>}
     </p>
   )}
 

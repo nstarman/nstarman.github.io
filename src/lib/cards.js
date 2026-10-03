@@ -17,6 +17,9 @@ export const SITE_PRESETS = [
   // the paper is mine — I am first author — and regular otherwise.
   { slug: 'size:fill:fit-figure:center:auto:link-rail:center-title:short:link-authors:position-text:none-extras:none-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
   { slug: 'size:fill:fit-figure:left:center:auto:link-rail:center-title:none-authors:none-text:details-extras:context-context:right:bottom-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
+  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor', where: 'Publications — the Assists, papers that thank me' },
+  // A row of a list, not a box: no tint and no padding, its link the paper's.
+  { slug: 'size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:short:marked-text:none-extras:venue,status-buttons:paper,preprint-look:padding=0,background=none', where: 'Home — the selected publications' },
 ];
 
 /** The Card Builder's starting card, for every item: a full strip with its
@@ -30,6 +33,8 @@ export const hasFigure = (item) => !!item.highlight?.image;
 export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
 export const hasRole = (item) => item.type === 'software' && !!item.role;
 export const hasVenue = (item) => item.type === 'publication';
+/** A paper not yet out: submitted, accepted. In preparation has no venue line. */
+export const hasStatus = (item) => item.type === 'publication' && ['submitted', 'accepted'].includes(item.status);
 /** Context links to the item's topic on /research/, so only a topic it shows. */
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
 

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, defaultSlug, linkKeys, cardText,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, defaultSlug, linkKeys, cardText, hasStatus,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 
@@ -414,6 +414,16 @@ describe('presets', () => {
 });
 
 describe('embeds', () => {
+  it('give a status pill only to a paper not yet out', () => {
+    const pubs = items.filter((i) => i.type === 'publication');
+    for (const status of ['submitted', 'accepted']) {
+      const p = pubs.find((i) => i.status === status);
+      if (p) expect(hasStatus(p), p.id).toBe(true);
+    }
+    for (const status of ['published', 'in-prep']) expect(hasStatus(pubs.find((i) => i.status === status))).toBe(false);
+    expect(hasStatus(items.find((i) => i.type === 'software'))).toBe(false);
+  });
+
   it('offer each link key once', () => {
     for (const i of items.filter((x) => CARD_TYPES.includes(x.type))) {
       const keys = linkKeys(i);

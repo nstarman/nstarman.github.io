@@ -1,47 +1,38 @@
 ---
-// One publication. `brief` is the landing-page variant: year and a single
-// `paper` button stacked in the right-hand column, everything else dropped.
-import { authors, venueLine, year, links, primaryLink, authorPosition } from '../lib/data.js';
+// One publication, as /publications/ lists it.
+import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 import Card from './Card.astro';
 
-const { item, brief = false, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
+const { item, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
 
-const { shown, etal, collaboration } = authors(item, brief ? 3 : maxAuthors);
+const { shown, etal, collaboration } = authors(item, maxAuthors);
 const venue = venueLine(item);
-const all = links(item);
-const paper = primaryLink(item);
-const trail = brief ? [] : all;
+const trail = links(item);
 const pending = item.status !== 'published' ? item.status : null;
 // The filter on /publications/ is CSS over this attribute, so it has to be on
 // the outermost element — that is what gets hidden.
 const pos = authorPosition(item);
 ---
-<article id={anchor} class={`${brief ? 'entry--brief' : 'entry--full'}${pending ? ` entry--unpub entry--${pending}` : ''}`}
+<article id={anchor} class={`entry--full${pending ? ` entry--unpub entry--${pending}` : ''}`}
          data-pos={pos ?? undefined}
          data-year={year(item) || undefined}
          data-tags={item.tags?.length ? item.tags.join(' ') : undefined}>
   <div class="body">
-    <div class="ttl" id={brief ? undefined : `pub-${item.id}`}>
-      {/* Only the landing page links the title; the full entry has its link
-          trail. No link before a submitted paper reaches arXiv, not a dead '#'. */}
-      {brief && paper ? <a href={paper.url}>{item.title}</a> : item.title}
-      {brief && pending && <span class="statustag">{pending}</span>}
-    </div>
+    {/* The title is words: the link trail is the way into the paper. */}
+    <div class="ttl" id={`pub-${item.id}`}>{item.title}</div>
 
     <p class="meta">
       {collaboration && <>{collaboration}, </>}
       <Byline shown={shown} />
       {etal && <>, et al.</>}
-      {brief && venue && <> · <Venue item={item} /></>}
     </p>
 
-    {/* The full entry carries its status here, beside the venue it is
-        submitted to or accepted by, rather than in the title. */}
-    {!brief && (venue || item.arxiv || pending) && (
+    {/* Its status, beside the venue it is submitted to or accepted by. */}
+    {(venue || item.arxiv || pending) && (
       <p class="venueline">
         <Venue item={item} />
         {venue && <span class="dot">·</span>}
@@ -75,12 +66,5 @@ const pos = authorPosition(item);
     {earlier.map((e) => <Card item={e} id={`pub-${e.id}`} preset="size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit" maxAuthors={maxAuthors} />)}
   </div>
 
-  {brief && (
-    <div class="side">
-      <span class="yr">{year(item)}</span>
-      {paper && <a class="btn" href={paper.url} title="paper">paper</a>}
-    </div>
-  )}
-
-  {!brief && <LinkIcons links={trail} />}
+  <LinkIcons links={trail} />
 </article>

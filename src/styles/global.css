@@ -153,28 +153,11 @@ h2{
    — being transitioned — flew it to the corner on the way out. */
 .btn:hover{color:var(--accent); border-color:var(--accent-line); background-color:var(--accent-soft); text-decoration:none}
 
-/* --- brief entries: landing page only. Flex with a right-hand gutter for the
-   year and the paper button — as a grid row-span the gutter's surplus height
-   was distributed across the rows and pushed the title off the authors. --- */
-.entries--brief{gap:0}
-.entry--brief{
-  display:flex; align-items:flex-start; gap:1.4rem;
-  position:relative; padding-block:.85rem;
-}
-.entry--brief .body{flex:1; min-width:0}
-.entry--brief:first-child{padding-top:0}
-.entry--brief .side{
-  flex:none; display:flex; flex-direction:column;
-  align-items:flex-end; gap:.42rem;
-}
-.entry--brief .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
-  line-height:1.4; text-wrap:pretty}
-.entry--brief .ttl a{color:var(--ink)}
-.entry--brief .ttl a:hover{color:var(--accent)}
-.entry--brief .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
-.entry--brief .meta .me{color:var(--ink-2); font-weight:500}
-.entry--brief + .entry--brief::before{
-  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+/* --- the landing page's papers: cards drawn as rows of a list, with a short
+   rule between them, halfway across the gap. --- */
+.entries--brief{gap:1.7rem}
+.entries--brief > .card + .card::before{
+  content:""; position:absolute; top:-.85rem; left:50%; transform:translateX(-50%);
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
 
@@ -524,6 +507,7 @@ a.card:hover .name{color:var(--accent)}
 .card[data-authors="short"][data-textsize="minor"] .c-by-short,
 .card:is(:not([data-text="none"]), [data-venue]):not([data-pos]) .c-stamp,
 .card:not([data-venue]) > .c-venue,
+.card:not([data-status]) .c-status,
 .card:not([data-context]) .c-context,
 .card:not([data-pos]) :is(.c-place, .c-sep),
 .card:not([data-role]) .c-role,
@@ -617,8 +601,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 }
 
 @media (max-width:34rem){
-  .entry--brief{flex-direction:column; gap:.4rem}
-  .entry--brief .side{flex-direction:row; align-items:center; order:-1}
   .tl{grid-template-columns:1fr; gap:.05rem}
   header .wrap{padding-block:2.5rem 2.25rem}
 }
@@ -677,12 +659,8 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* No column override: the headline grid and this one share tracks and gap, so
    a card in either lines up with the card above it. They differed — 15rem/.9rem
    against 13rem/.7rem — which resolved to two columns over three, and nothing
-   in the two rows ever aligned. The tiers still read apart, by padding, radius
-   and type size on .card--mini rather than by column width. */
-.card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
-.card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
-.card--mini p{font-size:.78rem; line-height:1.45}
-.card--mini .btns{padding-top:.45rem; gap:.25rem}
+   in the two rows ever aligned. The tiers still read apart, by their presets'
+   look — padding, corners and text size — rather than by column width. */
 
 
 /* The style menu. A real <select>, so it gets the platform's own popup and
@@ -715,11 +693,11 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 }
 .iconbtn .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 .iconyear{font-size:.72rem; line-height:1; font-variant-numeric:tabular-nums}
-/* Dense contexts — CV rows, the software long tail — take a smaller mark. */
-.tl .iconbtn,.card--mini .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
-.tl .iconbtn .ico,.card--mini .iconbtn .ico{width:.75rem; height:.75rem}
+/* Dense contexts — CV rows — take a smaller mark. */
+.tl .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
+.tl .iconbtn .ico{width:.75rem; height:.75rem}
 /* A software package's paper carries its year beside the mark. */
-.iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear),.card--mini .iconbtn:has(.iconyear){
+.iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear){
   width:auto; padding:0 .4rem; gap:.25rem}
 .iconbtn:hover,.iconbtn:focus-visible{
   color:var(--ground); background:var(--ink); border-color:var(--ink);
@@ -764,14 +742,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .pubprofiles{display:flex; align-items:center; gap:.5rem}
 .pubprofiles .pill{width:1.75rem; height:1.75rem}
 .pubprofiles .pill .ico{width:.8125rem; height:.8125rem}
-
-/* The year in the landing gutter reads as the Background section's date column
-   does — same face, size and weight, because they are the same kind of thing.
-   (It had lost its styling entirely when .entry stopped being a class here.) */
-.entry--brief .side .yr{
-  font-family:var(--mono); font-size:.76rem; color:var(--ink-faint);
-  font-variant-numeric:tabular-nums; line-height:1.4;
-}
 
 /* Publications page hierarchy. Four levels rather than two: the title carries
    the weight, the authors recede, the journal is italic and mid-toned so it
@@ -1080,8 +1050,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   .tl{position:relative}
 }
 
-.card--mini, .card[data-size]{position:relative}
-.card--mini .name{display:flex; align-items:center; gap:.45rem}
+.card[data-size]{position:relative}
 .cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
 
 /* Contents rail, on the CV and on /publications/. Hidden by default and shown

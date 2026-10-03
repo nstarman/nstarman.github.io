@@ -393,3 +393,10 @@ export const assists = acknowledgements.papers.map((p) => ({
   ...p,
   links: p.doi && !p.doi.startsWith('10.48550/') ? [{ rel: 'paper', url: `https://doi.org/${p.doi}` }] : [],
 }));
+
+/** An Assist as a card reads a paper: published, dated and placed as an item
+ *  is. Its venue is ADS's short name, set as the journal. */
+export const assistItem = (a) => ({
+  ...a, id: `assist-${a.bibcode ?? a.arxiv}`, type: 'publication', status: 'published',
+  date: { start: a.date }, venue: { journal: a.venue },
+});

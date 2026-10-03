@@ -12,7 +12,7 @@
 import Embed from '../../layouts/Embed.astro';
 import Card from '../../components/Card.astro';
 import { items, splitTitle, authorPosition } from '../../lib/data.js';
-import { CARD_TYPES, defaultSlug, hasFigure, hasPosition, hasRole, hasVenue, hasContext } from '../../lib/cards.js';
+import { CARD_TYPES, defaultSlug, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasContext } from '../../lib/cards.js';
 import { parseName } from '../../lib/cardname.js';
 
 export const getStaticPaths = () =>
@@ -134,8 +134,8 @@ const apply = `(function (parseName, can) {
   if (spec.authors === 'position' && can.position) d.pos = ''; else delete d.pos;
   // My position in a corner of the card, where the name puts it there.
   if (spec.authors === 'position' && can.position && spec.posX) { d.posx = spec.posX; d.posy = spec.posY; } else { delete d.posx; delete d.posy; }
-  [['venue', 'venue'], ['role', 'role'], ['context', 'context']].forEach(function (x) {
-    if (spec.extras.indexOf(x[0]) >= 0 && can[x[0]]) d[x[1]] = ''; else delete d[x[1]];
+  ['venue', 'status', 'role', 'context'].forEach(function (x) {
+    if (spec.extras.indexOf(x) >= 0 && can[x]) d[x] = ''; else delete d[x];
   });
   if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
   // The buttons to a row: as many as fit, so many — no more than are shown —
@@ -178,7 +178,7 @@ const apply = `(function (parseName, can) {
     return s.display !== 'none' && s.position !== 'absolute';
   });
   if (!inRail) d.rail = 'empty';
-})(${parseName.toString()}, ${JSON.stringify({ lead: item.type !== 'software' && authorPosition(item) === 1, figure: hasFigure(item), position: hasPosition(item), role: hasRole(item), venue: hasVenue(item), context: hasContext(item), split: !!splitTitle(item), byline: item.type === 'publication' })});`;
+})(${parseName.toString()}, ${JSON.stringify({ lead: item.type !== 'software' && authorPosition(item) === 1, figure: hasFigure(item), position: hasPosition(item), role: hasRole(item), venue: hasVenue(item), status: hasStatus(item), context: hasContext(item), split: !!splitTitle(item), byline: item.type === 'publication' })});`;
 ---
 <Embed title={item.title}>
   <Card item={item} preset={defaultSlug(item)} allCounts />
