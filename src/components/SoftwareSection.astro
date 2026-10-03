@@ -37,7 +37,7 @@ const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
 ---
 {lead && (
   <div class:list={['lead', !tail && 'lead--last']} data-paper={hasPaper(lead)}>
-    <Card item={lead} id={`sw-${lead.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature" />
+    <Card item={lead} id={`sw-${lead.id}`} preset="size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature" />
   </div>
 )}
 

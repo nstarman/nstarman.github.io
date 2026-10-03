@@ -7,7 +7,7 @@ export { placeOf, PLACE_AT, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS,
 
 /** The cards the website itself renders, by name, and where. */
 export const SITE_PRESETS = [
-  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
   { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
   { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
   { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
