@@ -68,13 +68,17 @@ export function titleOf(item, which = 'full') {
 }
 
 /** The full title cut around its short title — [before, short, after], the
- *  short part in the full title's own casing — or null where the short title
- *  is not part of the full one. */
+ *  short part in the full title's own casing. Where the short title is not part
+ *  of the full one, the text before the first colon stands in; null if there is
+ *  neither. */
 export function splitTitle(item) {
-  const short = item.shortTitle;
-  if (!short || short === item.title) return null;
-  const i = item.title.toLowerCase().indexOf(short.toLowerCase());
-  if (i < 0) return null;
+  let short = item.shortTitle;
+  let i = short ? item.title.toLowerCase().indexOf(short.toLowerCase()) : -1;
+  if (i < 0) {
+    i = 0;
+    short = item.title.split(': ')[0];
+  }
+  if (short === item.title) return null;
   return [item.title.slice(0, i), item.title.slice(i, i + short.length), item.title.slice(i + short.length)];
 }
 
