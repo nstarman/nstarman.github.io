@@ -637,6 +637,7 @@ describe('the Card Builder\'s snippets', () => {
   });
   it('escape what the item gives them', () => {
     expect(snippet(s, { site: 'https://s', height: 100 })).toBe('[![A \\[b\\] "c"](x--size_fill_fit-text_none-light.png)](<https://e.org/a (b)>)');
+    expect(snippet({ ...s, it: { title: 'a\\[b' } }, { site: '', height: 0 })).toBe('![a\\\\\\[b](x--size_fill_fit-text_none-light.png)');
     expect(snippet({ ...s, format: 'html', theme: 'light' }, { site: 'https://s', height: 100 })).toContain('alt="A [b] &quot;c&quot;"');
   });
 });

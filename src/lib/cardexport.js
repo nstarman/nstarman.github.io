@@ -42,7 +42,8 @@ export function snippet(s, { site, height }) {
       : `<img src="${file(s, s.theme)}" alt="${alt}"${s.width ? ` width="${s.width}"` : ''}>`);
   }
   if (s.format === 'markdown') {
-    const md = `![${s.it.title.replace(/[[\]]/g, '\\$&')}](${file(s, themes(s)[0])})`;
+    // Its alt text escaped as Markdown reads it: a backslash, and brackets.
+    const md = `![${s.it.title.replace(/[\\[\]]/g, '\\$&')}](${file(s, themes(s)[0])})`;
     // In <…>, a link may hold spaces and brackets.
     return s.it.href ? `[${md}](<${s.it.href.replace(/[<>]/g, encodeURIComponent)}>)` : md;
   }
