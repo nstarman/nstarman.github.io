@@ -17,5 +17,16 @@
       "url": "https://github.com/nstarman/mvgkde"
     }
   ],
-  "details": "Kernel density estimation in JAX — differentiable, vectorized, bandwidth-tunable."
+  "details": "Kernel density estimation in JAX — differentiable, vectorized, bandwidth-tunable.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/mvgkde.webp",
+    "source": {
+      "repo": "nstarman/mvgkde",
+      "path": "docs/_static/favicon.svg",
+      "sha": "f2dd1950f69e8c23d9bac5ac1208318306de70a2"
+    },
+    "alt": "The mvgkde logo: a kernel density estimate of points scattered along a slanted, handwritten M, drawn as filled contours from cream through gold and green to deep blue.",
+    "description": "A multivariate Gaussian kernel density estimator in JAX, with full control of the bandwidth matrix: differentiable, vectorized, and per-dimension tunable."
+  }
 }
