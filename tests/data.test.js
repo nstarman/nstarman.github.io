@@ -100,6 +100,11 @@ describe('authors', () => {
     expect(names(2)).toEqual(['X. A', '…', 'N. Starkman']);
     expect(authors(long, 2).etal).toBe(true);           // D and E follow
     expect(names(4)).toEqual(['X. A', 'X. B', 'X. C', 'N. Starkman']);
+    expect(names(1)).toEqual(['…', 'N. Starkman']);       // room for mine alone
+    const filled = (max) => authors(long, max, { fill: true }).shown.map((a) => a.name);
+    expect(filled(3)).toEqual(['X. A', 'X. B', '…', 'N. Starkman']);   // three names, as asked
+    expect(filled(2)).toEqual(names(2));
+    expect(filled(1)).toEqual(names(1));
     long.authors.splice(4);                              // owner now last
     expect(authors(long, 2).etal).toBe(false);
   });

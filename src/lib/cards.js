@@ -1,0 +1,55 @@
+// Which cards exist, and what the website uses. A card's name — its spec — is
+// src/lib/cardname.js; this adds what needs the database: the website's
+// presets, and a card's links and text.
+import { links, primaryLink, softwarePapers, venueUrl } from './data.js';
+
+export { LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
+
+/** The cards the website itself renders, by name, and where. */
+export const SITE_PRESETS = [
+  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
+  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
+  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
+  { slug: 'size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit', where: 'Publications — a proceeding under its paper' },
+  // The paper's own links: a carousel card leaves the data (Zenodo) and the
+  // package's docs to the entry on /publications/. Its title is bold where
+  // the paper is mine — I am first author — and regular otherwise.
+  { slug: 'size:fill:fit-figure:center:auto:link-rail:center-title:short:link-authors:position-text:none-extras:none-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
+  { slug: 'size:fill:fit-figure:left:center:auto:link-rail:center-title:none-authors:none-text:details-extras:context-context:right:bottom-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
+];
+
+/** The links a card carries, in order: for software its papers lead, each
+ *  with its year. */
+export function cardLinks(item) {
+  return item.type === 'software' ? [...softwarePapers(item), ...links(item)] : links(item);
+}
+
+/** A card's two tiers of text. A package has its own summary and details; a
+ *  paper or synthesis has its highlight's description as details, and as
+ *  summary the record's own or, failing that, the description's first
+ *  sentence. Either may be missing — a paper with no highlight has neither. */
+export function cardText(item) {
+  if (item.type === 'software') return { summary: item.summary, details: item.details ?? item.summary };
+  const d = item.highlight?.description;
+  // ponytail: the first sentence ends at the first ". " — an abbreviation such
+  // as "e.g. " would cut it short; give the record a summary if one does.
+  return { summary: item.summary ?? d?.match(/^.+?[.!?](?=\s|$)/)?.[0], details: d };
+}
+
+/** Where a card's title links, title:…:link — the item itself: a paper's
+ *  paper or preprint, a package's first link. */
+export const ownLink = (item) => (item.type === 'software' ? links(item)[0] : (primaryLink(item) ?? links(item)[0])) ?? null;
+
+/** title:…:ads — its ADS abstract, where it has a bibcode. */
+export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}/abstract` : null);
+
+/** title:…:journal — where it was published: the journal's own page, or its
+ *  DOI, once it is out. */
+export const journalHref = (item) => (item.type === 'publication' ? venueUrl(item) : null);
+
+/** Where it links with title:…:site — the item's entry on this site, where
+ *  it has one: a paper on /publications/ (an in-prep one is not listed), a
+ *  package on /software/, a synthesis on /research/. */
+export const siteHref = (item) => (item.type === 'publication' ? (item.status !== 'in-prep' ? `/publications/#pub-${item.id}` : null)
+  : item.type === 'software' ? `/software/#sw-${item.id}` : item.type === 'highlight' ? `/research/#hl-${item.id}` : null);

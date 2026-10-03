@@ -9,7 +9,7 @@ const { links = [] } = Astro.props;
 {links.length > 0 && (
   <ul class="btns btns--icon">
     {links.map((l) => (
-      <li>
+      <li data-rel={relKey(l)}>
         <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
           <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} /></svg>
           {l.year && <span class="iconyear" aria-hidden="true">{l.year}</span>}

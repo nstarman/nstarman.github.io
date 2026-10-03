@@ -1,0 +1,249 @@
+---
+// Every card on the site: one item, drawn by a preset — the name
+// (src/lib/cardname.js) that says its size, where its figure and rail sit,
+// what it shows and how it looks.
+//
+// All of an item's parts are always rendered and the axes, as data attributes,
+// choose which show, so CSS alone draws any combination, with no second
+// renderer.
+//
+// Slots: `corner` goes first in the card (the CV's source mark), `name` before
+// the title (the CV builder's tick box).
+import { authors, year, links, resolve, authorPosition, softwarePapers, venueLine, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref } from '../lib/cards.js';
+import { parseName, SPACE_TRACKS } from '../lib/cardname.js';
+import { ordinal } from '../lib/inline.js';
+import LinkIcons from './LinkIcons.astro';
+import Inline from './Inline.astro';
+import Byline from './Byline.astro';
+import Venue from './Venue.astro';
+
+const { item, preset, id, heading = 'div', maxAuthors = 8 } = Astro.props;
+const spec = parseName(preset);
+const COL_TRACKS = ['left_words', 'words_right'];
+const has = (x) => spec.extras.includes(x);
+// The figure, where the item has one and the name shows it: data-fig says
+// where it sits.
+const showFig = spec.figure !== 'none' && !!item.highlight?.image;
+// A text, padding, corner or button size in px, rather than a step, is set
+// as itself; a button's icon is half the button.
+const px = (d) => (/^\d/.test(spec.dials[d] ?? '') ? +spec.dials[d] : null);
+// The link buttons to a row: as many as fit, so many — no more than are
+// shown — or, left unsaid, as near square as they go, ⌈√n⌉ for the n shown.
+const kept = cardLinks(item).map((l) => spec.links === 'all' || spec.links.includes(relKey(l)));
+const shown = kept.filter(Boolean).length;
+const per = spec.perRow === 'fit' || !shown ? null : Math.min(shown, spec.perRow ?? Math.ceil(Math.sqrt(shown)));
+const across = spec.foot === 'center' || spec.foot === 'bottom';
+// Where across its area the buttons sit: in a side, toward the card's edge
+// unless the name says otherwise; under the words or at the bottom, left.
+const railAt = spec.railAlign ?? (across ? 'left' : spec.foot);
+// On a right rail, a short last row sits at the right: its first button — by
+// its place among them all, shown or not — starts that many columns in.
+const short = per && railAt === 'right' ? shown % per : 0;
+let skipAt = null;
+if (short) { let n = 0; kept.forEach((k, i) => { if (k && n++ === shown - short) skipAt = i + 1; }); }
+// A figure's own width, in its column: a share of it, or px, never wider.
+const figPx = typeof spec.figureSize === 'string' && spec.figureSize.endsWith('px') ? parseInt(spec.figureSize, 10) : null;
+const figW = !showFig || spec.figureSize === 'auto' ? null : figPx ? `min(${figPx}px, 100%)` : `${spec.figureSize}%`;
+// A side's width, area:<side>: a share of the card; at least so many px —
+// and at least its figure's, where that is px — growing to fit its rail; or
+// as wide as its buttons, its figure taking that. Unset, a figure of px sets
+// the least. The side's figure and rail stack in it.
+const sideCol = (side) => {
+  const w = spec.sides?.[side]?.width;
+  const here = showFig && spec.figure === side;
+  if (w?.startsWith('share=')) return `${w.slice(6)}%`;
+  if (w?.startsWith('min=')) return `minmax(${Math.max(+w.slice(4), here ? figPx ?? 0 : 0)}px, auto)`;
+  if (w === 'buttons') return spec.foot === side ? 'auto' : null;
+  return here && figPx ? `minmax(${figPx}px, auto)` : null;
+};
+// The corners each side wins over the top and bottom areas.
+const wins = ['left', 'right'].flatMap((side) => ['top', 'bottom'].filter((a) => spec.sides?.[side]?.[a]).map((a) => `${side}-${a}`)).join(' ');
+// The size as the stylesheet reads it — data-w, fill or px, the width in
+// --wpx; data-h, fit or px, the height in --hpx; both set, also as numbers in
+// --aw and --ah — and the look, each setting in its own attribute
+// (data-textsize=feature) or, set in px, its own custom property; one left out
+// is the box's own.
+const style = [
+  spec.width !== 'fill' && `--wpx:${spec.width}px`,
+  spec.height !== 'fit' && `--hpx:${spec.height}px`,
+  spec.width !== 'fill' && spec.height !== 'fit' && `--aw:${spec.width};--ah:${spec.height}`,
+  px('textsize') != null && `--fs:${px('textsize')}px`,
+  px('titlesize') != null && `--ts:${px('titlesize')}px`,
+  /^\d/.test(spec.frame ?? '') && `--frame:${spec.frame}px`,
+  spec.buttonGap != null && `--bgap:${spec.buttonGap}px`,
+  // space: a track between two slots, a length or flex, as --sp-<a>_<b>.
+  // Rows fit their content, so a flex row takes what is left (100fr); the
+  // words fill their column, so a flex column shares the width with them,
+  // one part each (1fr).
+  ...Object.entries(spec.space ?? {}).map(([k, v]) => `--sp-${k}:${v !== 'flex' ? `${v}px` : COL_TRACKS.includes(k) ? '1fr' : '100fr'}`),
+  px('padding') != null && `--pad-t:${px('padding')}px;--pad-x:${px('padding')}px;--pad-b:${px('padding')}px`,
+  px('corners') != null && `--rad:${px('corners')}px`,
+  px('buttons') != null && `--ib:${px('buttons')}px;--ii:${px('buttons') / 2}px`,
+  figW && `--figw:${figW}`,
+  sideCol('left') && `--colL:${sideCol('left')}`,
+  sideCol('right') && `--colR:${sideCol('right')}`,
+  per && `--per:${per}`,
+  skipAt && `--skip:${per - short}`,
+].filter(Boolean).join(';') || undefined;
+// A flex track between rows.
+const vflex = SPACE_TRACKS.filter((t) => !COL_TRACKS.includes(t)).some((t) => spec.space?.[t] === 'flex');
+const step = (d) => (px(d) == null ? spec.dials[d] : undefined);
+// The byline, short or full or so many names — or, in its place, my position
+// in it.
+const counted = typeof spec.authors === 'number';
+const bylined = spec.authors === 'short' || spec.authors === 'full' || counted;
+const H = heading;
+
+const isSoftware = item.type === 'software';
+const h = item.highlight;
+const href = ownLink(item)?.url;
+const site = siteHref(item) ?? undefined;
+const ads = adsHref(item) ?? undefined;
+const journal = journalHref(item) ?? undefined;
+const titleHref = { link: href, site, ads, journal }[spec.titleLink];
+const titleLink = !!spec.titleLink && !!titleHref;
+// The title at each length, each distinct wording once, carrying a class for
+// every length it serves: an item with no short or nick title has one span.
+const lengths = ['full', 'short', 'nick'];
+const wordings = [...new Set(lengths.map((t) => titleOf(item, t)))]
+  .map((w) => ({ w, cls: ['c-t', ...lengths.filter((t) => titleOf(item, t) === w).map((t) => `c-t-${t}`)] }));
+// The full title's parts outside its short title, which title:full:split sets
+// in ordinary weight.
+const split = splitTitle(item);
+// A paper's figure goes to its card on /publications/, which lists everything
+// but work in preparation; otherwise, and for a synthesis, to the item's own
+// main link.
+const figHref = item.type === 'publication' && item.status !== 'in-prep' ? `/publications/#hl-${item.id}` : href;
+const figLink = spec.figureLink && !!figHref;
+// A synthesis's papers, each to its card on /research/ — there only if its
+// topic is shown — or out to the paper.
+const onResearch = (p) => HIGHLIGHT_TOPICS.some(([key]) => key === p.highlight?.topic);
+const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
+const refHref = (p) => (onResearch(p) ? `/research/#hl-${p.id}` : links(p)[0]?.url);
+// The context extra: the topic this item's highlight sits under on /research/.
+const topic = HIGHLIGHT_TOPICS.find(([key]) => key === h?.topic);
+// Bold only the papers I led or was second on. Past third the place is just
+// "nth", unless the record states it on purpose.
+const pos = isSoftware ? null : authorPosition(item);
+const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : 'nth');
+// A paper's byline, at the lengths the authors axis offers: short is the first
+// three and "et al." — two at minor type, where three wrap — and full is up to
+// maxAuthors (eight, as /publications/ shows them). Every cut keeps me: past
+// it, authors() elides to my name ("J. Nibauer, …, N. Starkman, et al.").
+const byline = item.type === 'publication'
+  ? { tight: authors(item, 2), short: authors(item, 3), full: authors(item, maxAuthors) }
+  : null;
+// So many names, authors:<n>, past the whole list being the whole list.
+const listed = item.authors?.length ?? 0;
+const count = counted ? Math.min(spec.authors, listed) : null;
+const counts = byline && count ? [count] : [];
+const { summary: sum, details: det } = cardText(item);
+// What sits in the rail: the papers a synthesis draws on, the buttons, my
+// position or the year, and the context link — less what a name floats to a
+// corner. With none of it, there is no rail: its column closes, and the words
+// take its room.
+const contextShown = has('context') && !!topic;
+const venueShown = has('venue') && item.type === 'publication';
+const posShown = spec.authors === 'position' && !!place;
+const stampInRail = !isSoftware && !(posShown && spec.posX) && (posShown || (spec.text === 'none' && !venueShown));
+const railEmpty = !refs.length && !shown && !stampInRail && !(contextShown && !spec.contextX);
+const foot = spec.foot;
+---
+<article class="card" id={id}
+         data-type={item.type} data-foot={foot} data-footend={spec.footEnd} data-rail={railEmpty ? 'empty' : undefined} data-railalign={spec.railAlign} data-text={spec.text}
+         data-size data-w={spec.width === 'fill' ? 'fill' : 'px'} data-h={spec.height === 'fit' ? 'fit' : 'px'} style={style}
+         data-textsize={step('textsize')} data-titlesize={step('titlesize')} data-titleweight={spec.titleWeight === 'mine' ? (pos === 1 ? 'bold' : 'regular') : spec.titleWeight} data-vflex={vflex ? '' : undefined} data-frame={spec.frame ? (/^\d/.test(spec.frame) ? '' : spec.frame) : undefined} data-padding={step('padding')}
+         data-corners={step('corners')} data-buttons={step('buttons')}
+         data-title={spec.title === 'full' ? undefined : spec.title}
+         data-titleat={spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : undefined} data-titlealign={spec.titleAlign}
+         data-wins={wins || undefined}
+         data-authors={bylined && byline ? (counted ? 'count' : spec.authors) : undefined}
+         data-students={bylined && spec.marks === 'plain' && byline ? 'plain' : undefined}
+         data-rest={spec.title === 'full' && spec.rest === 'split' && split ? 'split' : undefined}
+         data-fig={showFig ? spec.figure : undefined}
+         data-figw={figW ? '' : undefined}
+         data-figh={showFig && spec.figure !== 'center' ? spec.figureH : undefined}
+         data-figslot={showFig && spec.figure === 'center' ? spec.figureSlot : undefined}
+         data-figv={showFig && spec.figure !== 'center' ? spec.figureAlign : undefined}
+         data-pos={spec.authors === 'position' && place ? '' : undefined}
+         data-posx={spec.authors === 'position' && place && spec.posX ? spec.posX : undefined}
+         data-posy={spec.authors === 'position' && place && spec.posX ? spec.posY : undefined}
+         data-role={has('role') && isSoftware && item.role ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined}
+         data-context={contextShown ? '' : undefined}
+         data-ctxx={contextShown && spec.contextX ? spec.contextX : undefined}
+         data-ctxy={contextShown && spec.contextX ? spec.contextY : undefined}
+         data-background={spec.background === 'normal' ? undefined : spec.background}
+         data-links={spec.links === 'all' ? undefined : (spec.links.join(' ') || 'none')}
+         data-per={per ? '' : undefined}
+         data-skipat={skipAt ?? undefined}
+         data-paper={isSoftware && softwarePapers(item).length ? 'yes' : undefined}>
+  <slot name="corner" />
+  {/* The title, a link where the name asks — to the item (title:…:link),
+      its entry here (:site), its ADS abstract (:ads) or its journal
+      (:journal) — words otherwise. */}
+  <H class:list={['c-name', pos > 2 && 'c-name--minor']}>
+    <slot name="name" />
+    {titleLink
+      ? <a href={titleHref}>{wordings.map((x) => (
+        <span class:list={x.cls}>{split && x.w === item.title
+          ? <><span class="c-t-rest">{split[0]}</span>{split[1]}<span class="c-t-rest">{split[2]}</span></>
+          : x.w}</span>
+      ))}</a>
+      : wordings.map((x) => (
+        <span class:list={x.cls}>{split && x.w === item.title
+          ? <><span class="c-t-rest">{split[0]}</span>{split[1]}<span class="c-t-rest">{split[2]}</span></>
+          : x.w}</span>
+      ))}
+  </H>
+
+  {/* The figure, a link where the name asks (figure:…:link) — out of the
+      tab order when the title is the same link. */}
+  {h?.image && (
+    figLink
+      ? <a class="c-fig" href={figHref} tabindex={titleLink ? '-1' : undefined}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
+      : <span class="c-fig"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></span>
+  )}
+
+  {byline && (
+    <p class="c-by">
+      {['tight', 'short', 'full'].map((len) => (
+        <span class={`c-by-${len}`}>{byline[len].collaboration && <>{byline[len].collaboration}, </>}<Byline shown={byline[len].shown} links={spec.authorLink || false} />{byline[len].etal && <>, et al.</>}</span>
+      ))}
+      {counts.map((n) => authors(item, n, { fill: true })).map((b, i) => (
+        <span class="c-by-n" data-n={counts[i]} hidden={counts[i] !== count}>{b.collaboration && <>{b.collaboration}, </>}<Byline shown={b.shown} links={spec.authorLink || false} />{b.etal && <>, et al.</>}</span>
+      ))}
+    </p>
+  )}
+
+  {/* The venue extra: where and when it appeared. A preprint with no venue yet
+      is placed by its arXiv number, as on /publications/. */}
+  {item.type === 'publication' && (
+    <p class="c-venue">
+      {venueLine(item) ? <><Venue item={item} /><span class="dot">·</span></>
+        : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>
+    </p>
+  )}
+
+  {((isSoftware && item.role) || sum || det) && (
+    <div class="c-text">
+      {isSoftware && item.role && <p class="c-role">{item.role}</p>}
+      {sum && <p class="c-sum"><Inline text={sum} base="/cv/" /></p>}
+      {det && <p class="c-det"><Inline text={det} base="/cv/" /></p>}
+    </div>
+  )}
+
+  <div class="c-foot">
+    {refs.length > 0 && (
+      <ul class="c-refs">
+        {refs.map((p) => <li><a href={refHref(p)}>{titleOf(p, 'short')}</a></li>)}
+      </ul>
+    )}
+    <LinkIcons links={cardLinks(item)} />
+    {/* My author position, in place of the byline, then the year — which a
+        card with text or the venue line already carries. */}
+    {!isSoftware && <span class="c-stamp">{place && <><span class="c-place">{place}</span><span class="c-sep"> | </span></>}<span class="c-yr">{year(item)}</span></span>}
+    {topic && <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} title={`${topic[1]} research highlights`}>Context&nbsp;›</a>}
+  </div>
+</article>

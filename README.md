@@ -62,9 +62,9 @@ can use: the home page carries no CV and no map, and the CV carries no map from
 
 | file | imported by | what is in it |
 |---|---|---|
-| [`src/styles/global.css`](src/styles/global.css) | `src/layouts/Base.astro`, so every page | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, an item as the site renders it, the software cards, and the CV pieces other pages reuse (below) |
+| [`src/styles/global.css`](src/styles/global.css) | `src/layouts/Base.astro`, so every page | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, an item as the site renders it, the cards, and the CV pieces other pages reuse (below) |
 | [`src/styles/map.css`](src/styles/map.css) | `CollabMap.astro`, `ConfMap.astro` | the two world maps on `/research/` |
-| [`src/styles/cv/page.css`](src/styles/cv/page.css) | `CvView.astro` | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the sticky bar, the length toggle, the source marks |
+| [`src/styles/cv/page.css`](src/styles/cv/page.css) | `CvView.astro` | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the sticky bar, the length slider, the source marks |
 | [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | `CvView.astro` | the collaborator and conference maps in the CV's right margin, and the tint on a row that answers what was picked in one — a paper written with that person, a talk given in that place |
 | [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | `src/pages/tools/cv.astro` | what `/tools/cv/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
 

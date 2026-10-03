@@ -57,6 +57,25 @@ export const byType = (...types) => items.filter((i) => types.includes(i.type));
 export const featured = (...types) => byType(...types).filter((i) => i.featured);
 export const resolve = (id) => byId.get(id);
 
+/** An item's title at one of three lengths: `full`, `short` (shortTitle) or
+ *  `nick` (nickTitle), each falling back to the next longer one. */
+export function titleOf(item, which = 'full') {
+  if (which === 'nick') return item.nickTitle ?? item.shortTitle ?? item.title;
+  if (which === 'short') return item.shortTitle ?? item.title;
+  return item.title;
+}
+
+/** The full title cut around its short title — [before, short, after], the
+ *  short part in the full title's own casing — or null where the short title
+ *  is not part of the full one. */
+export function splitTitle(item) {
+  const short = item.shortTitle;
+  if (!short || short === item.title) return null;
+  const i = item.title.toLowerCase().indexOf(short.toLowerCase());
+  if (i < 0) return null;
+  return [item.title.slice(0, i), item.title.slice(i, i + short.length), item.title.slice(i + short.length)];
+}
+
 // Research-highlight topics in the order /research/ shows them; a topic left
 // out is not shown at all: `software` cards wait here. Anchored there as
 // `#hl-topic-<key>`, which /publications/ links to.
@@ -212,7 +231,7 @@ export function affiliationAt(orcid, date) {
 
 const ELLIPSIS = { name: '…', me: false, student: null, url: null, affiliation: null };
 
-export function authors(item, max = Infinity) {
+export function authors(item, max = Infinity, { fill = false } = {}) {
   const all = item.authors ?? [];
   // Where they were at the time. The paper's own printed affiliation wins where
   // there is one — that is what the paper actually claimed — and the employment
@@ -220,9 +239,13 @@ export function authors(item, max = Infinity) {
   const at = item.date?.start ?? null;
   // Cutting at `max` would drop the owner into "et al." — the one name a CV's
   // reader is looking for. Keep the first author and elide to the owner instead: "J. Nibauer, …, N. Starkman, et al."
+  // At one name, there is room only for mine: "…, N. Starkman, et al." With
+  // `fill`, the cut is exactly `max` names, those before the elision filling
+  // it: at three, "J. Nibauer, A. Bonaca, …, N. Starkman, et al."
   const meAt = all.findIndex((a) => a.me);
-  const elide = max >= 2 && meAt >= max;
-  const picked = elide ? [all[0], null, all[meAt]] : all.slice(0, max);
+  const elide = max >= 1 && meAt >= max;
+  const before = fill ? all.slice(0, max - 1) : all.slice(0, Math.min(1, max - 1));
+  const picked = !elide ? all.slice(0, max) : [...before, null, all[meAt]];
   const shown = picked.map((a) => a === null ? ELLIPSIS : ({
     name: displayName(a),
     me: Boolean(a.me),
