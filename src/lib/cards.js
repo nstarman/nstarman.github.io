@@ -36,9 +36,9 @@ export const hasVenue = (item) => item.type === 'publication';
 /** A paper not yet out: submitted, accepted. In preparation has no venue line. */
 /** The year stands on its own in a paper's or a synthesis's rail. */
 export const hasYear = (item) => item.type !== 'software';
-/** The pill after a paper's title, title:…:status: where it stands, once it
- *  is past in prep. */
-export const titleStatus = (item) => (item.type === 'publication' && ['submitted', 'accepted', 'published'].includes(item.status) ? item.status : null);
+/** The pill after a paper's title, title:…:status: where it stands, while
+ *  it is not yet out — submitted or accepted. */
+export const titleStatus = (item) => (item.type === 'publication' && ['submitted', 'accepted'].includes(item.status) ? item.status : null);
 export const hasStatus = (item) => item.type === 'publication' && ['submitted', 'accepted'].includes(item.status);
 /** Context links to the item's topic on /research/, so only a topic it shows. */
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);

@@ -75,6 +75,7 @@ const apply = `(function (parseName, placeOf, can) {
   // The venue line: the journal's short name, without its year, across.
   if (spec.venueName) d.venuename = spec.venueName; else delete d.venuename;
   if (spec.venueDate === false) d.venueundated = ''; else delete d.venueundated;
+  if (spec.venueArxiv === false) d.venuenoarxiv = ''; else delete d.venuenoarxiv;
   // Unlinked, the journal's name is words: its link loses its address.
   [].forEach.call(card.querySelectorAll('a.venuelink'), function (a) {
     if (spec.venueLink === false) a.removeAttribute('href'); else if (a.dataset.href) a.setAttribute('href', a.dataset.href);
@@ -86,6 +87,9 @@ const apply = `(function (parseName, placeOf, can) {
   if (spec.venueAt === 'beside' && spec.venueSplit) { d.vsplit = ''; card.style.setProperty('--vsplit', /px$/.test(spec.venueSplit) ? spec.venueSplit : spec.venueSplit + '%'); } else { delete d.vsplit; card.style.removeProperty('--vsplit'); }
   // The text across the center; and each part's own size and weight.
   if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
+  ['title', 'body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
+    if ((spec.styles || {})[p]) card.style.setProperty('--fst-' + p, spec.styles[p]); else card.style.removeProperty('--fst-' + p);
+  });
   ['body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
     var sz = (spec.sizes || {})[p], w = (spec.weights || {})[p];
     if (sz) card.style.setProperty('--fs-' + p, sz + 'px'); else card.style.removeProperty('--fs-' + p);

@@ -360,6 +360,9 @@ describe('card names', () => {
   it('set the venue line short, undated and across, where extras has it', () => {
     expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:undated:right')).toMatchObject({ venueName: 'short', venueDate: false, venueAlign: 'right' });
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:unlinked:undated'))).toContain('-venue:full:unlinked:undated-');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:noarxiv:authors'))).toContain('-venue:full:undated:noarxiv:authors-');
+    expect(parseName('size:fill:fit-text:none-look:yearstyle=italic,titlestyle=normal').styles).toEqual({ year: 'italic' });
+    expect(formatName(parseName('size:fill:fit-text:none-look:yearstyle=italic,venuestyle=italic'))).toMatch(/-look:venuestyle=italic,yearstyle=italic$/);
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:center'))).toContain('-extras:venue-venue:full:center-');
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:left'))).not.toContain('-venue:');
     expect(formatName(parseName('size:fill:fit-text:none-extras:none-venue:short'))).not.toContain('-venue:');

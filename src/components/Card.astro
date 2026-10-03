@@ -10,7 +10,7 @@
 //
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
-import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { authors, year, links, resolve, authorPosition, softwarePapers, venueLine, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, paperHref, paperSpan, hasStatus, hasYear, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, placeOf, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
@@ -96,6 +96,7 @@ const style = [
   // A part's own size and weight, look:<part>size and <part>weight.
   ...Object.entries(spec.sizes ?? {}).map(([k, v]) => `--fs-${k}:${v}px`),
   ...Object.entries(spec.weights ?? {}).map(([k, v]) => `--fw-${k}:${{ regular: 400, medium: 500, bold: 600 }[v]}`),
+  ...Object.entries(spec.styles ?? {}).map(([k, v]) => `--fst-${k}:${v}`),
   /^\d/.test(spec.frame ?? '') && `--frame:${spec.frame}px`,
   // The gap between the buttons: px, or a share of a button's size.
   spec.buttonGap != null && `--bgap:${spec.buttonGap.endsWith('%') ? `calc(var(--ib) * ${parseInt(spec.buttonGap, 10) / 100})` : `${spec.buttonGap}px`}`,
@@ -223,7 +224,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-pos={posShown ? '' : undefined}
          data-strips={strips || undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
-         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={(spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst ? '' : undefined} data-vsplit={spec.venueAt === 'beside' && spec.venueSplit ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuenoarxiv={spec.venueArxiv === false ? '' : undefined} data-varxiv={item.type === 'publication' && !venueLine(item) ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={(spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst ? '' : undefined} data-vsplit={spec.venueAt === 'beside' && spec.venueSplit ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
          data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-background={spec.background === 'normal' ? undefined : spec.background}

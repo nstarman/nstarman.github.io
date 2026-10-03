@@ -1,11 +1,12 @@
 ---
-// The Card Builder's size and weight, the one wherever a part of the card is
-// words: its size typed in px or, the default, by the card's text size; then
-// on the same line its weight, from a menu, auto as the card has it. Named
-// <name>size, <name>by and <name>weight unless given (the title's are its
-// own); mine adds the title's own weight.
+// The Card Builder's size, weight and slant, the one wherever a part of the
+// card is words: its size typed in px or, the default, by the card's text
+// size; then on the same line its weight, from a menu, auto as the card has
+// it, and its slant, normal or italic. Named <name>size, <name>by,
+// <name>weight and <name>style unless given (the title's are its own); mine
+// adds the title's own weight.
 import NumBox from './NumBox.astro';
-const { name, label, max = 40, sizeName = `${name}size`, byName = `${name}by`, weightName = `${name}weight`, sizeTitle, autoTitle = 'As the card has it', mine = false } = Astro.props;
+const { name, label, max = 40, sizeName = `${name}size`, byName = `${name}by`, weightName = `${name}weight`, styleName = `${name}style`, sizeTitle, autoTitle = 'As the card has it', mine = false } = Astro.props;
 ---
 <NumBox title={sizeTitle ?? `${label} own size, in pixels; empty follows the card's text size`} name={sizeName} min="8" max={max} step="0.1" placeholder="auto" label={`${label} size in pixels`} unit="px" />
 <span class="pilltoggle" role="radiogroup" aria-label={`${label} size`}>
@@ -16,4 +17,8 @@ const { name, label, max = 40, sizeName = `${name}size`, byName = `${name}by`, w
   <option value="" title={autoTitle} selected>auto</option>
   {['regular', 'medium', 'bold'].map((v) => <option value={v}>{v}</option>)}
   {mine && <option value="mine" title="Bold where I am first author, regular otherwise">mine</option>}
+</select>
+<select name={styleName} class="eb-menu" aria-label={`${label} slant`}>
+  <option value="" selected>normal</option>
+  <option value="italic">italic</option>
 </select>

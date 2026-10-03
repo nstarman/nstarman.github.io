@@ -76,7 +76,7 @@ const data = {
   // The builder's own default first, then the website's cards.
   presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
   items: Object.fromEntries(pool.map((i) => [i.id, {
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), paperTo: Object.fromEntries(['journal', 'arxiv', 'ads', 'site'].map((t) => [t, !!paperHref(i, t)])), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), paperTo: Object.fromEntries(['journal', 'arxiv', 'ads', 'site'].map((t) => [t, !!paperHref(i, t)])), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), varxiv: hasVenue(i) && !venueLine(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
   }])),
 };
 ---
@@ -297,7 +297,7 @@ const data = {
                 </span>
                 {/* Set apart: a pill after the title, where it stands. */}
                 <span class="pilltoggle eb-checks" id="eb-tstatus">
-                  <label title="Where it stands — submitted, accepted or published — as a pill after the title"><input type="checkbox" class="eb-check" name="titlestatus" />status</label>
+                  <label title="Where it stands, while it is not yet out — submitted or accepted — as a pill after the title"><input type="checkbox" class="eb-check" name="titlestatus" />status</label>
                 </span>
               </span>
               {/* Where the title links: nowhere, to the item itself — named by
@@ -314,7 +314,7 @@ const data = {
                   size — and on the same line its weight, from a menu. */}
               <span class="eb-dim">size</span>
               <span class="eb-px">
-                <TextLook label="The title's" sizeName="titlesizepx" byName="titlesize" weightName="titleweight" max={STEP_PX.titlesize.max} sizeTitle={STEP_PX.titlesize.what} autoTitle="Medium, or regular where I am past second author" mine />
+                <TextLook label="The title's" sizeName="titlesizepx" byName="titlesize" weightName="titleweight" styleName="titlestyle" max={STEP_PX.titlesize.max} sizeTitle={STEP_PX.titlesize.what} autoTitle="Medium, or regular where I am past second author" mine />
               </span>
             </span>
           </fieldset>
@@ -425,6 +425,7 @@ const data = {
               <span class="eb-dim">show</span>
               <span class="pilltoggle eb-checks">
                 <label title="The year it appeared"><input type="checkbox" class="eb-check" name="venuedate" checked />date</label>
+                <label id="eb-varxiv" title="For a paper in no journal yet, its arXiv number in place of a journal; unticked, no venue at all"><input type="checkbox" class="eb-check" name="venuearxiv" checked />arXiv</label>
                 <label id="eb-vstatus" title="Where it stands — submitted or accepted — as a pill at the end of the venue line"><input type="checkbox" class="eb-check" name="extra" value="status" />status</label>
               </span>
               <span class="eb-dim">size</span>
@@ -937,9 +938,11 @@ const data = {
     form.elements.authorsfit.checked = !!c.authorsFit;
     setRadio('venuelink', c.venueLink === false ? 'none' : 'journal');
     form.elements.venuedate.checked = c.venueDate !== false;
+    form.elements.venuearxiv.checked = c.venueArxiv !== false;
     form.elements.venuealign.value = c.venueAlign ?? 'left';
     form.elements.titlestatus.checked = !!c.titleStatus;
     form.elements.textalign.value = c.textAlign ?? 'left';
+    for (const p of ['title', ...FACES]) form.elements[`${p}style`].value = c.styles?.[p] ?? '';
     for (const p of FACES) {
       form.elements[`${p}size`].value = c.sizes?.[p] ?? '';
       setRadio(`${p}by`, c.sizes?.[p] ? '' : 'text');
@@ -983,7 +986,7 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueArxiv: f.get('venuearxiv') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), styles: Object.fromEntries(['title', ...FACES].filter((p) => f.get(`${p}style`) === 'italic').map((p) => [p, 'italic'])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
       extras: f.getAll('extra').filter((x) => has(items[id], x)), links: sameOrder(btnOrder.filter((k) => on.includes(k)), all.map((b) => b.value)) ? 'all' : btnOrder.filter((k) => on.includes(k)), perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
@@ -1047,6 +1050,7 @@ const data = {
     // A status pill belongs to a paper that has one to show.
     el('eb-tstatus').hidden = !s.it.tstatus;
     el('eb-vstatus').hidden = !s.it.status;
+    el('eb-varxiv').hidden = !s.it.varxiv;
     el('eb-vname').hidden = el('eb-vname-key').hidden = !s.it.vshort;
     el('eb-vlink').hidden = el('eb-vlink-key').hidden = !s.it.vlink;
     showOrder();
@@ -2315,7 +2319,7 @@ const data = {
   // links the item has not got stay off, as with a preset.
   const THEMES = ['auto', 'light', 'dark'];
   const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
-  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'venueName', 'venueLink', 'venueDate', 'venueAlign', 'venueAt', 'venueFirst', 'authorsFit', 'paperButton', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'venueName', 'venueLink', 'venueDate', 'venueArxiv', 'venueAlign', 'venueAt', 'venueFirst', 'authorsFit', 'paperButton', 'titleStatus', 'textAlign', 'sizes', 'weights', 'styles', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
   el('eb-export').addEventListener('click', () => {
     const s = spec();
     const c = parseName(s.slug);
