@@ -591,6 +591,33 @@
           "type": "string",
           "pattern": "^highlights/[\\w.-]+\\.(png|jpe?g|webp|gif|svg)$"
         },
+        "source": {
+          "description": "Where `image` comes from, when it is mirrored from a package's own repository: `path` on `repo`'s default branch. scripts/sync-software-figures.mjs re-makes `image` whenever that file changes, and a workflow, run every six months or by hand, opens a pull request with the result. Omit it for an image made here; the script then leaves the image alone.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repo",
+            "path",
+            "sha"
+          ],
+          "properties": {
+            "repo": {
+              "description": "owner/name on GitHub.",
+              "type": "string",
+              "pattern": "^[\\w.-]+/[\\w.-]+$"
+            },
+            "path": {
+              "description": "The file in that repository. PNG becomes WebP at quality 85; SVG is copied as is.",
+              "type": "string",
+              "pattern": "\\.(png|svg)$"
+            },
+            "sha": {
+              "description": "Git blob SHA of the file last mirrored. Written by the script, never by hand.",
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          }
+        },
         "alt": {
           "description": "What the picture shows, for anyone who cannot see it.",
           "type": "string",

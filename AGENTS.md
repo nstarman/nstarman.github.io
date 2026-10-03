@@ -174,6 +174,26 @@ lists them, each linking to that paper's card — or straight out to the paper i
 it has none yet. Syntheses lead the grid; paper cards follow, newest first. The
 section renders only once there is a card to show.
 
+A software item's figure is its own logo, never its paper's figure, and is
+best **mirrored** from the package's repository, not copied by hand: give the
+highlight a `source` and let the script make the image.
+
+```jsonc
+"source": { "repo": "GalacticDynamics/unxt", "path": "docs/_static/favicon.png" }
+```
+
+```bash
+node scripts/sync-software-figures.mjs   # makes `image`, and writes source.sha
+```
+
+`source.sha` is the git blob it mirrored. Every six months (1 January and
+1 July), a workflow re-runs the script and opens a pull request when an
+upstream file has changed. To pick up a new logo sooner, run *Refresh software
+figures* by hand from the Actions tab. Any change
+made to an image (today, PNG to WebP at quality 85) lives in the script, so it
+is reviewed along with that pull request. A highlight without a `source` has a
+custom image, which the script leaves alone. Avoid custom images where you can.
+
 ### `location` — a place, never an institution
 
 `location` is what the conference map pins, so it has one format:
