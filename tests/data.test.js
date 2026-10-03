@@ -168,13 +168,13 @@ describe('links', () => {
     expect(out[0].label).toBe('JOSS review');
   });
 
-  it('orders ADS before the preprint before the code', () => {
+  it('orders the paper before ADS before the preprint before the code', () => {
     const out = links({
       bibcode: '2022ApJ...935..167A',
       arxiv: '2206.14220',
-      links: [{ rel: 'code', url: 'https://github.test' }],
+      links: [{ rel: 'code', url: 'https://github.test' }, { rel: 'paper', url: 'https://journal.test' }],
     });
-    expect(out.map(relKey)).toEqual(['ads', 'preprint', 'code']);
+    expect(out.map(relKey)).toEqual(['paper', 'ads', 'preprint', 'code']);
   });
 });
 
@@ -265,9 +265,7 @@ describe('softwarePapers', () => {
   });
 
   it('prefers the article at the journal over ADS or the preprint', () => {
-    // REL_ORDER ranks `ads` and `preprint` above `paper`, which is right for a
-    // trail of marks and wrong when only one link is being chosen: this used to
-    // send Astropy to ADS and macro_lightning to arXiv.
+    // This used to send Astropy to ADS and macro_lightning to arXiv.
     expect(softwarePapers(resolve('astropy'))[0].url).toBe('https://doi.org/10.3847/1538-4357/ac7c74');
     expect(softwarePapers(resolve('macro-lightning-code'))[0].url).toContain('journals.aps.org');
   });
