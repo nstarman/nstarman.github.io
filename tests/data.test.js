@@ -100,6 +100,11 @@ describe('authors', () => {
     expect(names(2)).toEqual(['X. A', '…', 'N. Starkman']);
     expect(authors(long, 2).etal).toBe(true);           // D and E follow
     expect(names(4)).toEqual(['X. A', 'X. B', 'X. C', 'N. Starkman']);
+    expect(names(1)).toEqual(['…', 'N. Starkman']);       // room for mine alone
+    const filled = (max) => authors(long, max, { fill: true }).shown.map((a) => a.name);
+    expect(filled(3)).toEqual(['X. A', 'X. B', '…', 'N. Starkman']);   // three names, as asked
+    expect(filled(2)).toEqual(names(2));
+    expect(filled(1)).toEqual(names(1));
     long.authors.splice(4);                              // owner now last
     expect(authors(long, 2).etal).toBe(false);
   });
@@ -351,5 +356,15 @@ describe('primaryLink', () => {
 
   it('will not fall back to code', () => {
     expect(primaryLink({ links: [{ rel: 'code', url: 'c' }] })).toBeNull();
+  });
+});
+
+describe('venueLine, short', () => {
+  it('names every journal in data/ short, and keeps the rest of the line', () => {
+    const withVenue = items.filter((i) => i.venue?.journal || i.venue?.booktitle);
+    for (const i of withVenue) expect(venueLine(i, { short: true }), i.id).not.toBe(venueLine(i));
+    const apj = { venue: { journal: 'The Astrophysical Journal', volume: '979', pages: '155' } };
+    expect(venueLine(apj, { short: true })).toBe('ApJ 979, 155');
+    expect(venueLine({ venue: { journal: 'Unheard Of' } }, { short: true })).toBe('Unheard Of');
   });
 });

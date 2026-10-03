@@ -2,9 +2,9 @@
 import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
-import LinkIcons from '../components/LinkIcons.astro';
-import { byType, links, primaryLink, resolve, year, authorPosition, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { spans, ordinal } from '../lib/inline.js';
+import Card from '../components/Card.astro';
+import { byType, links, primaryLink, resolve, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
 const papers = byType('publication').filter((p) => p.highlight);
@@ -16,8 +16,6 @@ const groups = HIGHLIGHT_TOPICS
   .map(([key, label, intro]) => ({ key, label, intro, items: highlights.filter((i) => i.highlight.topic === key) }))
   .filter((g) => g.items.length > 0);
 
-// A synthesis's papers link to their cards; a paper without one, out to the paper.
-const paperHref = (p) => (p.highlight ? `#${anchor(p.id)}` : links(p)[0]?.url);
 const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 
 // An intro's `[](item:id)` becomes that paper's inline-card. A typo fails the
@@ -25,7 +23,7 @@ const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 const inlineCard = (s) => {
   const p = resolve(s.item);
   if (!p) throw new Error(`research highlights: [](item:${s.item}) names no item`);
-  const name = s.t || p.nickTitle || p.shortTitle || p.title;
+  const name = s.t || titleOf(p, 'nick');
   return { name, href: p.highlight ? `#${anchor(p.id)}` : mainHref(p) };
 };
 ---
@@ -64,37 +62,7 @@ const inlineCard = (s) => {
             <button type="button" class="iconbtn" data-step="1" aria-label={`Next ${g.label} highlight`}>›</button>
           </div>
           <div class="hl" role="region" aria-label={`${g.label} highlights`} tabindex="0">
-            {g.items.map((item) => {
-              const h = item.highlight;
-              const href = mainHref(item);
-              const figHref = item.type === 'publication' ? `/publications/#${anchor(item.id)}` : href;
-              const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
-              // Bold only the papers I led or was second on. Past third the
-              // place is just "nth", unless the record states it on purpose.
-              const pos = authorPosition(item);
-              const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : 'nth');
-              return (
-                <article class="card hl-card" id={anchor(item.id)}>
-                  {/* Three areas — title, figure, footer — on rows the whole
-                      carousel shares, so every card's lines up. */}
-                  <h5 class:list={['name', pos > 2 && 'name--minor']}>{href ? <a href={href}>{item.shortTitle ?? item.title}</a> : (item.shortTitle ?? item.title)}</h5>
-                  {/* A paper's figure goes to its card on /publications/; a
-                      synthesis has none there, so its figure follows the title. */}
-                  {figHref
-                    ? <a class="hl-fig" href={figHref} tabindex="-1"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
-                    : <img class="hl-fig" src={`/${h.image}`} alt={h.alt} loading="lazy" />}
-                  <div class="hl-foot">
-                    {refs.length > 0 && (
-                      <ul class="hl-refs">
-                        {refs.map((p) => <li><a href={paperHref(p)}>{p.shortTitle ?? p.title}</a></li>)}
-                      </ul>
-                    )}
-                    <LinkIcons links={links(item)} />
-                    <span class="hl-year">{place && <>{place} | </>}{year(item)}</span>
-                  </div>
-                </article>
-              );
-            })}
+            {g.items.map((item) => <Card item={item} preset="size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,ads,doi,preprint,repo,code:fit-look:titleweight=medium,titleface=mono" id={anchor(item.id)} heading="h5" />)}
           </div>
           </div>
           </>)}

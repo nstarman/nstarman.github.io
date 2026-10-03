@@ -1,4 +1,5 @@
-// Compiles the CV to PDF in the browser, with typst.ts.
+// Compiles the CV — or any one-file document, as a card is — to PDF in the
+// browser, with typst.ts.
 //
 // Knows nothing about the page: it takes the render model cvModel() built and
 // returns the PDF bytes. The builder owns the tick-boxes, the status line and
@@ -52,11 +53,7 @@ async function fetchWasm(url) {
  * @returns {Promise<Uint8Array>} the PDF
  */
 export async function compilePdf(model, fonts, onStatus = () => {}) {
-  if (!typst) {
-    onStatus('Loading the Typst compiler…');
-    typst = await loadCompiler(fonts);
-  }
-  onStatus('Compiling…');
+  await ready(fonts, onStatus);
   // cv/ is the compilation root in both runtimes, so cv/lib/styles.typ is
   // /lib/styles.typ here and the relative imports inside resolve unchanged.
   for (const [path, src] of Object.entries(TEMPLATE)) {
@@ -68,4 +65,28 @@ export async function compilePdf(model, fonts, onStatus = () => {}) {
   }
   await typst.mapShadow('/cv.json', new TextEncoder().encode(JSON.stringify(model)));
   return typst.pdf({ mainFilePath: '/cv.typ' });
+}
+
+/**
+ * One document: `src` as /main.typ, with the files it reads beside it.
+ * @param {string} src
+ * @param {Record<string, Uint8Array>} files  by absolute path, `/card.json`
+ * @param {string[]} fonts  as for compilePdf — a page compiles one kind of
+ *   document, so the faces it loads first are the ones it keeps
+ * @param {(msg: string) => void} [onStatus]
+ * @returns {Promise<Uint8Array>} the PDF
+ */
+export async function compileTypst(src, files, fonts, onStatus = () => {}) {
+  await ready(fonts, onStatus);
+  await typst.addSource('/main.typ', src);
+  for (const [path, bytes] of Object.entries(files)) await typst.mapShadow(path, bytes);
+  return typst.pdf({ mainFilePath: '/main.typ' });
+}
+
+async function ready(fonts, onStatus) {
+  if (!typst) {
+    onStatus('Loading the Typst compiler…');
+    typst = await loadCompiler(fonts);
+  }
+  onStatus('Compiling…');
 }

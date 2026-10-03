@@ -153,28 +153,11 @@ h2{
    — being transitioned — flew it to the corner on the way out. */
 .btn:hover{color:var(--accent); border-color:var(--accent-line); background-color:var(--accent-soft); text-decoration:none}
 
-/* --- brief entries: landing page only. Flex with a right-hand gutter for the
-   year and the paper button — as a grid row-span the gutter's surplus height
-   was distributed across the rows and pushed the title off the authors. --- */
-.entries--brief{gap:0}
-.entry--brief{
-  display:flex; align-items:flex-start; gap:1.4rem;
-  position:relative; padding-block:.85rem;
-}
-.entry--brief .body{flex:1; min-width:0}
-.entry--brief:first-child{padding-top:0}
-.entry--brief .side{
-  flex:none; display:flex; flex-direction:column;
-  align-items:flex-end; gap:.42rem;
-}
-.entry--brief .ttl{font-size:.99rem; font-weight:500; color:var(--ink);
-  line-height:1.4; text-wrap:pretty}
-.entry--brief .ttl a{color:var(--ink)}
-.entry--brief .ttl a:hover{color:var(--accent)}
-.entry--brief .meta{margin:.2rem 0 0; font-size:.9rem; color:var(--ink-mute)}
-.entry--brief .meta .me{color:var(--ink-2); font-weight:500}
-.entry--brief + .entry--brief::before{
-  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+/* --- the landing page's papers: cards drawn as rows of a list, with a short
+   rule between them, halfway across the gap. --- */
+.entries--brief{gap:1.7rem}
+.entries--brief > .card + .card::before{
+  content:""; position:absolute; top:-.85rem; left:50%; transform:translateX(-50%);
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
 
@@ -188,15 +171,10 @@ h2{
 .tl .sub{display:block; font-size:.85rem; color:var(--ink-mute); margin-top:.05rem}
 
 /* ---------- software ---------- */
-.lead{
-  display:flex; flex-direction:column; gap:.4rem;
-  /* The lead is a package too, so it gets the card's squircle — at half the
-     tint, so it reads as the same family without competing with the grid. */
-  background:color-mix(in srgb, var(--ink) 1.2%, transparent);
-  border-radius:20px;
-  padding:1.15rem 1.2rem 1.25rem;
-  margin-bottom:2rem; position:relative;
-}
+/* The lead package: its card ("Software — the lead package" in
+   SITE_PRESETS) and, below it, the
+   first tier divider. */
+.lead{margin-bottom:2rem; position:relative}
 /* The divider now sits in the gap below the box rather than inside its tint. */
 /* The lead's underline is the first of the tier dividers, not decoration: it
    marks the boundary between the lead and the tier below it, and matches
@@ -209,12 +187,6 @@ h2{
   width:32%; height:1px; background:var(--ink-faint); opacity:.24;
 }
 .lead--last::after{content:none}
-.lead .name{font-family:var(--mono); font-size:1.3rem; font-weight:500; letter-spacing:-.01em}
-.lead .role-line{
-  font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
-  color:var(--accent);
-}
-.lead p{margin:0; font-size:1rem; color:var(--ink-2); line-height:1.55}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath
    stayed three-up. auto-fill keeps the tracks, so a card is the same width
@@ -238,6 +210,451 @@ h2{
 a.card{color:inherit}
 a.card:hover{text-decoration:none; background:color-mix(in srgb, var(--ink) 5%, transparent)}
 a.card:hover .name{color:var(--accent)}
+
+/* ---------- cards: one component, named by what it shows ----------
+   Card.astro draws every card, and its preset (src/lib/cardname.js) arrives
+   as data attributes. Size is the box, each dimension on its own: a width
+   set or filling its container, a height set — the content fitted inside —
+   or growing with its content. Look is how it is drawn: the type, padding,
+   corners and buttons, each a step — minor, compact, standard, feature or
+   display — in data-textsize, data-padding, data-corners and data-buttons.
+   Lengths inside are in em, so a card keeps its shape at every size. Where
+   its parts sit — five fixed areas, and the parts in them — is the layout,
+   below. */
+.card[data-size]{font-size:var(--fs); padding:var(--pad-t) var(--pad-x) var(--pad-b); border-radius:var(--rad); gap:.35em}
+/* background: the site's tint is normal; /publications/ sets its highlight in
+   light, so it sits back from the entry it belongs to. */
+.card[data-background="none"]{background:transparent}
+.card[data-background="light"]{background:color-mix(in srgb, var(--ink) 1.25%, transparent)}
+.card[data-background="dark"]{background:color-mix(in srgb, var(--ink) 5%, transparent)}
+/* Where a setting is left out: standard on a card that fills its width; on
+   one of a set width, following it, by a line through the steps below (a
+   320px card no wider than it is high reads as standard) — --u is the width
+   per unit of stretch. Before the steps, so a step given wins. */
+.card[data-w="fill"]{--fs:.88rem; --pad-t:.95rem; --pad-x:1.05rem; --pad-b:1rem; --rad:16px; --ib:1.6rem; --ii:.8rem}
+.card[data-w="px"]{--u:calc(var(--wpx) / var(--stretch));
+  --fs:calc(7.2px + .0216 * var(--u)); --pad-t:calc(.06 * var(--u) - 4px); --pad-x:calc(.064 * var(--u) - 3.2px); --pad-b:var(--pad-t);
+  --rad:calc(2.5px + .0375 * var(--u)); --ib:calc(11.8px + .045 * var(--u)); --ii:calc(6.9px + .02 * var(--u))}
+/* The look's settings, each a step. */
+.card[data-titlesize="minor"]{--ts:calc(.72rem * 1.08)} .card[data-titlesize="compact"]{--ts:calc(.78rem * 1.08)} .card[data-titlesize="standard"]{--ts:calc(.88rem * 1.08)}
+.card[data-titlesize="feature"]{--ts:1.08rem} .card[data-titlesize="display"]{--ts:calc(1.15rem * 1.08)}
+.card[data-textsize="minor"]{--fs:.72rem} .card[data-padding="minor"]{--pad-t:.5rem; --pad-x:.6rem; --pad-b:.55rem} .card[data-corners="minor"]{--rad:10px} .card[data-buttons="minor"]{--ib:1.3rem; --ii:.68rem}
+.card[data-textsize="compact"]{--fs:.78rem} .card[data-padding="compact"]{--pad-t:.7rem; --pad-x:.8rem; --pad-b:.75rem} .card[data-corners="compact"]{--rad:12px} .card[data-buttons="compact"]{--ib:1.45rem; --ii:.75rem}
+.card[data-textsize="standard"]{--fs:.88rem} .card[data-padding="standard"]{--pad-t:.95rem; --pad-x:1.05rem; --pad-b:1rem} .card[data-corners="standard"]{--rad:16px} .card[data-buttons="standard"]{--ib:1.6rem; --ii:.8rem}
+.card[data-textsize="feature"]{--fs:1rem} .card[data-padding="feature"]{--pad-t:1.2rem; --pad-x:1.35rem; --pad-b:1.25rem} .card[data-corners="feature"]{--rad:18px} .card[data-buttons="feature"]{--ib:1.9rem; --ii:.94rem}
+.card[data-textsize="display"]{--fs:1.15rem} .card[data-padding="display"]{--pad-t:1.5rem; --pad-x:1.7rem; --pad-b:1.55rem} .card[data-corners="display"]{--rad:22px} .card[data-buttons="display"]{--ib:2.2rem; --ii:1.08rem}
+
+/* The size, each dimension set or not (data-w, data-h): a set width in
+   --wpx, a set height in --hpx — the content fitted inside, never growing
+   it: contain:size keeps it out of the box's size, which Safari and Firefox
+   otherwise let stretch. With both set, they arrive as numbers in --aw and
+   --ah too; --stretch, how much wider than it is high the card reads,
+   follows. */
+.card[data-size]{--aw:4; --ah:5}
+.card[data-size]{--stretch:clamp(1, var(--aw) / var(--ah), 2)}
+.card[data-w="px"]{width:var(--wpx); max-width:100%}
+.card[data-h="px"]{height:var(--hpx); contain:size; overflow:hidden}
+/* Both set: the shape is kept as a narrow screen shrinks the width. */
+.card[data-w="px"][data-h="px"]{height:auto; aspect-ratio:var(--aw) / var(--ah)}
+
+/* Package names are code, so they are set in mono; paper titles are prose. */
+.c-name{margin:0; font-size:var(--ts, 1.08em); font-weight:500; line-height:1.35; color:var(--ink); overflow-wrap:anywhere}
+.card[data-size] .c-name{font-family:var(--ff-title, var(--sans))}
+.card[data-type="software"] .c-name{font-family:var(--ff-title, var(--mono))}
+.c-name--minor{font-weight:400}
+/* title:full:split — the part of the full title that is not its short title. */
+.card[data-rest="split"] .c-t-rest{font-weight:400}
+.c-name a{color:var(--ink)}
+.c-name a:hover{color:var(--accent)}
+.c-text{display:flex; flex-direction:column; gap:.15em; color:var(--ink-mute)}
+.card[data-size] .c-text p{margin:0; font-size:1em; line-height:1.5; color:inherit}
+/* A paper's byline and venue line, each its own part. */
+.card[data-size] :is(.c-by, .c-venue){margin:0; line-height:1.5; color:var(--ink-mute)}
+/* look:<part>size and <part>weight, each part's own (--fs-<part>,
+   --fw-<part>), or as it is. My name never lighter than the rest. */
+.card[data-size] .c-by{font-size:var(--fs-authors, 1em); font-weight:var(--fw-authors, 400); font-style:var(--fst-authors, normal); font-family:var(--ff-authors, var(--sans))}
+.card[data-size] :is(.c-venue, .c-byvenue){font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400); font-style:var(--fst-venue, normal); font-family:var(--ff-venue, var(--sans))}
+.c-by .me{color:var(--ink-2); font-weight:max(500, var(--fw-authors, 400))}
+/* authors:…:plain — my students set like any other co-author, no colour, no † or ‡. */
+.card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate){color:inherit}
+.card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate) sup{display:none}
+.card[data-size] .c-text .c-role{font-family:var(--mono); font-size:.78em; letter-spacing:.09em; text-transform:uppercase; color:var(--accent)}
+:is(.c-venue, .c-byvenue) .dot, .c-bysep{margin:0 .4em; color:var(--ink-faint)}
+:is(.c-venue, .c-byvenue) .yr{font-family:var(--mono); font-size:.92em; font-variant-numeric:tabular-nums}
+/* venue:short, :undated, :center|right — the journal's short name where it
+   has one, the line without its year, and the line across the center. */
+.card:not([data-venuename="short"]) .c-vshort, .card[data-venuename="short"] :is(.c-venue, .c-byvenue):has(.c-vshort) .c-vfull,
+.card[data-venueundated] :is(.c-venue, .c-byvenue) :is(.dot, .yr),
+/* venue:…:noarxiv — a paper in no journal yet has no venue line at all. */
+.card[data-venuenoarxiv][data-varxiv] .c-byvenue, .card[data-venuenoarxiv][data-varxiv] > .c-venue{display:none}
+.card[data-venuealign="center"] > .c-venue{text-align:center}
+.card[data-venuealign="right"] > .c-venue{text-align:right}
+/* Figures are drawn for paper: shown whole, on white, in either theme. */
+.c-fig img{display:block; width:100%; aspect-ratio:16/10; object-fit:contain;
+  border-radius:10px; background:#fff; padding:.3rem}
+.c-foot{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:end; gap:.4em; margin-top:auto; padding-top:.3em}
+/* The buttons' box, in three slots along it — start, center and end: under
+   the words or at the bottom, its left, center and right, each a row; in a
+   side, its top, center and bottom (below). A part sits in the slot its
+   place along the box names, and across the box at its own place. */
+.c-slot{display:flex; flex-wrap:wrap; align-items:flex-end; gap:.4em; min-width:0; align-self:stretch}
+.c-slot:not(:has(> *)){display:none}
+.c-slot[data-at="start"]{grid-column:1; justify-self:start}
+.c-slot[data-at="center"]{grid-column:2; justify-self:center}
+.c-slot[data-at="end"]{grid-column:3; justify-self:end; justify-content:flex-end}
+.c-slot > [data-cross="start"]{align-self:flex-start}
+.c-slot > [data-cross="center"]{align-self:center}
+.c-slot > [data-cross="end"]{align-self:flex-end}
+/* Prefixed so a page's own rule for link buttons — /publications/ stacks them —
+   does not reach into a card. */
+/* The gap between the buttons, resolved where they are — a registered
+   length — so the paper button, in its own smaller face, spans the same. */
+@property --bg{syntax:'<length>'; inherits:true; initial-value:0px}
+.card .c-foot .btns--icon{flex-direction:row; margin:0; padding:0; --bg:var(--bgap, .3em); gap:var(--bg)}
+/* So many buttons to a row, then the next: that many columns, each as wide
+   as its widest button — a package's paper button is a word, not a glyph. */
+.card[data-per] .c-foot .btns--icon{display:grid; grid-template-columns:repeat(var(--per), auto); justify-content:start}
+/* On a right rail the buttons sit at the right: rows that wrap as they fit
+   end there, and in a grid a short last row starts --skip columns in — its
+   first button, data-skipat, marked by its place among them all. */
+.card:is([data-foot="right"], [data-railalign="right"]):not([data-per]) .c-foot .btns--icon{justify-content:flex-end}
+/* Centered buttons: rows that wrap center too. */
+.card[data-railalign="center"]:not([data-per]) .c-foot .btns--icon{justify-content:center}
+.card[data-skipat="2"] .c-foot li:nth-child(2),
+.card[data-skipat="3"] .c-foot li:nth-child(3),
+.card[data-skipat="4"] .c-foot li:nth-child(4),
+.card[data-skipat="5"] .c-foot li:nth-child(5),
+.card[data-skipat="6"] .c-foot li:nth-child(6),
+.card[data-skipat="7"] .c-foot li:nth-child(7),
+.card[data-skipat="8"] .c-foot li:nth-child(8),
+.card[data-skipat="9"] .c-foot li:nth-child(9),
+.card[data-skipat="10"] .c-foot li:nth-child(10),
+.card[data-skipat="11"] .c-foot li:nth-child(11),
+.card[data-skipat="12"] .c-foot li:nth-child(12),
+.card[data-skipat="13"] .c-foot li:nth-child(13),
+.card[data-skipat="14"] .c-foot li:nth-child(14),
+.card[data-skipat="15"] .c-foot li:nth-child(15),
+.card[data-skipat="16"] .c-foot li:nth-child(16){grid-column-start:calc(var(--skip) + 1)}
+/* With the buttons at the bottom of a side rail, their rows stack upward from
+   it: the first row lowest. A grid has no reversed rows, so it is turned over
+   and each button turned back — their order, for a keyboard and a screen
+   reader, is the same. */
+.card:is([data-foot="left"], [data-foot="right"])[data-footend="bottom"] .c-foot .btns--icon{flex-wrap:wrap-reverse}
+.card[data-per]:is([data-foot="left"], [data-foot="right"])[data-footend="bottom"] .c-foot .btns--icon,
+.card[data-per]:is([data-foot="left"], [data-foot="right"])[data-footend="bottom"] .c-foot .btns--icon > li{transform:scaleY(-1)}
+.c-foot .iconbtn{width:var(--ib); height:var(--ib); border-radius:calc(var(--ib) * .25)}
+.c-foot .iconbtn .ico{width:var(--ii); height:var(--ii)}
+/* paper:<label>[:<to>] — a paper's button of words, or its glyph, first in
+   the buttons' box and as high as a button. */
+.c-paperbtn{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; height:var(--ib); padding:0; overflow:hidden; white-space:nowrap;
+  width:calc(var(--pn, 2) * var(--ib) + (var(--pn, 2) - 1) * var(--bg));
+  border:1px solid var(--accent-line); border-radius:calc(var(--ib) * .25); background:color-mix(in srgb, var(--accent) 6%, var(--surface));
+  color:var(--accent); font-family:var(--mono); font-size:calc(var(--ib) * .42); line-height:1; letter-spacing:.04em; text-decoration:none}
+.c-paperbtn:hover{background:color-mix(in srgb, var(--accent) 14%, var(--surface)); text-decoration:none}
+.c-paperbtn .ico{width:var(--ii); height:var(--ii); fill:currentColor}
+/* paper:…:grey — in the greys the site's word buttons have. */
+.card[data-papercolor="grey"] .c-paperbtn{color:var(--ink-mute); border-color:var(--rule); background:var(--surface)}
+.card[data-papercolor="grey"] .c-paperbtn:is(:hover, :focus-visible){color:var(--ground); background:var(--ink); border-color:var(--ink)}
+.card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
+.card:not([data-paperbtn]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
+.c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
+.c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
+.c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
+.c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
+.c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
+/* A strip: my position, the year or the context link in the top area, or
+   the bottom one where the buttons are not. A strip of the card's padding is
+   made for it, and it sits there, at the left, center or right, clear of
+   every layout's parts. grid-area:auto, or a grid card would give it a cell
+   of its own. */
+.card[data-size][data-strips~="top"]{padding-top:calc(var(--pad-t) + 1.4em + var(--tc))}
+.card[data-size][data-strips~="bottom"]{padding-bottom:calc(var(--pad-b) + 1.4em)}
+.c-foot [data-strip]{position:absolute; grid-area:auto; line-height:1.2}
+.c-foot [data-strip="top"]{top:var(--pad-t)}
+.c-foot [data-strip="bottom"]{bottom:var(--pad-b)}
+.c-foot [data-strip][data-h="left"]{left:var(--pad-x)}
+.c-foot [data-strip][data-h="center"]{left:50%; translate:-50% 0}
+.c-foot [data-strip][data-h="right"]{right:var(--pad-x)}
+/* A buttons' box with nothing in it is no box at all: no column, no row, no
+   gap — only what sits in a strip, still drawn. [data-size] outweighs the
+   layouts' rules for the box, which come later. */
+.card[data-size][data-rail="empty"] > .c-foot, .card[data-size][data-rail="empty"] > .c-foot > .c-slot{display:contents}
+.card[data-size][data-rail="empty"] > .c-foot :is(.c-refs, .btns){display:none}
+/* The context extra: the way to the paper's topic on /research/. */
+.c-context{font-family:var(--ff-context, var(--mono)); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); font-style:var(--fst-context, normal); letter-spacing:.06em;
+  text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
+.c-context:hover{color:var(--accent); text-decoration:none}
+
+/* Layout: one grid for every card, every area always there. A part that is
+   off is hidden, and its track is 0; the areas are fixed and the parts move
+   between them, so moving the rail from the right side to the bottom turns
+   one track off and another on.
+
+     columns   left side · ┊ · center (the words) · ┊ · right side
+     rows      title (the top area) · ┊ · figure · ┊ · authors · ┊ · venue · ┊ ·
+               text · ┊ · rest · rail under the words · ┊ · bottom area
+
+   — in that order unless a figure in the center moves to another slot
+   among them, the tracks keeping their places and names. Each ┊ is a
+   space track, 0 unless space: names it (--sp-<a>_<b>, its two
+   neighbours): a length, or flex — 100fr, so it takes what room is left
+   from the rest row. The default gaps are not tracks, so a part left out
+   leaves none: a row's is a margin above each part shown (--gr), the
+   padding drawn in by as much; a column's is the track beside a column in
+   use (--dL, --dR), which the card's attributes say. --gr and --gc resolve
+   on the card, in its em, and the parts inherit that length. */
+@property --gr{syntax:'<length>'; inherits:true; initial-value:0px}
+@property --gc{syntax:'<length>'; inherits:true; initial-value:0px}
+.card[data-size]{display:grid; gap:0; align-items:start;
+  --gr:.35em; --gc:0px; --dL:0px; --dR:0px; --cL:0px; --cR:0px;
+  --rL0:1; --rL1:13; --rR0:1; --rR1:13;
+  --r-fig:auto; --r-text:auto; --rest:minmax(0,1fr);
+  --rowT:1; --rowF:3; --rowB:5; --rowV:7; --rowX:9; --s1:auto; --s3:var(--r-fig); --s5:auto; --s7:auto; --s9:var(--r-text);
+  --words:minmax(0,1fr); --figdef:6em; --F:var(--figdef);
+  --tc:var(--sp-top_center, 0px); --r2:var(--sp-title_figure, 0px);
+  padding-top:calc(var(--pad-t) + var(--tc) - var(--gr));
+  grid-template-columns:var(--cL) var(--sp-left_center, var(--dL)) var(--words) var(--sp-center_right, var(--dR)) var(--cR);
+  grid-template-rows:var(--s1) var(--r2) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--r6, var(--sp-authors_venue, 0px)) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) var(--s14, auto)}
+.card[data-size] > :is(.c-name, .c-fig, .c-by, .c-venue, .c-text, .c-foot){margin:var(--gr) 0 0}
+/* The gaps each layout has had: beside a rail, 1em and .15em; a figure
+   beside the words with the rail under them, 1.1em and .35em — and there
+   the words take 3:2 of a card of set width or, filling it, all but the
+   figure's 10.25em, as the highlight on /publications/ has it. */
+.card[data-size]:is([data-foot="left"], [data-foot="right"]){--gc:1em; --gr:.15em}
+.card[data-size]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]){--gc:1.1em; --gr:.35em; --figdef:10.25em; align-items:normal}
+.card[data-size][data-w="px"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]){--figdef:minmax(0,2fr); --words:minmax(0,3fr)}
+/* A side's column, and the gap before the words where it holds anything: a
+   figure's set width; a rail as wide as its buttons; both stacked, the wider
+   of the two — the figure, holding no width of its own, takes the column's.
+   A side's width set, area:<side> (--colL, --colR), in their place. */
+.card[data-size] > .c-fig{contain:inline-size}
+/* An area the name gives with nothing in it is there all the same: a side
+   its column — its width, or 3em — and the top or bottom a strip of the
+   card's padding, its height or a line's. */
+.card[data-size][data-empty~="left"]{--cL:var(--colL, 3em); --dL:var(--gc)}
+.card[data-size][data-empty~="right"]{--cR:var(--colR, 3em); --dR:var(--gc)}
+.card[data-size][data-empty~="top"]{padding-top:calc(var(--pad-t) + var(--hT, 1.4em) + var(--tc))}
+.card[data-size][data-empty~="bottom"]{padding-bottom:calc(var(--pad-b) + var(--hB, 1.4em))}
+.card[data-size][data-fig="left"]{--cL:var(--colL, var(--F)); --dL:var(--gc)}
+.card[data-size][data-fig="right"]{--cR:var(--colR, var(--F)); --dR:var(--gc)}
+.card[data-size][data-foot="left"]:not([data-rail="empty"]){--cL:var(--colL, auto); --dL:var(--gc)}
+.card[data-size][data-foot="right"]:not([data-rail="empty"]){--cR:var(--colR, auto); --dR:var(--gc)}
+.card[data-size][data-fig="left"][data-foot="left"]:not([data-rail="empty"]){--cL:var(--colL, minmax(var(--F), auto))}
+.card[data-size][data-fig="right"][data-foot="right"]:not([data-rail="empty"]){--cR:var(--colR, minmax(var(--F), auto))}
+/* A card of set height: a figure over the words takes what room is left;
+   otherwise the text does, and is clipped there. */
+.card[data-size][data-h="px"]{--r-text:minmax(0,auto)}
+.card[data-size][data-h="px"][data-fig="center"]{--r-fig:minmax(3em,1fr); --rest:0px}
+.card[data-h="px"] > .c-fig img{height:100%; aspect-ratio:auto}
+.card[data-h="px"] :is(.c-sum, .c-det){display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden}
+/* The areas are fixed: the top (row 1, the title's), the left side, the
+   center and the right side (columns 1, 3 and 5) and the bottom (row 14);
+   the parts move between them. A side runs from under the top area to over
+   the bottom one — those win their corners — unless it wins them itself,
+   area:<side>:top, :bottom (data-wins). */
+/* The space from the top area to the center: padding over the card or,
+   the title in the top area, the row under it — the sides then start in
+   that row, so it moves the center alone. A side's own, top_left and
+   top_right, is a margin over its first part, less the center's padding. */
+.card[data-size][data-titleat="top"]{--rL0:2; --rR0:2; --tc:0px; --r2:var(--sp-top_center, var(--sp-title_figure, 0px))}
+.card[data-size][data-fig="left"] > .c-fig,
+.card[data-size][data-foot="left"]:not([data-fig="left"]) > .c-foot{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_left, 0px))}
+.card[data-size][data-fig="right"] > .c-fig,
+.card[data-size][data-foot="right"]:not([data-fig="right"]) > .c-foot{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_right, 0px))}
+.card[data-size][data-titleat="top"][data-wins~="left-top"]{--rL0:1}
+.card[data-size][data-titleat="top"][data-wins~="right-top"]{--rR0:1}
+.card[data-size][data-foot="bottom"][data-wins~="left-bottom"]{--rL1:15}
+.card[data-size][data-foot="bottom"][data-wins~="right-bottom"]{--rR1:15}
+/* The slots. */
+.card[data-size] > .c-name{grid-area:var(--rowT) / 3}
+.card[data-size] > .c-by{grid-area:var(--rowB) / 3}
+.card[data-size] > .c-venue{grid-area:var(--rowV) / 3}
+/* venue:…:beside — the venue's area beside the authors', a column of its own
+   on their line: the names take the rest and wrap in theirs. At their
+   right, or :before, their left. */
+.card[data-size][data-venueat="beside"][data-venue] > .c-by{display:flex; align-items:baseline; gap:0 var(--sp-authors_venue, 1.2em)}
+.card[data-size][data-venueat="beside"] > .c-by > :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n){flex:1 1 auto; min-width:0}
+.card[data-size][data-venueat="beside"] > .c-by > .c-byvenue{flex:none; text-align:right}
+.card[data-size][data-venueat="beside"][data-venuefirst] > .c-by > .c-byvenue{text-align:left}
+.card[data-size][data-venueat="beside"] .c-bysep{display:none}
+/* …:beside:<width> — the left column so wide, the right the rest. The
+   space between them is authors_venue's, its row then none. */
+.card[data-size][data-venueat="beside"]{--r6:0px}
+.card[data-size][data-venueat="beside"][data-vsplit]:not([data-venuefirst]) > .c-by > :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n){flex:0 0 var(--vsplit)}
+.card[data-size][data-venueat="beside"][data-vsplit]:not([data-venuefirst]) > .c-by > .c-byvenue{flex:1 1 0; min-width:0}
+.card[data-size][data-venueat="beside"][data-vsplit][data-venuefirst] > .c-by > .c-byvenue{flex:0 0 var(--vsplit)}
+/* venue:…:above — the venue's line and the authors' change places. */
+.card[data-size][data-venueat="above"] > .c-by{grid-row-start:var(--rowV)}
+.card[data-size][data-venueat="above"] > .c-venue{grid-row-start:var(--rowB)}
+.card[data-size] > .c-text{grid-area:var(--rowX) / 3; min-height:0; overflow:hidden}
+.card[data-size][data-fig="center"] > .c-fig{grid-area:var(--rowF) / 3; align-self:stretch}
+/* figure:center:<slot> — the center's parts take its five row slots in
+   order, the figure where the name puts it: above the title, or below the
+   title (the default), the byline, the venue or the text. Each slot's size
+   follows the part in it. Above the title only where the title is not in
+   the top area, which is that row. */
+.card[data-size][data-fig="center"][data-figslot="top"]:not([data-titleat="top"]){--rowF:1; --rowT:3; --s1:var(--r-fig); --s3:auto}
+.card[data-size][data-fig="center"][data-figslot="authors"]{--rowB:3; --rowF:5; --s3:auto; --s5:var(--r-fig)}
+.card[data-size][data-fig="center"][data-figslot="venue"]{--rowB:3; --rowV:5; --rowF:7; --s3:auto; --s7:var(--r-fig)}
+.card[data-size][data-fig="center"][data-figslot="text"]{--rowB:3; --rowV:5; --rowX:7; --rowF:9; --s3:auto; --s7:var(--r-text); --s9:var(--r-fig)}
+.card[data-size][data-fig="left"] > .c-fig,
+.card[data-size][data-foot="left"] > .c-foot{grid-area:var(--rL0) / 1 / var(--rL1) / 2}
+.card[data-size][data-fig="right"] > .c-fig,
+.card[data-size][data-foot="right"] > .c-foot{grid-area:var(--rR0) / 5 / var(--rR1) / 6}
+/* A side's figure and rail stacked: the figure above, the rail in the row
+   under it. */
+.card[data-size][data-fig="left"][data-foot="left"]:not([data-rail="empty"]) > .c-fig,
+.card[data-size][data-fig="right"][data-foot="right"]:not([data-rail="empty"]) > .c-fig{grid-row-end:12}
+.card[data-size][data-fig="left"][data-foot="left"] > .c-foot,
+.card[data-size][data-fig="right"][data-foot="right"] > .c-foot{grid-row-start:12}
+/* The center's last part runs on into that row, so the buttons sit beside it
+   at the side's foot, not in a row of their own under everything: the card
+   as high as the words or the side stacked, the higher. */
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"]):not([data-text="none"]) > .c-text,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"][data-venue]:is(:not([data-venueat]), :not([data-authors])) > .c-venue,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:is(:not([data-venue]), [data-venueat])[data-authors] > .c-by,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:not([data-venue]):not([data-authors]):not([data-titleat="top"]) > .c-name{grid-row-end:13}
+.card[data-size][data-foot="center"] > .c-foot{grid-area:12 / 3}
+.card[data-size][data-foot="bottom"] > .c-foot{grid-area:14 / 1 / 15 / 6}
+.card[data-size][data-foot="bottom"][data-wins~="left-bottom"] > .c-foot{grid-column-start:3}
+.card[data-size][data-foot="bottom"][data-wins~="right-bottom"] > .c-foot{grid-column-end:4}
+/* title:…:top — the title in the top area, across the card but for the
+   sides that win its corners. */
+.card[data-size][data-titleat="top"] > .c-name{grid-area:1 / 1 / 2 / 6}
+/* title:…:top:center|bottom — the title up and down the top area, as high
+   as the title or the area's own height, area:top:min, the more; and the
+   bottom area as high as its buttons or area:bottom:min. */
+.card[data-size][data-titleat="top"]{--s1:minmax(var(--hT, auto), auto)}
+.card[data-size][data-foot="bottom"]{--s14:minmax(var(--hB, auto), auto)}
+.card[data-titlev="center"] > .c-name{align-self:center}
+.card[data-titlev="bottom"] > .c-name{align-self:end}
+/* title:…:center|right — the title across its area. */
+.card[data-titlealign="center"] > .c-name{text-align:center}
+.card[data-titlealign="right"] > .c-name{text-align:right}
+/* text:…:center|right, and look:bodysize and bodyweight — the summary's or
+   details' place across the center, its own size, and its weight. */
+.card[data-textalign="center"] > .c-text{text-align:center}
+.card[data-textalign="right"] > .c-text{text-align:right}
+.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--fs-body, 1em); font-weight:var(--fw-body, 400); font-style:var(--fst-body, normal); font-family:var(--ff-body, var(--sans))}
+.card[data-size] > .c-name{font-style:var(--fst-title, normal)}
+/* title:…:status — the pill after the title, sized with it, never bold. */
+.c-tstatus{font-size:.6em; font-weight:400; vertical-align:.15em; white-space:nowrap}
+.card[data-size][data-titleat="top"][data-wins~="left-top"] > .c-name{grid-column-start:3}
+.card[data-size][data-titleat="top"][data-wins~="right-top"] > .c-name{grid-column-end:4}
+/* A rail under the words or at the bottom sits at the foot of its row: where
+   cards share their rows, as the research carousel's do, every card's
+   buttons end at the bottom. */
+.card[data-size]:is([data-foot="center"], [data-foot="bottom"]) > .c-foot{align-self:end}
+.card:is([data-fig="left"], [data-fig="right"]) > .c-fig img{aspect-ratio:4/3}
+.card:is([data-fig="left"], [data-fig="right"]):is([data-foot="left"], [data-foot="right"]) > .c-fig img{padding:.15em}
+/* The buttons' box in a side: a column, its slots at the top, in the middle
+   and at the bottom — the middle one between the others where both are
+   there — each part across it at its own place. */
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot{align-self:stretch; display:flex; flex-direction:column; gap:.4em; padding:0}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot{flex-direction:column; flex-wrap:nowrap; align-items:flex-start}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="center"]{margin-block:auto}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="end"]{margin-top:auto}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="center"]:has(> *) ~ .c-slot[data-at="end"]{margin-top:0}
+.card:is([data-foot="left"], [data-foot="right"])[data-railalign="left"]:not([data-per]) .c-foot .btns--icon{justify-content:flex-start}
+/* On a phone, a card that fits its content stacks a side figure over the
+   words, centred and no wider than 14rem. */
+@media (max-width:34rem){
+  .card[data-size][data-h="fit"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]){--cL:0px; --cR:0px; --dL:0px; --dR:0px}
+  .card[data-size][data-h="fit"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]) > .c-fig{grid-area:3 / 3; width:min(100%,14rem); justify-self:center; margin-top:var(--gr)}
+}
+
+/* Which parts show — last, so they win over the layouts. The title at the
+   length data-title names; in the rail, my author position and the year,
+   each where it is asked for. */
+.card[data-text="none"] .c-text,
+.card:not([data-yearwith]) :is(.c-sep, .c-yr),
+.card:is(:not([data-year]), [data-yearwith]) .c-year,
+.card:not([data-title]) .c-t:not(.c-t-full),
+.card[data-title="short"] .c-t:not(.c-t-short),
+.card[data-title="nick"] .c-t:not(.c-t-nick),
+.card[data-title="none"] > .c-name,
+.card:not([data-authors]) > .c-by,
+.card[data-authors="full"] :is(.c-by-short, .c-by-tight),
+.card[data-authors="count"] :is(.c-by-short, .c-by-tight, .c-by-full),
+.card:not([data-authors="count"]) .c-by-n,
+.card[data-authors="short"] .c-by-full,
+.card[data-authors="short"]:not([data-textsize="minor"]) .c-by-tight,
+.card[data-authors="short"][data-textsize="minor"] .c-by-short,
+.card:not([data-pos]) .c-stamp,
+.card:not([data-venue]) > .c-venue,
+/* venue:…:authors — the venue after the byline, on its line, where there is
+   one; its own line then empty. */
+.card:is(:not([data-venue]), :not(:is([data-venueat="authors"], [data-venueat="beside"]))) .c-byvenue,
+.card[data-venuefirst] .c-byvenue--after, .card:not([data-venuefirst]) .c-byvenue--before,
+.card:is([data-venueat="authors"], [data-venueat="beside"])[data-authors] > .c-venue,
+.card:not([data-status]) .c-status,
+.card:not([data-titlestatus]) .c-tstatus,
+.card:not([data-context]) .c-context,
+.card:not([data-pos]) :is(.c-place, .c-sep),
+.card:not([data-role]) .c-role,
+.card[data-text="summary"] .c-det,
+.card[data-text="details"] .c-sum,
+.card:not([data-fig]) > .c-fig{display:none}
+/* A figure's own width in its column (--figw: a share of the column, or px,
+   never wider), at its center — or, at a side, its left or right. */
+.card[data-figw] > .c-fig{width:var(--figw); max-width:100%; justify-self:center}
+.card[data-figw][data-fig="center"] > .c-fig{align-self:center}
+.card[data-figw][data-figh="left"] > .c-fig{justify-self:start}
+.card[data-figw][data-figh="right"] > .c-fig{justify-self:end}
+/* A side figure at the top, center or bottom of the card's height. */
+.card[data-figv="top"] > .c-fig{align-self:start}
+.card[data-figv="center"] > .c-fig{align-self:center}
+.card[data-figv="bottom"] > .c-fig{align-self:end}
+/* titleweight: the title's own weight, in place of medium — or regular past
+   second author. The rest of a split full title stays regular. */
+.card[data-titleweight="regular"] .c-name{font-weight:400}
+.card[data-titleweight="medium"] .c-name{font-weight:500}
+.card[data-titleweight="bold"] .c-name{font-weight:600}
+/* frame: the white around a figure, a step or px (--frame), its corners then
+   following the card's; none, the bare image. */
+.card[data-frame="minor"]{--frame:3px} .card[data-frame="compact"]{--frame:4px} .card[data-frame="standard"]{--frame:.3rem}
+.card[data-frame="feature"]{--frame:8px} .card[data-frame="display"]{--frame:12px}
+.card[data-size][data-frame] .c-fig img{padding:var(--frame); border-radius:calc(var(--rad) * .625)}
+.card[data-size][data-frame="none"] .c-fig img{padding:0; background:none; border-radius:0}
+/* A flex track between rows: a figure over the words in a card of set
+   height keeps its own height, and the spring has the room to share. */
+.card[data-size][data-h="px"][data-vflex][data-fig="center"]{--r-fig:auto}
+.card[data-h="px"][data-vflex][data-fig="center"] > .c-fig img{height:auto; aspect-ratio:16/10}
+
+/* data-links names the links to keep, from the closed `rel` vocabulary. */
+.card[data-links] .c-foot li{display:none}
+.card[data-links][data-paperbtn] .c-foot li.c-paperli{display:block}
+.card[data-links~="paper"] li[data-rel="paper"], .card[data-links~="preprint"] li[data-rel="preprint"],
+.card[data-links~="doi"] li[data-rel="doi"], .card[data-links~="repo"] li[data-rel="repo"],
+.card[data-links~="code"] li[data-rel="code"], .card[data-links~="docs"] li[data-rel="docs"],
+.card[data-links~="data"] li[data-rel="data"], .card[data-links~="slides"] li[data-rel="slides"],
+.card[data-links~="event"] li[data-rel="event"], .card[data-links~="homepage"] li[data-rel="homepage"],
+.card[data-links~="ads"] li[data-rel="ads"], .card[data-links~="empty"] li[data-rel="empty"]{display:block}
+.card[data-links~="year"] .c-foot li[data-rel="year"], .card[data-links~="position"] .c-foot li[data-rel="position"], .card[data-links~="context"] .c-foot li[data-rel="context"]{display:flex}
+/* buttons:…,year,…: the year, my position or the context link among the
+   buttons — in a grid a row of its own, at the buttons' place across. */
+.c-foot li.c-cell{display:flex; align-items:center}
+.card[data-per] .c-foot li.c-cell{grid-column:1 / -1}
+.card:is([data-railalign="right"], [data-foot="right"]:not([data-railalign])) .c-foot li.c-cell{justify-content:flex-end}
+.card[data-railalign="center"] .c-foot li.c-cell{justify-content:center}
+/* buttons:…,empty,… — a button's room with nothing in it. */
+.c-foot li[data-rel="empty"]{width:var(--ib); height:var(--ib)}
+
+/* A row of choices as pills — the Card Builder's. Each choice is its own
+   pill; the chosen one is outlined in the accent rather than filled, so
+   nothing competes with the content for weight. A choice is a label round a
+   clipped radio, or round a visible tick box where several can be on. (The
+   CV's lengths, a .cvtoggle, are a slider: cv/page.css.) */
+.pilltoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
+.pilltoggle label{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
+  padding:.2rem .6rem; line-height:1.4; transition:.15s; cursor:pointer;
+}
+.pilltoggle label:hover{color:var(--ink); border-color:var(--rule-strong)}
+.pilltoggle label:has(:checked){color:var(--accent); border-color:var(--accent-line); font-weight:500}
+.pilltoggle label:has(:checked):hover{border-color:var(--accent)}
+.pilltoggle label:has(:focus-visible){outline:2px solid var(--accent); outline-offset:2px}
 
 /* ---------- page break marker (mockup only) ---------- */
 
@@ -275,8 +692,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 }
 
 @media (max-width:34rem){
-  .entry--brief{flex-direction:column; gap:.4rem}
-  .entry--brief .side{flex-direction:row; align-items:center; order:-1}
   .tl{grid-template-columns:1fr; gap:.05rem}
   header .wrap{padding-block:2.5rem 2.25rem}
 }
@@ -335,22 +750,9 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* No column override: the headline grid and this one share tracks and gap, so
    a card in either lines up with the card above it. They differed — 15rem/.9rem
    against 13rem/.7rem — which resolved to two columns over three, and nothing
-   in the two rows ever aligned. The tiers still read apart, by padding, radius
-   and type size on .card--mini rather than by column width. */
-.card--mini{padding:.7rem .8rem .75rem; border-radius:12px; gap:.2rem}
-.card--mini .name{font-size:.85rem; overflow-wrap:anywhere}
-.card--mini p{font-size:.78rem; line-height:1.45}
-.card--mini .btns{padding-top:.45rem; gap:.25rem}
+   in the two rows ever aligned. The tiers still read apart, by their presets'
+   look — padding, corners and text size — rather than by column width. */
 
-/* Fourth tier: useful, not notable. Smaller again than .card--mini — same
-   columns, less of everything else, so it reads as a footnote to the tiers
-   above rather than a fourth thing competing with them. Ordered after
-   .card--mini deliberately: same specificity, so this has to come later to
-   win. */
-.card--tiny{padding:.5rem .6rem .55rem; border-radius:10px; gap:.15rem}
-.card--tiny .name{font-size:.76rem}
-.card--tiny p{font-size:.72rem; line-height:1.4}
-.card--tiny .btns{padding-top:.35rem; gap:.2rem}
 
 /* The style menu. A real <select>, so it gets the platform's own popup and
    keyboard handling for free; .btn gives it the shape of the buttons beside it
@@ -382,11 +784,11 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 }
 .iconbtn .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 .iconyear{font-size:.72rem; line-height:1; font-variant-numeric:tabular-nums}
-/* Dense contexts — CV rows, the software long tail — take a smaller mark. */
-.tl .iconbtn,.card--mini .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
-.tl .iconbtn .ico,.card--mini .iconbtn .ico{width:.75rem; height:.75rem}
+/* Dense contexts — CV rows — take a smaller mark. */
+.tl .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
+.tl .iconbtn .ico{width:.75rem; height:.75rem}
 /* A software package's paper carries its year beside the mark. */
-.iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear),.card--mini .iconbtn:has(.iconyear){
+.iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear){
   width:auto; padding:0 .4rem; gap:.25rem}
 .iconbtn:hover,.iconbtn:focus-visible{
   color:var(--ground); background:var(--ink); border-color:var(--ink);
@@ -425,20 +827,12 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
   .entry--full{flex-direction:column; align-items:stretch; gap:0}
   .entry--full .body{display:contents}
   .entry--full .btns--icon{flex-direction:row; margin-top:.5rem}
-  .entry--full .body > :is(.hl-card, .absmore, .micro-card){order:1}
+  .entry--full .body > :is(.card, .absmore){order:1}
 }
 /* ADS and arXiv on the publications page, same pills as the home page. */
 .pubprofiles{display:flex; align-items:center; gap:.5rem}
 .pubprofiles .pill{width:1.75rem; height:1.75rem}
 .pubprofiles .pill .ico{width:.8125rem; height:.8125rem}
-
-/* The year in the landing gutter reads as the Background section's date column
-   does — same face, size and weight, because they are the same kind of thing.
-   (It had lost its styling entirely when .entry stopped being a class here.) */
-.entry--brief .side .yr{
-  font-family:var(--mono); font-size:.76rem; color:var(--ink-faint);
-  font-variant-numeric:tabular-nums; line-height:1.4;
-}
 
 /* Publications page hierarchy. Four levels rather than two: the title carries
    the weight, the authors recede, the journal is italic and mid-toned so it
@@ -449,19 +843,9 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .entry--full .venueline .venue{font-style:italic; color:var(--ink-2)}
 .entry--full .abstract{color:var(--ink-2)}
 
-/* The highlight on a publication: figure and words only, smaller than on
-   /research/. The abstract folds behind a disclosure, as .contribs does. */
-.hl-card--pub{display:grid; grid-template-columns:9rem 1fr; gap:1.1rem; align-items:center; margin-top:.6rem;
-  background:color-mix(in srgb, var(--ink) 1.25%, transparent)}
-.hl-context{align-self:flex-end; font-family:var(--mono); font-size:.68rem;
-  letter-spacing:.06em; text-transform:uppercase;
-  color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
-.hl-context:hover{color:var(--accent)}
 .absmore{margin-top:.45rem}
-@media (max-width:34rem){
-  .hl-card--pub{grid-template-columns:1fr}
-  .hl-card.hl-card--pub img{width:min(100%,14rem); justify-self:center}  /* beats .hl-card img, which comes later */
-}
+/* A publication's highlight and its proceedings sit just under it. */
+.entry--full .body > .card{margin-top:.6rem}
 .absmore summary{
   cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none;
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
@@ -472,15 +856,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .absmore[open] summary::before{transform:rotate(90deg)}
 .absmore summary:hover{color:var(--ink)}
 
-/* Same on the publications list and the home page's short list, so a year means
-   the same thing wherever a paper is shown. */
-.micro-card{display:flex; align-items:flex-start; gap:1rem; margin-top:.6rem; padding:.6rem .9rem}
-.micro-card .body{flex:1; min-width:0}
-.micro-card .ttl{font-size:.88rem; font-weight:500; color:var(--ink)}
-.micro-card .meta{margin:.1rem 0 0; font-size:.82rem}
-.micro-card .venueline{margin:.1rem 0 0; font-size:.82rem; color:var(--ink-mute)}
-.micro-card .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
-.micro-card .btns--icon{flex:none; flex-direction:row; gap:.35rem; margin:0}
 .entry--unpub .yr{font-style:italic}
 /* Submitted is less settled than accepted, so its pill sits a step fainter. */
 .entry--submitted .statustag{opacity:.6}
@@ -514,6 +889,8 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 
 #sw-yes:checked ~ .lead:not([data-paper]),
 #sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
+/* A package's anchor, #sw-<id>, which a card's title:…:site links to. */
+:is(.lead, .soft) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
 /* The dividers between tiers 1-3 stay. Hiding one took its margins with it —
    the only thing separating those grids — so the filtered headline card ran
    straight into the row beneath, and all three keep visible cards under either
@@ -559,6 +936,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .pubfilter[data-stops="3"]{--stops:3}
 .pubfilter[data-stops="4"]{--stops:4}
 .pubfilter[data-stops="5"]{--stops:5}
+.pubfilter[data-stops="6"]{--stops:6}
 
 .pubfilter label{
   /* The grid makes the columns equal; the label only has to fill its own. */
@@ -595,6 +973,17 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 #pos-4:checked   ~ .h2row .pubfilter label[for="pos-4"]{color:var(--ink)}
 
 .posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
+/* The same slider with its radios inside its labels, as the Card Builder's
+   size has it: the thumb follows the checked label, and with none checked — a
+   typed width — it is hidden. */
+.pubfilter--inline:not(:has(:checked))::before{opacity:0}
+.pubfilter--inline:has(> label:nth-child(2) :checked)::before{transform:translateX(100%)}
+.pubfilter--inline:has(> label:nth-child(3) :checked)::before{transform:translateX(200%)}
+.pubfilter--inline:has(> label:nth-child(4) :checked)::before{transform:translateX(300%)}
+.pubfilter--inline:has(> label:nth-child(5) :checked)::before{transform:translateX(400%)}
+.pubfilter--inline:has(> label:nth-child(6) :checked)::before{transform:translateX(500%)}
+.pubfilter--inline label:has(:checked){color:var(--ink)}
+.pubfilter--inline:has(:focus-visible){outline:2px solid var(--accent); outline-offset:2px}
 
 /* The filter itself. A paper with no position — no author marked `me` — carries
    no data-pos and hides under any stop, which is what the question means. */
@@ -608,7 +997,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* The venue, linked to the article at the journal. Same restraint as an author
    link: it reads as the citation it is, and shows it is a link on hover. */
 .venuelink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
-.venuelink:hover, .venuelink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
+.venuelink[href]:hover, .venuelink[href]:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
 
 .authorlink{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
 .authorlink:hover, .authorlink:focus-visible{color:var(--accent); border-bottom-color:var(--accent-line)}
@@ -647,33 +1036,15 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
    peeks in from the right and says there is more. */
 .hl-intro{margin:.6rem 0 0; color:var(--ink-2); line-height:1.65}
 .hl{display:grid; grid-auto-flow:column; grid-auto-columns:min(17rem, 85%);
-  grid-template-rows:auto auto auto; column-gap:.7rem;
+  grid-template-rows:repeat(14, auto); column-gap:.7rem;
   margin-top:1rem; padding-bottom:.6rem; overflow-x:auto;
   scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:thin}
-/* Each card spans the row's three tracks through subgrid: the title area is as
-   tall as the longest title in the row, so figures and footers line up. */
-.hl > .card{scroll-snap-align:start; display:grid; grid-row:span 3;
-  grid-template-rows:subgrid; row-gap:.55rem; padding:.75rem .9rem .7rem}
-.hl > .card > .name{align-self:start}
-.hl > .card > .name--minor{font-weight:400}
-/* Wider than the 4:3 figure elsewhere, so the card is shorter; contain keeps
-   the whole figure, just smaller. */
-.hl > .card img{aspect-ratio:16/10; padding:.3rem}
-/* Links left, year right. The smaller marks of .card--mini, so six links and
-   the year still share one line. */
-.hl-foot{display:grid; grid-template-columns:1fr auto; align-items:end; gap:.4rem}
-.hl-foot .btns--icon{grid-column:1; margin:0; padding:0; gap:.25rem}
-.hl-foot .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
-.hl-foot .iconbtn .ico{width:.75rem; height:.75rem}
-.hl-foot .hl-refs{grid-column:1 / -1}
-.hl-year{grid-column:2; font-family:var(--mono); font-size:.72rem;
-  letter-spacing:.04em; color:var(--ink-faint)}
-.hl-card h5{margin:0; line-height:1.35}
-.hl-body{display:flex; flex-direction:column; gap:.3rem}
-/* Figures are drawn for paper: shown whole, on white, in either theme. */
-.hl-card img{display:block; width:100%; aspect-ratio:4/3; object-fit:contain;
-  border-radius:10px; background:#fff; padding:.4rem}
-.hl-refs{margin:.2rem 0 0; padding-left:1.1rem; font-size:.85rem}
+/* Each card spans the row's fourteen tracks — a card's own — through
+   subgrid: the title area is as tall as the longest title in the row, so
+   figures and footers line up. The gap between a card's parts is the
+   carousel's. */
+.hl > .card[data-size]{scroll-snap-align:start; grid-row:span 14; grid-template-rows:subgrid; --gr:.55rem}
+.hl > .card > .c-name{align-self:start}
 /* Prev/next, right-aligned above the row. */
 .hl-nav{display:flex; justify-content:flex-end; gap:.35rem; margin-top:.8rem}
 .hl-nav[hidden]{display:none}
@@ -682,7 +1053,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl-nav .iconbtn:disabled{opacity:.35; cursor:default; color:var(--ink-mute);
   background:var(--surface); border-color:var(--rule-strong)}
 /* Arrived at from an inline-card: say which card it meant. */
-.hl-card:target{box-shadow:inset 0 0 0 1.5px var(--accent-line)}
+.card:target{box-shadow:inset 0 0 0 1.5px var(--accent-line)}
 
 /* An inline-card: a paper's card shrunk to its name and set into the sentence
    that mentions it. The card's grey and mono title, at the text's own size. */
@@ -746,7 +1117,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl-topic{margin:1.6rem 0 0}
 /* Jumped to from /publications/ (a byline lands on #collaborators) and from a
    synthesis card: land clear of the sticky nav, not underneath it. */
-.cmap-head,.hl-topic,.hl-card{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+.cmap-head,.hl-topic,.hl > .card{scroll-margin-top:calc(var(--nav-h) + 1rem)}
 
 /* ---------- shared with the CV ----------
    Rules that cv/page.css used to carry but that other pages rely on too: the
@@ -770,8 +1141,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   .tl{position:relative}
 }
 
-.card--mini{position:relative}
-.card--mini .name{display:flex; align-items:center; gap:.45rem}
+.card[data-size]{position:relative}
 .cvcount{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
 
 /* Contents rail, on the CV and on /publications/. Hidden by default and shown
@@ -858,4 +1228,11 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .entry--full{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 0.75rem)}
 /* A figure on /research/ jumps to the paper's card here; leave room for the
    title, byline and venue above it. */
-.hl-card--pub{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 7rem)}
+.entry--full .card[id]{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 7rem)}
+/* An entry's own anchor, #pub-<id>, which a card's title:…:site links to. */
+.entry--full .ttl[id]{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 0.75rem)}
+
+/* ---------- embeds (/embed/<id>/) ----------
+   One card and nothing else, on a transparent page, so it sits on whatever
+   the host page is. A dynamic card takes the frame's width. */
+body.embed{background:transparent}

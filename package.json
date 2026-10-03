@@ -29,6 +29,7 @@
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "modern-screenshot": "^4.7.0"
   }
 }

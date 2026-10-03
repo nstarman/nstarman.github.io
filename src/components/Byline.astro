@@ -4,18 +4,21 @@
 // A student of mine is coloured and marked by level — † undergraduate,
 // ‡ graduate, so colour is never the only cue. The key is on /publications/.
 // The collaboration and "et al." stay with the caller, because the CV and the
-// publication list punctuate them differently.
+// publication list punctuate them differently. links={false} sets the names
+// unlinked, as a card does, keeping each one's two links in data-orcid and
+// data-site for the embed page; links="orcid" links each to their ORCID
+// alone, links="site" to their entry on the collaborator map alone.
 import { collabHref } from '../lib/collabmap.js';
 
-const { shown } = Astro.props;
-const href = (a) => collabHref(a.orcid) ?? a.url;
+const { shown, links = true } = Astro.props;
+const href = (a) => (links === 'orcid' ? a.url : links === 'site' ? collabHref(a.orcid) : links ? collabHref(a.orcid) ?? a.url : null);
 const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
 const mark = { undergraduate: '†', graduate: '‡' };
 ---
 {shown.map((a, i) => (
   <>{i > 0 && ', '}{a.me
     ? <span class="me">{a.name}</span>
-    : <span class={a.student ? `stu--${a.student}` : undefined}
+    : <span class={a.student ? `stu--${a.student}` : undefined} data-orcid={links === false ? a.url ?? undefined : undefined} data-site={links === false ? collabHref(a.orcid) ?? undefined : undefined}
             title={a.student ? `${level[a.student]} student I supervised or advised` : undefined}>{href(a)
         ? <a class="authorlink" href={href(a)}>{a.name}</a>
         : a.name}{a.student && <sup>{mark[a.student]}</sup>}</span>}</>

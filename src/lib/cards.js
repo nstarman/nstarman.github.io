@@ -1,0 +1,109 @@
+// Which cards exist, and what the website uses. A card's name — its spec — is
+// src/lib/cardname.js; this adds what needs the database: the website's
+// presets, an item's default card, and its links and extras.
+import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl } from './data.js';
+
+export { placeOf, PLACE_AT, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
+
+/** The cards the website itself renders, by name, and where. */
+export const SITE_PRESETS = [
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
+  // The paper's own links: a carousel card leaves the data (Zenodo) and the
+  // package's docs to the entry on /publications/. Its title is bold where
+  // the paper is mine — I am first author — and regular otherwise.
+  { slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,ads,doi,preprint,repo,code:fit-look:titleweight=medium,titleface=mono', where: 'Research — the highlight carousels' },
+  { slug: 'size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
+  // A row of a list, not a box: no tint and no padding, its link the paper's.
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
+];
+
+/** The Card Builder's starting card, for every item: a full strip with its
+ *  byline, summary, figure and venue. Extras an item has not got drop out. */
+export const BUILDER_DEFAULT = 'size:fill:fit-figure:left:top:auto-title:full:split-authors:full:plain-text:summary-extras:venue-buttons:all:right';
+
+/** The types that are drawn as cards, and so can be embedded. */
+export const CARD_TYPES = ['publication', 'highlight', 'software'];
+
+export const hasFigure = (item) => !!item.highlight?.image;
+export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
+export const hasRole = (item) => item.type === 'software' && !!item.role;
+export const hasVenue = (item) => item.type === 'publication';
+/** A paper not yet out: submitted, accepted. In preparation has no venue line. */
+/** The year stands on its own in a paper's or a synthesis's rail. */
+export const hasYear = (item) => item.type !== 'software';
+/** The pill after a paper's title, title:…:status: where it stands, while
+ *  it is not yet out — submitted or accepted. */
+export const titleStatus = (item) => (item.type === 'publication' && ['submitted', 'accepted'].includes(item.status) ? item.status : null);
+export const hasStatus = (item) => item.type === 'publication' && ['submitted', 'accepted'].includes(item.status);
+/** Context links to the item's topic on /research/, so only a topic it shows. */
+export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
+
+/** The links a card carries, in order: for software its papers lead, each
+ *  with its year. */
+export function cardLinks(item) {
+  return item.type === 'software' ? [...softwarePapers(item), ...links(item)] : links(item);
+}
+
+/** The link keys a card can be cut down to — `ads`, `preprint`, `code` … */
+export const linkKeys = (item) => [...new Set(cardLinks(item).map(relKey))];
+
+/** What an embed shows when its URL asks for nothing in particular: the card
+ *  the website draws for it, in a fixed box at the standard look, so an
+ *  iframe with no width still gets a card of a known shape. */
+export function defaultSlug(item) {
+  if (item.type === 'software') return 'size:320:400-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit-look:standard';
+  if (!hasFigure(item)) return 'size:640:160-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right-look:standard';
+  return `size:320:400-figure:center:auto:link-title:short:link-authors:none-text:none-extras:${hasPosition(item) ? 'position' : 'none'}-buttons:all:fit-look:standard`;
+}
+
+/** A card's two tiers of text. A package has its own summary and details; a
+ *  paper or synthesis has its highlight's description as details, and as
+ *  summary the record's own or, failing that, the description's first
+ *  sentence. Either may be missing — a paper with no highlight has neither. */
+export function cardText(item) {
+  if (item.type === 'software') return { summary: item.summary, details: item.details ?? item.summary };
+  const d = item.highlight?.description;
+  // ponytail: the first sentence ends at the first ". " — an abbreviation such
+  // as "e.g. " would cut it short; give the record a summary if one does.
+  return { summary: item.summary ?? d?.match(/^.+?[.!?](?=\s|$)/)?.[0], details: d };
+}
+
+/** How many buttons wide the paper button is: its word, in the mono face at
+ *  .42 of a button with .04em between letters, and its padding, rounded up
+ *  to whole buttons — the glyph, one. */
+export const paperSpan = (label) => (!label || label === 'icon' ? 1 : Math.ceil(0.27 * label.length + 0.62));
+
+/** Where a card's paper button links, paper:…:<to>: the article, arXiv, ADS
+ *  or this site; left unsaid, the article where it is out, else arXiv, else
+ *  nowhere — and with nowhere to go there is no button. */
+export function paperHref(item, to) {
+  if (item.type !== 'publication') return null;
+  const arxiv = links(item).find((l) => l.rel === 'preprint')?.url ?? (item.arxiv ? `https://arxiv.org/abs/${item.arxiv}` : null);
+  const by = { journal: journalHref(item), arxiv, ads: adsHref(item), site: siteHref(item) };
+  return (to ? by[to] : by.journal ?? by.arxiv) ?? null;
+}
+
+/** Where a card's title links, title:…:link — the item itself: a paper's
+ *  paper or preprint, a package's first link. */
+export const ownLink = (item) => (item.type === 'software' ? links(item)[0] : (primaryLink(item) ?? links(item)[0])) ?? null;
+
+/** title:…:ads — its ADS abstract, where it has a bibcode. */
+export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}/abstract` : null);
+
+/** title:…:journal — where it was published: the journal's own page, or its
+ *  DOI, once it is out. */
+export const journalHref = (item) => (item.type === 'publication' ? venueUrl(item) : null);
+
+/** Where it links with title:…:site — the item's entry on this site, where
+ *  it has one: a paper on /publications/ (an in-prep one is not listed), a
+ *  package on /software/, a synthesis on /research/. */
+export const siteHref = (item) => (item.type === 'publication' ? (item.status !== 'in-prep' ? `/publications/#pub-${item.id}` : null)
+  : item.type === 'software' ? `/software/#sw-${item.id}` : item.type === 'highlight' ? `/research/#hl-${item.id}` : null);
+
+/** Where a click on an exported image of the card should go. */
+export const embedHref = (item) => (primaryLink(item) ?? links(item)[0])?.url ?? null;

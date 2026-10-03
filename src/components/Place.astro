@@ -1,0 +1,21 @@
+---
+// The Card Builder's position, the one wherever a part has one in its area:
+// up and down (v), then across (h), each a menu, named as the form reads
+// it. A part with no up and down leaves v out; one placed among the
+// center's parts has those first (among: its name, id, value and
+// [value, label]s). The script hides each menu where the part's area has no
+// such choice.
+const { v, h, vId, hId, vValue = 'top', hValue = 'left', label, among } = Astro.props;
+const menus = [
+  among && { ...among, what: 'among the parts' },
+  v && { name: v, id: vId, value: vValue, options: [['top'], ['center'], ['bottom']], what: 'up and down' },
+  h && { name: h, id: hId, value: hValue, options: [['left'], ['center'], ['right']], what: 'across' },
+].filter(Boolean);
+---
+<span class="eb-place">
+  {menus.map((m) => (
+    <select name={m.name} id={m.id} class="eb-menu" aria-label={`${label}, ${m.what}`}>
+      {m.options.map(([x, text]) => <option value={x} selected={x === m.value}>{text ?? x}</option>)}
+    </select>
+  ))}
+</span>

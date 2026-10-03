@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Publication from '../components/Publication.astro';
+import Card from '../components/Card.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, featured, dateLabel } from '../lib/data.js';
 import { lines as longLines } from '../lib/inline.js';
@@ -54,7 +54,7 @@ const background = [...byType('position'), ...byType('education')]
           <a class="more" href="/publications/">All publications →</a>
         </div>
         <div class="entries entries--brief">
-          {pubs.map((item) => <Publication item={item} brief />)}
+          {pubs.map((item) => <Card item={item} preset="size:fill:fit-figure:none-title:full:whole:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none" />)}
         </div>
       </div>
     </section>

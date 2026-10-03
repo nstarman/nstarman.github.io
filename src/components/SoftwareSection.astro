@@ -1,9 +1,9 @@
 ---
 // Three tiers, two dividers: the lead package, the headliners as cards, then
 // everything else compactly. Tier comes from the data, not from an id check.
-import { byType, links, softwarePapers } from '../lib/data.js';
+import { byType, softwarePapers } from '../lib/data.js';
 import contributions from '/config/contributions.json';
-import LinkIcons from './LinkIcons.astro';
+import Card from './Card.astro';
 
 // The landing page shows the lead and the headliners only; the long tail is
 // what "All software →" is for.
@@ -31,44 +31,25 @@ const useful = (tail ? all.filter((s) => s.tier === 'useful') : [])
 // CSS because it is a fact about the data, and it is recomputed every build.
 const usefulEmptied = useful.length > 0 && !useful.some((s) => softwarePapers(s).length);
 
-const href = (s) => links(s)[0]?.url ?? '#';
-// The papers lead the trail where there are any: they are the citable
-// artefacts, and the package's own code and docs links are already beside them.
-const trail = (s) => [...softwarePapers(s), ...links(s)];
 // Marks the card for the filter — present or absent, so the CSS tests for the
 // attribute. An empty string is dropped from the output, hence the value.
 const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
 ---
 {lead && (
   <div class:list={['lead', !tail && 'lead--last']} data-paper={hasPaper(lead)}>
-    <div class="name"><a href={href(lead)}>{lead.title}</a></div>
-    {lead.role && <div class="role-line">{lead.role}</div>}
-    <p>{lead.details ?? lead.summary}</p>
-    <LinkIcons links={trail(lead)} />
+    <Card item={lead} id={`sw-${lead.id}`} preset="size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature" />
   </div>
 )}
 
 <div class="soft">
-  {headline.map((s) => (
-    <div class="card" data-paper={hasPaper(s)}>
-      <div class="name"><a href={href(s)}>{s.title}</a></div>
-      <p>{s.details ?? s.summary}</p>
-      <LinkIcons links={trail(s)} />
-    </div>
-  ))}
+  {headline.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit" />)}
 </div>
 
 {other.length > 0 && (
   <>
     <div class="tierbreak" role="presentation"></div>
     <div class="soft soft--mini">
-      {other.map((s) => (
-        <div class="card card--mini" data-paper={hasPaper(s)}>
-          <div class="name"><a href={href(s)}>{s.title}</a></div>
-          <p>{s.summary}</p>
-          <LinkIcons links={trail(s)} />
-        </div>
-      ))}
+      {other.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact" />)}
     </div>
   </>
 )}
@@ -77,13 +58,7 @@ const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
   <>
     <div class:list={['tierbreak', usefulEmptied && 'tier-nopaper']} role="presentation"></div>
     <div class:list={['soft', 'soft--tiny', usefulEmptied && 'tier-nopaper']}>
-      {useful.map((s) => (
-        <div class="card card--mini card--tiny" data-paper={hasPaper(s)}>
-          <div class="name"><a href={href(s)}>{s.title}</a></div>
-          <p>{s.summary}</p>
-          <LinkIcons links={trail(s)} />
-        </div>
-      ))}
+      {useful.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor" />)}
     </div>
   </>
 )}

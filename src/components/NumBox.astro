@@ -1,0 +1,22 @@
+---
+// The Card Builder's number box, the one wherever a number is set: a grey
+// pill holding < and > either side of the box, by less or more — 5 for a
+// size, 1 for a count — the box showing what is set or, empty, what that
+// comes to in the card; then its unit, a menu where there is a choice
+// (units, under unitName: % and px), or the one unit as it is (unit). A
+// count has none. after is a word that follows the pill, as "per row".
+const { name, min, max, step = 1, by = 5, value, placeholder, label, title, id, from, unit, units, unitName, unitLabel, after } = Astro.props;
+---
+<span class="eb-numrow" id={id} title={title}>
+  <span class="eb-num">
+    <button type="button" class="eb-step" data-d={-by} aria-label={`Less by ${by}`} title={`Less by ${by}`}>&lt;</button>
+    <input type="number" name={name} min={min} max={max} step={step} value={value} placeholder={placeholder} data-from={from} aria-label={label} />
+    <button type="button" class="eb-step" data-d={by} aria-label={`More by ${by}`} title={`More by ${by}`}>&gt;</button>
+    {units
+      ? <select class="eb-unit" name={unitName} aria-label={unitLabel ?? `${label}, in`}>
+          {units.map((u) => <option value={u.value} title={u.title} selected={u.checked}>{u.label}</option>)}
+        </select>
+      : unit && <span class="eb-unit">{unit}</span>}
+  </span>
+  {after && <span class="eb-dim">{after}</span>}
+</span>

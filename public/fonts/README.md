@@ -15,8 +15,17 @@ built PDF carries no other face.
 | `FontAwesome5Free-Solid-900.otf` | section marks, link marks | icons CC BY 4.0, font SIL OFL 1.1 |
 | `FontAwesome5Brands-Regular-400.otf` | GitHub, ORCID | as above |
 | `academicons.otf` | ADS, arXiv | SIL OFL 1.1 |
+| `card/IBMPlexSans-{Regular,Medium,SemiBold}.otf`, `card/IBMPlexMono-{Regular,Medium}.otf` | a card's PDF, from the Card Builder | SIL OFL 1.1, `card/LICENSE.txt` |
 
 New Computer Modern is Latin Modern's successor, the face the LaTeX CV this
 replaces was set in. Font Awesome 5 and Academicons are the same two icon
 packages that CV loaded, so the marks are the drawings it used rather than
 lookalikes.
+
+The card faces are IBM's static OpenType files, from the
+[IBM/plex](https://github.com/IBM/plex) repository's `packages/plex-sans` and
+`packages/plex-mono` — the faces the website sets its cards in, so the Card
+Builder's PDF matches the card on the page. They sit in `card/` so the CV
+builder, which loads every `.otf` at the top of this folder, does not fetch
+them too. Only the weights a card uses are here: 400, 500 and 600, and mono at
+400 and 500.

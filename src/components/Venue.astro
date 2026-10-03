@@ -1,11 +1,13 @@
 ---
-// "The Astrophysical Journal 979, 155", linked to the article where it has one.
+// "The Astrophysical Journal 979, 155", linked to the article where it has one
+// — unless link is false, when the link keeps its address, as data-href, for
+// the embed to give back; short, "ApJ 979, 155".
 import { venueLine, venueUrl } from '../lib/data.js';
 
-const { item } = Astro.props;
-const venue = venueLine(item);
+const { item, short = false, link = true } = Astro.props;
+const venue = venueLine(item, { short });
 const href = venueUrl(item);
 ---
 {venue && (href
-  ? <a class="venue venuelink" href={href}>{venue}</a>
+  ? <a class="venue venuelink" href={link ? href : undefined} data-href={href}>{venue}</a>
   : <span class="venue">{venue}</span>)}
