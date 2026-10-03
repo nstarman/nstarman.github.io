@@ -7,6 +7,8 @@
     "start": "2026"
   },
   "title": "Coordinax: an extended framework for coordinates and differential geometry in JAX",
+  "shortTitle": "coordinax",
+  "nickTitle": "coordinax",
   "status": "in-prep",
   "entryType": "unpublished",
   "authors": [
@@ -29,8 +31,6 @@
     "topic": "software",
     "image": "highlights/coordinax-paper.webp",
     "alt": "The coordinax logo: a ruler crossed with a green arrow on a blue square.",
-    "miniTitle": "coordinax",
-    "microTitle": "coordinax",
     "description": "Coordinates and differential geometry in JAX: vectors, frames and transformations that are differentiable and unit-aware via [unxt](item:unxt-joss)."
   },
   "tags": [

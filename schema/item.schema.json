@@ -66,6 +66,17 @@
       "type": "string",
       "minLength": 2
     },
+    "shortTitle": {
+      "description": "The title cut down for a card: shorter than `title`, about two lines on a card at most, in title case. A card set to its `short` title shows this, falling back to `title`.",
+      "type": "string",
+      "minLength": 2
+    },
+    "nickTitle": {
+      "description": "The item's name in a few words, as it is called in a sentence, e.g. \"Stream Members Only\". A card set to its `nick` title shows this, and so does the text-sized inline-card a /research/ introduction draws for `[](item:<id>)`. Falls back to `shortTitle`, then `title`.",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32
+    },
     "summary": {
       "description": "The one line. Always rendered, including in the two-page CV.",
       "type": "string"
@@ -622,17 +633,6 @@
           "description": "What the picture shows, for anyone who cannot see it.",
           "type": "string",
           "minLength": 2
-        },
-        "miniTitle": {
-          "description": "The title on the paper's card in the carousel on /research/: shorter than the full title, longer than `microTitle` if it needs to be. Defaults to the item's `title`. In title case, and about two lines on the card at most.",
-          "type": "string",
-          "minLength": 2
-        },
-        "microTitle": {
-          "description": "The paper's name in a few words, e.g. \"Stream Members Only\". Shown on the text-sized inline-card that a topic's introduction on /research/ embeds where it mentions the paper, as `[](item:<id>)`.",
-          "type": "string",
-          "minLength": 2,
-          "maxLength": 32
         },
         "description": {
           "description": "A few plain sentences on what was found and why it matters. May carry [text](url) links.",

@@ -63,7 +63,7 @@ export const resolve = (id) => byId.get(id);
 //
 // The third entry is the topic's introduction, one string per paragraph.
 // `[](item:<id>)` puts that paper's inline-card into the sentence, named by its
-// `highlight.microTitle` and linking to its card below.
+// `nickTitle` and linking to its card below.
 export const HIGHLIGHT_TOPICS = [
   ['extragalactic', 'Extragalactic', [
     'Weighing a galaxy’s dark matter halo is comparatively easy: its rotation curve tells us how much gravitational mass is present. [](item:maximum-discs) turned decades of by-eye mass modelling into an algorithm for measuring how much of that gravity can be supplied by stars, while [](item:sparc-halo-density) found that haloes have remarkably similar characteristic densities across galaxies spanning five orders of magnitude in brightness. The harder—and more revealing—question is shape. Cold dark matter predicts haloes that are flattened and triaxial; self-interacting dark matter makes them rounder. Stellar streams are ideal probes because their paths trace the gravitational field, preserving a visible record of the halo geometry.',

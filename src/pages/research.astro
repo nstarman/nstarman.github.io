@@ -25,7 +25,7 @@ const mainHref = (item) => (primaryLink(item) ?? links(item)[0])?.url;
 const inlineCard = (s) => {
   const p = resolve(s.item);
   if (!p) throw new Error(`research highlights: [](item:${s.item}) names no item`);
-  const name = s.t || p.highlight?.microTitle || p.highlight?.miniTitle || p.title;
+  const name = s.t || p.nickTitle || p.shortTitle || p.title;
   return { name, href: p.highlight ? `#${anchor(p.id)}` : mainHref(p) };
 };
 ---
@@ -77,7 +77,7 @@ const inlineCard = (s) => {
                 <article class="card hl-card" id={anchor(item.id)}>
                   {/* Three areas — title, figure, footer — on rows the whole
                       carousel shares, so every card's lines up. */}
-                  <h5 class:list={['name', pos > 2 && 'name--minor']}>{href ? <a href={href}>{h.miniTitle ?? item.title}</a> : (h.miniTitle ?? item.title)}</h5>
+                  <h5 class:list={['name', pos > 2 && 'name--minor']}>{href ? <a href={href}>{item.shortTitle ?? item.title}</a> : (item.shortTitle ?? item.title)}</h5>
                   {/* A paper's figure goes to its card on /publications/; a
                       synthesis has none there, so its figure follows the title. */}
                   {figHref
@@ -86,7 +86,7 @@ const inlineCard = (s) => {
                   <div class="hl-foot">
                     {refs.length > 0 && (
                       <ul class="hl-refs">
-                        {refs.map((p) => <li><a href={paperHref(p)}>{p.highlight?.miniTitle ?? p.title}</a></li>)}
+                        {refs.map((p) => <li><a href={paperHref(p)}>{p.shortTitle ?? p.title}</a></li>)}
                       </ul>
                     )}
                     <LinkIcons links={links(item)} />

@@ -74,6 +74,8 @@ from the `$schema` key.
   "featured": true,                   // surface on the website landing page
   "date": { "start": "2025-01" },     // YYYY | YYYY-MM | YYYY-MM-DD
   "title": "Stream Members Only: …",
+  "shortTitle": "Stream Members Only",   // optional: the title cut down for a card
+  "nickTitle": "Stream Members Only",    // optional: its name in a sentence, ≤ 32 characters
   "summary": "One line. Always rendered, including in the 2-page CV.",
   "details": "Elaboration. Long CVs and website only — dropped from short presets.",
   "detailsComplete": "Only the complete CV shows this. For a GPA.",
@@ -149,8 +151,6 @@ and the links out. Every paper can have one: give the publication a
   "image": "highlights/stream-members-only.png",   // file at public/highlights/…
   "topic": "galactic",                             // extragalactic | galactic | cmb | dm-direct-detection | software
   "alt": "What the picture shows",
-  "miniTitle": "Short title",                      // the card's title; optional, defaults to `title`
-  "microTitle": "Stream Members Only",              // a few words: the paper's name in a sentence
   "description": "Two or three plain sentences. May carry [text](url)."
 }
 ```
@@ -164,7 +164,7 @@ not shown until the topic is added there.
 Each topic opens with an introduction, written in `HIGHLIGHT_TOPICS`, that
 tells the story its papers belong to. Where it mentions a paper it writes
 `[](item:<id>)`, and that becomes a text-sized inline-card named by the paper's
-`microTitle` and linking to its card. The cards then run in a row that scrolls
+`nickTitle` and linking to its card. The cards then run in a row that scrolls
 sideways, newest first, with prev/next buttons. A paper added to a topic
 should be worked into its introduction, not just appended to the row.
 
