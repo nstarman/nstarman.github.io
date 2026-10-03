@@ -354,6 +354,14 @@ describe('primaryLink', () => {
     expect(primaryLink({ arxiv: '2401.00001' }).rel).toBe('preprint');
   });
 
+  it('never takes the ADS record ahead of the article or the preprint', () => {
+    const bib = '2026arXiv260618386M';
+    expect(primaryLink({ status: 'submitted', bibcode: bib, arxiv: '2606.18386' }).rel).toBe('preprint');
+    expect(primaryLink({ status: 'published', bibcode: bib, doi: '10.3847/x' }).url).toBe('https://doi.org/10.3847/x');
+    expect(primaryLink({ status: 'submitted', bibcode: bib }).label).toBe('ADS');
+    expect(softwarePapers(resolve('galactopinns'))[0].url).not.toMatch(/adsabs/);
+  });
+
   it('will not fall back to code', () => {
     expect(primaryLink({ links: [{ rel: 'code', url: 'c' }] })).toBeNull();
   });
