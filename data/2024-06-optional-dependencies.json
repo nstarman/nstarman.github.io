@@ -10,6 +10,17 @@
   },
   "title": "optional_dependencies",
   "summary": "Construct checks for optional dependencies",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/optional-dependencies.webp",
+    "source": {
+      "repo": "GalacticDynamics/optional_dependencies",
+      "path": "docs/_static/favicon.svg",
+      "sha": "45861f61c0af39b229d93e448fe9d06a8d046637"
+    },
+    "alt": "The optional_dependencies logo: a package, drawn as a blue isometric cube, with a yellow badge carrying a question mark.",
+    "description": "Checks for optional dependencies: an enum whose members hold each package's installed version, or a marker that it is not installed."
+  },
   "repo": "GalacticDynamics/optional_dependencies",
   "links": [
     {
