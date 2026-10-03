@@ -18,6 +18,11 @@
   "highlight": {
     "topic": "software",
     "image": "highlights/galax.webp",
+    "source": {
+      "repo": "GalacticDynamics/galax",
+      "path": "docs/_static/favicon.png",
+      "sha": "14cb02535ddadb0426411e4da79db2d5dab07736"
+    },
     "alt": "The galax logo, the GalacticDynamics mark: a painted spiral galaxy with a glowing core on a dark disk, circled by a dark ring, between a teal < and a purple > code bracket.",
     "description": "Galactic dynamics in JAX: potentials, orbit integration and stream generation, GPU-accelerated and fully differentiable."
   },
