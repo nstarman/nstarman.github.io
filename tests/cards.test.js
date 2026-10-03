@@ -2,16 +2,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus, paperHref, paperSpan,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
+  FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
+import { file, snippet } from '../src/lib/cardexport.js';
 
-/** Every preset="…" a component or page passes to Card. */
-function usedPresets(dir = 'src', out = new Set()) {
+/** Every preset a component or page passes to Card: by its key,
+ *  preset={PRESET.<key>}, or as a name written out, preset="…". */
+function usedPresets(dir = 'src', out = { keys: new Set(), written: new Set() }) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) usedPresets(p, out);
-    else if (e.name.endsWith('.astro')) for (const m of fs.readFileSync(p, 'utf8').matchAll(/<Card\b[^>]*\bpreset="([^"]+)"/g)) out.add(m[1]);
+    else if (e.name.endsWith('.astro')) {
+      const src = fs.readFileSync(p, 'utf8');
+      for (const m of src.matchAll(/<Card\b[^>]*\bpreset=\{PRESET\.(\w+)\}/g)) out.keys.add(m[1]);
+      for (const m of src.matchAll(/<Card\b[^>]*\bpreset="([^"]+)"/g)) out.written.add(m[1]);
+    }
   }
   return out;
 }
@@ -352,7 +359,8 @@ describe('card names', () => {
     expect(paperHref(out, 'arxiv')).toBe('https://arxiv.org/abs/2401.00001');
     expect(paperHref({ type: 'software', arxiv: '2401.00001' })).toBeNull();
     // So many buttons wide: the glyph one, a short word two, a long one more.
-    expect([paperSpan('icon'), paperSpan('pdf'), paperSpan('paper'), paperSpan('manuscript')]).toEqual([1, 2, 2, 4]);
+    const span = (label) => cardFace(parseName(`${NAME}-paper:${label}`), { ...cardFacts(items.find((i) => paperHref(i))), every: false }).style['--pn'];
+    expect([span('icon'), span('pdf'), span('paper'), span('manuscript')]).toEqual([1, 2, 2, 4]);
     expect(paperHref({ ...out, status: 'submitted' }), 'not out yet: arXiv').toBe('https://arxiv.org/abs/2401.00001');
   });
 
@@ -502,16 +510,19 @@ describe('the full title around its short one', () => {
 });
 
 describe('presets', () => {
-  it('parse as the embed page has the parser, inlined on its own with nothing around it', () => {
-    const inlined = new Function(`return (${parseName.toString()})`)();
+  it('parse, and make the same card, as the embed page has them, inlined on their own with nothing around them', () => {
+    const [inlined, face] = new Function(`${placeOf.toString()}\n${cardFace.toString()}\nreturn [(${parseName.toString()}), cardFace];`)();
     const rich = 'size:320:400-figure:center:authors:auto:link-title:nick:top:center-authors:full:marked:site-text:none-extras:venue,status,position,year,role,context-context:bottom:right-position:top-year:center:top:center-buttons:all:2:center:right-space:title_figure=8,left_center=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
     for (const n of [...SITE_PRESETS.map((p) => p.slug), NAME, rich, 'size:fill:200-figure:left:top:right:120px-title:short-authors:5:marked:orcid-text:details-extras:none-buttons:none:right:center:left']) {
       expect(inlined(n), n).toEqual(parseName(n));
+      for (const i of items.filter((x) => CARD_TYPES.includes(x.type)).slice(0, 12)) expect(face(inlined(n), cardFacts(i, true)), n).toEqual(cardFace(parseName(n), cardFacts(i, true)));
     }
   });
 
   it('are exactly the cards the website renders', () => {
-    expect([...usedPresets()].sort()).toEqual(SITE_PRESETS.map((p) => p.slug).sort());
+    const used = usedPresets();
+    expect([...used.written]).toEqual([]);
+    expect([...used.keys].sort()).toEqual(Object.keys(PRESET).sort());
   });
 
   it('are written as the canonical name, and so is every item default', () => {
@@ -537,5 +548,96 @@ describe('embeds', () => {
       const keys = linkKeys(i);
       expect(new Set(keys).size).toBe(keys.length);
     }
+  });
+});
+
+describe('the grammar, at its edges', () => {
+  const B = 'size:fill:fit-text:none';
+  const throws = (n) => expect(() => parseName(n), n).toThrow();
+  it('writes four equal sizes in px each, a step alone being only a step', () => {
+    for (const width of ['fill', 320]) {
+      const n = formatName({ width, text: 'none', dials: { textsize: '16', padding: '16', corners: '16', buttons: '16' } });
+      expect(n).toContain('look:textsize=16,padding=16,corners=16,buttons=16');
+      expect(formatName(parseName(n))).toBe(n);
+    }
+  });
+  it('takes each button and extra once, but empty as often as asked, and all or none alone', () => {
+    for (const n of ['all,ads', 'none,ads', 'ads,ads', 'ads,cod', 'arxiv']) throws(`${B}-buttons:${n}`);
+    expect(parseName(`${B}-buttons:empty,ads,empty`).links).toEqual(['empty', 'ads', 'empty']);
+    throws(`${B}-extras:venue,venue`);
+    expect(parseName(`${B}-extras:year,position`).extras).toEqual(['position', 'year']);
+  });
+  it('takes an empty area\'s height once, even a 0', () => {
+    throws(`${B}-area:top:min=0,min=24`);
+    expect(parseName(`${B}-area:top:min=0`).sides.top.height).toBe(0);
+  });
+  it('reads and writes the space above each part, in px to a tenth', () => {
+    expect(formatName(parseName(`${B}-look:partgap=8.8`))).toContain('look:partgap=8.8');
+    expect(cardFace(parseName(`${B}-look:partgap=8.8`), cardFacts(items[0])).style['--gr']).toBe('8.8px');
+    for (const n of ['33', '8.85', '-1']) throws(`${B}-look:partgap=${n}`);
+  });
+  it('writes a space of 0, and none for no space at all', () => {
+    expect(formatName({ text: 'none', space: { title_figure: 0 } })).toContain('space:title_figure=0');
+    expect(formatName({ text: 'none', space: { title_figure: undefined } })).not.toContain('space');
+    expect(formatName({})).toContain('-text:none-');
+  });
+  it('accepts every value the exported lists offer, which parseName writes out on its own', () => {
+    for (const p of FACES) for (const k of ['size=12', 'weight=bold', 'style=italic', 'face=mono']) parseName(`${B}-look:${p}${k}`);
+    for (const t of SPACE_TRACKS) parseName(`${B}-space:${t}=4`);
+    for (const slot of FIGURE_SLOTS) parseName(`${B}-figure:center:${slot}:auto`);
+    for (const to of PAPER_TO) parseName(`${B}-paper:paper:${to}`);
+    for (const d of DIALS) for (const step of LOOKS) parseName(`${B}-look:${d}=${step}`);
+  });
+  it('writes every name it reads as one it reads back the same', () => {
+    // A seeded walk through the axes, mixed: each name written is a fixed point.
+    let seed = 7;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    const pick = (a) => a[Math.floor(rnd() * a.length)];
+    const maybe = (x) => (rnd() < 0.5 ? x : '');
+    for (let k = 0; k < 3000; k += 1) {
+      const foot = pick(['center', 'bottom', 'left', 'right']);
+      const parts = [
+        `size:${pick(['fill', '320'])}:${pick(['fit', '160'])}`,
+        pick(['figure:none', `figure:center${maybe(':authors')}:${pick(['auto', '40', '120px'])}${maybe(':link')}`, `figure:${pick(['left', 'right'])}:${pick(['top', 'center', 'bottom'])}${maybe(':right')}:auto`]),
+        pick(['title:none', `title:${pick(['full:whole', 'full:split', 'short', 'nick'])}${maybe(':link')}${maybe(':status')}${maybe(':top:center')}${maybe(':right')}`]),
+        pick(['authors:none', `authors:${pick(['short', 'full', '5'])}${maybe(':fit')}:${pick(['plain', 'marked'])}${maybe(':orcid')}`]),
+        pick(['text:none', `text:${pick(['summary', 'details'])}:${pick(['left', 'center'])}`]),
+        `extras:${['venue', 'status', 'position', 'year', 'context'].filter(() => rnd() < 0.5).join(',') || 'none'}`,
+        maybe(`venue:${pick(['full', 'short'])}${maybe(':undated')}${pick(['', ':above', ':authors:before', ':beside:40'])}`),
+        maybe(`year:${pick(['top:right', 'bottom', foot])}`),
+        `buttons:${pick(['all', 'none', 'ads,code', 'empty,ads,empty', 'year,paperbutton'])}${maybe(':3')}:${foot}`,
+        maybe(`paper:${pick(['paper', 'icon'])}${maybe(':arxiv')}${maybe(':grey')}`),
+        maybe(`space:${pick(['title_figure=flex', 'center_right=24,top_left=0'])}`),
+        maybe(`look:${pick(['feature', 'textsize=15.5', 'padding=0,yearstyle=italic', 'frame=4,buttongap=50%'])}`),
+      ].filter(Boolean);
+      let spec;
+      try { spec = parseName(parts.join('-')); } catch { continue; }
+      const once = formatName(spec);
+      expect(formatName(parseName(once)), once).toBe(once);
+    }
+  });
+  it('sets a short last row at the right from the last part listed among the buttons', () => {
+    const it0 = items.find((i) => i.type === 'publication' && linkKeys(i).length >= 3 && cardFacts(i).year);
+    const keys = linkKeys(it0).slice(0, 3);
+    const f = cardFace(parseName(`${B}-extras:year-buttons:${keys[0]},year,${keys[1]},${keys[2]}:2:right`), cardFacts(it0));
+    // The rows after the year: two buttons, a whole row — so no skip.
+    expect(f.seq.some((x) => x.skip)).toBe(false);
+    const g = cardFace(parseName(`${B}-extras:year-buttons:${keys[0]},${keys[1]},year,${keys[2]}:2:right`), cardFacts(it0));
+    expect(g.seq.find((x) => x.skip)?.link).toBe(linkKeys(it0).indexOf(keys[2]));
+  });
+});
+
+describe('the Card Builder\'s snippets', () => {
+  const s = { id: 'x', it: { title: 'A [b] "c"', href: 'https://e.org/a (b)' }, slug: 'size:fill:fit-text:none', width: null, format: 'markdown', theme: 'auto' };
+  it('name a file for its card, a hash where the name would run too long', () => {
+    expect(file(s, 'light')).toBe('x--size_fill_fit-text_none-light.png');
+    const long = file({ ...s, slug: SITE_PRESETS.find((p) => p.key === 'assist').slug }, 'dark');
+    expect(long.length).toBeLessThan(40);
+    expect(long).toMatch(/^x--[0-9a-z]+-dark\.png$/);
+  });
+  it('escape what the item gives them', () => {
+    expect(snippet(s, { site: 'https://s', height: 100 })).toBe('[![A \\[b\\] "c"](x--size_fill_fit-text_none-light.png)](<https://e.org/a (b)>)');
+    expect(snippet({ ...s, it: { title: 'a\\[b' } }, { site: '', height: 0 })).toBe('![a\\\\\\[b](x--size_fill_fit-text_none-light.png)');
+    expect(snippet({ ...s, format: 'html', theme: 'light' }, { site: 'https://s', height: 100 })).toContain('alt="A [b] &quot;c&quot;"');
   });
 });

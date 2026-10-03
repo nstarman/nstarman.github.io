@@ -199,14 +199,6 @@ export function softwarePapers(sw) {
 const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 
 /**
- * Authors for display, truncated per preset. The data always holds the full
- * list — truncating there would corrupt the BibTeX — so it happens here.
- *
- * `url` is the author's ORCID page, and is null for the owner: this is his own
- * site, his ORCID is already in the CV header, and a self-link in every byline
- * would be noise rather than navigation.
- */
-/**
  * Where a collaborator was working on a given date, from the dated employment
  * history in config/collaborators.json.
  *
@@ -236,6 +228,14 @@ export function affiliationAt(orcid, date) {
 
 const ELLIPSIS = { name: '…', me: false, student: null, url: null, affiliation: null };
 
+/**
+ * Authors for display, truncated per preset. The data always holds the full
+ * list — truncating there would corrupt the BibTeX — so it happens here.
+ *
+ * `url` is the author's ORCID page, and is null for the owner: this is his own
+ * site, his ORCID is already in the CV header, and a self-link in every byline
+ * would be noise rather than navigation.
+ */
 export function authors(item, max = Infinity, { fill = false } = {}) {
   const all = item.authors ?? [];
   // Where they were at the time. The paper's own printed affiliation wins where
@@ -366,7 +366,8 @@ export function primaryLink(item) {
  * contradicting ADS URL.
  */
 export function links(item) {
-  const out = [...(item.links ?? [])];
+  // Copies: the label set below is the rendering's, not the record's.
+  const out = (item.links ?? []).map((l) => ({ ...l }));
   if (item.bibcode) {
     out.push({
       rel: 'paper',

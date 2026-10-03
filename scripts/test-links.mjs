@@ -50,7 +50,14 @@ let unbuilt = 0;
 
 for (const page of pages) {
   const html = fs.readFileSync(path.join(DIST, page.slice(1)), 'utf8');
-  const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
+  // An id attribute itself — \b would match data-id="…" too, the - being a
+  // word's edge. And each once: a second, an anchor cannot reach.
+  const all = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  const ids = new Set(all);
+  for (const id of new Set(all.filter((x, i) => all.indexOf(x) !== i))) {
+    console.log(`  DUPLICATE ID  ${page} #${id}`);
+    broken += 1;
+  }
 
   for (const [, href] of html.matchAll(/\bhref="([^"]+)"/g)) {
     // External, mail and in-page-only links are not this script's business.
@@ -85,7 +92,7 @@ for (const page of pages) {
     if (!file.endsWith('.html')) continue;
     anchors += 1;
     const targetHtml = fs.readFileSync(path.join(DIST, file.slice(1)), 'utf8');
-    if (!new RegExp(`\\bid="${hash.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(targetHtml)) {
+    if (!new RegExp(`\\sid="${hash.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(targetHtml)) {
       console.log(`  BROKEN ANCHOR  ${page} -> ${href}`);
       broken += 1;
     }
@@ -122,7 +129,7 @@ if (fs.existsSync(embedIndex)) {
     checked += 1;
     anchors += 1;
     const html = exists(pathname) && fs.readFileSync(path.join(DIST, pathname.slice(1), 'index.html'), 'utf8');
-    if (!html || !html.includes(`id="${hash.slice(1)}"`)) {
+    if (!html || !html.includes(` id="${hash.slice(1)}"`)) {
       console.log(`  MISSING ENTRY  /embed/index.json -> ${e.site}`);
       broken += 1;
     }

@@ -203,8 +203,6 @@ h2{
 }
 .card .btns{margin-top:auto; padding-top:.6rem}
 .card .name{font-family:var(--mono); font-size:.95rem; font-weight:500; color:var(--ink)}
-.card .name a{color:var(--ink)}
-.card .name a:hover{color:var(--accent)}
 .card p{margin:0; font-size:.88rem; color:var(--ink-mute); line-height:1.5}
 /* A card that is itself a link, on /tools/: the title takes the hover. */
 a.card{color:inherit}
@@ -316,25 +314,11 @@ a.card:hover .name{color:var(--accent)}
 .card[data-per] .c-foot .btns--icon{display:grid; grid-template-columns:repeat(var(--per), auto); justify-content:start}
 /* On a right rail the buttons sit at the right: rows that wrap as they fit
    end there, and in a grid a short last row starts --skip columns in — its
-   first button, data-skipat, marked by its place among them all. */
+   first button, data-skip. */
 .card:is([data-foot="right"], [data-railalign="right"]):not([data-per]) .c-foot .btns--icon{justify-content:flex-end}
 /* Centered buttons: rows that wrap center too. */
 .card[data-railalign="center"]:not([data-per]) .c-foot .btns--icon{justify-content:center}
-.card[data-skipat="2"] .c-foot li:nth-child(2),
-.card[data-skipat="3"] .c-foot li:nth-child(3),
-.card[data-skipat="4"] .c-foot li:nth-child(4),
-.card[data-skipat="5"] .c-foot li:nth-child(5),
-.card[data-skipat="6"] .c-foot li:nth-child(6),
-.card[data-skipat="7"] .c-foot li:nth-child(7),
-.card[data-skipat="8"] .c-foot li:nth-child(8),
-.card[data-skipat="9"] .c-foot li:nth-child(9),
-.card[data-skipat="10"] .c-foot li:nth-child(10),
-.card[data-skipat="11"] .c-foot li:nth-child(11),
-.card[data-skipat="12"] .c-foot li:nth-child(12),
-.card[data-skipat="13"] .c-foot li:nth-child(13),
-.card[data-skipat="14"] .c-foot li:nth-child(14),
-.card[data-skipat="15"] .c-foot li:nth-child(15),
-.card[data-skipat="16"] .c-foot li:nth-child(16){grid-column-start:calc(var(--skip) + 1)}
+.c-foot .btns--icon > li[data-skip]{grid-column-start:calc(var(--skip) + 1)}
 /* With the buttons at the bottom of a side rail, their rows stack upward from
    it: the first row lowest. A grid has no reversed rows, so it is turned over
    and each button turned back — their order, for a keyboard and a screen
@@ -356,7 +340,7 @@ a.card:hover .name{color:var(--accent)}
 .card[data-papercolor="grey"] .c-paperbtn{color:var(--ink-mute); border-color:var(--rule); background:var(--surface)}
 .card[data-papercolor="grey"] .c-paperbtn:is(:hover, :focus-visible){color:var(--ground); background:var(--ink); border-color:var(--ink)}
 .card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
-.card:not([data-paperbtn]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
+.card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
@@ -372,9 +356,9 @@ a.card:hover .name{color:var(--accent)}
 .c-foot [data-strip]{position:absolute; grid-area:auto; line-height:1.2}
 .c-foot [data-strip="top"]{top:var(--pad-t)}
 .c-foot [data-strip="bottom"]{bottom:var(--pad-b)}
-.c-foot [data-strip][data-h="left"]{left:var(--pad-x)}
-.c-foot [data-strip][data-h="center"]{left:50%; translate:-50% 0}
-.c-foot [data-strip][data-h="right"]{right:var(--pad-x)}
+.c-foot [data-strip][data-across="left"]{left:var(--pad-x)}
+.c-foot [data-strip][data-across="center"]{left:50%; translate:-50% 0}
+.c-foot [data-strip][data-across="right"]{right:var(--pad-x)}
 /* A buttons' box with nothing in it is no box at all: no column, no row, no
    gap — only what sits in a strip, still drawn. [data-size] outweighs the
    layouts' rules for the box, which come later. */
@@ -621,16 +605,11 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size][data-h="px"][data-vflex][data-fig="center"]{--r-fig:auto}
 .card[data-h="px"][data-vflex][data-fig="center"] > .c-fig img{height:auto; aspect-ratio:16/10}
 
-/* data-links names the links to keep, from the closed `rel` vocabulary. */
-.card[data-links] .c-foot li{display:none}
-.card[data-links][data-paperbtn] .c-foot li.c-paperli{display:block}
-.card[data-links~="paper"] li[data-rel="paper"], .card[data-links~="preprint"] li[data-rel="preprint"],
-.card[data-links~="doi"] li[data-rel="doi"], .card[data-links~="repo"] li[data-rel="repo"],
-.card[data-links~="code"] li[data-rel="code"], .card[data-links~="docs"] li[data-rel="docs"],
-.card[data-links~="data"] li[data-rel="data"], .card[data-links~="slides"] li[data-rel="slides"],
-.card[data-links~="event"] li[data-rel="event"], .card[data-links~="homepage"] li[data-rel="homepage"],
-.card[data-links~="ads"] li[data-rel="ads"], .card[data-links~="empty"] li[data-rel="empty"]{display:block}
-.card[data-links~="year"] .c-foot li[data-rel="year"], .card[data-links~="position"] .c-foot li[data-rel="position"], .card[data-links~="context"] .c-foot li[data-rel="context"]{display:flex}
+/* A button the name does not keep — a link left out of its list, the paper
+   button where it is off — is there, hidden: data-off. */
+.c-foot .btns--icon > li[data-off]{display:none}
+/* And a list with no button shown is none: it takes no room in its slot. */
+.c-foot .btns--icon:not(:has(> li:not([data-off]))){display:none}
 /* buttons:…,year,…: the year, my position or the context link among the
    buttons — in a grid a row of its own, at the buttons' place across. */
 .c-foot li.c-cell{display:flex; align-items:center}
@@ -1043,7 +1022,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
    subgrid: the title area is as tall as the longest title in the row, so
    figures and footers line up. The gap between a card's parts is the
    carousel's. */
-.hl > .card[data-size]{scroll-snap-align:start; grid-row:span 14; grid-template-rows:subgrid; --gr:.55rem}
+.hl > .card[data-size]{scroll-snap-align:start; grid-row:span 14; grid-template-rows:subgrid}
 .hl > .card > .c-name{align-self:start}
 /* Prev/next, right-aligned above the row. */
 .hl-nav{display:flex; justify-content:flex-end; gap:.35rem; margin-top:.8rem}
