@@ -10,6 +10,8 @@
     "start": "2026-01"
   },
   "title": "phasecurvefit: A High-Performance JAX Framework for Phase-Space Walks with Pluggable Metrics and Strategies",
+  "shortTitle": "phasecurvefit",
+  "nickTitle": "phasecurvefit",
   "status": "submitted",
   "entryType": "misc",
   "authors": [
@@ -49,8 +51,6 @@
     "topic": "software",
     "image": "highlights/phasecurvefit-joss.webp",
     "alt": "The phasecurvefit logo: noisy points along a self-crossing looped curve, coloured by their fitted order from red through yellow to blue, with the learned mean path drawn as a black line.",
-    "miniTitle": "phasecurvefit",
-    "microTitle": "phasecurvefit",
     "description": "A stellar stream is observed as an unordered cloud of stars, so fitting one starts with putting them in order along it. phasecurvefit does this by walking from star to star through phase space, with a choice of distance metrics and search strategies, then trains a neural network to place any stars the walk skipped and trace the stream’s smooth central path. Built on JAX, it is fast and differentiable: each step takes seconds."
   }
 }

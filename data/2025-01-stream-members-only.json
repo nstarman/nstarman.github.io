@@ -12,6 +12,8 @@
     "start": "2025-01"
   },
   "title": "Stream Members Only: Data-Driven Characterization of Stellar Streams with Mixture Density Networks",
+  "shortTitle": "Stream Members Only",
+  "nickTitle": "Stream Members Only",
   "status": "published",
   "entryType": "article",
   "authors": [
@@ -86,8 +88,6 @@
     "topic": "galactic",
     "image": "highlights/stream-members-only.webp",
     "alt": "Probabilistic graphical model of the stream: each star’s observed astrometry and photometry come from a mixture of Gaussians whose weights, means and covariances are set by neural networks of its position along the stream, with each star’s measurement errors feeding in.",
-    "miniTitle": "Stream Members Only",
-    "microTitle": "Stream Members Only",
     "description": "Using a stellar stream to weigh the Milky Way’s dark matter starts with knowing which stars belong to it. Mixture density networks model a stream’s track, width, density and kinematics from all the available astrometry and photometry, with normalizing flows for the background, even where phase-space data are incomplete. Applied to GD-1 and Palomar 5, the result is public catalogs of stellar membership probabilities."
   }
 }

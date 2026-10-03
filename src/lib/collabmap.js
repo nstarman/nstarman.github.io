@@ -33,7 +33,7 @@ function papersByAuthor() {
       const preprint = (links(pub) ?? []).find((l) => l.rel === 'preprint');
       out.get(a.orcid).push({
         id: pub.id,
-        title: pub.highlight?.microTitle ?? pub.highlight?.miniTitle ?? pub.title,
+        title: pub.nickTitle ?? pub.shortTitle ?? pub.title,
         doi: pub.doi,
         date: String(pub.date.start),
         url: venueUrl(pub) ?? preprint?.url ?? null,

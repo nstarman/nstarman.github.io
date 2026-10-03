@@ -11,6 +11,8 @@
     "start": "2025-03"
   },
   "title": "unxt: A Python package for unit-aware computing with JAX",
+  "shortTitle": "unxt",
+  "nickTitle": "unxt",
   "status": "published",
   "entryType": "article",
   "authors": [
@@ -67,8 +69,6 @@
     "topic": "software",
     "image": "highlights/unxt-joss.webp",
     "alt": "The unxt logo: a ruler crossed with a green pencil on a blue square.",
-    "miniTitle": "unxt",
-    "microTitle": "unxt",
     "description": "JAX gives scientific Python automatic differentiation, compilation and GPUs, but no physical units. unxt adds them: quantities that carry their units through jitted, differentiated and vectorized code, with astropy.units under the hood and an interface astropy users will recognize. It underpins the GalacticDynamics stack, including coordinax and galax."
   }
 }
