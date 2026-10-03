@@ -364,11 +364,15 @@ describe('card names', () => {
     expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors')).toMatchObject({ venueAt: 'authors' });
     expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:above:right')).toMatchObject({ venueAt: 'above', venueAlign: 'right' });
     expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors:before')).toMatchObject({ venueAt: 'authors', venueFirst: true });
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:beside')).toMatchObject({ venueAt: 'beside' });
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:beside:before'))).toContain('-venue:full:beside:before-');
+    expect(parseName('size:fill:fit-text:none-extras:venue-venue:full:beside:before:40').venueSplit).toBe('40');
+    expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:beside:120px'))).toContain('-venue:full:beside:120px-');
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors:before'))).toContain('-venue:short:authors:before-');
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:above'))).toContain('-venue:full:undated:above-');
     expect(parseName('size:fill:fit-text:none-extras:venue-venue:short:authors').venueAlign).toBeUndefined();
     expect(formatName(parseName('size:fill:fit-text:none-extras:venue-venue:full:undated:authors'))).toContain('-venue:full:undated:authors-');
-    for (const bad of ['venue:abbr', 'venue:short:right:undated', 'venue:undated', 'venue:full:middle', 'venue:full:undated:unlinked', 'venue:full:authors:right', 'venue:full:above:authors', 'venue:full:right:above', 'venue:full:before', 'venue:full:right:before', 'venue:full:authors:after']) {
+    for (const bad of ['venue:abbr', 'venue:short:right:undated', 'venue:undated', 'venue:full:middle', 'venue:full:undated:unlinked', 'venue:full:authors:right', 'venue:full:above:authors', 'venue:full:right:above', 'venue:full:before', 'venue:full:right:before', 'venue:full:authors:after', 'venue:full:above:beside', 'venue:full:beside:right', 'venue:full:beside:96', 'venue:full:beside:4', 'venue:full:beside:900px', 'venue:full:authors:40']) {
       expect(() => parseName(`size:fill:fit-text:none-extras:venue-${bad}`)).toThrow();
     }
   });

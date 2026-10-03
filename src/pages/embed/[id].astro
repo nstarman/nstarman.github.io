@@ -81,7 +81,9 @@ const apply = `(function (parseName, placeOf, can) {
   });
   if (spec.venueAlign) d.venuealign = spec.venueAlign; else delete d.venuealign;
   if (spec.venueAt) d.venueat = spec.venueAt; else delete d.venueat;
-  if (spec.venueAt === 'authors' && spec.venueFirst) d.venuefirst = ''; else delete d.venuefirst;
+  if ((spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst) d.venuefirst = ''; else delete d.venuefirst;
+  // Beside the authors, the left column's width; the right takes the rest.
+  if (spec.venueAt === 'beside' && spec.venueSplit) { d.vsplit = ''; card.style.setProperty('--vsplit', /px$/.test(spec.venueSplit) ? spec.venueSplit : spec.venueSplit + '%'); } else { delete d.vsplit; card.style.removeProperty('--vsplit'); }
   // The text across the center; and each part's own size and weight.
   if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
   ['body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {

@@ -77,6 +77,8 @@ const style = [
   spec.width !== 'fill' && spec.height !== 'fit' && `--aw:${spec.width};--ah:${spec.height}`,
   px('textsize') != null && `--fs:${px('textsize')}px`,
   px('titlesize') != null && `--ts:${px('titlesize')}px`,
+  // Beside the authors, the left column's width, venue:…:beside:<width>.
+  spec.venueAt === 'beside' && spec.venueSplit && `--vsplit:${/px$/.test(spec.venueSplit) ? spec.venueSplit : `${spec.venueSplit}%`}`,
   // A part's own size and weight, look:<part>size and <part>weight.
   ...Object.entries(spec.sizes ?? {}).map(([k, v]) => `--fs-${k}:${v}px`),
   ...Object.entries(spec.weights ?? {}).map(([k, v]) => `--fw-${k}:${{ regular: 400, medium: 500, bold: 600 }[v]}`),
@@ -212,7 +214,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-pos={posShown ? '' : undefined}
          data-strips={strips || undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
-         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={spec.venueAt === 'authors' && spec.venueFirst ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={(spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst ? '' : undefined} data-vsplit={spec.venueAt === 'beside' && spec.venueSplit ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
          data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-background={spec.background === 'normal' ? undefined : spec.background}

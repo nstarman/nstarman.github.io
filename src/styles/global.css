@@ -404,7 +404,7 @@ a.card:hover .name{color:var(--accent)}
   --tc:var(--sp-top_center, 0px); --r2:var(--sp-title_figure, 0px);
   padding-top:calc(var(--pad-t) + var(--tc) - var(--gr));
   grid-template-columns:var(--cL) var(--sp-left_center, var(--dL)) var(--words) var(--sp-center_right, var(--dR)) var(--cR);
-  grid-template-rows:var(--s1) var(--r2) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--sp-authors_venue, 0px) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) var(--s14, auto)}
+  grid-template-rows:var(--s1) var(--r2) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--r6, var(--sp-authors_venue, 0px)) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) var(--s14, auto)}
 .card[data-size] > :is(.c-name, .c-fig, .c-by, .c-venue, .c-text, .c-foot){margin:var(--gr) 0 0}
 /* The gaps each layout has had: beside a rail, 1em and .15em; a figure
    beside the words with the rail under them, 1.1em and .35em — and there
@@ -459,6 +459,20 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size] > .c-name{grid-area:var(--rowT) / 3}
 .card[data-size] > .c-by{grid-area:var(--rowB) / 3}
 .card[data-size] > .c-venue{grid-area:var(--rowV) / 3}
+/* venue:…:beside — the venue's area beside the authors', a column of its own
+   on their line: the names take the rest and wrap in theirs. At their
+   right, or :before, their left. */
+.card[data-size][data-venueat="beside"][data-venue] > .c-by{display:flex; align-items:baseline; gap:0 var(--sp-authors_venue, 1.2em)}
+.card[data-size][data-venueat="beside"] > .c-by > :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n){flex:1 1 auto; min-width:0}
+.card[data-size][data-venueat="beside"] > .c-by > .c-byvenue{flex:none; text-align:right}
+.card[data-size][data-venueat="beside"][data-venuefirst] > .c-by > .c-byvenue{text-align:left}
+.card[data-size][data-venueat="beside"] .c-bysep{display:none}
+/* …:beside:<width> — the left column so wide, the right the rest. The
+   space between them is authors_venue's, its row then none. */
+.card[data-size][data-venueat="beside"]{--r6:0px}
+.card[data-size][data-venueat="beside"][data-vsplit]:not([data-venuefirst]) > .c-by > :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n){flex:0 0 var(--vsplit)}
+.card[data-size][data-venueat="beside"][data-vsplit]:not([data-venuefirst]) > .c-by > .c-byvenue{flex:1 1 0; min-width:0}
+.card[data-size][data-venueat="beside"][data-vsplit][data-venuefirst] > .c-by > .c-byvenue{flex:0 0 var(--vsplit)}
 /* venue:…:above — the venue's line and the authors' change places. */
 .card[data-size][data-venueat="above"] > .c-by{grid-row-start:var(--rowV)}
 .card[data-size][data-venueat="above"] > .c-venue{grid-row-start:var(--rowB)}
@@ -559,9 +573,9 @@ a.card:hover .name{color:var(--accent)}
 .card:not([data-venue]) > .c-venue,
 /* venue:…:authors — the venue after the byline, on its line, where there is
    one; its own line then empty. */
-.card:is(:not([data-venue]), :not([data-venueat="authors"])) .c-byvenue,
+.card:is(:not([data-venue]), :not(:is([data-venueat="authors"], [data-venueat="beside"]))) .c-byvenue,
 .card[data-venuefirst] .c-byvenue--after, .card:not([data-venuefirst]) .c-byvenue--before,
-.card[data-venueat="authors"][data-authors] > .c-venue,
+.card:is([data-venueat="authors"], [data-venueat="beside"])[data-authors] > .c-venue,
 .card:not([data-status]) .c-status,
 .card:not([data-titlestatus]) .c-tstatus,
 .card:not([data-context]) .c-context,

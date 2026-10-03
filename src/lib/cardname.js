@@ -92,10 +92,15 @@
 //            …:undated              config/journals.json); not a link to the
 //            …:above                article; without its year; its own line
 //            …:center · …:right     above the authors' rather than below;
-//            …:authors              across the center, left left off — or,
-//            e.g. venue:short:right in place of the last two, after the
-//                                   authors, on their line — or, :authors:
-//                                   before, before them
+//            …:authors · …:beside   across the center, left left off — or,
+//            e.g. venue:short:right in place of the last two, in the
+//                                   authors' area, after them — or, :authors:
+//                                   before, before them; or :beside, its own
+//                                   area beside theirs, a column on their
+//                                   line, at their right — :beside:before,
+//                                   their left — and then the left column's
+//                                   width, 5–95 (%) or 20–800px, the right
+//                                   the rest: venue:full:beside:40
 //   context  <place>                where the context link sits, e.g.
 //            e.g. context:bottom:right  context:bottom:right
 //   position <place>                where my author position sits
@@ -242,7 +247,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, venueName, venueLink, venueDate, venueAlign, venueAt, venueFirst, authorsFit, paperButton }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, venueName, venueLink, venueDate, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -284,7 +289,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     authors === 'none' ? 'authors:none' : `authors:${authors}${authorsFit ? ':fit' : ''}:${marks}` + (authorLink ? `:${authorLink}` : ''),
     `text:${text}` + (textAlign && textAlign !== 'left' && text !== 'none' ? `:${textAlign}` : ''),
     `extras:${EXTRAS.filter((e) => extras.includes(e)).join(',') || 'none'}`,
-    ...(extras.includes('venue') && (venueName === 'short' || venueLink === false || venueDate === false || venueAlign || venueAt) ? [`venue:${venueName || 'full'}${venueLink === false ? ':unlinked' : ''}${venueDate === false ? ':undated' : ''}${venueAt === 'above' ? ':above' : ''}${venueAt === 'authors' ? `:authors${venueFirst ? ':before' : ''}` : venueAlign ? `:${venueAlign}` : ''}`] : []),
+    ...(extras.includes('venue') && (venueName === 'short' || venueLink === false || venueDate === false || venueAlign || venueAt) ? [`venue:${venueName || 'full'}${venueLink === false ? ':unlinked' : ''}${venueDate === false ? ':undated' : ''}${venueAt === 'above' ? ':above' : ''}${venueAt === 'authors' || venueAt === 'beside' ? `:${venueAt}${venueFirst ? ':before' : ''}${venueAt === 'beside' && venueSplit ? `:${venueSplit}` : ''}` : venueAlign ? `:${venueAlign}` : ''}`] : []),
     ...(extras.includes('context') && place('context', contextAt) ? [`context${place('context', contextAt)}`] : []),
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
@@ -400,16 +405,21 @@ export function parseName(name) {
       let j = 1;
       const at = (xs) => (j < kv.length && one(kv[j], xs) ? kv[j++] : null);
       const n = at(['full', 'short']), unlinked = at(['unlinked']), undated = at(['undated']), above = at(['above']);
-      const align = at(above ? ['left', 'center', 'right'] : ['left', 'center', 'right', 'authors']);
-      // On the authors' line, after them, or :before them.
-      const before = align === 'authors' && at(['before']);
+      const align = at(above ? ['left', 'center', 'right'] : ['left', 'center', 'right', 'authors', 'beside']);
+      // In the authors' area, after them, or :before them; or its own area
+      // beside theirs, at their right, or :before, their left.
+      const before = (align === 'authors' || align === 'beside') && at(['before']);
+      // Beside, the left column's width: a share, 5–95%, or 20–800px; the
+      // right takes the rest.
+      const split = align === 'beside' && j < kv.length && ((/^[1-9][0-9]?$/.test(kv[j]) && +kv[j] >= 5 && +kv[j] <= 95) || (/^[1-9][0-9]{1,2}px$/.test(kv[j]) && parseInt(kv[j], 10) >= 20 && parseInt(kv[j], 10) <= 800)) ? kv[j++] : null;
       if (!n || j !== kv.length) throw new Error('"' + name + '": no such venue, ' + parts[i]);
       if (above) spec.venueAt = 'above';
       if (before) spec.venueFirst = true;
+      if (split) spec.venueSplit = split;
       if (n === 'short') spec.venueName = 'short';
       if (unlinked) spec.venueLink = false;
       if (undated) spec.venueDate = false;
-      if (align === 'authors') spec.venueAt = 'authors';
+      if (align === 'authors' || align === 'beside') spec.venueAt = align;
       else if (align && align !== 'left') spec.venueAlign = align;
     } else if ((key === 'context' || key === 'year' || key === 'position') && kv.length >= 2) {
       // A place — settled once the buttons' area is known.

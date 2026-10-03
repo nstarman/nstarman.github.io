@@ -333,7 +333,9 @@ const data = {
                 <select name="authorsline" class="eb-menu" aria-label="The authors' area, beside the venue's">
                   <option value="above" title="A line of their own, above the venue's" selected>above published</option>
                   <option value="below" title="A line of their own, below the venue's">below published</option>
-                  <option value="shared" title="One line, shared with the venue">with published</option>
+                  <option value="left" title="An area of their own, left of the venue's, on one line">left of published</option>
+                  <option value="right" title="An area of their own, right of the venue's, on one line">right of published</option>
+                  <option value="shared" title="One area, shared with the venue">with published</option>
                 </select>
                 {/* Sharing a line with the venue, which comes first. */}
                 <span class="eb-dim eb-inkey" id="eb-aorder-key">order</span>
@@ -389,10 +391,17 @@ const data = {
                 <select name="venueline" class="eb-menu" aria-label="The area the venue sits in">
                   <option value="below" title="A line of its own, below the authors'" selected>below authors</option>
                   <option value="above" title="A line of its own, above the authors'">above authors</option>
-                  <option value="authors" title="The authors' line, after them">with authors</option>
+                  <option value="left" title="An area of its own, left of the authors', on one line">left of authors</option>
+                  <option value="right" title="An area of its own, right of the authors', on one line">right of authors</option>
+                  <option value="authors" title="The authors' area, shared">with authors</option>
                 </select>
                 <span class="eb-dim eb-inkey" id="eb-vpos-key">position</span>
                 <span id="eb-vpos"><Place h="venuealign" label="The venue line's position" /></span>
+                {/* Beside the authors, the left column's width — a share or px;
+                    the right takes the rest. Dragged by its grip, too. */}
+                <span class="eb-dim eb-inkey" id="eb-vsplit-key">left width</span>
+                <NumBox id="eb-vsplit" title="The left column's width, a share of the line or px; the right takes the rest" name="vsplitn" min="5" max="800" placeholder="auto" label="The left column's width" unitName="vsplitu" unitLabel="The left column's width, as"
+                  units={[{ value: '%', label: '%', title: 'A share of the line', checked: true }, { value: 'px', label: 'px', title: 'In pixels' }]} />
                 {/* Sharing the authors' line, which comes first. */}
                 <span class="eb-dim eb-inkey" id="eb-vorder-key">order</span>
                 <select name="venueorder" id="eb-vorder" class="eb-menu" aria-label="The venue before or after the authors, on their line">
@@ -811,10 +820,16 @@ const data = {
     showOrder();
     render();
   }
+  // Where the venue's own area last was, beside the authors': where it goes
+  // back to from their shared one.
+  let lastAreas = 'below';
   // The venue's area beside the authors', as the Published row and the
   // Authors row each name it: below the authors is the authors above it.
-  const V2A = { below: 'above', above: 'below', authors: 'shared' };
-  const A2V = { above: 'below', below: 'above', shared: 'authors' };
+  const V2A = { below: 'above', above: 'below', left: 'right', right: 'left', authors: 'shared' };
+  const A2V = { above: 'below', below: 'above', right: 'left', left: 'right', shared: 'authors' };
+  // The venue's area as the name has it, as its menu names it: beside the
+  // authors' is left or right of them.
+  const venueArea = (c) => (c.venueAt === 'beside' ? (c.venueFirst ? 'left' : 'right') : c.venueAt ?? 'below');
   // A part's place as the form has it: a strip's area and across it, or the
   // buttons' area, up and down and across.
   const placed = (f, k) => {
@@ -912,8 +927,11 @@ const data = {
     form.elements.paperword.value = c.paperButton && c.paperButton.label !== 'icon' ? c.paperButton.label : 'paper';
     form.elements.paperto.value = c.paperButton?.to ?? '';
     setRadio('venuename', c.venueName ?? 'full');
-    setRadio('venueline', c.venueAt ?? 'below');
-    setRadio('authorsline', V2A[c.venueAt ?? 'below']);
+    setRadio('venueline', venueArea(c));
+    setRadio('authorsline', V2A[venueArea(c)]);
+    form.elements.vsplitn.value = c.venueSplit ? parseInt(c.venueSplit, 10) : '';
+    form.elements.vsplitu.value = /px$/.test(c.venueSplit ?? '') ? 'px' : '%';
+    if (form.elements.venueline.value !== 'authors') lastAreas = form.elements.venueline.value;
     form.elements.venueorder.value = c.venueFirst ? 'before' : 'after';
     form.elements.authorsorder.value = c.venueFirst ? 'after' : 'before';
     form.elements.authorsfit.checked = !!c.authorsFit;
@@ -965,7 +983,7 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: f.get('venueline') !== 'below' ? f.get('venueline') : undefined, venueFirst: f.get('venueline') === 'authors' && f.get('venueorder') === 'before' ? true : undefined, venueAlign: f.get('venueline') !== 'authors' && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
       extras: f.getAll('extra').filter((x) => has(items[id], x)), links: sameOrder(btnOrder.filter((k) => on.includes(k)), all.map((b) => b.value)) ? 'all' : btnOrder.filter((k) => on.includes(k)), perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
@@ -1037,7 +1055,8 @@ const data = {
     form.elements.paperword.hidden = form.elements.paperlabel.value === 'icon';
     for (const o of form.elements.paperto.options) o.disabled = !!o.value && !s.it.paperTo[o.value];
     if (form.elements.paperto.selectedOptions[0]?.disabled) form.elements.paperto.value = '';
-    el('eb-vpos').hidden = el('eb-vpos-key').hidden = form.elements.venueline.value === 'authors';
+    el('eb-vpos').hidden = el('eb-vpos-key').hidden = !['below', 'above'].includes(form.elements.venueline.value);
+    el('eb-vsplit').hidden = el('eb-vsplit-key').hidden = !['left', 'right'].includes(form.elements.venueline.value);
     el('eb-vorder').hidden = el('eb-vorder-key').hidden = el('eb-aorder').hidden = el('eb-aorder-key').hidden = form.elements.venueline.value !== 'authors';
     el('eb-aarea').hidden = el('eb-aarea-key').hidden = !(s.it.venue && [...form.querySelectorAll('[name=extra]')].some((b) => b.value === 'venue' && b.checked));
     if (s.it.vshort) el('eb-vname-short').title = `The journal's short name: ${s.it.vshort}`;
@@ -1338,7 +1357,7 @@ const data = {
     if (e.target.name === 'framepx') { for (const r of form.elements.frame) r.checked = false; render(); }
     if (e.target.name === 'bgap' || /^h(top|bottom)$/.test(e.target.name)) render();
     // A text size typed leaves by text.
-    if (e.target.name === 'paperword') render();
+    if (e.target.name === 'paperword' || e.target.name === 'vsplitn') render();
     const face = FACES.find((p) => e.target.name === `${p}size`);
     if (face) { setRadio(`${face}by`, e.target.value === '' ? 'text' : ''); render(); }
     // Typing a number of names chooses it.
@@ -1373,8 +1392,10 @@ const data = {
       if (e.target.checked) tune(['paper']); else el('eb-paper-row').hidden = true; // ticked, its settings come up; unticked, they go
     } else if (e.target.name === 'venueline') {
       form.elements.authorsline.value = V2A[e.target.value]; // the same choice, from the authors' side
+      if (e.target.value !== 'authors') lastAreas = e.target.value;
     } else if (e.target.name === 'authorsline') {
       form.elements.venueline.value = A2V[e.target.value];
+      if (e.target.value !== 'shared') lastAreas = A2V[e.target.value];
     } else if (e.target.name === 'venueorder') {
       form.elements.authorsorder.value = e.target.value === 'before' ? 'after' : 'before'; // the same order, from the authors' side
     } else if (e.target.name === 'authorsorder') {
@@ -1473,6 +1494,10 @@ const data = {
     .eb-drop.eb-cell{z-index:8; border:1px dotted var(--accent); border-radius:4px; background:none;
       display:flex; align-items:center; justify-content:center; font:10px/1.1 var(--mono); color:var(--accent); text-align:center}
     .eb-hits .card .c-foot li[data-rel]{cursor:grab}
+    .eb-ghost{position:absolute; z-index:9; pointer-events:none; padding:2px 7px; border-radius:6px; background:var(--accent); color:var(--bg, #fff);
+      font:600 10px/1.4 var(--mono); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap}
+    .eb-hits .card :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n, .c-byvenue, .c-venue *){cursor:grab}
+    .eb-hits .card > :is(.c-by, .c-venue){cursor:move}
     .eb-drop-on-btn{outline:2px solid var(--accent) !important; outline-offset:2px; border-radius:6px}
     .eb-drop.eb-cell.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 28%, transparent)}
     .eb-hits .card, .eb-hits :is(${HITS.slice(0, -1).map(([q]) => q).join(', ')}){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
@@ -1490,11 +1515,11 @@ const data = {
     .eb-area{display:none}
     .eb-hits .eb-area{display:block; position:absolute; z-index:-1}
     /* A side's inner edge, dragged to set its width. */
-    .eb-area-grip{display:none}
-    .eb-hits .eb-area-grip{display:block; position:absolute; z-index:4; width:7px; margin-left:-3.5px; cursor:ew-resize; touch-action:none}
-    .eb-hits .eb-area-grip::before{content:''; position:absolute; inset:0 3px; background:var(--accent); opacity:0; transition:opacity .15s}
-    .eb-hits .card:hover .eb-area-grip::before{opacity:.35}
-    .eb-hits .eb-area-grip:hover::before, .eb-hits .eb-area-grip:active::before{opacity:1}
+    :is(.eb-area-grip, .eb-split-grip){display:none}
+    .eb-hits :is(.eb-area-grip, .eb-split-grip){display:block; position:absolute; z-index:4; width:7px; margin-left:-3.5px; cursor:ew-resize; touch-action:none}
+    .eb-hits :is(.eb-area-grip, .eb-split-grip)::before{content:''; position:absolute; inset:0 3px; background:var(--accent); opacity:0; transition:opacity .15s}
+    .eb-hits .card:hover :is(.eb-area-grip, .eb-split-grip)::before{opacity:.35}
+    .eb-hits :is(.eb-area-grip, .eb-split-grip):hover::before, .eb-hits :is(.eb-area-grip, .eb-split-grip):active::before{opacity:1}
     .eb-plus{position:absolute; z-index:3; width:18px; height:18px; margin:-9px 0 0 -9px; padding:0; border-radius:50%;
       border:1.5px solid var(--accent); background:var(--ground); color:var(--accent); font:600 14px/14px system-ui, sans-serif;
       cursor:pointer; opacity:0; transition:opacity .15s}
@@ -1620,7 +1645,7 @@ const data = {
     let dragging = false;
     const place = () => {
       if (dragging) return;
-      card.querySelectorAll('.eb-plus, .eb-band, .eb-area, .eb-area-grip, .eb-areabtn').forEach((e) => e.remove());
+      card.querySelectorAll('.eb-plus, .eb-band, .eb-area, .eb-area-grip, .eb-split-grip, .eb-areabtn').forEach((e) => e.remove());
       const cs = frame.contentWindow.getComputedStyle(card);
       const rows = cs.gridTemplateRows.split(' ').map(parseFloat), cols = cs.gridTemplateColumns.split(' ').map(parseFloat);
       if (rows.length !== 14 || cols.length !== 5) return;
@@ -1735,7 +1760,10 @@ const data = {
       }
       // The title in the top area, the row under it is the space from the
       // top to the center; else that space is padding over the center.
-      const rowTracks = ROW_TRACKS.map(([i, t]) => [i, titleTop && t === 'title_figure' ? 'top_center' : t]);
+      // Beside the authors, the venue's column: the space between the two
+      // is authors_venue's, in the gutter, not a row.
+      const sideBy = card.dataset.venueat === 'beside' && 'venue' in card.dataset && 'authors' in card.dataset;
+      const rowTracks = ROW_TRACKS.map(([i, t]) => [i, titleTop && t === 'title_figure' ? 'top_center' : t]).filter(([, t]) => !(sideBy && t === 'authors_venue'));
       for (const [i, t] of rowTracks) trackBetween[t] = named(ROW_SLOTS, rowNames, rows, i);
       if (!titleTop) trackBetween.top_center = 'top · center';
       Object.assign(trackBetween, { top_left: 'top · LHS', top_right: 'top · RHS' });
@@ -1780,6 +1808,27 @@ const data = {
       for (const [i, t] of COL_TRACKS) {
         add('eb-plus', { top: `${pt + H / 2}px`, left: `${pl + sum(cols, i) + cols[i] / 2}px` }, t);
       }
+      // Beside the authors, the gutter between the two columns: the space
+      // there, its ⊕ and band, and a grip to drag the left one's width — its
+      // box showing what it comes to.
+      if (sideBy) {
+        const by = card.querySelector(':scope > .c-by'), at = card.getBoundingClientRect(), B = by.getBoundingClientRect();
+        const seen = (q) => [...by.querySelectorAll(q)].find((x) => x.getClientRects().length);
+        const [L, R] = [seen('.c-by-tight, .c-by-short, .c-by-full, .c-by-n'), seen('.c-byvenue')].map((x) => x?.getBoundingClientRect()).filter(Boolean).sort((a, b) => a.left - b.left);
+        if (L && R) {
+          const gx = (L.right + R.left) / 2 - at.left, y = B.top - at.top;
+          trackBetween.authors_venue = card.dataset.venuefirst ? 'published · authors' : 'authors · published';
+          // The ⊕ on the line's top edge, the grip down the rest of it.
+          add('eb-plus', { top: `${y}px`, left: `${gx}px` }, 'authors_venue');
+          if (space.authors_venue) add('eb-band', { left: `${L.right - at.left}px`, width: `${R.left - L.right}px`, top: `${y}px`, height: `${B.height}px` }, 'authors_venue');
+          const g = doc.createElement('span');
+          g.className = 'eb-split-grip';
+          g.title = 'Drag to set the left column’s width';
+          Object.assign(g.style, { left: `${gx}px`, top: `${y + 9}px`, height: `${B.height}px` });
+          card.append(g);
+          show('vsplitn', form.elements.vsplitu.value === 'px' ? L.width : (L.width / B.width) * 100);
+        }
+      }
       // Each band where its track does its work: a row's across the words —
       // the figures and side boxes span those rows — but for the one above
       // the bottom area, which runs the card's width; a column's down to
@@ -1812,6 +1861,34 @@ const data = {
     };
     place();
     frame.contentWindow.addEventListener('resize', place);
+    // The gutter's grip dragged, beside the authors: the left column's width
+    // as it goes, then — let go — set in the Published row, as its unit is.
+    doc.addEventListener('pointerdown', (e) => {
+      const g = e.target.closest?.('.eb-split-grip');
+      if (!g) return;
+      e.preventDefault();
+      e.stopPropagation();
+      dragging = true;
+      const B = card.querySelector(':scope > .c-by').getBoundingClientRect(), px = form.elements.vsplitu.value === 'px';
+      let v = null;
+      const move = (ev) => {
+        const w = ev.clientX - B.left;
+        v = px ? Math.min(800, Math.max(20, Math.round(w))) : Math.min(95, Math.max(5, Math.round((w / B.width) * 100)));
+        card.dataset.vsplit = '';
+        card.style.setProperty('--vsplit', px ? `${v}px` : `${v}%`);
+      };
+      const up = () => {
+        doc.removeEventListener('pointermove', move);
+        doc.removeEventListener('pointerup', up);
+        dragging = false;
+        if (v == null) return place();
+        form.elements.vsplitn.value = v;
+        tune(['venue']);
+        render();
+      };
+      doc.addEventListener('pointermove', move);
+      doc.addEventListener('pointerup', up);
+    });
     // A side's grip dragged: its width as it goes, then — let go — set in the
     // Area row: a share of the card where it is one, else at least that px.
     doc.addEventListener('pointerdown', (e) => {
@@ -1926,11 +2003,91 @@ const data = {
     const SLOT_NAMES = { top: 'above title', title: 'below title', authors: 'below authors', venue: 'below venue', text: 'below text' };
     let dragged = false;
     doc.addEventListener('dragstart', (e) => e.preventDefault());
+    // The authors and the venue, each an element in an area. Dragged by its
+    // words, an element goes into the other's area, before or after what is
+    // there — or, sharing one, back to its own. Dragged by its area — its
+    // room, or within 5px of its edge — an area goes above, below, left or
+    // right of the other's. The words stay put; a tag with the part's name
+    // follows the pointer. Each drop is the Area and Order menus of both.
+    doc.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || e.target.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-split-grip, .eb-areabtn, .eb-fig-grip')) return;
+      const card = doc.querySelector('.card'), d = card.dataset;
+      if (!('venue' in d) || !('authors' in d)) return;
+      const NAMES = '.c-by-tight, .c-by-short, .c-by-full, .c-by-n';
+      const by = card.querySelector(':scope > .c-by'), vline = card.querySelector(':scope > .c-venue');
+      const shared = d.venueat === 'authors', beside = d.venueat === 'beside';
+      const seen = (q) => [...by.querySelectorAll(q)].find((x) => x.getClientRects().length);
+      // Each one's area: its line, or, beside, its column; sharing, the one line.
+      const areaOf = { authors: beside ? seen(NAMES) : by, venue: shared ? by : beside ? seen('.c-byvenue') : vline };
+      const t = e.target;
+      const edge = (el) => {
+        const b = el.getBoundingClientRect(), dx = Math.min(e.clientX - b.left, b.right - e.clientX), dy = Math.min(e.clientY - b.top, b.bottom - e.clientY);
+        return Math.min(dx, dy) >= -3 && Math.min(dx, dy) <= 5;
+      };
+      let part = null, isArea = false;
+      // An area by its room or its edge — but for one shared, which has no
+      // other to move about.
+      if (!shared) for (const p of ['venue', 'authors']) if (areaOf[p] && (t === areaOf[p] || edge(areaOf[p]))) { part = p; isArea = true; break; }
+      if (!part) part = t.closest?.('.c-byvenue') || (vline.contains(t) && t !== vline) ? 'venue' : t.closest?.(NAMES) ? 'authors' : null;
+      if (!part) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const venue = part === 'venue', other = areaOf[venue ? 'authors' : 'venue'];
+      const r = card.getBoundingClientRect(), R = other.getBoundingClientRect();
+      const x = R.left - r.left, y = R.top - r.top, w = R.width, h = R.height, out = Math.max(h, 22);
+      // Where each drop puts the venue's area, as the Published row's menus
+      // have it: an area about the other's; an element into it, or out.
+      const ZONES = isArea
+        ? { above: [x, y - out, w, out], left: [x, y, w / 2, h], right: [x + w / 2, y, w / 2, h], below: [x, y + h, w, out] }
+        : { before: [x, y, w / 2, h], after: [x + w / 2, y, w / 2, h], ...(shared && { 'own area': [x, y + h, w, out] }) };
+      const PUT = isArea
+        ? venue ? { above: ['above'], left: ['left'], right: ['right'], below: ['below'] } : { above: ['below'], left: ['right'], right: ['left'], below: ['above'] }
+        : { before: ['authors', venue ? 'before' : 'after'], after: ['authors', venue ? 'after' : 'before'], 'own area': [lastAreas] };
+      const x0 = e.clientX, y0 = e.clientY;
+      let on = false, over = null, tag = null;
+      const move = (ev) => {
+        if (!on && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
+        if (!on) {
+          on = true;
+          for (const [k, [zx, zy, zw, zh]] of Object.entries(ZONES)) {
+            const z = doc.createElement('span');
+            z.className = 'eb-drop eb-cell';
+            z.dataset.drop = k;
+            z.textContent = k;
+            Object.assign(z.style, { left: `${zx}px`, top: `${zy}px`, width: `${zw}px`, height: `${zh}px` });
+            card.append(z);
+          }
+          tag = doc.createElement('span');
+          tag.className = 'eb-ghost';
+          tag.textContent = `${venue ? 'Published' : 'Authors'}${isArea ? ' area' : ''}`;
+          card.append(tag);
+        }
+        const px = ev.clientX - r.left, py = ev.clientY - r.top;
+        Object.assign(tag.style, { left: `${px + 8}px`, top: `${py + 8}px` });
+        over = Object.keys(ZONES).find((k) => { const [zx, zy, zw, zh] = ZONES[k]; return px >= zx && px <= zx + zw && py >= zy && py <= zy + zh; }) ?? null;
+        for (const z of card.querySelectorAll('.eb-cell')) z.classList.toggle('eb-drop-on', z.dataset.drop === over);
+      };
+      const up = () => {
+        doc.removeEventListener('pointermove', move);
+        doc.removeEventListener('pointerup', up, true);
+        if (!on) return;
+        dragged = true; // the click that follows the drop is no click
+        card.querySelectorAll('.eb-cell, .eb-ghost').forEach((z) => z.remove());
+        if (!over) return;
+        const [line, order] = PUT[over];
+        const set = (n, v) => { form.elements[n].value = v; form.elements[n].dispatchEvent(new Event('change', { bubbles: true })); };
+        set('venueline', line);
+        if (order) set('venueorder', order);
+        tune([venue ? 'venue' : 'authors']);
+      };
+      doc.addEventListener('pointermove', move);
+      doc.addEventListener('pointerup', up, true);
+    }, true);
     // A button dragged among the others: dropped by one of them, it takes its
     // place — the order line's < and >, by the pointer. The box itself, by
     // the room around its buttons, moves between areas.
     doc.addEventListener('pointerdown', (e) => {
-      const li = e.button === 0 && e.target.closest?.('.c-foot li[data-rel]');
+      const li = e.button === 0 && !e.target.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-split-grip, .eb-areabtn, .eb-fig-grip') && e.target.closest?.('.c-foot li[data-rel]');
       if (!li) return;
       e.preventDefault();
       e.stopImmediatePropagation();
