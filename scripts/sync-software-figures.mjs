@@ -6,8 +6,9 @@
 // encoder here did. A highlight without `source` has a custom image and is
 // left alone.
 //
-// Run by .github/workflows/refresh-software-figures.yml every week, which opens
-// a pull request when anything moved, and by hand:
+// Run by .github/workflows/refresh-software-figures.yml every six months, or
+// whenever it is triggered from the Actions tab; it opens a pull request when
+// anything moved. To run it locally:
 //
 //   node scripts/sync-software-figures.mjs           # rewrites images and source.sha
 //   node scripts/sync-software-figures.mjs --check   # exits 1 if any would change

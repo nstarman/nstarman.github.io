@@ -186,8 +186,10 @@ highlight a `source` and let the script make the image.
 node scripts/sync-software-figures.mjs   # makes `image`, and writes source.sha
 ```
 
-`source.sha` is the git blob it mirrored. Every Monday a workflow re-runs the
-script and opens a pull request when an upstream file has changed. Any change
+`source.sha` is the git blob it mirrored. Every six months (1 January and
+1 July), a workflow re-runs the script and opens a pull request when an
+upstream file has changed. To pick up a new logo sooner, run *Refresh software
+figures* by hand from the Actions tab. Any change
 made to an image (today, PNG to WebP at quality 85) lives in the script, so it
 is reviewed along with that pull request. A highlight without a `source` has a
 custom image, which the script leaves alone. Avoid custom images where you can.

@@ -8,9 +8,9 @@ name: Refresh software figures
 
 on:
   schedule:
-    # 06:00 UTC on Mondays. Logos change rarely; weekly keeps a new one from
-    # waiting long without polling often.
-    - cron: "0 6 * * 1"
+    # 06:00 UTC on 1 January and 1 July. Logos change rarely, so twice a year
+    # is enough; run it by hand (Actions > Run workflow) to pick one up sooner.
+    - cron: "0 6 1 1,7 *"
   workflow_dispatch:
 
 permissions:
@@ -55,7 +55,7 @@ jobs:
             exit 0
           fi
 
-          body=$'Re-made by `scripts/sync-software-figures.mjs`, run weekly by `.github/workflows/refresh-software-figures.yml`, because the upstream file changed:\n\n'
+          body=$'Re-made by `scripts/sync-software-figures.mjs`, run every six months, or by hand, by `.github/workflows/refresh-software-figures.yml`, because the upstream file changed:\n\n'
           body+=$(sed 's/^/- /' changed.txt)
           body+=$'\n\nTo stop mirroring a figure, remove its `highlight.source`.'
 
