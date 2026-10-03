@@ -173,7 +173,6 @@ export function venueUrl(item) {
  * its own year, so a package with a second paper shows two. Nothing is copied
  * onto the software record, so the dates cannot drift from the papers'.
  */
-const CITE_RELS = ['paper', 'preprint', 'doi'];
 export function softwarePapers(sw) {
   const out = [];
   for (const id of sw.refs ?? []) {
@@ -186,7 +185,7 @@ export function softwarePapers(sw) {
     // sent Astropy to its ADS record and macro_lightning to its arXiv preprint.
     const article = venueUrl(ref);
     // Nothing published yet: a preprint or a review thread is what there is.
-    const url = article ?? links(ref).find((l) => CITE_RELS.includes(l.rel))?.url;
+    const url = article ?? primaryLink(ref)?.url;
     if (url) out.push({ ...paper, url });
   }
   return out.sort((a, b) => (a.year ?? '9999').localeCompare(b.year ?? '9999'));
@@ -320,11 +319,8 @@ export function dateLabel(item, { month = false } = {}) {
   return month && mm ? `${MONTHS[Number(mm) - 1]} ${y(start)}` : y(start);
 }
 
-/**
- * Order links land in. ADS first as the canonical record, then the preprint,
- * then the published article, then everything that is code or data.
- */
-// The paper itself leads: the article at the journal, then the records of it.
+// Order links land in. The paper itself leads: the article at the journal,
+// then the records of it, then everything that is code or data.
 const REL_ORDER = ['paper', 'doi', 'ads', 'preprint', 'repo', 'code',
                    'docs', 'data', 'slides', 'event', 'homepage'];
 
@@ -345,14 +341,19 @@ export const REL_ICON = {
 };
 
 /**
- * The one link a title points at: the article, else the preprint, else null.
- * No fallback to code or docs — a paper's title linking to its repository
- * would be a surprise, and a submitted paper with nothing public stays a bare
- * title rather than a dead '#'.
+ * The one link a title points at: the article, else the preprint, else its
+ * ADS record, else null. The ADS link is synthesised as a `paper` rel, so it
+ * is told apart by relKey — taking the first `paper` sent titles to ADS ahead
+ * of arXiv and the DOI. No fallback to code or docs — a paper's title linking
+ * to its repository would be a surprise, and a submitted paper with nothing
+ * public stays a bare title rather than a dead '#'.
  */
 export function primaryLink(item) {
   const all = links(item);
-  return all.find((l) => l.rel === 'paper') ?? all.find((l) => l.rel === 'preprint') ?? null;
+  const by = (k) => all.find((l) => relKey(l) === k);
+  const article = venueUrl(item);
+  return by('paper') ?? (article ? { rel: 'doi', url: article, label: item.doi } : null)
+    ?? by('doi') ?? by('preprint') ?? by('ads') ?? null;
 }
 
 /**
