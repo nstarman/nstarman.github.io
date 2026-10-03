@@ -1,6 +1,6 @@
 // A card's name: its spec, written as key:value[:subvalue] parts joined by "-".
 //
-//   size:320:400-figure:center:auto-rail:center-title:short-authors:position-text:none-extras:none-buttons:all-look:textsize=feature,padding=compact
+//   size:320:400-figure:center:auto-title:short-authors:none-text:none-extras:position,year-buttons:all-look:textsize=feature,padding=compact
 //
 //   size     <width>:<height>, each set or not:
 //              width   fill · 120–1600    filling its container, or that many px
@@ -24,23 +24,6 @@
 //                                   column in percent, or 8–800px, its own
 //                                   width. :link makes it a link to the
 //                                   item, as the website has it
-//   rail     center                 the links, year and context, under the
-//                                   words, beside a figure at a side
-//            bottom                 under the figure and the words both, the
-//                                   card's full width
-//            …:<h>[:<v>]            along it, either one's buttons left (the
-//            e.g. rail:bottom:right   default), centered, or right — the year
-//                                   and context then at its left; then
-//                                   across it, the year and context at the
-//                                   top, center or bottom (the default) of
-//                                   the buttons: rail:center:left:top
-//            <side>:<end>[:<h>]     in the left or right side, the links at
-//            e.g. rail:right:top    the top or bottom of it and the year at
-//                                   the other end, or center, the two
-//                                   together in its middle; then across it,
-//                                   left, center or right — toward the
-//                                   card's edge, left off; with a figure
-//                                   in the same side, under it
 //   title    full:split · full:whole      the full title; split (the default)
 //                                          sets only its short title at the
 //                                          title's weight and the rest regular,
@@ -56,20 +39,23 @@
 //                                          its ADS abstract; or to where it
 //                                          was published, the journal's own
 //                                          page. Left off, words
+//            …:status                     then a pill after it: submitted,
+//            e.g. title:full:split:status   accepted or published
 //            …:top                        then, last, where it sits: across
 //            e.g. title:short:link:top    the card above all else — the
-//                                          figure, words and rails start
-//                                          under it; left off, the center,
-//                                          the words' own column
+//                                          figure, words and sides start
+//                                          under it; left off, the center
 //            …:center · …:right           and very last, across its area:
 //            e.g. title:nick:top:center   left (the default, left off),
 //                                          centered or at the right
-//   area     left:<s> · right:<s>         the areas are fixed — the top, the
+//   area     <a>[:<s>]                    the areas are fixed — the top, the
 //            e.g. area:left:share=25,top  left side, the center, the right
 //                                          side and the bottom — and the parts
 //                                          move between them: a side holds its
-//                                          figure and rail, stacked, the
-//                                          figure above. A side's settings,
+//                                          figure and buttons, stacked, the
+//                                          figure above. An area given here
+//                                          is there with nothing in it, too:
+//                                          area:left. A side's settings,
 //                                          comma-separated: its width — fit
 //                                          (left off), min=<0–800>, at least
 //                                          so many px, share=<5–95>, that share
@@ -78,7 +64,9 @@
 //                                          laid out — and the corners it wins:
 //                                          top, over the top area, bottom,
 //                                          over the bottom area, each of which
-//                                          wins its corners left off
+//                                          wins its corners left off. The top's
+//                                          or bottom's, its height empty:
+//                                          min=<0–400>, area:top:min=24
 //   authors  none · short · full · 1–20   a paper's byline: none, the first
 //                                          three and "et al.", up to eight, or
 //                                          up to so many, authors:5;
@@ -88,35 +76,49 @@
 //            e.g. authors:full:plain:orcid  or to the papers we wrote together,
 //                                          on this site's collaborator map —
 //                                          where they have one; left off, words
-//            position                     in place of the byline, my place in
-//                                          it beside the year: "1st | 2026" —
-//                                          never both — in the rail, or
-//            position:<x>:<y>             in a corner of the card, left or
-//            e.g. authors:position:right:top  right, top or bottom
 //   text     none · summary · details     (the record's own tiers; none is
 //                                          the title alone)
 //   extras   none, or any of venue (where and when it appeared), status (a
 //            paper not yet out — submitted, accepted — as a pill on the
-//            venue line), role (my role in a package), context (a link to
-//            its topic on /research/)
-//   context  rail                   the context link in the rail, the default
-//            <x>:<y>                or out of it, in a corner of the card —
-//            e.g. context:right:bottom  left or right, top or bottom — so a
-//                                   card with nothing else for a rail has none
+//            venue line), position (my author position, "1st"), year (the
+//            year), role (my role in a package),
+//            context (a link to its topic on /research/)
+//   context  <place>                where the context link sits, e.g.
+//            e.g. context:bottom:right  context:bottom:right
+//   position <place>                where my author position sits
+//            e.g. position:top:right
+//   year     <place>                where the year sits. Where my position is
+//            e.g. year:top:right    in the same place, the two read as one,
+//                                   "1st | 2026"
 //   buttons  the link buttons: all · none, or the keys to keep, e.g.
 //            ads,code; then :1–12, the buttons to a row before the next,
 //            e.g. buttons:all:2, or :fit, as many as fit — left off, as
-//            near square as they go: ⌈√n⌉ to a row, for n buttons
+//            near square as they go: ⌈√n⌉ to a row, for n buttons; then
+//            their area — left, center (left off, under the words), right
+//            or bottom (the card's full width) — and their place in it: in
+//            a side, its top (left off), center or bottom, then across it,
+//            toward the card's edge left off; under the words or at the
+//            bottom, left (left off), center or right. buttons:all:fit:right,
+//            buttons:all:bottom:center
+//
+//   <place>  my position, the year and the context link each sit in an
+//            area, and at a place in it: with the buttons, in their area —
+//            the default, at the end away from them — up and down and
+//            across it, area:<v>:<h>; or in the top area, or the bottom one
+//            where the buttons are not, a strip of the card's padding:
+//            left (left off), center or right, top:right. Either part
+//            after the area may be left off, as near the default as it is
 //   space    room between the card's slots, comma-separated, each a length
 //            0–64 px or flex — a row, what room is left; a column, a share
 //            of the width alike with the words. Between rows, named by
 //            the slots either side in their default order — a figure
 //            moved among the center's parts keeps the names where they
 //            are: title_figure · figure_authors ·
-//            authors_venue · venue_text · text_rail · rail_bottom; between
-//            columns: left_words · words_right (the left side, the words,
-//            the right side). space:title_figure=flex sinks all under the
-//            title; words_right=24 widens the gap before the right side.
+//            authors_venue · venue_text · text_buttons (to the buttons under
+//            the words) · center_bottom (to the bottom area); between
+//            columns: left_center · center_right (the left area, the center,
+//            the right area). space:title_figure=flex sinks all under the
+//            title; center_right=24 widens the gap before the right area.
 //            Left off, as it is
 //   look     how it is drawn: settings, comma-separated, as key=value, each
 //            on its own —
@@ -148,10 +150,10 @@
 //            four before the rest.
 //
 // Parts may come in any order, and all but size and text may be left out:
-// figure none, rail center, title by the box (below), area none, authors
-// none, extras none, context rail, buttons all, space none, and the look
-// above. A left-out title depends on the box: a card of set
-// height at minor text size is too small for the full title, so it takes the nick
+// figure none, title by the box (below), area none, authors none, extras
+// none, context, position and year with the buttons, buttons all under
+// the words, space none, and the look above. A left-out title depends on
+// the box: a card of set height at minor text size is too small for the full title, so it takes the nick
 // title when no wider than it is high and the short title when wider;
 // anything else takes full:split. Such a box may leave out text too, and has none; any
 // other must give it. A name is written in full, in the order above, but for
@@ -168,30 +170,50 @@ export const DIALS = ['textsize', 'padding', 'corners', 'buttons'];
 export const FIGURE_AT = ['left', 'center', 'right'];
 export const FIGURE_ALIGN = ['top', 'center', 'bottom'];
 export const FIGURE_SLOTS = ['top', 'title', 'authors', 'venue', 'text'];
-/** Where the rail sits, and its buttons along it. */
+/** The buttons' area, and their place in it. */
 export const FOOT_AT = ['left', 'center', 'right', 'bottom'];
 export const FOOT_END = ['top', 'center', 'bottom'];
 export const RAIL_ALIGN = ['left', 'center', 'right'];
 export const TITLES = ['full', 'short', 'nick', 'none'];
-export const AUTHORS = ['none', 'short', 'full', 'position'];
+export const AUTHORS = ['none', 'full', 'short'];
 /** The most names authors:<n> asks for. */
 export const AUTHORS_MAX = 20;
 export const TEXTS = ['none', 'summary', 'details'];
-export const EXTRAS = ['venue', 'status', 'role', 'context'];
+export const EXTRAS = ['venue', 'status', 'position', 'year', 'role', 'context'];
 export const BACKGROUNDS = ['none', 'light', 'normal', 'dark'];
 /** A set width or height is between these, in px. */
 export const FIXED_MIN = 120;
 export const FIXED_MAX = 1600;
 export const FIXED_MIN_HEIGHT = 40;
 
-export const SPACE_TRACKS = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_rail', 'rail_bottom', 'left_words', 'words_right'];
+export const SPACE_TRACKS = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom', 'left_center', 'center_right'];
+/** The areas my position, the year and the context link may sit in. */
+export const PLACE_AT = ['top', 'left', 'center', 'right', 'bottom'];
+
+/** Where my position (part 'pos'), the year or the context link sits:
+ *  { area, v, h }, and strip where that is a strip of the card's padding — as
+ *  the name puts it or, left out, with the buttons, at the end away from
+ *  them. In the top area, or the bottom one where the buttons are not, a
+ *  strip: left, center or right. In the buttons' area, their box: up and down
+ *  and across it. Self-contained, as parseName: the embed page runs a copy. */
+export function placeOf(spec, part) {
+  const at = spec[part + 'At'] || {};
+  const box = spec.foot || 'center';
+  const side = box === 'left' || box === 'right';
+  const area = at.area || box;
+  if (area !== box) return { area: area, strip: true, h: at.h || 'left' };
+  const bv = side ? spec.footEnd || 'top' : 'bottom';
+  const bh = spec.railAlign || (side ? box : 'left');
+  const away = { top: 'bottom', bottom: 'top', center: side ? 'center' : 'right', left: 'right', right: 'left' };
+  return side ? { area: area, v: at.v || away[bv], h: at.h || bh } : { area: area, v: at.v || 'bottom', h: at.h || away[bh] };
+}
 
 /** The tracks set, in a fixed order. */
 const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${t}=${space[t]}`).join(',');
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posX, posY = 'bottom', authorLink = false, contextX, contextY = 'bottom', railAlign, titleWeight, frame, buttonGap, space, dials = {}, background = 'normal' }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, frame, buttonGap, space, dials = {}, background = 'normal' }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -205,19 +227,37 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(buttonGap != null ? [`buttongap=${buttonGap}`] : []),
     ...(background !== 'normal' ? [`background=${background}`] : []),
   ];
+  // A small part's place, written where it departs from its own left out:
+  // the area, then up and down where that is not the default — or where
+  // across is center, which would read as up and down — then across.
+  const place = (part, at) => {
+    const d = placeOf({ foot, footEnd, railAlign }, part);
+    const p = placeOf({ foot, footEnd, railAlign, [part + 'At']: at }, part);
+    if (p.area === d.area && p.v === d.v && p.h === d.h) return '';
+    if (p.strip) return `:${p.area}` + (p.h !== 'left' ? `:${p.h}` : '');
+    const h = p.h !== d.h ? p.h : null;
+    return `:${p.area}` + (p.v !== d.v || h === 'center' ? `:${p.v}` : '') + (h ? `:${h}` : '');
+  };
+  // The buttons' area and their place in it, where either departs.
+  const side = foot === 'left' || foot === 'right';
+  const bv = side && footEnd && footEnd !== 'top' ? footEnd : null;
+  const bh = railAlign && railAlign !== (side ? foot : 'left') ? railAlign : null;
+  const at = foot !== 'center' || bv || bh ? `:${foot}` + (bv || (side && bh === 'center') ? `:${footEnd || 'top'}` : '') + (bh ? `:${bh}` : '') : '';
   return [
     `size:${width}:${height}`,
     figure === 'none' ? 'figure:none' : `figure:${figure}${figure === 'center' ? (figureSlot && figureSlot !== 'title' ? `:${figureSlot}` : '') : `:${figureAlign}` + (figureH && figureH !== 'center' ? `:${figureH}` : '')}:${figureSize}` + (figureLink ? ':link' : ''),
-    foot === 'center' || foot === 'bottom'
-      ? `rail:${foot}` + (railAlign && railAlign !== 'left' || footEnd && footEnd !== 'bottom' ? `:${railAlign ?? 'left'}` : '') + (footEnd && footEnd !== 'bottom' ? `:${footEnd}` : '')
-      : `rail:${foot}:${footEnd ?? 'top'}` + (railAlign && railAlign !== foot ? `:${railAlign}` : ''),
-    (title === 'full' ? `title:full:${rest}` : `title:${title}`) + (titleLink && title !== 'none' ? `:${titleLink}` : '') + (titleAt === 'top' && title !== 'none' ? ':top' : '') + (titleAlign && titleAlign !== 'left' && title !== 'none' ? `:${titleAlign}` : ''),
-    ...['left', 'right'].filter((s) => sides[s]).map((s) => `area:${s}:${[sides[s].width, sides[s].top && 'top', sides[s].bottom && 'bottom'].filter(Boolean).join(',')}`),
-    authors === 'none' ? 'authors:none' : authors === 'position' ? 'authors:position' + (posX ? `:${posX}:${posY}` : '') : `authors:${authors}:${marks}` + (authorLink ? `:${authorLink}` : ''),
+    (title === 'full' ? `title:full:${rest}` : `title:${title}`) + (titleLink && title !== 'none' ? `:${titleLink}` : '') + (titleStatus && title !== 'none' ? ':status' : '') + (titleAt === 'top' && title !== 'none' ? ':top' : '') + (titleAlign && titleAlign !== 'left' && title !== 'none' ? `:${titleAlign}` : ''),
+    ...['left', 'right', 'top', 'bottom'].filter((s) => sides[s]).map((s) => {
+      const set = [sides[s].width, sides[s].height != null && `min=${sides[s].height}`, sides[s].top && 'top', sides[s].bottom && 'bottom'].filter(Boolean).join(',');
+      return `area:${s}` + (set ? `:${set}` : '');
+    }),
+    authors === 'none' ? 'authors:none' : `authors:${authors}:${marks}` + (authorLink ? `:${authorLink}` : ''),
     `text:${text}`,
     `extras:${EXTRAS.filter((e) => extras.includes(e)).join(',') || 'none'}`,
-    ...(contextX && extras.includes('context') ? [`context:${contextX}:${contextY}`] : []),
-    `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : ''),
+    ...(extras.includes('context') && place('context', contextAt) ? [`context${place('context', contextAt)}`] : []),
+    ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
+    ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
+    `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
     ...(space && Object.keys(space).length ? [`space:${spaceList(space)}`] : []),
     ...(tuned.length ? [`look:${tuned.join(',')}`] : []),
   ].join('-');
@@ -264,31 +304,21 @@ export function parseName(name) {
       if (slot && slot !== 'title') spec.figureSlot = slot;
       spec.figureSize = share ? +f[0] : f[0];
       spec.figureLink = f.length === 2;
-    } else if (key === 'rail' && (kv.length === 3 || kv.length === 4) && one(kv[1], ['center', 'bottom'])) {
-      // Under the words or at the bottom: along it, then across it — each
-      // rail's own axis first, as a side's is.
-      if (!(one(kv[2], ['left', 'center', 'right']) && (kv.length === 3 || one(kv[3], ['top', 'center', 'bottom'])))) throw new Error('"' + name + '": no such rail, ' + parts[i]);
-      spec.foot = kv[1];
-      if (kv[2] !== 'left') spec.railAlign = kv[2];
-      if (kv[3] && kv[3] !== 'bottom') spec.footEnd = kv[3];
-    } else if (key === 'rail' && (kv.length === 3 || kv.length === 4)) {
-      // In a side: where in its height, then where across it — toward the
-      // card's edge, the side's own, left off.
-      if (!(one(kv[1], ['left', 'right']) && one(kv[2], ['top', 'center', 'bottom']) && (kv.length === 3 || (one(kv[3], ['left', 'center', 'right']) && kv[3] !== kv[1])))) throw new Error('"' + name + '": no such rail, ' + parts[i]);
-      spec.foot = kv[1];
-      spec.footEnd = kv[2];
-      if (kv[3]) spec.railAlign = kv[3];
-    } else if (key === 'area' && one(kv[1], ['left', 'right']) && kv.length === 3) {
-      // A side: its width — at least so many px, growing to fit what is in
-      // it; a share of the card's; or its buttons' — and the corners it
-      // wins, over the top and bottom areas. Each once.
+    } else if (key === 'area' && one(kv[1], ['left', 'right', 'top', 'bottom']) && (kv.length === 2 || kv.length === 3)) {
+      // An area that is there, with or without anything in it. A side: its
+      // width — at least so many px, growing to fit what is in it; a share
+      // of the card's; or its buttons' — and the corners it wins, over the
+      // top and bottom areas. The top or bottom: its height, empty. Each once.
       const side = {};
-      const xs = kv[2].split(',');
+      const end = one(kv[1], ['top', 'bottom']);
+      const xs = kv.length === 3 ? kv[2].split(',') : [];
       for (let j = 0; j < xs.length; j += 1) {
         const m = /^(min|share)=(0|[1-9][0-9]{0,2})$/.exec(xs[j]);
-        const width = (m && (m[1] === 'min' ? +m[2] <= 800 : +m[2] >= 5 && +m[2] <= 95)) || xs[j] === 'buttons';
+        const width = !end && ((m && (m[1] === 'min' ? +m[2] <= 800 : +m[2] >= 5 && +m[2] <= 95)) || xs[j] === 'buttons');
+        const height = end && m && m[1] === 'min' && +m[2] <= 400;
         if (width && !side.width) side.width = xs[j];
-        else if (one(xs[j], ['top', 'bottom']) && !side[xs[j]]) side[xs[j]] = true;
+        else if (height && !side.height) side.height = +m[2];
+        else if (!end && one(xs[j], ['top', 'bottom']) && !side[xs[j]]) side[xs[j]] = true;
         else throw new Error('"' + name + '": no such area, ' + parts[i]);
       }
       spec.sides = { ...spec.sides, [kv[1]]: side };
@@ -300,16 +330,19 @@ export function parseName(name) {
       const align = kv.length > 2 && one(kv[kv.length - 1], ['left', 'center', 'right']) ? kv[kv.length - 1] : null;
       const ka = align ? kv.slice(0, -1) : kv;
       const top = ka.length > 2 && ka[ka.length - 1] === 'top';
-      const kt = top ? ka.slice(0, -1) : ka;
+      const kp = top ? ka.slice(0, -1) : ka;
+      const pill = kp.length > 2 && kp[kp.length - 1] === 'status';
+      const kt = pill ? kp.slice(0, -1) : kp;
       const link = kt.length > 2 && one(kt[kt.length - 1], ['link', 'site', 'ads', 'journal']) ? kt[kt.length - 1] : false;
       const t = link ? kt.slice(1, -1) : kt.slice(1);
-      if ((top || align) && t[0] === 'none') throw new Error('"' + name + '": no such title, ' + parts[i]);
+      if ((top || align || pill) && t[0] === 'none') throw new Error('"' + name + '": no such title, ' + parts[i]);
       if (t[0] === 'full' && t.length <= 2 && (t.length === 1 || one(t[1], ['whole', 'split']))) spec.rest = t[1] || 'split';
       else if (!(t.length === 1 && one(t[0], ['short', 'nick', 'none']) && !(link && t[0] === 'none'))) throw new Error('"' + name + '": no such title, ' + parts[i]);
       spec.title = t[0];
       spec.titleLink = link;
       spec.titleAt = top ? 'top' : 'center';
       if (align && align !== 'left') spec.titleAlign = align;
+      if (pill) spec.titleStatus = true;
     } else if (key === 'authors' && (one(kv[1], ['short', 'full']) || (/^[1-9][0-9]?$/.test(kv[1]) && +kv[1] <= 20)) && kv.length <= 4) {
       // The length, then its marking, then where the names link, if anywhere.
       const link = kv.length > 2 && one(kv[kv.length - 1], ['orcid', 'site']) ? kv[kv.length - 1] : false;
@@ -318,41 +351,46 @@ export function parseName(name) {
       spec.authors = one(kv[1], ['short', 'full']) ? kv[1] : +kv[1];
       spec.marks = m[0] || 'plain';
       spec.authorLink = link;
-    } else if (key === 'authors' && kv[1] === 'position' && kv.length === 4) {
-      if (!(one(kv[2], ['left', 'right']) && one(kv[3], ['top', 'bottom']))) throw new Error('"' + name + '": no such corner, ' + parts[i]);
-      spec.authors = 'position';
-      spec.posX = kv[2];
-      spec.posY = kv[3];
-    } else if (key === 'context' && kv.length === 3) {
-      if (!(one(kv[1], ['left', 'right']) && one(kv[2], ['top', 'bottom']))) throw new Error('"' + name + '": no such corner, ' + parts[i]);
-      spec.contextX = kv[1];
-      spec.contextY = kv[2];
-    } else if (key === 'buttons' && kv.length <= 3 && /^(all|none|[a-z]+(,[a-z]+)*)$/.test(kv[1])) {
-      if (kv.length === 3 && !(kv[2] === 'fit' || (/^[1-9][0-9]?$/.test(kv[2]) && +kv[2] <= 12))) throw new Error('"' + name + '": no such buttons to a row, ' + parts[i]);
+    } else if ((key === 'context' || key === 'year' || key === 'position') && kv.length >= 2) {
+      // A place — settled once the buttons' area is known.
+      spec[(key === 'position' ? 'pos' : key) + 'At'] = kv.slice(1);
+    } else if (key === 'buttons' && /^(all|none|[a-z]+(,[a-z]+)*)$/.test(kv[1] || '')) {
+      // The keys; then so many to a row, or fit; then the area and the place
+      // in it — in a side, up and down then across; else across.
+      const r = kv.slice(2);
+      if (r.length && (r[0] === 'fit' || /^[0-9]+$/.test(r[0]))) {
+        const n = r.shift();
+        if (!(n === 'fit' || (/^[1-9][0-9]?$/.test(n) && +n <= 12))) throw new Error('"' + name + '": no such buttons to a row, ' + parts[i]);
+        spec.perRow = n === 'fit' ? 'fit' : +n;
+      }
+      if (r.length) {
+        const area = r.shift();
+        if (!one(area, ['left', 'center', 'right', 'bottom'])) throw new Error('"' + name + '": no such area for the buttons, ' + parts[i]);
+        const side = area === 'left' || area === 'right';
+        spec.foot = area;
+        if (side) spec.footEnd = r.length && one(r[0], ['top', 'center', 'bottom']) ? r.shift() : 'top';
+        if (r.length && one(r[0], ['left', 'center', 'right'])) { const h = r.shift(); if (h !== (side ? area : 'left')) spec.railAlign = h; }
+        if (r.length) throw new Error('"' + name + '": no such place for the buttons, ' + parts[i]);
+      }
       spec.links = kv[1] === 'all' ? 'all' : kv[1] === 'none' ? [] : kv[1].split(',');
-      if (kv.length === 3) spec.perRow = kv[2] === 'fit' ? 'fit' : +kv[2];
     } else if (kv.length !== 2) {
       throw new Error('"' + name + '": not key:value, ' + parts[i]);
     } else if (key === 'figure' && kv[1] === 'none') {
       spec.figure = 'none';
-    } else if (key === 'rail' && one(kv[1], ['center', 'bottom'])) {
-      spec.foot = kv[1];
-    } else if (key === 'authors' && one(kv[1], ['none', 'position'])) {
+    } else if (key === 'authors' && kv[1] === 'none') {
       spec.authors = kv[1];
-    } else if (key === 'context' && kv[1] === 'rail') {
-      delete spec.contextX;
     } else if (key === 'text' && one(kv[1], ['none', 'summary', 'details'])) {
       spec.text = kv[1];
     } else if (key === 'extras') {
       const xs = kv[1] === 'none' ? [] : kv[1].split(',');
-      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], ['venue', 'status', 'role', 'context'])) throw new Error('"' + name + '": no such extra, ' + xs[j]);
+      for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], ['venue', 'status', 'position', 'year', 'role', 'context'])) throw new Error('"' + name + '": no such extra, ' + xs[j]);
       spec.extras = xs;
     } else if (key === 'space') {
       spec.space = {};
       const xs = kv[1].split(',');
       for (let j = 0; j < xs.length; j += 1) {
         // A track between two slots, named by them.
-        const t = /^(title_figure|figure_authors|authors_venue|venue_text|text_rail|rail_bottom|left_words|words_right)=(flex|0|[1-9][0-9]?)$/.exec(xs[j]);
+        const t = /^(title_figure|figure_authors|authors_venue|venue_text|text_buttons|center_bottom|left_center|center_right)=(flex|0|[1-9][0-9]?)$/.exec(xs[j]);
         if (!t || (t[2] !== 'flex' && +t[2] > 64)) throw new Error('"' + name + '": no such space, ' + xs[j]);
         spec.space[t[1]] = t[2];
       }
@@ -379,6 +417,22 @@ export function parseName(name) {
     } else {
       throw new Error('"' + name + '": not understood, ' + parts[i]);
     }
+  }
+  // My position, the year and the context link: an area — the buttons', or
+  // the top or bottom — and a place in it: a strip's across it, the
+  // buttons' box up and down and across.
+  const parts3 = ['pos', 'year', 'context'];
+  for (let j = 0; j < parts3.length; j += 1) {
+    const t = spec[parts3[j] + 'At'];
+    if (!t) continue;
+    const area = t[0];
+    if (!(area === spec.foot || area === 'top' || area === 'bottom')) throw new Error('"' + name + '": ' + parts3[j] + ' sits with the buttons, at the top or at the bottom, not ' + area);
+    const at = { area: area };
+    const r = t.slice(1);
+    if (area === spec.foot && r.length && one(r[0], ['top', 'center', 'bottom'])) at.v = r.shift();
+    if (r.length && one(r[0], ['left', 'center', 'right'])) at.h = r.shift();
+    if (r.length) throw new Error('"' + name + '": no such place for ' + parts3[j] + ', ' + t.join(':'));
+    spec[parts3[j] + 'At'] = at;
   }
   // Standard is the own look of a card that fills its width.
   // A title size is its own, never the card's standard.

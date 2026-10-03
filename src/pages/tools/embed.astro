@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import { items, relKey, splitTitle } from '../../lib/data.js';
 import {
-  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasContext, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
 
 const pool = items.filter((i) => CARD_TYPES.includes(i.type));
@@ -47,6 +47,10 @@ const placeOf = (l) => {
   if (/zenodo/.test(url.pathname)) return 'Zenodo';
   return PLACES[url.host.replace(/^www\./, '')] ?? (l.rel === 'doi' ? 'DOI' : l.rel);
 };
+// A paper's own link goes to its publisher where it is the paper or its DOI
+// and not ADS or arXiv: the title-link option then reads "publisher", and the
+// journal's own, the same place, is not offered again.
+const toPublisher = (i) => i.type === 'publication' && ['paper', 'doi'].includes(ownLink(i)?.rel) && !/adsabs|arxiv/.test(ownLink(i).url);
 const linkChoices = (i) => {
   const byKey = new Map();
   for (const l of cardLinks(i)) {
@@ -69,7 +73,7 @@ const data = {
   // The builder's own default first, then the website's cards.
   presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
   items: Object.fromEntries(pool.map((i) => [i.id, {
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), status: hasStatus(i) ? i.status : null, context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? placeOf(ownLink(i)) : null, site: siteHref(i)?.replace(/#.*/, '') ?? null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) ? 'journal' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
   }])),
 };
 ---
@@ -244,6 +248,11 @@ const data = {
                 <span class="pilltoggle eb-checks" role="group" aria-label={`The sides that run beside the ${end} area, taking its corners`}>
                   {['left', 'right'].map((side) => <label id={`eb-win-${side}-${end}`} title={`The ${side} side runs ${end === 'top' ? 'up' : 'down'} beside the ${end} area, taking its corner`}><input type="checkbox" class="eb-check" name={`win${side}`} value={end} />{side === 'left' ? 'LHS' : 'RHS'}</label>)}
                 </span>
+                {/* Its height, with nothing in it: a strip of the card's padding. */}
+                <span class="eb-dim">height</span>
+                <span class="eb-px">
+                  <label title={`The ${end} area's height when nothing is in it; empty is a line's`}><input type="number" name={`h${end}`} min="0" max="400" step="1" placeholder="–" data-from="20" aria-label={`The ${end} area's height, in pixels`} />px</label>
+                </span>
               </span>
             </fieldset>
           ))}
@@ -255,12 +264,12 @@ const data = {
             <legend class="eb-key">Title</legend>
             <span class="eb-sub">
               {/* Its area, first: the top area, across the card above the
-                  figure, the words and the rails — empty, it takes no room —
+                  figure, the words and the sides — empty, it takes no room —
                   or the center, the words' own column. */}
               <span class="eb-dim">area</span>
               <span class="pilltoggle" role="radiogroup" aria-label="The area the title sits in">
+                <label title="Across the card, above the figure, the words and the sides"><input type="radio" class="posradio" name="titleat" value="top" />top</label>
                 <label title="In the words' own column"><input type="radio" class="posradio" name="titleat" value="center" checked />center</label>
-                <label title="Across the card, above the figure, the words and the rails"><input type="radio" class="posradio" name="titleat" value="top" />top</label>
               </span>
               {/* Then its position across that area. */}
               <span class="eb-dim">position</span>
@@ -281,6 +290,10 @@ const data = {
                 <span class="pilltoggle">
                   {TITLES.filter((v) => v !== 'full').map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="title" value={v} />{v}</label>)}
                 </span>
+                {/* Set apart: a pill after the title, where it stands. */}
+                <span class="pilltoggle eb-checks" id="eb-tstatus">
+                  <label title="Where it stands — submitted, accepted or published — as a pill after the title"><input type="checkbox" class="eb-check" name="titlestatus" />status</label>
+                </span>
               </span>
               {/* Where the title links: nowhere, to the item itself — named by
                   where that is — or to its entry on this site. */}
@@ -289,45 +302,39 @@ const data = {
                 <label title="The title as words"><input type="radio" class="posradio" name="titlelink" value="" checked />none</label>
                 <label id="eb-tl-link" title="The title a link to the item itself"><input type="radio" class="posradio" name="titlelink" value="link" /><span></span></label>
                 <label id="eb-tl-ads" title="The title a link to its ADS abstract"><input type="radio" class="posradio" name="titlelink" value="ads" /><span></span></label>
-                <label id="eb-tl-journal" title="The title a link to where it was published: the journal's own page"><input type="radio" class="posradio" name="titlelink" value="journal" /><span></span></label>
-                <label id="eb-tl-site" title="The title a link to its entry on this site"><input type="radio" class="posradio" name="titlelink" value="site" /><span></span></label>
+                <label id="eb-tl-journal" title="The title a link to where it was published: the publisher's own page, or its DOI"><input type="radio" class="posradio" name="titlelink" value="journal" /><span></span></label>
+                <label id="eb-tl-site" title="The title a link to its entry on this website: /publications/ or /software/"><input type="radio" class="posradio" name="titlelink" value="site" /><span></span></label>
               </span>
-              <span class="eb-dim">weight</span>
-              <span class="pilltoggle" role="radiogroup" aria-label="The title's weight">
-                <label title="Medium, or regular where I am past second author"><input type="radio" class="posradio" name="titleweight" value="" checked />auto</label>
-                {['regular', 'medium', 'bold'].map((v) => <label><input type="radio" class="posradio" name="titleweight" value={v} />{v}</label>)}
-                <label title="Bold where I am first author, regular otherwise"><input type="radio" class="posradio" name="titleweight" value="mine" />mine</label>
-              </span>
-              {/* Its size: a step, a size typed, or — the default — following
-                  the text size. */}
+              {/* Its size — a size typed, or, the default, following the text
+                  size — and on the same line its weight, from a menu. */}
               <span class="eb-dim">size</span>
               <span class="eb-px">
                 <label title={STEP_PX.titlesize.what}><input type="number" name="titlesizepx" min={STEP_PX.titlesize.min} max={STEP_PX.titlesize.max} step="0.1" aria-label="Title size in pixels" />px</label>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops={LOOKS.length + 1} role="radiogroup" aria-label="Title size">
-                  {LOOKS.map((v) => <label title={`${v}: ${STEP_PX.titlesize[v]}px`}><input type="radio" class="posradio" name="titlesize" value={v} />{STEP_PX.titlesize[v]}</label>)}
+                <span class="pilltoggle" role="radiogroup" aria-label="Title size">
                   <label title="Follows the text size"><input type="radio" class="posradio" name="titlesize" value="text" checked />by text</label>
                 </span>
+                <span class="eb-dim eb-inkey">weight</span>
+                <select name="titleweight" class="eb-menu" aria-label="The title's weight">
+                  <option value="" title="Medium, or regular where I am past second author" selected>auto</option>
+                  {['regular', 'medium', 'bold'].map((v) => <option value={v}>{v}</option>)}
+                  <option value="mine" title="Bold where I am first author, regular otherwise">mine</option>
+                </select>
               </span>
             </span>
           </fieldset>
 
-          {/* Which byline: short or full — or, in its place, my author
-              position beside the year. Never both, so position is one of the
-              choices. none is the tick box's above. Then, for a byline, my
-              students marked or plain. */}
+          {/* Which byline: short, full or so many names. none is the tick
+              box's above. Then my students marked or plain, and where each
+              co-author links. */}
           <fieldset class="eb-row" id="eb-authors-row" data-tune="authors" hidden>
             <legend class="eb-key">Authors</legend>
             <span class="eb-sub">
               <span class="eb-dim">length</span>
               <span class="eb-pair">
                 <span class="pilltoggle">
-                  {AUTHORS.filter((v) => v !== 'position').map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="authors" value={v} />{v}</label>)}
+                  {AUTHORS.map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="authors" value={v} />{v}</label>)}
                   {/* So many names: a choice like the others, its number typed. */}
                   <label class="eb-px" title={`So many names, 1–${AUTHORS_MAX}, keeping mine`}><input type="radio" class="posradio" name="authors" value="n" /><input type="number" name="authorsn" min="1" max={AUTHORS_MAX} step="1" placeholder="#" aria-label="Number of names" /></label>
-                </span>
-                {/* Set apart: in place of the byline, not a length of it. */}
-                <span class="pilltoggle" id="eb-pos">
-                  <label title="My author position, as 1st | 2026, in place of the byline"><input type="radio" class="posradio" name="authors" value="position" />position</label>
                 </span>
               </span>
               <span class="eb-dim" id="eb-marks-key">students</span>
@@ -343,22 +350,75 @@ const data = {
                 <label title="Each co-author a link to their ORCID, where they have one"><input type="radio" class="posradio" name="authorlink" value="orcid" />ORCID</label>
                 <label title="Each co-author a link to the papers we wrote together, on the collaborator map at /research/, where they are on it"><input type="radio" class="posradio" name="authorlink" value="site" />our papers</label>
               </span>
-              {/* For a position: in the rail, or a corner of the card. */}
-              <span class="eb-dim" id="eb-corner-key">corner</span>
-              <span class="eb-pair" id="eb-corner">
-                <span class="pilltoggle" role="radiogroup" aria-label="Where my position sits">
-                  <label title="In the rail, beside the buttons"><input type="radio" class="posradio" name="posx" value="" checked />rail</label>
-                  <label title="The card's left corner"><input type="radio" class="posradio" name="posx" value="left" />left</label>
-                  <label title="The card's right corner"><input type="radio" class="posradio" name="posx" value="right" />right</label>
+            </span>
+          </fieldset>
+
+          {/* My author position, "1st", where Extras asks for it: an area —
+              with the buttons, or a strip at the top or bottom — and a place
+              there. Clicking it brings it up. */}
+          <fieldset class="eb-row" id="eb-pos-row" data-tune="position" hidden>
+            <legend class="eb-key">Position</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" id="eb-posat" role="radiogroup" aria-label="The area my position sits in">
+                <label title="A strip across the card's top"><input type="radio" class="posradio" name="posat" value="top" />top</label>
+                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="posat" value="" checked /><span class="eb-boxname">center</span></label>
+                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="posat" value="bottom" />bottom</label>
+              </span>
+              <span class="eb-dim">position</span>
+              <span class="eb-pair" id="eb-pospos">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-posv" role="radiogroup" aria-label="My position at the top, center or bottom of the buttons' area">
+                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="posv" value={v} checked={v === 'bottom'} />{v}</label>)}
                 </span>
-                <span class="pilltoggle" id="eb-posy" role="radiogroup" aria-label="The top or bottom corner">
-                  <label><input type="radio" class="posradio" name="posy" value="top" />top</label>
-                  <label><input type="radio" class="posradio" name="posy" value="bottom" checked />bottom</label>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="My position at the left, center or right of its area">
+                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="posh" value={v} checked={v === 'left'} />{v}</label>)}
                 </span>
-                {/* In a rail at a side, my position sits at the end the buttons
-                    do not: swapping turns the rail over, top for bottom. An
-                    action, not a setting. */}
-                <span id="eb-swap"><button type="button" class="eb-linkbtn" title="Swap my position and the buttons, end for end in the rail">⇅ swap</button></span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* The year and the context link, where Extras asks for them: each in
+              an area — with the buttons, or a strip at the top or bottom — and
+              at a place there. Where my position is in the same place as the
+              year, the two read as one, "1st | 2026". Clicking either brings
+              up its own row. */}
+          <fieldset class="eb-row" id="eb-year-row" data-tune="year" hidden>
+            <legend class="eb-key">Year</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" id="eb-yearat" role="radiogroup" aria-label="The area the year sits in">
+                <label title="A strip across the card's top"><input type="radio" class="posradio" name="yearat" value="top" />top</label>
+                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="yearat" value="" checked /><span class="eb-boxname">center</span></label>
+                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="yearat" value="bottom" />bottom</label>
+              </span>
+              <span class="eb-dim">position</span>
+              <span class="eb-pair" id="eb-yearpos">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-yearv" role="radiogroup" aria-label="The year at the top, center or bottom of the buttons' area">
+                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="yearv" value={v} checked={v === 'bottom'} />{v}</label>)}
+                </span>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The year at the left, center or right of its area">
+                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="yearh" value={v} checked={v === 'left'} />{v}</label>)}
+                </span>
+              </span>
+            </span>
+          </fieldset>
+          <fieldset class="eb-row" id="eb-ctx-row" data-tune="context" hidden>
+            <legend class="eb-key">Context</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" id="eb-ctxat" role="radiogroup" aria-label="The area the context link sits in">
+                <label title="A strip across the card's top"><input type="radio" class="posradio" name="ctxat" value="top" />top</label>
+                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="ctxat" value="" checked /><span class="eb-boxname">center</span></label>
+                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="ctxat" value="bottom" />bottom</label>
+              </span>
+              <span class="eb-dim">position</span>
+              <span class="eb-pair" id="eb-ctxpos">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-ctxv" role="radiogroup" aria-label="The context link at the top, center or bottom of the buttons' area">
+                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="ctxv" value={v} checked={v === 'bottom'} />{v}</label>)}
+                </span>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The context link at the left, center or right of its area">
+                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="ctxh" value={v} checked={v === 'left'} />{v}</label>)}
+                </span>
               </span>
             </span>
           </fieldset>
@@ -439,9 +499,9 @@ const data = {
             </span>
           </fieldset>
 
-          {/* The buttons — with the year and context, the rail — and the area
-              they sit in: the left side, under the words, the right side, or
-              the bottom; where in it; and how they are laid out, so many to a
+          {/* The buttons: their area — the left side, under the words, the
+              right side, or the bottom — and their place in it, up and down
+              in a side and across; and how they are laid out, so many to a
               row. Clicking any of them in the preview brings it up. */}
           <fieldset class="eb-row" data-tune="foot" hidden>
             <legend class="eb-key">Buttons</legend>
@@ -454,7 +514,7 @@ const data = {
               </span>
               <span class="eb-dim">position</span>
               <span class="eb-pair">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="Up and down: in a side, the buttons at its top, center or bottom; under the words or at the bottom, the year at the top, center or bottom of the buttons">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-footend" role="radiogroup" aria-label="The buttons at the top, center or bottom of their side">
                   {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="footend" value={v} checked={v === 'top'} />{v}</label>)}
                 </span>
                 <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The buttons at the left, center or right of their area">
@@ -481,19 +541,6 @@ const data = {
               <span class="eb-dim">gap</span>
               <span class="eb-px">
                 <label title="The space between the buttons, in pixels; empty is a third of the text's height"><input type="number" name="bgap" min="0" max="32" step="1" placeholder="auto" aria-label="Space between buttons, in pixels" />px</label>
-              </span>
-              {/* The context link: in the rail, or floating in a corner. */}
-              <span class="eb-dim" id="eb-ctx-key">context</span>
-              <span class="eb-pair" id="eb-ctx">
-                <span class="pilltoggle" role="radiogroup" aria-label="Where the context link sits">
-                  <label title="In the rail"><input type="radio" class="posradio" name="ctxx" value="" checked />rail</label>
-                  <label title="Floating in the card's left corner"><input type="radio" class="posradio" name="ctxx" value="left" />left</label>
-                  <label title="Floating in the card's right corner"><input type="radio" class="posradio" name="ctxx" value="right" />right</label>
-                </span>
-                <span class="pilltoggle" id="eb-ctxy" role="radiogroup" aria-label="The top or bottom corner">
-                  <label><input type="radio" class="posradio" name="ctxy" value="top" />top</label>
-                  <label><input type="radio" class="posradio" name="ctxy" value="bottom" checked />bottom</label>
-                </span>
               </span>
             </span>
           </fieldset>
@@ -574,11 +621,14 @@ const data = {
 
 <script>
   import { domToPng } from 'modern-screenshot';
-  import { AUTHORS_MAX, DIALS, SPACE_TRACKS, formatName, parseName } from '../../lib/cardname.js';
+  import { AUTHORS_MAX, DIALS, SPACE_TRACKS, formatName, parseName, placeOf } from '../../lib/cardname.js';
 
   const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
   const form = document.getElementById('eb');
   const el = (id) => document.getElementById(id);
+  // A radio group set to a value — '' too, which setting RadioNodeList.value
+  // does not check — and none checked where no radio has it.
+  const setRadio = (n, v) => { for (const r of document.querySelectorAll(`input[type=radio][name="${n}"]`)) r.checked = r.value === String(v); };
   const preview = el('eb-preview');
   const code = el('eb-code');
   const note = el('eb-note');
@@ -594,14 +644,16 @@ const data = {
   let height = 0; // the previewed card's height, as it last reported it
   let shown = ''; // the preview's src, so a snippet-only change leaves it alone
 
-  // The role, status and context, where the item has them, and on a row of
-  // their own a toggle per link it carries. The figure and the venue are on the row
+  // The role, status, my position, the year and the context, where the item
+  // has them, and on a row of their own a toggle per link it carries. The figure and the venue are on the row
   // above.
   function buildExtras(id) {
     const it = items[id];
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
       + x(it.status, 'status', `Its status, ${it.status}, on the venue line`)
+      + x(it.pos, 'position', 'My author position, as 1st')
+      + x(it.year, 'year', 'The year')
       + x(it.context, 'context', 'A link to its topic on /research/');
     el('eb-extras-drop').hidden = !extras.innerHTML;
     el('eb-links').innerHTML = it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
@@ -609,10 +661,31 @@ const data = {
 
   // A preset as it comes out for this item: the extras it has not got drop,
   // so an item with no figure still matches the default.
-  const has = (it, x) => ({ figure: it.figure, venue: it.venue, status: it.status, role: it.role, context: it.context })[x];
+  // My position, the year and the context link: each one's prefix in the
+  // form, and its part in a spec.
+  const SMALL = [['pos', 'pos'], ['year', 'year'], ['ctx', 'context']];
+  // A part's place as the form has it: a strip's area and across it, or the
+  // buttons' area, up and down and across.
+  const placed = (f, k) => {
+    const a = f.get(`${k}at`);
+    return a ? { area: a, h: f.get(`${k}h`) } : { area: f.get('foot'), v: f.get(`${k}v`), h: f.get(`${k}h`) };
+  };
+  // A part's place set back to where it sits in its area left out — with the
+  // buttons, at the end away from them; in a strip, at its left. The bottom
+  // strip is the buttons' own area once they are at the bottom.
+  function resetPlace(k) {
+    const foot = form.elements.foot.value;
+    if (foot === 'bottom' && form.elements[`${k}at`].value === 'bottom') setRadio(`${k}at`, '');
+    const a = form.elements[`${k}at`].value;
+    const part = SMALL.find(([x]) => x === k)[1];
+    const pl = placeOf({ foot, footEnd: form.elements.footend.value, railAlign: form.elements.railalign.value, [`${part}At`]: a ? { area: a } : undefined }, part);
+    if (pl.v) form.elements[`${k}v`].value = pl.v;
+    form.elements[`${k}h`].value = pl.h;
+  }
+  const has = (it, x) => ({ figure: it.figure, venue: it.venue, status: it.status, position: it.pos, year: it.year, role: it.role, context: it.context })[x];
   // The byline as this item can have it: none with no authors, and none for a
   // position it has not got.
-  const authorsFor = (it, a) => (!it.byline || (a === 'position' && !it.pos) ? 'none' : a);
+  const authorsFor = (it, a) => (!it.byline ? 'none' : a);
   // The title's link as this item can have it: none to a place it has not got.
   const linkFor = (it, l) => (l && it[l] ? l : false);
   function fit(name, it) {
@@ -620,7 +693,7 @@ const data = {
     // A list of buttons to keep, read against the links this item has.
     const keys = it.links.map(([k]) => k);
     const kept = c.links === 'all' ? keys : keys.filter((k) => c.links.includes(k));
-    return formatName({ ...c, links: kept.length === keys.length ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), figure: it.figure ? c.figure : 'none',
+    return formatName({ ...c, links: kept.length === keys.length ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
                         rest: it.split ? c.rest : 'split', text: it.text ? c.text : 'none' });
   }
 
@@ -638,7 +711,10 @@ const data = {
     form.elements.hmode.value = c.height === 'fit' ? 'fit' : 'px';
     if (c.width !== 'fill') form.elements.px.value = c.width;
     for (const d of DIALS) setDial(d, c.dials[d] ?? (c.width === 'fill' ? 'standard' : 'width'));
-    setDial('titlesize', c.dials.titlesize ?? 'text');
+    // A title size of a step shows as its px, there being no stops for it.
+    const ts = c.dials.titlesize;
+    setDial('titlesize', ts ? '' : 'text');
+    if (ts && !/^\d/.test(ts)) form.elements.titlesizepx.value = STEP_PX.titlesize[ts];
     for (const d in STEP_PX) if (/^\d/.test(c.dials[d] ?? '')) form.elements[`${d}px`].value = c.dials[d]; // a size, on no step
     if (c.height !== 'fit') form.elements.hpx.value = c.height;
     el('eb-figure-on').checked = c.figure !== 'none';
@@ -648,38 +724,46 @@ const data = {
     form.elements.figunit.value = typeof c.figureSize === 'string' && c.figureSize.endsWith('px') ? 'px' : '%';
     form.elements.figh.value = c.figureH ?? 'center';
     form.elements.figslot.value = c.figureSlot ?? 'title';
+    areasOn = new Set(Object.keys(c.sides ?? {}));
+    for (const end of ['top', 'bottom']) form.elements[`h${end}`].value = c.sides?.[end]?.height ?? '';
     for (const side of ['left', 'right']) {
       const { width = '', top, bottom } = c.sides?.[side] ?? {};
       const [kind, n = ''] = width.split('=');
-      form.elements[`w${side}`].value = kind;
+      setRadio(`w${side}`, kind);
       form.elements[`w${side}n`].value = n;
       for (const b of form.querySelectorAll(`[name=win${side}]`)) b.checked = !!{ top, bottom }[b.value];
     }
     form.elements.figlink.checked = !!c.figureLink;
     form.elements.foot.value = c.foot;
-    form.elements.footend.value = c.footEnd ?? (['left', 'right'].includes(c.foot) ? 'top' : 'bottom');
+    form.elements.footend.value = c.footEnd ?? 'top';
     form.elements.railalign.value = c.railAlign ?? (['left', 'right'].includes(c.foot) ? c.foot : 'left');
     form.elements.titleweight.value = c.titleWeight ?? '';
     const framePx = /^[0-9]/.test(c.frame ?? '');
-    form.elements.frame.value = framePx ? '' : c.frame ?? '';
+    setRadio('frame', framePx ? '' : c.frame ?? '');
     form.elements.framepx.value = framePx ? c.frame : '';
     form.elements.bgap.value = c.buttonGap ?? '';
     space = { ...(c.space ?? {}) };
     showTracks();
     form.elements.perrow.value = typeof c.perRow === 'number' ? c.perRow : '';
-    form.elements.perp.value = typeof c.perRow === 'number' ? '' : c.perRow === 'fit' ? 'fit' : 'square';
+    setRadio('perp', typeof c.perRow === 'number' ? '' : c.perRow === 'fit' ? 'fit' : 'square');
     form.elements.title.value = c.title;
     form.elements.rest.value = c.rest ?? 'split';
-    form.elements.titlelink.value = c.titleLink || '';
+    setRadio('titlelink', c.titleLink || '');
     form.elements.titleat.value = c.titleAt ?? 'center';
     form.elements.titlealign.value = c.titleAlign ?? 'left';
+    form.elements.titlestatus.checked = !!c.titleStatus;
     form.elements.authors.value = typeof c.authors === 'number' ? 'n' : c.authors;
     form.elements.authorsn.value = typeof c.authors === 'number' ? c.authors : '';
-    form.elements.posx.value = c.posX ?? '';
-    form.elements.ctxx.value = c.contextX ?? '';
-    form.elements.ctxy.value = c.contextY ?? 'bottom';
-    form.elements.authorlink.value = c.authorLink || '';
-    form.elements.posy.value = c.posY ?? 'bottom';
+    // My position, the year and the context link: the area — '' for the
+    // buttons' own — and the place there, as the name has them or, left out,
+    // as they then sit.
+    for (const [k, part] of SMALL) {
+      const pl = placeOf(c, part);
+      setRadio(`${k}at`, pl.strip ? pl.area : '');
+      if (pl.v) form.elements[`${k}v`].value = pl.v;
+      form.elements[`${k}h`].value = pl.h;
+    }
+    setRadio('authorlink', c.authorLink || '');
     form.elements.marks.value = c.marks ?? 'plain';
     form.elements.background.value = c.background;
     form.elements.text.value = c.text;
@@ -704,8 +788,8 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? String(clampInt(f.get('bgap'), 0, 32)) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleAlign: f.get('titlealign'), rest: items[id].split ? f.get('rest') : 'split',
-      authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posX: f.get('posx') || undefined, contextX: f.get('ctxx') || undefined, contextY: f.get('ctxy'), posY: f.get('posy'), text: items[id].text ? f.get('text') : 'none',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? String(clampInt(f.get('bgap'), 0, 32)) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleAlign: f.get('titlealign'), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
       extras: f.getAll('extra').filter((x) => has(items[id], x)), links: on.length === all.length ? 'all' : on, perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
     return { id, it: items[id], slug, width, height, format: f.get('format'), theme: f.get('theme') };
@@ -750,14 +834,19 @@ const data = {
     el('eb-venue').hidden = !s.it.venue;
     // marked | plain and the ORCID links belong to a byline that is shown.
     el('eb-marks').hidden = el('eb-marks-key').hidden = el('eb-orcid').hidden = el('eb-orcid-key').hidden = !(s.it.byline && ['short', 'full', 'n'].includes(form.elements.authors.value));
-    // A corner belongs to a position; top or bottom, to a corner.
-    el('eb-corner').hidden = el('eb-corner-key').hidden = form.elements.authors.value !== 'position';
-    el('eb-posy').hidden = !form.elements.posx.value;
-    // Where the context link sits belongs to a card that has one.
-    el('eb-ctx').hidden = el('eb-ctx-key').hidden = !(s.it.context && [...form.querySelectorAll('[name=extra]')].some((b) => b.value === 'context' && b.checked));
-    el('eb-ctxy').hidden = !form.elements.ctxx.value;
-    el('eb-swap').hidden = !!form.elements.posx.value || ['center', 'bottom'].includes(form.elements.foot.value) || form.elements.footend.value === 'center';
-    el('eb-pos').hidden = !s.it.pos;
+    // Each part's area: top, the buttons' own — named as theirs — or bottom,
+    // which is theirs where they are at the bottom; up and down only in the
+    // buttons' box, a strip having none.
+    const box = form.elements.foot.value;
+    for (const [k] of SMALL) {
+      el(`eb-${k}at`).querySelector('.eb-boxname').textContent = { left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[box];
+      el(`eb-${k}at`).querySelector('.eb-stripbottom').hidden = box === 'bottom';
+      el(`eb-${k}v`).hidden = !!form.elements[`${k}at`].value;
+    }
+    // Up and down belongs to buttons in a side.
+    el('eb-footend').hidden = !['left', 'right'].includes(box);
+    // A status pill belongs to a paper that has one to show.
+    el('eb-tstatus').hidden = !s.it.tstatus;
     // whole | split belongs to a full title that has a short title inside it.
     el('eb-rest').hidden = !(form.elements.title.value === 'full' && s.it.split);
     // The title's link pills, named for this item, where it has the place.
@@ -789,15 +878,13 @@ const data = {
     // The shape lit is the one the two numbers make, if any.
     for (const r of form.elements.shape) { const [a, b] = r.value.split('x').map(Number); r.checked = wset && hset && Math.round((s.width * b) / a) === s.height; }
     const fixed = wset;
-    // Each area's settings only where something is in it — a side's width,
-    // and beside the top or bottom area, a side holding anything: a setting
-    // for an empty one would change nothing.
+    // A side's width only where something is in it: a setting for an empty
+    // one would change nothing.
     for (const side of ['left', 'right']) {
       const kind = form.elements[`w${side}`].value;
       el(`eb-w-${side}-buttons`).hidden = form.elements.foot.value !== side;
       el(`eb-w-${side}-n`).hidden = kind === 'buttons';
       el(`eb-w-${side}-unit`).textContent = kind === 'share' ? '%' : 'px';
-      el(`eb-win-${side}-top`).hidden = el(`eb-win-${side}-bottom`).hidden = !sideHas(side);
     }
     for (const a of ['left', 'right', 'top', 'bottom']) if (!canTune(el(`eb-area-${a}-row`))) el(`eb-area-${a}-row`).hidden = true;
     // Its position: in a side, up and down and across it; in the center,
@@ -818,7 +905,7 @@ const data = {
     else if (!form.elements.perp.value) form.elements.perp.value = 'square';
     // A size box shows its step's px; typed, it keeps its own.
     for (const d in STEP_PX) {
-      const v = form.elements[d].value, box = form.elements[`${d}px`];
+      const v = form.querySelector(`[name=${d}]:checked`)?.value, box = form.elements[`${d}px`];
       if (v && document.activeElement !== box) box.value = STEP_PX[d][v] ?? '';
     }
     for (const d of form.querySelectorAll('.eb-dial')) d.dataset.stops = fixed ? 6 : 5;
@@ -863,7 +950,7 @@ const data = {
 
   // A dial's slider set to a step, or to none — the thumb hides.
   function setDial(d, v) {
-    for (const r of form.elements[d]) r.checked = r.value === v;
+    setRadio(d, v);
   }
 
   // What a box takes when nothing is chosen — in a fixed minor the nick or short
@@ -957,35 +1044,69 @@ const data = {
     const [lo, hi] = form.elements.figunit.value === 'px' ? [8, 800] : [10, 100];
     return Math.min(hi, Math.max(lo, Math.round(+form.elements.figpx.value || 0)));
   };
-  // Each side holding anything: its width — at least so many px, 0–800; a
-  // share of the card, 5–95; or its buttons', where they are in it — and the
-  // corners it wins, where the top or bottom area holds anything.
-  const sides = (f) => Object.fromEntries(['left', 'right'].filter(sideHas).map((side) => {
-    const kind = f.get(`w${side}`), n = f.get(`w${side}n`);
-    const [lo, hi] = kind === 'min' ? [0, 800] : [5, 95];
-    const width = kind === 'buttons' ? (f.get('foot') === side ? 'buttons' : undefined)
-      : kind && n !== '' ? `${kind}=${Math.min(hi, Math.max(lo, Math.round(+n)))}` : undefined;
-    const wins = f.getAll(`win${side}`);
-    const top = wins.includes('top') && f.get('titleat') === 'top', bottom = wins.includes('bottom') && f.get('foot') === 'bottom';
-    return [side, { ...(width && { width }), ...(top && { top }), ...(bottom && { bottom }) }];
-  }).filter(([, v]) => Object.keys(v).length));
+  // The areas added with their ⊕, there with nothing in them too.
+  let areasOn = new Set();
+  // Each side that is there — holding anything, or added: its width — at
+  // least so many px, 0–800; a share of the card, 5–95; or its buttons',
+  // where they are in it — and the corners it wins, where the top or bottom
+  // area holds anything; written where it was added or departs. Then the top
+  // and bottom, where added: their height, empty.
+  const sides = (f) => {
+    const out = {};
+    for (const side of ['left', 'right']) {
+      if (!sideHas(side) && !areasOn.has(side)) continue;
+      const kind = f.get(`w${side}`), n = f.get(`w${side}n`);
+      const [lo, hi] = kind === 'min' ? [0, 800] : [5, 95];
+      const width = kind === 'buttons' ? (f.get('foot') === side ? 'buttons' : undefined)
+        : kind && n !== '' ? `${kind}=${Math.min(hi, Math.max(lo, Math.round(+n)))}` : undefined;
+      const wins = f.getAll(`win${side}`);
+      const top = wins.includes('top') && f.get('titleat') === 'top', bottom = wins.includes('bottom') && f.get('foot') === 'bottom';
+      const v = { ...(width && { width }), ...(top && { top }), ...(bottom && { bottom }) };
+      if (areasOn.has(side) || Object.keys(v).length) out[side] = v;
+    }
+    for (const end of ['top', 'bottom']) {
+      if (!areasOn.has(end)) continue;
+      const n = f.get(`h${end}`);
+      out[end] = n !== '' && n != null ? { height: clampInt(n, 0, 400) } : {};
+    }
+    return out;
+  };
   // A whole number typed, held between lo and hi.
   const clampInt = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(+v || 0)));
   // The space tracks set, px or flex, kept here.
   let space = {};
   // Each track named by the parts shown either side of it in the preview —
-  // "words · rail" — as it was last laid out; by its own name until then.
+  // "text · buttons" — as it was last laid out; by its own name until then.
   const trackBetween = {};
   const trackName = (t) => trackBetween[t] ?? t.replace('_', ' · ');
   // The tracks set, each with its px, flex and a way to remove it; or how to
   // add one.
+  // < and > beside every box of px or %: 5 less or more, held to its range.
+  // An empty box starts from what it shows — the title size from the text's,
+  // an empty area's height from its line's.
+  const STEP_BTN = (d) => `<button type="button" class="eb-step" data-d="${d}" aria-label="${d < 0 ? 'Less' : 'More'} by ${Math.abs(d)}" title="${d < 0 ? 'Less' : 'More'} by ${Math.abs(d)}">${d < 0 ? '&lt;' : '&gt;'}</button>`;
+  for (const n of ['px', 'hpx', 'figpx', 'wleftn', 'wrightn', 'htop', 'hbottom', 'framepx', 'bgap', 'buttonspx', 'textsizepx', 'titlesizepx', 'paddingpx', 'cornerspx']) {
+    const i = form.elements[n];
+    i.insertAdjacentHTML('beforebegin', STEP_BTN(-5));
+    i.insertAdjacentHTML('afterend', STEP_BTN(5));
+  }
+  form.addEventListener('click', (e) => {
+    const b = e.target.closest('.eb-step');
+    if (!b) return;
+    const i = b.parentElement.querySelector('input[type=number]');
+    const lo = i.min === '' ? 0 : +i.min, hi = i.max === '' ? Infinity : +i.max;
+    const from = i.value !== '' ? +i.value : i.name === 'titlesizepx' ? +form.elements.textsizepx.value || lo : +i.dataset.from || lo;
+    i.value = Math.min(hi, Math.max(lo, Math.round((from + +b.dataset.d) * 10) / 10));
+    i.dispatchEvent(new Event('input', { bubbles: true }));
+    i.dispatchEvent(new Event('change', { bubbles: true }));
+  });
   function showTracks() {
     const set = SPACE_TRACKS.filter((t) => space[t]);
     el('eb-tracks').innerHTML = set.length ? set.map((t) => {
       const v = space[t];
       const and = trackName(t).replace(' · ', ' and ');
       return `<span class="eb-track eb-px"><span class="eb-dim" data-label="${t}">${trackName(t)}</span>`
-        + `<label><input type="number" min="0" max="64" step="1" data-track="${t}" value="${v === 'flex' ? '' : v}" placeholder="–" aria-label="Space between ${and}, in pixels" />px</label>`
+        + `<label>${STEP_BTN(-5)}<input type="number" min="0" max="64" step="1" data-track="${t}" value="${v === 'flex' ? '' : v}" placeholder="–" aria-label="Space between ${and}, in pixels" />${STEP_BTN(5)}px</label>`
         + `<span class="pilltoggle eb-checks"><label><input type="checkbox" class="eb-check" data-trackflex="${t}" ${v === 'flex' ? 'checked' : ''} />flex</label></span>`
         + `<button type="button" class="eb-track-x" data-trackdel="${t}" aria-label="Remove the space between ${and}">✕</button></span>`;
     }).join('') : '<span class="eb-dim">⊕ between two parts in the preview adds one</span>';
@@ -1016,7 +1137,7 @@ const data = {
     }
     // A frame typed is that many px, on no step.
     if (e.target.name === 'framepx') { for (const r of form.elements.frame) r.checked = false; render(); }
-    if (e.target.name === 'bgap') render();
+    if (e.target.name === 'bgap' || /^h(top|bottom)$/.test(e.target.name)) render();
     // Typing a number of names chooses it.
     if (e.target.name === 'authorsn') { form.elements.authors.value = 'n'; render(); }
     const d = sizeOf(e.target);
@@ -1038,7 +1159,13 @@ const data = {
       // the year at the bottom of the buttons.
       const side = ['left', 'right'].includes(e.target.value);
       form.elements.railalign.value = side ? e.target.value : 'left';
-      form.elements.footend.value = side ? 'top' : 'bottom';
+      form.elements.footend.value = 'top';
+      for (const [k] of SMALL) resetPlace(k);
+    } else if (['footend', 'railalign'].includes(e.target.name)) {
+      // The buttons moved in their area: what sits with them, away from them.
+      for (const [k] of SMALL) if (!form.elements[`${k}at`].value) resetPlace(k);
+    } else if (/^(pos|year|ctx)at$/.test(e.target.name)) {
+      resetPlace(e.target.name.slice(0, -2));
     } else if (e.target.name === 'titleat') {
       // The top area's settings come with the title into it, and go with it.
       el('eb-area-top-row').hidden = !canTune(el('eb-area-top-row'));
@@ -1091,7 +1218,7 @@ const data = {
   });
 
   // The preview's hitboxes: each part of the card, outlined, brings up what
-  // tunes it — first match wins, so a link button beats the rail it sits in,
+  // tunes it — first match wins, so a link button beats the box it sits in,
   // and the card itself is what is left: its padding and edge.
   const HITS = [
     // One rule: a click brings up the settings of what was clicked, and only
@@ -1101,11 +1228,11 @@ const data = {
     ['.c-name', ['title']],
     ['.c-by', ['authors']],
     ['.c-text', ['text']],
-    // My position, "1st", stands in for the byline: it brings up the authors —
-    // the way back to a byline, and the corner it sits in.
-    ['.c-place', ['authors']],
-    ['.c-stamp', ['foot']],
-    ['.c-context', ['foot']],
+    // My position and the year are parts of their own, together or apart.
+    ['.c-place', ['position']],
+    [':is(.c-yr, .c-year)', ['year']],
+    ['.c-stamp', ['position']],
+    ['.c-context', ['context']],
     ['.c-refs', ['foot']],
     // The venue line has no row of its own: it is on or off, above.
     ['.c-venue', []],
@@ -1140,28 +1267,33 @@ const data = {
       cursor:pointer; opacity:0; transition:opacity .15s}
     .eb-hits .card:hover .eb-plus{opacity:.9}
     .eb-plus:hover, .eb-plus:focus-visible{opacity:1 !important; background:var(--accent); color:var(--ground)}
+    .eb-areabtn{position:absolute; z-index:6; width:18px; height:18px; margin:-9px 0 0 -9px; padding:0; border-radius:50%;
+      border:1.5px solid var(--stu-ug); background:var(--ground); color:var(--stu-ug); font:600 14px/14px system-ui, sans-serif;
+      cursor:pointer; opacity:0; transition:opacity .15s}
+    .eb-hits .card:hover .eb-areabtn{opacity:.9}
+    .eb-areabtn:hover, .eb-areabtn:focus-visible{opacity:1 !important; background:var(--stu-ug); color:var(--ground)}
     .eb-band{display:none}
     .eb-hits .eb-band{display:block; position:absolute; z-index:1; padding:0; border:0; cursor:pointer;
       background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 25%, transparent) 0 3px, transparent 3px 7px)}
     .eb-hits .eb-band:hover, .eb-hits .eb-band:focus-visible{outline:1.5px solid var(--accent); outline-offset:-1.5px;
       background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 40%, transparent) 0 3px, transparent 3px 7px)}`;
   const tuneRows = [...document.querySelectorAll('[data-tune]')];
-  // What a side holds: its figure, its rail, or both.
+  // What a side holds: its figure, its buttons, or both.
   function sideHas(side) {
     const it = items[form.elements.card.value];
     return form.elements.foot.value === side || (it.figure && el('eb-figure-on').checked && form.elements.figat.value === side);
   }
   // The rows this item can show: none for authors, text or a figure it has
   // not got; a side's area only with something in it; and the top or bottom
-  // area's only while it holds the title or the buttons, beside a side that
-  // holds anything.
+  // area's while it holds the title or the buttons — both sides offered
+  // beside it, whatever they hold, so the row is the same each time.
   function canTune(r) {
     const it = items[form.elements.card.value];
     const t = r.dataset.tune;
-    const sides = sideHas('left') || sideHas('right');
-    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'figure' && !it.figure)
-      || (t === 'area-left' && !sideHas('left')) || (t === 'area-right' && !sideHas('right'))
-      || (t === 'area-top' && !(sides && form.elements.titleat.value === 'top')) || (t === 'area-bottom' && !(sides && form.elements.foot.value === 'bottom')));
+    const extra = (x) => [...form.querySelectorAll('[name=extra]')].some((b) => b.value === x && b.checked);
+    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extra('position'))) || (t === 'year' && !(it.year && extra('year'))) || (t === 'context' && !(it.context && extra('context')))
+      || (t === 'area-left' && !(sideHas('left') || areasOn.has('left'))) || (t === 'area-right' && !(sideHas('right') || areasOn.has('right')))
+      || (t === 'area-top' && !(form.elements.titleat.value === 'top' || areasOn.has('top'))) || (t === 'area-bottom' && !(form.elements.foot.value === 'bottom' || areasOn.has('bottom'))));
   }
   function tune(keys) {
     for (const r of tuneRows) r.hidden = !keys.includes(r.dataset.tune) || !canTune(r);
@@ -1173,11 +1305,6 @@ const data = {
     if (!t) return;
     delete space[t];
     showTracks();
-    render();
-  });
-  // Swap my position and the buttons in a side rail: its top for its bottom.
-  el('eb-swap').addEventListener('click', () => {
-    form.elements.footend.value = form.elements.footend.value === 'top' ? 'bottom' : 'top';
     render();
   });
 
@@ -1234,11 +1361,11 @@ const data = {
   }
   // The card's space tracks, as its grid has them: each row track by its
   // index in the grid's fourteen rows, each column track in its five.
-  const ROW_TRACKS = [[1, 'title_figure'], [3, 'figure_authors'], [5, 'authors_venue'], [7, 'venue_text'], [9, 'text_rail'], [12, 'rail_bottom']];
-  const COL_TRACKS = [[1, 'left_words'], [3, 'words_right']];
+  const ROW_TRACKS = [[1, 'title_figure'], [3, 'figure_authors'], [5, 'authors_venue'], [7, 'venue_text'], [9, 'text_buttons'], [12, 'center_bottom']];
+  const COL_TRACKS = [[1, 'left_center'], [3, 'center_right']];
   const ROW_SLOTS = [0, 2, 4, 6, 8, 11, 13];
   const COL_SLOTS = [0, 2, 4];
-  const COL_NAMES = { 0: 'LHS', 2: 'words', 4: 'RHS' };
+  const COL_NAMES = { 0: 'LHS', 2: 'center', 4: 'RHS' };
   // In the preview, a ⊕ between each two slots that show — the first track
   // between them, where parts left out leave several — to add space there,
   // and a hatched band over each track that has some.
@@ -1250,7 +1377,7 @@ const data = {
     let dragging = false;
     const place = () => {
       if (dragging) return;
-      card.querySelectorAll('.eb-plus, .eb-band, .eb-area, .eb-area-grip').forEach((e) => e.remove());
+      card.querySelectorAll('.eb-plus, .eb-band, .eb-area, .eb-area-grip, .eb-areabtn').forEach((e) => e.remove());
       const cs = frame.contentWindow.getComputedStyle(card);
       const rows = cs.gridTemplateRows.split(' ').map(parseFloat), cols = cs.gridTemplateColumns.split(' ').map(parseFloat);
       if (rows.length !== 14 || cols.length !== 5) return;
@@ -1287,6 +1414,37 @@ const data = {
         const r = on && card.querySelector(q).getBoundingClientRect();
         if (r) area(name, r.left - at0.left, lineY(name === 'top' ? 1 : 14), r.width, name === 'top' ? rows[0] : rows[13]);
       }
+      // The areas themselves: an empty top or bottom outlined in the strip of
+      // padding it makes; on each edge a ⊕ to add an area that is not there,
+      // and in each empty one an ✕ to take it away.
+      const empty = (card.dataset.empty ?? '').split(' ').filter(Boolean), strips = card.dataset.strips ?? '';
+      const W0 = card.offsetWidth, H0 = card.offsetHeight, pb = parseFloat(cs.paddingBottom);
+      if (empty.includes('top')) area('top', pl, 2, W, pt - 4);
+      if (empty.includes('bottom')) area('bottom', pl, H0 - pb + 2, W, pb - 4);
+      const there = { left: cols[0] > 0.5, right: cols[4] > 0.5,
+        top: card.dataset.titleat === 'top' || strips.includes('top') || empty.includes('top'),
+        bottom: (card.dataset.foot === 'bottom' && card.dataset.rail !== 'empty') || strips.includes('bottom') || empty.includes('bottom') };
+      const edge = { left: [5, H0 / 2], right: [W0 - 5, H0 / 2], top: [W0 / 2, 5], bottom: [W0 / 2, H0 - 5] };
+      for (const a of ['left', 'right', 'top', 'bottom']) {
+        const del = empty.includes(a);
+        if (there[a] && !del) continue;
+        const b = doc.createElement('button');
+        b.type = 'button';
+        b.className = 'eb-areabtn';
+        b.textContent = del ? '×' : '+';
+        b.title = `${del ? 'Take away' : 'Add'} the ${{ left: 'left', right: 'right', top: 'top', bottom: 'bottom' }[a]} area`;
+        b.setAttribute('aria-label', b.title);
+        const r = del && card.querySelector(`.eb-area[data-area="${a}"]`);
+        const [x, y] = r ? [r.offsetLeft + r.offsetWidth / 2, r.offsetTop + r.offsetHeight / 2] : edge[a];
+        Object.assign(b.style, { left: `${x}px`, top: `${y}px` });
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (del) areasOn.delete(a); else areasOn.add(a);
+          tune(del ? [] : [`area-${a}`]);
+          render();
+        });
+        card.append(b);
+      }
       // Name each track by the parts shown before and after it, or the
       // card's edge, and relabel the Space row to match — its text only, so
       // a box being typed in keeps its focus.
@@ -1296,7 +1454,7 @@ const data = {
         return `${names[a] ?? 'edge'} · ${names[b] ?? 'edge'}`;
       };
       // Each row slot named by the part in it, as this card orders them.
-      const rowNames = { 11: 'rail', 13: 'rail' };
+      const rowNames = { 11: 'buttons', 13: 'bottom' };
       for (const [q, name] of [['.c-name', 'title'], ['.c-fig', 'figure'], ['.c-by', 'authors'], ['.c-venue', 'venue'], ['.c-text', 'text']]) {
         const part = card.querySelector(q);
         const r = part && parseInt(frame.contentWindow.getComputedStyle(part).gridRowStart, 10);
@@ -1321,7 +1479,7 @@ const data = {
         card.append(e);
       };
       // Of the tracks between two parts shown, the one that holds the gap
-      // between them — a rail's sits on the rail's side, past an empty figure
+      // between them — the buttons' sits on their side, past an empty figure
       // column — so a space set there is the whole of it, not added to it.
       const between = (slots, tracks, sizes) => {
         const shown = slots.filter((i) => sizes[i] > 0.5);
@@ -1337,21 +1495,21 @@ const data = {
         add('eb-plus', { top: `${pt + H / 2}px`, left: `${pl + sum(cols, i) + cols[i] / 2}px` }, t);
       }
       // Each band where its track does its work: a row's across the words —
-      // the figures and side rails span those rows — but for the one above
-      // the bottom rail, which runs the card's width; a column's down to
-      // that rail, which runs under them all.
-      // A title at the top runs across the card — short of the side rails
+      // the figures and side boxes span those rows — but for the one above
+      // the bottom area, which runs the card's width; a column's down to
+      // that area, which runs under them all.
+      // A title at the top runs across the card — short of the sides
       // the top area stops beside — and so does the space under it; the
-      // columns start under it, but for the one beside such a rail.
+      // columns start under it, but for the one beside such a side.
       const top = card.dataset.titleat === 'top' ? sum(rows, 2) : 0;
       const name = card.querySelector('.c-name').getBoundingClientRect(), at = card.getBoundingClientRect();
       for (const [i, t] of ROW_TRACKS) {
-        const across = t === 'rail_bottom' ? { left: `${pl}px`, width: `${W}px` }
+        const across = t === 'center_bottom' ? { left: `${pl}px`, width: `${W}px` }
           : top && t === 'title_figure' ? { left: `${name.left - at.left}px`, width: `${name.width}px` }
           : { left: `${pl + sum(cols, 2)}px`, width: `${cols[2]}px` };
         if (space[t]) add('eb-band', { top: `${pt + sum(rows, i)}px`, height: `${rows[i]}px`, ...across }, t);
       }
-      const beside = (card.dataset.wins ?? '').split(' ').map((w) => ({ 'left-top': 'left_words', 'right-top': 'words_right' })[w]);
+      const beside = (card.dataset.wins ?? '').split(' ').map((w) => ({ 'left-top': 'left_center', 'right-top': 'center_right' })[w]);
       for (const [i, t] of COL_TRACKS) {
         const y = beside.includes(t) ? 0 : top;
         if (space[t]) add('eb-band', { left: `${pl + sum(cols, i)}px`, width: `${cols[i]}px`, top: `${pt + y}px`, height: `${sum(rows, 12) - y}px` }, t);
@@ -1419,7 +1577,7 @@ const data = {
     grip(frame);
     plus(frame);
     // A part is what it is; what is left — the card's own room, the box a
-    // rail fills its side with, or a title's box past its words — is the
+    // buttons' box fills its side with, or a title's box past its words — is the
     // area under the pointer, where there is one, not the part that happens
     // to fill it.
     const areaAt = (x, y) => [...doc.querySelectorAll('.eb-area')].find((a) => {
@@ -1432,7 +1590,7 @@ const data = {
       return [...r.getClientRects()].some((b) => x >= b.left - 2 && x <= b.right + 2 && y >= b.top - 2 && y <= b.bottom + 2);
     };
     const find = (t, x, y) => {
-      if (t.closest?.('.eb-plus, .eb-band, .eb-area-grip')) return null;
+      if (t.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-areabtn')) return null;
       for (const [q, keys] of HITS) {
         const el = t.closest?.(q);
         if (!el) continue;
@@ -1527,7 +1685,7 @@ const data = {
   // links the item has not got stay off, as with a preset.
   const THEMES = ['auto', 'light', 'dark'];
   const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
-  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleAlign', 'authors', 'marks', 'authorLink', 'posX', 'posY', 'contextX', 'contextY', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleAlign', 'titleStatus', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
   el('eb-export').addEventListener('click', () => {
     const s = spec();
     const c = parseName(s.slug);
@@ -1593,6 +1751,9 @@ const data = {
      options, which are faint capitals. As wide as the longest in their
      block — Authors above the preview, Background below — so the controls
      line up close by. */
+  /* < and >: small, quiet, either side of a box. */
+  :global(.eb-step){padding:0 .25rem; border:0; background:none; color:var(--ink-mute); cursor:pointer; font:inherit; font-family:var(--mono); font-size:.8rem}
+  :global(.eb-step:hover){color:var(--accent)}
   .eb-key{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); min-width:7ch; padding:0; float:left}
   /* Which one, under the key: Area (Left). */
   .eb-key small{display:block; font-size:inherit; font-weight:400; color:var(--ink-mute)}
@@ -1610,6 +1771,11 @@ const data = {
   .eb .eb-preset{flex:0 1 auto; field-sizing:content; max-width:11rem; padding:0; border:0; background:none; cursor:pointer;
     font-family:var(--mono); font-size:.66rem; color:var(--ink-faint); text-overflow:ellipsis}
   .eb .eb-preset:hover, .eb .eb-preset:focus-visible{color:var(--ink)}
+  /* A menu among the pills: their type, sized to what it shows; its key a
+     step apart from what comes before it. */
+  .eb .eb-menu{flex:0 0 auto; field-sizing:content; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    padding:.2rem .5rem; border:1px solid var(--rule-strong); border-radius:999px; background:var(--surface); color:var(--ink); cursor:pointer}
+  .eb .eb-inkey{margin-left:.8rem}
   .eb .pilltoggle{flex-wrap:wrap}
   .eb-sizes, .eb-rest{align-self:center; text-transform:uppercase}
   .eb-dials{margin-top:.8rem}
@@ -1658,7 +1824,6 @@ const data = {
   .eb-checks label{display:inline-flex; align-items:center; gap:.45em}
   /* Set apart from what is before them: my author position, from the
      byline's lengths; its corner and the context's; and the swap. */
-  #eb-pos, #eb-posy, #eb-swap, #eb-ctxy{border-left:1px solid var(--rule-strong); padding-left:.8rem}
   /* Space: the tracks set wrap beside the key. */
   [data-tune="space"] .eb-sub{flex:1 1 0; min-width:0}
   :global(.eb-tracks){display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; justify-self:start; align-items:center}

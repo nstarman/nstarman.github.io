@@ -4,10 +4,11 @@
 // glyph for a `rel` is decided once.
 import { REL_ICON, relKey } from '../lib/data.js';
 
-const { links = [] } = Astro.props;
+// cross: in a card's buttons' box, its alignment across the box.
+const { links = [], cross } = Astro.props;
 ---
 {links.length > 0 && (
-  <ul class="btns btns--icon">
+  <ul class="btns btns--icon" data-cross={cross}>
     {links.map((l) => (
       <li data-rel={relKey(l)}>
         <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>

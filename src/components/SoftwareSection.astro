@@ -37,19 +37,19 @@ const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
 ---
 {lead && (
   <div class:list={['lead', !tail && 'lead--last']} data-paper={hasPaper(lead)}>
-    <Card item={lead} id={`sw-${lead.id}`} preset="size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature" />
+    <Card item={lead} id={`sw-${lead.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature" />
   </div>
 )}
 
 <div class="soft">
-  {headline.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit" />)}
+  {headline.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit" />)}
 </div>
 
 {other.length > 0 && (
   <>
     <div class="tierbreak" role="presentation"></div>
     <div class="soft soft--mini">
-      {other.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact" />)}
+      {other.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact" />)}
     </div>
   </>
 )}
@@ -58,7 +58,7 @@ const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
   <>
     <div class:list={['tierbreak', usefulEmptied && 'tier-nopaper']} role="presentation"></div>
     <div class:list={['soft', 'soft--tiny', usefulEmptied && 'tier-nopaper']}>
-      {useful.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor" />)}
+      {useful.map((s) => <Card item={s} id={`sw-${s.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor" />)}
     </div>
   </>
 )}

@@ -46,7 +46,7 @@ const pos = authorPosition(item);
         already is the way into the paper — in the lighter tint, with the way
         to its topic on /research/. */}
     {abstract && item.highlight && (
-      <Card item={item} preset="size:fill:fit-figure:left:center:auto:link-rail:center-title:none-authors:none-text:details-extras:context-context:right:bottom-buttons:none-look:background=light"
+      <Card item={item} preset="size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light"
             id={`hl-${item.id}`} />
     )}
 
@@ -63,7 +63,7 @@ const pos = authorPosition(item);
     )}
 
     {/* Each proceeding of this paper, as a strip under it. */}
-    {earlier.map((e) => <Card item={e} id={`pub-${e.id}`} preset="size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit" maxAuthors={maxAuthors} />)}
+    {earlier.map((e) => <Card item={e} id={`pub-${e.id}`} preset="size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right" maxAuthors={maxAuthors} />)}
   </div>
 
   <LinkIcons links={trail} />

@@ -62,7 +62,7 @@ const inlineCard = (s) => {
             <button type="button" class="iconbtn" data-step="1" aria-label={`Next ${g.label} highlight`}>›</button>
           </div>
           <div class="hl" role="region" aria-label={`${g.label} highlights`} tabindex="0">
-            {g.items.map((item) => <Card item={item} preset="size:fill:fit-figure:center:auto:link-rail:center-title:short:link-authors:position-text:none-extras:none-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine" id={anchor(item.id)} heading="h5" />)}
+            {g.items.map((item) => <Card item={item} preset="size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine" id={anchor(item.id)} heading="h5" />)}
           </div>
           </div>
           </>)}

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, defaultSlug, linkKeys, cardText, hasStatus,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 
@@ -16,14 +16,14 @@ function usedPresets(dir = 'src', out = new Set()) {
   return out;
 }
 
-const NAME = 'size:320:400-figure:center:auto-rail:center-title:short-authors:position-text:none-extras:none-buttons:all-look:standard';
+const NAME = 'size:320:400-figure:center:auto-title:short-authors:none-text:none-extras:position-buttons:all-look:standard';
 const four = (step) => ({ textsize: step, padding: step, corners: step, buttons: step });
 
 describe('card names', () => {
   it('round-trip every value of every axis, and every mix of the ones that share a part', () => {
     const sizes = [{ width: 'fill', height: 'fit' }, { width: 'fill', height: 200 }, { width: 480, height: 'fit' }, { width: 640, height: 160 }];
     const titles = [{ title: 'full', rest: 'whole' }, { title: 'full', rest: 'split' }, ...TITLES.filter((t) => t !== 'full').map((title) => ({ title }))];
-    const bylines = AUTHORS.flatMap((authors) => (['none', 'position'].includes(authors) ? [{ authors }] : ['marked', 'plain'].map((marks) => ({ authors, marks }))));
+    const bylines = AUTHORS.flatMap((authors) => (authors === 'none' ? [{ authors }] : ['marked', 'plain'].map((marks) => ({ authors, marks }))));
     const dialSets = [{}, { textsize: 'feature' }, { textsize: 'minor', padding: 'display', corners: 'compact', buttons: 'standard' }, { padding: '0' }, { textsize: '12.5', padding: '24', corners: '0', buttons: '40' }, ...LOOKS.map(four)];
     const base = { text: 'summary', figure: 'none', foot: 'center', extras: [], links: 'all', background: 'normal' };
     const check = (spec) => {
@@ -60,11 +60,11 @@ describe('card names', () => {
   });
 
   it('read as key:value[:subvalue] parts, written in full and in order, the look last', () => {
-    expect(formatName({ width: 320, height: 400, dials: four('standard'), figure: 'center', title: 'short', authors: 'position', text: 'none' })).toBe(NAME);
+    expect(formatName({ width: 320, height: 400, dials: four('standard'), figure: 'center', title: 'short', text: 'none', extras: ['position'] })).toBe(NAME);
     expect(formatName({ dials: four('compact'), foot: 'right', footEnd: 'top', text: 'summary', links: [] }))
-      .toBe('size:fill:fit-figure:none-rail:right:top-title:full:split-authors:none-text:summary-extras:none-buttons:none-look:compact');
+      .toBe('size:fill:fit-figure:none-title:full:split-authors:none-text:summary-extras:none-buttons:none:right-look:compact');
     expect(formatName({ width: 480, height: 480, figure: 'left', figureSize: 40, text: 'details', links: ['ads', 'code'] }))
-      .toBe('size:480:480-figure:left:center:40-rail:center-title:full:split-authors:none-text:details-extras:none-buttons:ads,code');
+      .toBe('size:480:480-figure:left:center:40-title:full:split-authors:none-text:details-extras:none-buttons:ads,code');
   });
 
   it('take parts in any order, and leave figure, foot, title, extras, links and look to their defaults', () => {
@@ -108,11 +108,11 @@ describe('card names', () => {
     expect(() => parseName('size:fill:fit-authors:some-text:summary')).toThrow();
   });
 
-  it('take my author position in place of the byline, never beside it', () => {
-    expect(parseName('size:fill:fit-authors:position-text:none')).toMatchObject({ authors: 'position' });
-    expect(parseName('size:fill:fit-authors:position-text:none')).not.toHaveProperty('marks');
-    expect(() => parseName('size:fill:fit-authors:position:marked-text:none')).toThrow();
-    expect(() => parseName('size:fill:fit-authors:full-text:none-extras:position')).toThrow();
+  it('take my author position as an extra, beside a byline or without one', () => {
+    expect(parseName('size:fill:fit-authors:none-text:none')).not.toHaveProperty('marks');
+    expect(parseName('size:fill:fit-authors:full-text:none-extras:position')).toMatchObject({ authors: 'full', extras: ['position'] });
+    // Not a byline any more.
+    expect(() => parseName('size:fill:fit-authors:position-text:none')).toThrow();
   });
 
   it('place the figure, at a share of the card or its own size, or leave it out', () => {
@@ -126,16 +126,21 @@ describe('card names', () => {
     }
   });
 
-  it('set the rail under the words, or at a side with its links at the top, center or bottom', () => {
+  it('set the buttons in an area, under the words left out, and at a place in it', () => {
     expect(parseName('size:fill:fit-text:none').foot).toBe('center');
-    expect(parseName('size:fill:fit-text:none-rail:left:bottom')).toMatchObject({ foot: 'left', footEnd: 'bottom' });
-    expect(parseName('size:fill:fit-text:none-rail:right:center')).toMatchObject({ foot: 'right', footEnd: 'center' });
-    expect(parseName('size:fill:fit-text:none-rail:bottom')).toMatchObject({ foot: 'bottom' });
-    expect(() => parseName('size:fill:fit-text:none-rail:bottom:top')).toThrow();
-    expect(parseName('size:fill:fit-text:none-rail:bottom:right')).toMatchObject({ foot: 'bottom', railAlign: 'right' });
-    expect(parseName('size:fill:fit-text:none-rail:center:left').railAlign).toBeUndefined();
-    expect(() => parseName('size:fill:fit-text:none-rail:right:left')).toThrow();
-    for (const bad of ['rail:beside', 'rail:stack', 'rail:right', 'rail:center:top', 'rail:right:middle', 'foot:center', 'layout:landscape']) {
+    expect(parseName('size:fill:fit-text:none-buttons:all:left:bottom')).toMatchObject({ foot: 'left', footEnd: 'bottom' });
+    expect(parseName('size:fill:fit-text:none-buttons:all:2:right:center')).toMatchObject({ foot: 'right', footEnd: 'center', perRow: 2 });
+    expect(parseName('size:fill:fit-text:none-buttons:all:right')).toMatchObject({ foot: 'right', footEnd: 'top' });
+    expect(parseName('size:fill:fit-text:none-buttons:all:bottom')).toMatchObject({ foot: 'bottom' });
+    expect(parseName('size:fill:fit-text:none-buttons:all:bottom:right')).toMatchObject({ foot: 'bottom', railAlign: 'right' });
+    expect(parseName('size:fill:fit-text:none-buttons:all:center:left').railAlign).toBeUndefined();
+    // A side's own edge is the default across it, and so is the top; center
+    // across a side needs its place up and down, or it would read as that.
+    expect(parseName('size:fill:fit-text:none-buttons:all:right:top:right').railAlign).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-text:none-buttons:all:left:top:center'))).toContain('-buttons:all:left:top:center');
+    expect(formatName(parseName('size:fill:fit-text:none-buttons:all:left:bottom:right'))).toContain('-buttons:all:left:bottom:right');
+    expect(formatName(parseName('size:fill:fit-text:none-buttons:all:fit:center:right'))).toContain('-buttons:all:fit:center:right');
+    for (const bad of ['buttons:all:top', 'buttons:all:bottom:top', 'buttons:all:right:middle', 'buttons:all:13', 'buttons:all:center:right:left', 'rail:center', 'rail:right:top', 'foot:center', 'layout:landscape']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });
@@ -152,7 +157,7 @@ describe('card names', () => {
     expect(parseName('size:fill:fit-text:none-figure:left:top:40:link')).toMatchObject({ figure: 'left', figureSize: 40, figureLink: true });
     expect(parseName('size:fill:fit-text:none-figure:left:top:40').figureLink).toBe(false);
     expect(formatName({ title: 'short', titleLink: 'link', figure: 'center', figureSize: 'auto', figureLink: true, text: 'none' }))
-      .toBe('size:fill:fit-figure:center:auto:link-rail:center-title:short:link-authors:none-text:none-extras:none-buttons:all');
+      .toBe('size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:none-buttons:all');
     for (const bad of ['title:none:link', 'title:none:site', 'title:short:link:site', 'title:site', 'title:link', 'title:short:links', 'title:full:link:bold', 'figure:left:top:40:yes', 'figure:none:link', 'figure:link']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
@@ -160,9 +165,9 @@ describe('card names', () => {
 
   it('write each look setting on its own, and the four at one step as the step', () => {
     expect(formatName({ dials: { textsize: 'compact', padding: 'standard' }, text: 'none', background: 'light' }))
-      .toBe('size:fill:fit-figure:none-rail:center-title:full:split-authors:none-text:none-extras:none-buttons:all-look:textsize=compact,background=light');
+      .toBe('size:fill:fit-figure:none-title:full:split-authors:none-text:none-extras:none-buttons:all-look:textsize=compact,background=light');
     expect(formatName({ width: 480, height: 120, dials: { buttons: 'display' }, text: 'none' }))
-      .toBe('size:480:120-figure:none-rail:center-title:full:split-authors:none-text:none-extras:none-buttons:all-look:buttons=display');
+      .toBe('size:480:120-figure:none-title:full:split-authors:none-text:none-extras:none-buttons:all-look:buttons=display');
     expect(formatName({ dials: four('feature'), text: 'none' })).toMatch(/-look:feature$/);
     // standard is the own look of a card that fills its width: all four there is no look at all
     expect(formatName({ dials: four('standard'), text: 'none' })).not.toMatch(/look:/);
@@ -184,13 +189,33 @@ describe('card names', () => {
     }
   });
 
-  it('put my position in the foot, or a corner of the card', () => {
-    expect(parseName('size:fill:fit-text:none-authors:position').posX).toBeUndefined();
-    expect(parseName('size:fill:fit-text:none-authors:position:left:top')).toMatchObject({ authors: 'position', posX: 'left', posY: 'top' });
-    expect(formatName({ text: 'none', authors: 'position', posX: 'right', posY: 'bottom' })).toContain('-authors:position:right:bottom-');
-    for (const bad of ['authors:position:left', 'authors:position:top:left', 'authors:position:left:middle', 'authors:full:left:top']) {
+  it('place my position with the buttons, or in the top or bottom strip', () => {
+    expect(parseName('size:fill:fit-text:none-extras:position').posAt).toBeUndefined();
+    expect(parseName('size:fill:fit-text:none-extras:position-position:top:right')).toMatchObject({ extras: ['position'], posAt: { area: 'top', h: 'right' } });
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'bottom', h: 'center' } })).toContain('-extras:position-position:bottom:center-');
+    // A byline and my position, both.
+    expect(formatName({ text: 'none', authors: 'full', extras: ['position', 'year'] })).toContain('-authors:full:plain-text:none-extras:position,year-');
+    // A strip's left is its default, and the buttons' box is where it sits left out.
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'top', h: 'left' } })).toContain('-position:top-');
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', v: 'bottom', h: 'right' } })).not.toContain('-position:');
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', h: 'left' } })).toContain('-position:center:left-');
+    // Not an area away from the buttons, and in a strip only across it.
+    for (const bad of ['position:left', 'position:top:bottom', 'position:center:middle', 'authors:full:top:left', 'authors:position:top']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
+  });
+
+  it('place a part with the buttons, at the end away from them left out', () => {
+    const at = (name, part) => placeOf(parseName(`size:fill:fit-text:none-extras:year,context-${name}`), part);
+    expect(at('buttons:all', 'year')).toEqual({ area: 'center', v: 'bottom', h: 'right' });
+    expect(at('buttons:all:center:right', 'year')).toEqual({ area: 'center', v: 'bottom', h: 'left' });
+    expect(at('buttons:all:right', 'year')).toEqual({ area: 'right', v: 'bottom', h: 'right' });
+    expect(at('buttons:all:left:center', 'context')).toEqual({ area: 'left', v: 'center', h: 'left' });
+    // In the box, center alone reads as up and down; across, it follows that.
+    expect(at('buttons:all:bottom-year:bottom:center', 'year')).toEqual({ area: 'bottom', v: 'center', h: 'right' });
+    expect(at('buttons:all:bottom-year:bottom:bottom:center', 'year')).toEqual({ area: 'bottom', v: 'bottom', h: 'center' });
+    expect(at('year:bottom:center', 'year')).toEqual({ area: 'bottom', strip: true, h: 'center' });
+    expect(at('context:top', 'context')).toEqual({ area: 'top', strip: true, h: 'left' });
   });
 
   it('link a byline to ORCID or our papers, and size the title on its own', () => {
@@ -203,18 +228,18 @@ describe('card names', () => {
     expect(parseName('size:fill:fit-text:none-look:feature,titlesize=standard').dials).toEqual({ ...four('feature'), titlesize: 'standard' });
     expect(parseName('size:fill:fit-text:none-look:titlesize=22.5').dials).toEqual({ titlesize: '22.5' });
     expect(formatName({ text: 'none', dials: { titlesize: 'display' } })).toMatch(/-look:titlesize=display$/);
-    for (const bad of ['authors:full:orcid:marked', 'authors:full:bold:orcid', 'authors:position:orcid', 'authors:full:site:orcid', 'authors:position:site', 'look:titlesize=61', 'look:titlesize=7', 'look:titlesize=huge']) {
+    for (const bad of ['authors:full:orcid:marked', 'authors:full:bold:orcid', 'authors:full:site:orcid', 'look:titlesize=61', 'look:titlesize=7', 'look:titlesize=huge']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });
 
-  it('float the context link to a corner, or keep it in the rail', () => {
-    expect(parseName('size:fill:fit-text:none-extras:context-context:right:bottom')).toMatchObject({ contextX: 'right', contextY: 'bottom' });
-    expect(parseName('size:fill:fit-text:none-extras:context-context:rail').contextX).toBeUndefined();
-    expect(formatName({ text: 'none', extras: ['context'], contextX: 'left', contextY: 'top' })).toContain('-extras:context-context:left:top-');
-    // No context link, no corner for it.
-    expect(formatName({ text: 'none', extras: [], contextX: 'left', contextY: 'top' })).not.toContain('context:');
-    for (const bad of ['context:right', 'context:middle:top', 'context:right:middle', 'context:none']) {
+  it('place the year and the context link as my position, each where its own part puts it', () => {
+    expect(parseName('size:fill:fit-text:none-extras:year-year:top:right')).toMatchObject({ yearAt: { area: 'top', h: 'right' } });
+    expect(parseName('size:fill:fit-text:none-extras:context-context:bottom:right')).toMatchObject({ contextAt: { area: 'bottom', h: 'right' } });
+    expect(formatName({ text: 'none', extras: ['year', 'context'], contextAt: { area: 'bottom' }, yearAt: { area: 'top', h: 'right' } })).toContain('-extras:year,context-context:bottom-year:top:right-');
+    // Not shown, no place for it.
+    expect(formatName({ text: 'none', extras: [], yearAt: { area: 'top' }, contextAt: { area: 'top' } })).not.toMatch(/year:|context:/);
+    for (const bad of ['year:rail', 'year:right', 'year:top:middle', 'year:none', 'context:rail', 'context:right:bottom', 'context:middle']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });
@@ -231,9 +256,9 @@ describe('card names', () => {
   });
 
   it('set space between the slots, and write it in the grid\'s order', () => {
-    const s = parseName('size:fill:fit-text:none-space:words_right=24,title_figure=flex');
-    expect(s.space).toEqual({ title_figure: 'flex', words_right: '24' });
-    expect(formatName(s)).toMatch(/-space:title_figure=flex,words_right=24$/);
+    const s = parseName('size:fill:fit-text:none-space:center_right=24,title_figure=flex');
+    expect(s.space).toEqual({ title_figure: 'flex', center_right: '24' });
+    expect(formatName(s)).toMatch(/-space:title_figure=flex,center_right=24$/);
     expect(parseName(formatName(s)).space).toEqual(s.space);
     for (const bad of [
       'space:title_words=4', 'space:title_figure=65', 'space:title_figure=auto',
@@ -280,6 +305,15 @@ describe('card names', () => {
     }
   });
 
+  it('put a status pill after the title, where the name asks', () => {
+    expect(parseName('size:fill:fit-text:none-title:full:split:link:status:top:center')).toMatchObject({ titleLink: 'link', titleStatus: true, titleAt: 'top', titleAlign: 'center' });
+    expect(parseName('size:fill:fit-text:none-title:short').titleStatus).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-text:none-title:nick:status'))).toContain('-title:nick:status-');
+    for (const bad of ['title:none:status', 'title:short:top:status', 'title:short:status:link']) {
+      expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
+    }
+  });
+
   it('set the title across its area, at the left left out', () => {
     expect(parseName('size:fill:fit-text:none-title:nick:top:center')).toMatchObject({ title: 'nick', titleAt: 'top', titleAlign: 'center' });
     expect(parseName('size:fill:fit-text:none-title:full:whole:link:right')).toMatchObject({ rest: 'whole', titleLink: 'link', titleAt: 'center', titleAlign: 'right' });
@@ -290,35 +324,15 @@ describe('card names', () => {
     }
   });
 
-  it('set the year against the buttons under the words, at their bottom left out', () => {
-    expect(parseName('size:fill:fit-text:none-rail:center:left:top')).toMatchObject({ foot: 'center', footEnd: 'top' });
-    expect(parseName('size:fill:fit-text:none-rail:bottom:right:center')).toMatchObject({ foot: 'bottom', railAlign: 'right', footEnd: 'center' });
-    expect(parseName('size:fill:fit-text:none-rail:center:left:bottom').footEnd).toBeUndefined();
-    // Along the rail first, then across it: the left written where across is not the default.
-    expect(formatName(parseName('size:fill:fit-text:none-rail:center:left:top'))).toContain('-rail:center:left:top-');
-    expect(formatName(parseName('size:fill:fit-text:none-rail:center:center'))).toContain('-rail:center:center-');
-    expect(formatName(parseName('size:fill:fit-text:none-rail:bottom:left:bottom'))).toContain('-rail:bottom-');
-    for (const bad of ['rail:center:top', 'rail:bottom:left:middle', 'rail:center:left:top:left']) {
-      expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
-    }
-  });
-
-  it('place the buttons in a side across it, toward the card edge left out', () => {
-    expect(parseName('size:fill:fit-text:none-rail:right:top:center').railAlign).toBe('center');
-    expect(parseName('size:fill:fit-text:none-rail:left:top').railAlign).toBeUndefined();
-    expect(formatName(parseName('size:fill:fit-text:none-rail:left:bottom:right'))).toContain('-rail:left:bottom:right-');
-    // The side's own edge is the default, so it is not written.
-    for (const bad of ['rail:right:top:right', 'rail:left:top:left', 'rail:left:top:middle']) {
-      expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
-    }
-  });
-
   it('give a side its width and the corners it wins, each once', () => {
-    const s = parseName('size:fill:fit-text:none-rail:bottom-title:short:top-area:left:bottom,buttons,top-area:right:top');
+    const s = parseName('size:fill:fit-text:none-buttons:all:bottom-title:short:top-area:left:bottom,buttons,top-area:right:top');
     expect(s.sides).toEqual({ left: { width: 'buttons', top: true, bottom: true }, right: { top: true } });
     // The width first, then the corners; the sides in order.
     expect(formatName(s)).toContain('-area:left:buttons,top,bottom-area:right:top-');
-    for (const bad of ['area:top:left', 'area:left:top,top', 'area:left:min=10,share=20', 'area:left:middle', 'area:bottom:left', 'area:left']) {
+    // An area alone is there, empty; the top and bottom take a height.
+    expect(parseName('size:fill:fit-text:none-area:left-area:top:min=24').sides).toEqual({ left: {}, top: { height: 24 } });
+    expect(formatName(parseName('size:fill:fit-text:none-area:bottom-area:right:share=20'))).toContain('-area:right:share=20-area:bottom-');
+    for (const bad of ['area:top:left', 'area:left:top,top', 'area:left:min=10,share=20', 'area:left:middle', 'area:bottom:left', 'area:top:share=20', 'area:top:min=401', 'area:center']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });
@@ -396,8 +410,8 @@ describe('the full title around its short one', () => {
 describe('presets', () => {
   it('parse as the embed page has the parser, inlined on its own with nothing around it', () => {
     const inlined = new Function(`return (${parseName.toString()})`)();
-    const rich = 'size:320:400-figure:center:authors:auto:link-rail:center:left:top-title:nick:top:center-authors:position:left:top-text:none-extras:venue,role,context-context:right:bottom-buttons:all:2-space:title_figure=8,left_words=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
-    for (const n of [...SITE_PRESETS.map((p) => p.slug), NAME, rich, 'size:fill:200-figure:left:top:right:120px-rail:right:center:left-title:short-authors:5:marked:orcid-text:details-extras:none-buttons:none']) {
+    const rich = 'size:320:400-figure:center:authors:auto:link-title:nick:top:center-authors:full:marked:site-text:none-extras:venue,status,position,year,role,context-context:bottom:right-position:top-year:center:top:center-buttons:all:2:center:right-space:title_figure=8,left_center=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
+    for (const n of [...SITE_PRESETS.map((p) => p.slug), NAME, rich, 'size:fill:200-figure:left:top:right:120px-title:short-authors:5:marked:orcid-text:details-extras:none-buttons:none:right:center:left']) {
       expect(inlined(n), n).toEqual(parseName(n));
     }
   });

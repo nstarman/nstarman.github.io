@@ -3,28 +3,28 @@
 // presets, an item's default card, and its links and extras.
 import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl } from './data.js';
 
-export { LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
+export { placeOf, PLACE_AT, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
 
 /** The cards the website itself renders, by name, and where. */
 export const SITE_PRESETS = [
-  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
-  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
-  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
-  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
-  { slug: 'size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit', where: 'Publications — a proceeding under its paper' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/. Its title is bold where
   // the paper is mine — I am first author — and regular otherwise.
-  { slug: 'size:fill:fit-figure:center:auto:link-rail:center-title:short:link-authors:position-text:none-extras:none-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
-  { slug: 'size:fill:fit-figure:left:center:auto:link-rail:center-title:none-authors:none-text:details-extras:context-context:right:bottom-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
-  { slug: 'size:fill:fit-figure:none-rail:center-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor', where: 'Publications — the Assists, papers that thank me' },
+  { slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
+  { slug: 'size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor', where: 'Publications — the Assists, papers that thank me' },
   // A row of a list, not a box: no tint and no padding, its link the paper's.
-  { slug: 'size:fill:fit-figure:none-rail:right:top-title:full:whole:link-authors:short:marked-text:none-extras:venue,status-buttons:paper,preprint-look:padding=0,background=none', where: 'Home — the selected publications' },
+  { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:short:marked-text:none-extras:venue,status-buttons:paper,preprint:right-look:padding=0,background=none', where: 'Home — the selected publications' },
 ];
 
 /** The Card Builder's starting card, for every item: a full strip with its
  *  byline, summary, figure and venue. Extras an item has not got drop out. */
-export const BUILDER_DEFAULT = 'size:fill:fit-figure:left:top:auto-rail:right:top-title:full:split-authors:full:plain-text:summary-extras:venue-buttons:all';
+export const BUILDER_DEFAULT = 'size:fill:fit-figure:left:top:auto-title:full:split-authors:full:plain-text:summary-extras:venue-buttons:all:right';
 
 /** The types that are drawn as cards, and so can be embedded. */
 export const CARD_TYPES = ['publication', 'highlight', 'software'];
@@ -34,6 +34,11 @@ export const hasPosition = (item) => item.type !== 'software' && authorPosition(
 export const hasRole = (item) => item.type === 'software' && !!item.role;
 export const hasVenue = (item) => item.type === 'publication';
 /** A paper not yet out: submitted, accepted. In preparation has no venue line. */
+/** The year stands on its own in a paper's or a synthesis's rail. */
+export const hasYear = (item) => item.type !== 'software';
+/** The pill after a paper's title, title:…:status: where it stands, once it
+ *  is past in prep. */
+export const titleStatus = (item) => (item.type === 'publication' && ['submitted', 'accepted', 'published'].includes(item.status) ? item.status : null);
 export const hasStatus = (item) => item.type === 'publication' && ['submitted', 'accepted'].includes(item.status);
 /** Context links to the item's topic on /research/, so only a topic it shows. */
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
@@ -51,9 +56,9 @@ export const linkKeys = (item) => [...new Set(cardLinks(item).map(relKey))];
  *  the website draws for it, in a fixed box at the standard look, so an
  *  iframe with no width still gets a card of a known shape. */
 export function defaultSlug(item) {
-  if (item.type === 'software') return 'size:320:400-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit-look:standard';
-  if (!hasFigure(item)) return 'size:640:160-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit-look:standard';
-  return `size:320:400-figure:center:auto:link-rail:center-title:short:link-authors:${hasPosition(item) ? 'position' : 'none'}-text:none-extras:none-buttons:all:fit-look:standard`;
+  if (item.type === 'software') return 'size:320:400-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit-look:standard';
+  if (!hasFigure(item)) return 'size:640:160-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right-look:standard';
+  return `size:320:400-figure:center:auto:link-title:short:link-authors:none-text:none-extras:${hasPosition(item) ? 'position' : 'none'}-buttons:all:fit-look:standard`;
 }
 
 /** A card's two tiers of text. A package has its own summary and details; a

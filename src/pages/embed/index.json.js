@@ -10,13 +10,14 @@ export function GET({ site }) {
   const abs = (p) => new URL(p, site).href;
   const body = {
     url: abs('/embed/{id}/?card={name}'),
-    name: 'size:<fill|px>:<fit|px>-figure:<none|center[:slot]:size|side:v[:h]:size>[:link]-rail:<<center|bottom>[:h[:v]]|side:v[:h]>-title:<…>[:top][:center|right]-area:<left|right>:[min=px|share=%|buttons][,top][,bottom]-authors:<…>-text:<…>-extras:<none|a,b>-context:<rail|x:y>-buttons:<all|none|a,b>[:per-row|:fit]-space:<a_b>=<px|flex>,…-look:<setting>=<value>,…  (textsize, padding, corners, buttons, titlesize, titleweight, frame, buttongap, background; the first four at one step written as the step)',
+    name: 'size:<fill|px>:<fit|px>-figure:<none|center[:slot]:size|side:v[:h]:size>[:link]-title:<…>[:link][:status][:top][:center|right]-area:<left|right>:[min=px|share=%|buttons][,top][,bottom]-authors:<…>-text:<…>-extras:<none|a,b>-context:<place>-position:<place>-year:<place>-buttons:<all|none|a,b>[:per-row|:fit][:<side>[:v][:h]|:<center|bottom>[:h]]-space:<a_b>=<px|flex>,…-look:<setting>=<value>,…  (textsize, padding, corners, buttons, titlesize, titleweight, frame, buttongap, background; the first four at one step written as the step)',
     axes: {
       size: { width: `fill, or px ${FIXED_MIN}–${FIXED_MAX}`, height: `fit, or px ${FIXED_MIN_HEIGHT}–${FIXED_MAX}` },
       figure: { none: true, at: FIGURE_AT, v: FIGURE_ALIGN, h: ['left', 'center', 'right'], slot: FIGURE_SLOTS, size: 'auto, filling its column; a share of its column, 10–100; or its own width, 8–800px' },
-      rail: { at: FOOT_AT, v: FOOT_END, h: RAIL_ALIGN },
-      area: { left: 'its width — min=<0–800 px>, share=<5–95 %> or buttons, left out fitting what is in it — then top and bottom, the corners it wins over the top and bottom areas', right: 'as left' },
-      title: TITLES, titleAt: ['center', 'top'], titleAlign: RAIL_ALIGN, authors: AUTHORS, text: TEXTS, extras: EXTRAS, context: { rail: true, x: ['left', 'right'], y: ['top', 'bottom'] },
+      buttonsAt: { area: FOOT_AT, v: 'in a side: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
+      place: { area: 'top, the buttons\u2019 own area, or bottom where the buttons are not', v: 'with the buttons: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
+      area: { left: 'there, even empty; its width — min=<0–800 px>, share=<5–95 %> or buttons, left out fitting what is in it, or 3em empty — then top and bottom, the corners it wins over the top and bottom areas', right: 'as left', top: 'there, even empty; its height empty, min=<0–400 px>, or a line\u2019s', bottom: 'as top' },
+      title: TITLES, titleAt: ['center', 'top'], titleAlign: RAIL_ALIGN, authors: AUTHORS, text: TEXTS, extras: EXTRAS, context: 'a place', position: 'a place', year: 'a place',
       buttons: 'all, none, or a comma list of an item’s link keys; then :1–12 to a row, or :fit, as many as fit',
       look: { ...Object.fromEntries(DIALS.map((d) => [d, `${LOOKS.join(', ')}, or px: ${{ textsize: '8–40, to a tenth', padding: '0–64', corners: '0–64', buttons: '12–64' }[d]}`])), titlesize: `${LOOKS.join(', ')}, or px: 8–60`, titleweight: ['regular', 'medium', 'bold', 'mine'], frame: `none, ${LOOKS.join(', ')}, or px: 0–32`, buttongap: 'px, 0–32', background: BACKGROUNDS },
       space: { between: SPACE_TRACKS, value: 'px, 0–64, or flex' },

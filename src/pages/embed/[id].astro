@@ -2,9 +2,9 @@
 // /embed/<id>/ — one item's card, for an iframe and for the builder's PNGs.
 // The query names the card (src/lib/cardname.js), and may pin the theme:
 //
-//   ?card=size:320:400-figure:center:auto-rail:center-title:short-authors:position-text:none-extras:none-buttons:all-look:standard
-//   ?card=size:800:200-figure:none-rail:right:top-title:full:split-text:summary-look:textsize=feature,buttons=compact
-//   ?card=size:fill:fit-figure:none-rail:right:top-text:summary-look:compact&theme=dark
+//   ?card=size:320:400-figure:center:auto-title:short-authors:none-text:none-extras:position,year-buttons:all-look:standard
+//   ?card=size:800:200-figure:none-title:full:split-text:summary-buttons:all:right-look:textsize=feature,buttons=compact
+//   ?card=size:fill:fit-figure:none-text:summary-buttons:all:right-look:compact&theme=dark
 //
 // Every part is rendered and the spec, as data attributes, chooses which show,
 // so this applies it before the first paint; with no query it shows the
@@ -12,15 +12,15 @@
 import Embed from '../../layouts/Embed.astro';
 import Card from '../../components/Card.astro';
 import { items, splitTitle, authorPosition } from '../../lib/data.js';
-import { CARD_TYPES, defaultSlug, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasContext } from '../../lib/cards.js';
-import { parseName } from '../../lib/cardname.js';
+import { CARD_TYPES, defaultSlug, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus } from '../../lib/cards.js';
+import { parseName, placeOf } from '../../lib/cardname.js';
 
 export const getStaticPaths = () =>
   items.filter((i) => CARD_TYPES.includes(i.type)).map((item) => ({ params: { id: item.id }, props: { item } }));
 
 const { item } = Astro.props;
 // The same parser the site and the builder use, run here from its own source.
-const apply = `(function (parseName, can) {
+const apply = `(function (parseName, placeOf, can) {
   var name = new URLSearchParams(location.search).get('card');
   if (!name) return;
   var spec; try { spec = parseName(name); } catch (e) { return; }
@@ -62,16 +62,15 @@ const apply = `(function (parseName, can) {
     if (v) card.style.setProperty(p, v); else card.style.removeProperty(p);
   });
   d.foot = spec.foot;
-  // Up and down: in a side, its buttons at the top, center or bottom of it;
-  // under the words or at the bottom, the year against the buttons. Then
-  // left, centered or right: along a rail under the words or at the
-  // bottom, across one in a side.
+  // The buttons' place in their area: in a side, up and down it; then
+  // across, or along the box under the words or at the bottom.
   if (spec.footEnd) d.footend = spec.footEnd; else delete d.footend;
   if (spec.railAlign) d.railalign = spec.railAlign; else delete d.railalign;
   d.text = spec.text;
   if (spec.title === 'full') delete d.title; else d.title = spec.title;
   if (spec.titleAt === 'top' && spec.title !== 'none') d.titleat = 'top'; else delete d.titleat;
   if (spec.titleAlign) d.titlealign = spec.titleAlign; else delete d.titlealign;
+  if (spec.titleStatus && can.tstatus) d.titlestatus = ''; else delete d.titlestatus;
   // The corners each side wins over the top and bottom areas, area:<side>:top,bottom.
   var wins = [];
   ['left', 'right'].forEach(function (side) { ['top', 'bottom'].forEach(function (a) { if (((spec.sides || {})[side] || {})[a]) wins.push(side + '-' + a); }); });
@@ -131,12 +130,32 @@ const apply = `(function (parseName, can) {
     if (href) a.href = href;
     else if (a) a.replaceWith(a.textContent);
   });
-  if (spec.authors === 'position' && can.position) d.pos = ''; else delete d.pos;
-  // My position in a corner of the card, where the name puts it there.
-  if (spec.authors === 'position' && can.position && spec.posX) { d.posx = spec.posX; d.posy = spec.posY; } else { delete d.posx; delete d.posy; }
-  ['venue', 'status', 'role', 'context'].forEach(function (x) {
+  if (spec.extras.indexOf('position') >= 0 && can.position) d.pos = ''; else delete d.pos;
+  ['venue', 'status', 'year', 'role', 'context'].forEach(function (x) {
     if (spec.extras.indexOf(x) >= 0 && can[x]) d[x] = ''; else delete d[x];
   });
+  // The buttons, my position, the year and the context link, each in its
+  // slot of the buttons' box — start, center or end along it, and across it
+  // at its own place — or, in the top area or the bottom one where the
+  // buttons are not, a strip; hidden, after the slots. My position and the
+  // year read as one, "1st | 2026", where both are in one place.
+  var foot = card.querySelector('.c-foot');
+  var side = spec.foot === 'left' || spec.foot === 'right';
+  var END = { top: 'start', left: 'start', center: 'center', bottom: 'end', right: 'end' };
+  var at = { pos: placeOf(spec, 'pos'), year: placeOf(spec, 'year'), context: placeOf(spec, 'context') };
+  var together = 'pos' in d && 'year' in d && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
+  if (together) d.yearwith = ''; else delete d.yearwith;
+  var strips = [];
+  [['.btns--icon', true, { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') }],
+    ['.c-stamp', 'pos' in d, at.pos], ['.c-year', 'year' in d && !together, at.year], ['.c-context', 'context' in d, at.context]].forEach(function (p) {
+    var el = foot.querySelector(p[0]), pl = p[2];
+    if (!el) return;
+    el.dataset.cross = END[side ? pl.h : pl.v];
+    delete el.dataset.strip; delete el.dataset.h;
+    if (p[1] && pl.strip) { el.dataset.strip = pl.area; el.dataset.h = pl.h; if (strips.indexOf(pl.area) < 0) strips.push(pl.area); }
+    (p[1] && !pl.strip ? foot.querySelector('.c-slot[data-at="' + END[side ? pl.v : pl.h] + '"]') : foot).appendChild(el);
+  });
+  if (strips.length) d.strips = strips.join(' '); else delete d.strips;
   if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
   // The buttons to a row: as many as fit, so many — no more than are shown —
   // or as near square as the ones shown go.
@@ -162,23 +181,28 @@ const apply = `(function (parseName, can) {
   // a row taking what is left (100fr), a column sharing the width with the
   // words (1fr) — and one the name leaves out goes back to 0.
   var sp = spec.space || {};
-  var rows = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_rail', 'rail_bottom'];
-  rows.concat(['left_words', 'words_right']).forEach(function (t) {
+  var rows = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom'];
+  rows.concat(['left_center', 'center_right']).forEach(function (t) {
     if (sp[t]) card.style.setProperty('--sp-' + t, sp[t] !== 'flex' ? sp[t] + 'px' : rows.indexOf(t) >= 0 ? '100fr' : '1fr'); else card.style.removeProperty('--sp-' + t);
   });
   if (rows.some(function (t) { return sp[t] === 'flex'; })) d.vflex = ''; else delete d.vflex;
-  // The context link in a corner, where the name floats it there.
-  if (spec.extras.indexOf('context') >= 0 && can.context && spec.contextX) { d.ctxx = spec.contextX; d.ctxy = spec.contextY; } else { delete d.ctxx; delete d.ctxy; }
-  // With nothing left in it — every part hidden or floated to a corner — the
-  // rail is none: its column closes, and the words take its room.
+  // With nothing left in it — every part hidden or in a strip — the box is
+  // none: its column closes, and the words take its room.
   delete d.rail;
-  var foot = card.querySelector('.c-foot');
-  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-stamp, .c-context'), function (e) {
+  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-stamp, .c-year, .c-context'), function (e) {
     var s = getComputedStyle(e);
     return s.display !== 'none' && s.position !== 'absolute';
   });
   if (!inRail) d.rail = 'empty';
-})(${parseName.toString()}, ${JSON.stringify({ lead: item.type !== 'software' && authorPosition(item) === 1, figure: hasFigure(item), position: hasPosition(item), role: hasRole(item), venue: hasVenue(item), status: hasStatus(item), context: hasContext(item), split: !!splitTitle(item), byline: item.type === 'publication' })});`;
+  // An area the name gives that nothing is in, there all the same: a side
+  // its column, the top or bottom a strip of its height.
+  var sides = spec.sides || {}, st = (d.strips || '').split(' ');
+  var holds = { left: d.fig === 'left' || (d.foot === 'left' && d.rail !== 'empty'), right: d.fig === 'right' || (d.foot === 'right' && d.rail !== 'empty'),
+    top: d.titleat === 'top' || st.indexOf('top') >= 0, bottom: (d.foot === 'bottom' && d.rail !== 'empty') || st.indexOf('bottom') >= 0 };
+  var empty = ['left', 'right', 'top', 'bottom'].filter(function (a) { return sides[a] && !holds[a]; });
+  if (empty.length) d.empty = empty.join(' '); else delete d.empty;
+  [['--hT', 'top'], ['--hB', 'bottom']].forEach(function (x) { var h = (sides[x[1]] || {}).height; if (h != null) card.style.setProperty(x[0], h + 'px'); else card.style.removeProperty(x[0]); });
+})(${parseName.toString()}, ${placeOf.toString()}, ${JSON.stringify({ lead: item.type !== 'software' && authorPosition(item) === 1, figure: hasFigure(item), position: hasPosition(item), role: hasRole(item), venue: hasVenue(item), status: hasStatus(item), year: hasYear(item), tstatus: !!titleStatus(item), context: hasContext(item), split: !!splitTitle(item), byline: item.type === 'publication' })});`;
 ---
 <Embed title={item.title}>
   <Card item={item} preset={defaultSlug(item)} allCounts />

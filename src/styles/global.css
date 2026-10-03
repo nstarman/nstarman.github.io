@@ -279,10 +279,22 @@ a.card:hover .name{color:var(--accent)}
 /* Figures are drawn for paper: shown whole, on white, in either theme. */
 .c-fig img{display:block; width:100%; aspect-ratio:16/10; object-fit:contain;
   border-radius:10px; background:#fff; padding:.3rem}
-.c-foot{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:.4em; margin-top:auto; padding-top:.3em}
+.c-foot{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:end; gap:.4em; margin-top:auto; padding-top:.3em}
+/* The buttons' box, in three slots along it — start, center and end: under
+   the words or at the bottom, its left, center and right, each a row; in a
+   side, its top, center and bottom (below). A part sits in the slot its
+   place along the box names, and across the box at its own place. */
+.c-slot{display:flex; flex-wrap:wrap; align-items:flex-end; gap:.4em; min-width:0; align-self:stretch}
+.c-slot:not(:has(> *)){display:none}
+.c-slot[data-at="start"]{grid-column:1; justify-self:start}
+.c-slot[data-at="center"]{grid-column:2; justify-self:center}
+.c-slot[data-at="end"]{grid-column:3; justify-self:end; justify-content:flex-end}
+.c-slot > [data-cross="start"]{align-self:flex-start}
+.c-slot > [data-cross="center"]{align-self:center}
+.c-slot > [data-cross="end"]{align-self:flex-end}
 /* Prefixed so a page's own rule for link buttons — /publications/ stacks them —
    does not reach into a card. */
-.card .c-foot .btns--icon{grid-column:1; flex-direction:row; margin:0; padding:0; gap:var(--bgap, .3em)}
+.card .c-foot .btns--icon{flex-direction:row; margin:0; padding:0; gap:var(--bgap, .3em)}
 /* So many buttons to a row, then the next: that many columns, each as wide
    as its widest button — a package's paper button is a word, not a glyph. */
 .card[data-per] .c-foot .btns--icon{display:grid; grid-template-columns:repeat(var(--per), auto); justify-content:start}
@@ -290,15 +302,8 @@ a.card:hover .name{color:var(--accent)}
    end there, and in a grid a short last row starts --skip columns in — its
    first button, data-skipat, marked by its place among them all. */
 .card:is([data-foot="right"], [data-railalign="right"]):not([data-per]) .c-foot .btns--icon{justify-content:flex-end}
-/* rail:center|bottom:<align> — a rail under the words, its buttons centered,
-   or at the right with the year and context at its left. A part floated to a
-   corner keeps its place. */
-.card[data-railalign="center"] > .c-foot .btns--icon{justify-self:center}
+/* Centered buttons: rows that wrap center too. */
 .card[data-railalign="center"]:not([data-per]) .c-foot .btns--icon{justify-content:center}
-.card[data-railalign="right"] > .c-foot{grid-template-columns:auto minmax(0,1fr)}
-.card[data-railalign="right"] > .c-foot .btns--icon{grid-column:2; justify-self:end}
-.card[data-railalign="right"]:not([data-posy]) > .c-foot .c-stamp,
-.card[data-railalign="right"]:not([data-ctxy]) > .c-foot .c-context{grid-column:1; justify-self:start}
 .card[data-skipat="2"] .c-foot li:nth-child(2),
 .card[data-skipat="3"] .c-foot li:nth-child(3),
 .card[data-skipat="4"] .c-foot li:nth-child(4),
@@ -324,36 +329,27 @@ a.card:hover .name{color:var(--accent)}
 .c-foot .iconbtn{width:var(--ib); height:var(--ib); border-radius:calc(var(--ib) * .25)}
 .c-foot .iconbtn .ico{width:var(--ii); height:var(--ii)}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
-.c-stamp{grid-column:2; font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
-/* authors:position:<x>:<y> — my position and the year in a corner of the
-   card: a strip of the padding is made for it at the top or bottom, and it
-   sits there, at the left or right, clear of every layout's parts. */
-.card[data-size][data-posy="top"]{padding-top:calc(var(--pad-t) + 1.4em)}
-.card[data-size][data-posy="bottom"]{padding-bottom:calc(var(--pad-b) + 1.4em)}
-/* grid-area:auto, or a grid card would place it in its own column 2. */
-.card[data-posy] .c-stamp{position:absolute; grid-area:auto; line-height:1.2}
-.card[data-posy="top"] .c-stamp{top:var(--pad-t)}
-.card[data-posy="bottom"] .c-stamp{bottom:var(--pad-b)}
-.card[data-posx="left"] .c-stamp{left:var(--pad-x)}
-.card[data-posx="right"] .c-stamp{right:var(--pad-x)}
-/* context:<x>:<y> — the context link out of the rail, in that corner of
-   the card, inside its padding: a strip of the padding is made for it, as
-   for my position in a corner, so it never sits on the words. A card with
-   nothing else for a rail has none. */
-.card[data-size][data-ctxy="top"]{padding-top:calc(var(--pad-t) + 1.4em)}
-.card[data-size][data-ctxy="bottom"]{padding-bottom:calc(var(--pad-b) + 1.4em)}
-.card[data-ctxy] .c-context{position:absolute; grid-area:auto; line-height:1.2}
-.card[data-ctxy="top"] .c-context{top:var(--pad-t)}
-.card[data-ctxy="bottom"] .c-context{bottom:var(--pad-b)}
-.card[data-ctxx="left"] .c-context{left:var(--pad-x)}
-.card[data-ctxx="right"] .c-context{right:var(--pad-x)}
-/* A rail with nothing in it is no box at all: no column, no row, no gap —
-   only what floats from it, still drawn. [data-size] outweighs the layouts'
-   rules for a rail, which come later. */
-.card[data-size][data-rail="empty"] > .c-foot{display:contents}
-.card[data-size][data-rail="empty"] > .c-foot > :is(.c-refs, .btns){display:none}
+.c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
+/* A strip: my position, the year or the context link in the top area, or
+   the bottom one where the buttons are not. A strip of the card's padding is
+   made for it, and it sits there, at the left, center or right, clear of
+   every layout's parts. grid-area:auto, or a grid card would give it a cell
+   of its own. */
+.card[data-size][data-strips~="top"]{padding-top:calc(var(--pad-t) + 1.4em)}
+.card[data-size][data-strips~="bottom"]{padding-bottom:calc(var(--pad-b) + 1.4em)}
+.c-foot [data-strip]{position:absolute; grid-area:auto; line-height:1.2}
+.c-foot [data-strip="top"]{top:var(--pad-t)}
+.c-foot [data-strip="bottom"]{bottom:var(--pad-b)}
+.c-foot [data-strip][data-h="left"]{left:var(--pad-x)}
+.c-foot [data-strip][data-h="center"]{left:50%; translate:-50% 0}
+.c-foot [data-strip][data-h="right"]{right:var(--pad-x)}
+/* A buttons' box with nothing in it is no box at all: no column, no row, no
+   gap — only what sits in a strip, still drawn. [data-size] outweighs the
+   layouts' rules for the box, which come later. */
+.card[data-size][data-rail="empty"] > .c-foot, .card[data-size][data-rail="empty"] > .c-foot > .c-slot{display:contents}
+.card[data-size][data-rail="empty"] > .c-foot :is(.c-refs, .btns){display:none}
 /* The context extra: the way to the paper's topic on /research/. */
-.c-context{grid-column:2; justify-self:end; font-family:var(--mono); font-size:.77em; letter-spacing:.06em;
+.c-context{font-family:var(--mono); font-size:.77em; letter-spacing:.06em;
   text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .c-context:hover{color:var(--accent); text-decoration:none}
 
@@ -384,9 +380,9 @@ a.card:hover .name{color:var(--accent)}
   --rowT:1; --rowF:3; --rowB:5; --rowV:7; --rowX:9; --s1:auto; --s3:var(--r-fig); --s5:auto; --s7:auto; --s9:var(--r-text);
   --words:minmax(0,1fr); --figdef:6em; --F:var(--figdef);
   padding-top:calc(var(--pad-t) + var(--strip-t, 0px) - var(--gr));
-  grid-template-columns:var(--cL) var(--sp-left_words, var(--dL)) var(--words) var(--sp-words_right, var(--dR)) var(--cR);
-  grid-template-rows:var(--s1) var(--sp-title_figure, 0px) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--sp-authors_venue, 0px) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_rail, 0px) var(--rest) auto var(--sp-rail_bottom, 0px) auto}
-.card[data-size]:is([data-ctxy="top"], [data-posy="top"]){--strip-t:1.4em}
+  grid-template-columns:var(--cL) var(--sp-left_center, var(--dL)) var(--words) var(--sp-center_right, var(--dR)) var(--cR);
+  grid-template-rows:var(--s1) var(--sp-title_figure, 0px) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--sp-authors_venue, 0px) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) auto}
+.card[data-size][data-strips~="top"]{--strip-t:1.4em}
 .card[data-size] > :is(.c-name, .c-fig, .c-by, .c-venue, .c-text, .c-foot){margin:var(--gr) 0 0}
 /* The gaps each layout has had: beside a rail, 1em and .15em; a figure
    beside the words with the rail under them, 1.1em and .35em — and there
@@ -400,6 +396,13 @@ a.card:hover .name{color:var(--accent)}
    of the two — the figure, holding no width of its own, takes the column's.
    A side's width set, area:<side> (--colL, --colR), in their place. */
 .card[data-size] > .c-fig{contain:inline-size}
+/* An area the name gives with nothing in it is there all the same: a side
+   its column — its width, or 3em — and the top or bottom a strip of the
+   card's padding, its height or a line's. */
+.card[data-size][data-empty~="left"]{--cL:var(--colL, 3em); --dL:var(--gc)}
+.card[data-size][data-empty~="right"]{--cR:var(--colR, 3em); --dR:var(--gc)}
+.card[data-size][data-empty~="top"]{padding-top:calc(var(--pad-t) + var(--hT, 1.4em))}
+.card[data-size][data-empty~="bottom"]{padding-bottom:calc(var(--pad-b) + var(--hB, 1.4em))}
 .card[data-size][data-fig="left"]{--cL:var(--colL, var(--F)); --dL:var(--gc)}
 .card[data-size][data-fig="right"]{--cR:var(--colR, var(--F)); --dR:var(--gc)}
 .card[data-size][data-foot="left"]:not([data-rail="empty"]){--cL:var(--colL, auto); --dL:var(--gc)}
@@ -457,31 +460,25 @@ a.card:hover .name{color:var(--accent)}
 /* title:…:center|right — the title across its area. */
 .card[data-titlealign="center"] > .c-name{text-align:center}
 .card[data-titlealign="right"] > .c-name{text-align:right}
+/* title:…:status — the pill after the title, sized with it, never bold. */
+.c-tstatus{font-size:.6em; font-weight:400; vertical-align:.15em; white-space:nowrap}
 .card[data-size][data-titleat="top"][data-wins~="left-top"] > .c-name{grid-column-start:3}
 .card[data-size][data-titleat="top"][data-wins~="right-top"] > .c-name{grid-column-end:4}
 /* A rail under the words or at the bottom sits at the foot of its row: where
    cards share their rows, as the research carousel's do, every card's
    buttons end at the bottom. */
 .card[data-size]:is([data-foot="center"], [data-foot="bottom"]) > .c-foot{align-self:end}
-/* …and across it, the year and context at the top or center of the
-   buttons, where they wrap onto more than one row. */
-.card:is([data-foot="center"], [data-foot="bottom"])[data-footend="top"] > .c-foot{align-items:start}
-.card:is([data-foot="center"], [data-foot="bottom"])[data-footend="center"] > .c-foot{align-items:center}
 .card:is([data-fig="left"], [data-fig="right"]) > .c-fig img{aspect-ratio:4/3}
 .card:is([data-fig="left"], [data-fig="right"]):is([data-foot="left"], [data-foot="right"]) > .c-fig img{padding:.15em}
-/* A rail in a side: the links at its top or bottom, the year at the other
-   end, or the two together in its middle. */
-.card:is([data-foot="left"], [data-foot="right"]) > .c-foot{align-self:stretch; display:flex;
-  flex-direction:column; justify-content:space-between; gap:.4em; padding:0}
-.card[data-foot="right"] > .c-foot{align-items:flex-end}
-.card[data-foot="left"] > .c-foot{align-items:flex-start}
-/* …or at its left, center or right, as the name puts them. */
-.card:is([data-foot="left"], [data-foot="right"])[data-railalign="left"] > .c-foot{align-items:flex-start}
-.card:is([data-foot="left"], [data-foot="right"])[data-railalign="center"] > .c-foot{align-items:center}
-.card:is([data-foot="left"], [data-foot="right"])[data-railalign="right"] > .c-foot{align-items:flex-end}
+/* The buttons' box in a side: a column, its slots at the top, in the middle
+   and at the bottom — the middle one between the others where both are
+   there — each part across it at its own place. */
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot{align-self:stretch; display:flex; flex-direction:column; gap:.4em; padding:0}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot{flex-direction:column; flex-wrap:nowrap; align-items:flex-start}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="center"]{margin-block:auto}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="end"]{margin-top:auto}
+.card:is([data-foot="left"], [data-foot="right"]) > .c-foot > .c-slot[data-at="center"]:has(> *) ~ .c-slot[data-at="end"]{margin-top:0}
 .card:is([data-foot="left"], [data-foot="right"])[data-railalign="left"]:not([data-per]) .c-foot .btns--icon{justify-content:flex-start}
-.card:is([data-foot="left"], [data-foot="right"])[data-footend="bottom"] > .c-foot{flex-direction:column-reverse}
-.card:is([data-foot="left"], [data-foot="right"])[data-footend="center"] > .c-foot{justify-content:center}
 /* On a phone, a card that fits its content stacks a side figure over the
    words, centred and no wider than 14rem. */
 @media (max-width:34rem){
@@ -490,10 +487,11 @@ a.card:hover .name{color:var(--accent)}
 }
 
 /* Which parts show — last, so they win over the layouts. The title at the
-   length data-title names; with no text and no venue line, a paper's year
-   moves into the foot, after its author position when that is asked for. */
+   length data-title names; in the rail, my author position and the year,
+   each where it is asked for. */
 .card[data-text="none"] .c-text,
-.card:is(:not([data-text="none"]), [data-venue]) :is(.c-sep, .c-yr),
+.card:not([data-yearwith]) :is(.c-sep, .c-yr),
+.card:is(:not([data-year]), [data-yearwith]) .c-year,
 .card:not([data-title]) .c-t:not(.c-t-full),
 .card[data-title="short"] .c-t:not(.c-t-short),
 .card[data-title="nick"] .c-t:not(.c-t-nick),
@@ -505,9 +503,10 @@ a.card:hover .name{color:var(--accent)}
 .card[data-authors="short"] .c-by-full,
 .card[data-authors="short"]:not([data-textsize="minor"]) .c-by-tight,
 .card[data-authors="short"][data-textsize="minor"] .c-by-short,
-.card:is(:not([data-text="none"]), [data-venue]):not([data-pos]) .c-stamp,
+.card:not([data-pos]) .c-stamp,
 .card:not([data-venue]) > .c-venue,
 .card:not([data-status]) .c-status,
+.card:not([data-titlestatus]) .c-tstatus,
 .card:not([data-context]) .c-context,
 .card:not([data-pos]) :is(.c-place, .c-sep),
 .card:not([data-role]) .c-role,
