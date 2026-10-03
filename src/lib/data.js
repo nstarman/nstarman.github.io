@@ -162,9 +162,7 @@ export function softwarePapers(sw) {
     const year = ref.status === 'in-prep' ? null : String(ref.date.start).slice(0, 4);
     const paper = { rel: 'paper', label: year ? `paper ${year}` : 'paper', id: ref.id, status: ref.status, year };
     // The article at the journal first. Taking the first citation link instead
-    // sent Astropy to its ADS record and macro_lightning to its arXiv preprint,
-    // because REL_ORDER ranks `ads` and `preprint` above `paper` — right for a
-    // trail of marks, wrong when only one link is being chosen.
+    // sent Astropy to its ADS record and macro_lightning to its arXiv preprint.
     const article = venueUrl(ref);
     // Nothing published yet: a preprint or a review thread is what there is.
     const url = article ?? links(ref).find((l) => CITE_RELS.includes(l.rel))?.url;
@@ -299,7 +297,8 @@ export function dateLabel(item, { month = false } = {}) {
  * Order links land in. ADS first as the canonical record, then the preprint,
  * then the published article, then everything that is code or data.
  */
-const REL_ORDER = ['ads', 'preprint', 'paper', 'doi', 'repo', 'code',
+// The paper itself leads: the article at the journal, then the records of it.
+const REL_ORDER = ['paper', 'doi', 'ads', 'preprint', 'repo', 'code',
                    'docs', 'data', 'slides', 'event', 'homepage'];
 
 /**
