@@ -183,13 +183,13 @@ const apply = `(function (parseName, placeOf, can) {
   if (together) d.yearwith = ''; else delete d.yearwith;
   var strips = [];
   // The paper button: its label, a word or the glyph, and its link, as the
-  // name asks — and with nowhere to go, none. It goes first, with the
-  // buttons.
+  // name asks — and with nowhere to go, none. It is the first of the
+  // buttons, in their list.
   var pb = card.querySelector('.c-paperbtn'), pbt = spec.paperButton, pbHref = pb && pbt && pb.dataset[pbt.to || 'auto'];
   if (pbHref) { d.paper = ''; pb.setAttribute('href', pbHref); pb.querySelector('.c-pword').textContent = pbt.label === 'icon' ? 'paper' : pbt.label; } else delete d.paper;
   if (pbHref && pbt.label === 'icon') d.paperlabel = 'icon'; else delete d.paperlabel;
   var btnsAt = { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') };
-  [['.c-paperbtn', true, btnsAt], ['.btns--icon', true, btnsAt],
+  [['.btns--icon', true, btnsAt],
     ['.c-stamp', 'pos' in d, at.pos], ['.c-year', 'year' in d && !together, at.year], ['.c-context', 'context' in d, at.context]].forEach(function (p) {
     var el = foot.querySelector(p[0]), pl = p[2];
     if (!el) return;
@@ -201,25 +201,33 @@ const apply = `(function (parseName, placeOf, can) {
   if (strips.length) d.strips = strips.join(' '); else delete d.strips;
   if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
   // The buttons in the name's order, the keys it lists as it lists them, the
-  // rest after.
+  // rest after — the paper button first of all.
   var ul = card.querySelector('.c-foot .btns--icon');
+  var rank = function (li) { if (!li.dataset.rel) return -1; var r = spec.links.indexOf(li.dataset.rel); return r < 0 ? 1e9 : r; };
   if (ul && spec.links !== 'all') [].map.call(ul.children, function (li, i) { return [li, i]; })
-    .sort(function (a, b) {
-      var ra = spec.links.indexOf(a[0].dataset.rel), rb = spec.links.indexOf(b[0].dataset.rel);
-      return (ra < 0 ? 1e9 : ra) - (rb < 0 ? 1e9 : rb) || a[1] - b[1];
-    })
+    .sort(function (a, b) { return rank(a[0]) - rank(b[0]) || a[1] - b[1]; })
     .forEach(function (p) { ul.appendChild(p[0]); });
+  // A button shown: the paper button where it is on; a link, where kept.
+  var on = function (li) { return li.dataset.rel ? spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0 : 'paper' in d; };
   // The buttons to a row: as many as fit, so many — no more than are shown —
   // or as near square as the ones shown go.
-  var shown = [].filter.call(card.querySelectorAll('.c-foot li[data-rel]'), function (li) { return spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; }).length;
-  var per = spec.perRow === 'fit' || !shown ? 0 : Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown)));
+  // Counted as the room they take: the paper button so many buttons wide —
+  // its word in the mono face, rounded up to whole buttons — the rest one
+  // each; a row never narrower than it.
+  var pn = pbHref ? (pbt.label === 'icon' ? 1 : Math.ceil(0.27 * pbt.label.length + 0.62)) : 1;
+  if (pbHref) card.style.setProperty('--pn', pn); else card.style.removeProperty('--pn');
+  var cell = function (li) { return li.dataset.rel ? 1 : pn; };
+  var shown = [].reduce.call(card.querySelectorAll('.c-foot .btns--icon > li'), function (n, li) { return n + (on(li) ? cell(li) : 0); }, 0);
+  var per = spec.perRow === 'fit' || !shown ? 0 : Math.max(pbHref ? pn : 1, Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown))));
   if (per) { d.per = ''; card.style.setProperty('--per', per); } else { delete d.per; card.style.removeProperty('--per'); }
   // On a right rail, a short last row sits at the right: its first button,
   // by its place among them all, starts --skip columns in.
-  var lis = card.querySelectorAll('.c-foot li[data-rel]'), short = per && (spec.railAlign || (spec.foot === 'right' ? 'right' : 'left')) === 'right' ? shown % per : 0, n = 0;
+  var lis = card.querySelectorAll('.c-foot .btns--icon > li'), short = per && (spec.railAlign || (spec.foot === 'right' ? 'right' : 'left')) === 'right' ? shown % per : 0, n = 0;
   delete d.skipat; card.style.removeProperty('--skip');
   if (short) [].forEach.call(lis, function (li, i) {
-    if ((spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0) && n++ === shown - short) { d.skipat = i + 1; card.style.setProperty('--skip', per - short); }
+    if (!on(li)) return;
+    if (n === shown - short) { d.skipat = i + 1; card.style.setProperty('--skip', per - short); }
+    n += cell(li);
   });
   if (spec.background === 'normal') delete d.background; else d.background = spec.background;
   // The title's weight, and the frame around the figure: a step, or px.
@@ -242,7 +250,7 @@ const apply = `(function (parseName, placeOf, can) {
   // With nothing left in it — every part hidden or in a strip — the box is
   // none: its column closes, and the words take its room.
   delete d.rail;
-  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-paperbtn, .c-stamp, .c-year, .c-context'), function (e) {
+  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-paperli, .c-stamp, .c-year, .c-context'), function (e) {
     var s = getComputedStyle(e);
     return s.display !== 'none' && s.position !== 'absolute';
   });

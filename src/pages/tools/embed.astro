@@ -2091,7 +2091,7 @@ const data = {
       if (!li) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      const sibs = () => [...li.parentElement.children].filter((x) => x.getClientRects().length);
+      const sibs = () => [...li.parentElement.children].filter((x) => x.dataset.rel && x.getClientRects().length);
       const x0 = e.clientX, y0 = e.clientY;
       let on = false, over = null;
       const move = (ev) => {

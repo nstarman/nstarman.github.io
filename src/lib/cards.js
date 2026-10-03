@@ -73,6 +73,11 @@ export function cardText(item) {
   return { summary: item.summary ?? d?.match(/^.+?[.!?](?=\s|$)/)?.[0], details: d };
 }
 
+/** How many buttons wide the paper button is: its word, in the mono face at
+ *  .42 of a button with .04em between letters, and its padding, rounded up
+ *  to whole buttons — the glyph, one. */
+export const paperSpan = (label) => (!label || label === 'icon' ? 1 : Math.ceil(0.27 * label.length + 0.62));
+
 /** Where a card's paper button links, paper:…:<to>: the article, arXiv, ADS
  *  or this site; left unsaid, the article where it is out, else arXiv, else
  *  nowhere — and with nowhere to go there is no button. */

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus, paperHref, paperSpan,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 
@@ -345,6 +345,8 @@ describe('card names', () => {
     expect(paperHref({ type: 'publication' })).toBeNull();
     expect(paperHref(out, 'arxiv')).toBe('https://arxiv.org/abs/2401.00001');
     expect(paperHref({ type: 'software', arxiv: '2401.00001' })).toBeNull();
+    // So many buttons wide: the glyph one, a short word two, a long one more.
+    expect([paperSpan('icon'), paperSpan('pdf'), paperSpan('paper'), paperSpan('manuscript')]).toEqual([1, 2, 2, 4]);
     expect(paperHref({ ...out, status: 'submitted' }), 'not out yet: arXiv').toBe('https://arxiv.org/abs/2401.00001');
   });
 

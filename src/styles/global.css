@@ -304,7 +304,10 @@ a.card:hover .name{color:var(--accent)}
 .c-slot > [data-cross="end"]{align-self:flex-end}
 /* Prefixed so a page's own rule for link buttons — /publications/ stacks them —
    does not reach into a card. */
-.card .c-foot .btns--icon{flex-direction:row; margin:0; padding:0; gap:var(--bgap, .3em)}
+/* The gap between the buttons, resolved where they are — a registered
+   length — so the paper button, in its own smaller face, spans the same. */
+@property --bg{syntax:'<length>'; inherits:true; initial-value:0px}
+.card .c-foot .btns--icon{flex-direction:row; margin:0; padding:0; --bg:var(--bgap, .3em); gap:var(--bg)}
 /* So many buttons to a row, then the next: that many columns, each as wide
    as its widest button — a package's paper button is a word, not a glyph. */
 .card[data-per] .c-foot .btns--icon{display:grid; grid-template-columns:repeat(var(--per), auto); justify-content:start}
@@ -340,13 +343,14 @@ a.card:hover .name{color:var(--accent)}
 .c-foot .iconbtn .ico{width:var(--ii); height:var(--ii)}
 /* paper:<label>[:<to>] — a paper's button of words, or its glyph, first in
    the buttons' box and as high as a button. */
-.c-paperbtn{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; height:var(--ib); min-width:var(--ib); padding:0 .7em;
+.c-paperbtn{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; height:var(--ib); padding:0; overflow:hidden; white-space:nowrap;
+  width:calc(var(--pn, 2) * var(--ib) + (var(--pn, 2) - 1) * var(--bg));
   border:1px solid var(--accent-line); border-radius:calc(var(--ib) * .25); background:color-mix(in srgb, var(--accent) 6%, var(--surface));
   color:var(--accent); font-family:var(--mono); font-size:calc(var(--ib) * .42); line-height:1; letter-spacing:.04em; text-decoration:none}
 .c-paperbtn:hover{background:color-mix(in srgb, var(--accent) 14%, var(--surface)); text-decoration:none}
 .c-paperbtn .ico{width:var(--ii); height:var(--ii); fill:currentColor}
-.card[data-paperlabel="icon"] .c-paperbtn{padding:0}
-.card:not([data-paper]) .c-paperbtn, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
+.card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
+.card:not([data-paper]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400)}
@@ -612,6 +616,7 @@ a.card:hover .name{color:var(--accent)}
 
 /* data-links names the links to keep, from the closed `rel` vocabulary. */
 .card[data-links] .c-foot li{display:none}
+.card[data-links][data-paper] .c-foot li.c-paperli{display:block}
 .card[data-links~="paper"] li[data-rel="paper"], .card[data-links~="preprint"] li[data-rel="preprint"],
 .card[data-links~="doi"] li[data-rel="doi"], .card[data-links~="repo"] li[data-rel="repo"],
 .card[data-links~="code"] li[data-rel="code"], .card[data-links~="docs"] li[data-rel="docs"],

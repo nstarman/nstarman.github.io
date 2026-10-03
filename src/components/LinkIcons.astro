@@ -4,11 +4,14 @@
 // glyph for a `rel` is decided once.
 import { REL_ICON, relKey } from '../lib/data.js';
 
-// cross: in a card's buttons' box, its alignment across the box.
+// cross: in a card's buttons' box, its alignment across the box. Anything
+// given — a card's paper button — comes first, among them.
 const { links = [], cross } = Astro.props;
+const lead = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
 ---
-{links.length > 0 && (
+{(links.length > 0 || lead.trim()) && (
   <ul class="btns btns--icon" data-cross={cross}>
+    <Fragment set:html={lead} />
     {links.map((l) => (
       <li data-rel={relKey(l)}>
         <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
