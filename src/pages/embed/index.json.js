@@ -3,7 +3,7 @@
 // preset here and builds the URL, rather than scraping pages.
 import { items } from '../../lib/data.js';
 import {
-  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, SITE_PRESETS, CARD_TYPES, defaultSlug, hasFigure, linkKeys, embedHref, siteHref,
+  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, FACES, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, SITE_PRESETS, CARD_TYPES, defaultSlug, hasFigure, linkKeys, embedHref, siteHref,
 } from '../../lib/cards.js';
 
 export function GET({ site }) {
@@ -17,9 +17,9 @@ export function GET({ site }) {
       buttonsAt: { area: FOOT_AT, v: 'in a side: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
       place: { area: 'top, the buttons\u2019 own area, or bottom where the buttons are not', v: 'with the buttons: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
       area: { left: 'there, even empty; its width — min=<0–800 px>, share=<5–95 %> or buttons, left out fitting what is in it, or 3em empty — then top and bottom, the corners it wins over the top and bottom areas', right: 'as left', top: 'there, even empty; its height empty, min=<0–400 px>, or a line\u2019s', bottom: 'as top' },
-      title: TITLES, titleAt: ['center', 'top'], titleAlign: RAIL_ALIGN, authors: AUTHORS, text: TEXTS, extras: EXTRAS, context: 'a place', position: 'a place', year: 'a place',
+      title: TITLES, titleAt: ['center', 'top'], titleAlign: RAIL_ALIGN, titleV: FOOT_END, authors: AUTHORS, text: TEXTS, extras: EXTRAS, context: 'a place', position: 'a place', year: 'a place',
       buttons: 'all, none, or a comma list of an item’s link keys; then :1–12 to a row, or :fit, as many as fit',
-      look: { ...Object.fromEntries(DIALS.map((d) => [d, `${LOOKS.join(', ')}, or px: ${{ textsize: '8–40, to a tenth', padding: '0–64', corners: '0–64', buttons: '12–64' }[d]}`])), titlesize: `${LOOKS.join(', ')}, or px: 8–60`, titleweight: ['regular', 'medium', 'bold', 'mine'], bodysize: 'px, 8–40, to a tenth', bodyweight: ['regular', 'medium', 'bold'], frame: `none, ${LOOKS.join(', ')}, or px: 0–32`, buttongap: 'px, 0–32, or 0–100% of a button\u2019s size', background: BACKGROUNDS },
+      look: { ...Object.fromEntries(DIALS.map((d) => [d, `${LOOKS.join(', ')}, or px: ${{ textsize: '8–40, to a tenth', padding: '0–64', corners: '0–64', buttons: '12–64' }[d]}`])), titlesize: `${LOOKS.join(', ')}, or px: 8–60`, titleweight: ['regular', 'medium', 'bold', 'mine'], ...Object.fromEntries(FACES.flatMap((f) => [[`${f}size`, 'px, 8–40, to a tenth'], [`${f}weight`, ['regular', 'medium', 'bold']]])), frame: `none, ${LOOKS.join(', ')}, or px: 0–32`, buttongap: 'px, 0–32, or 0–100% of a button\u2019s size', background: BACKGROUNDS },
       space: { between: SPACE_TRACKS, value: 'px, 0–64, or flex' },
     },
     resize: abs('/embed/resize.js'),

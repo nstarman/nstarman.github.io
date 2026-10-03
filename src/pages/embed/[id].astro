@@ -70,11 +70,15 @@ const apply = `(function (parseName, placeOf, can) {
   if (spec.title === 'full') delete d.title; else d.title = spec.title;
   if (spec.titleAt === 'top' && spec.title !== 'none') d.titleat = 'top'; else delete d.titleat;
   if (spec.titleAlign) d.titlealign = spec.titleAlign; else delete d.titlealign;
+  if (spec.titleAt === 'top' && spec.titleV) d.titlev = spec.titleV; else delete d.titlev;
   if (spec.titleStatus && can.tstatus) d.titlestatus = ''; else delete d.titlestatus;
-  // The text across the center, its own size and its weight.
+  // The text across the center; and each part's own size and weight.
   if (spec.textAlign) d.textalign = spec.textAlign; else delete d.textalign;
-  if (spec.bodyWeight) d.bodyweight = spec.bodyWeight; else delete d.bodyweight;
-  if (spec.bodySize) card.style.setProperty('--bs', spec.bodySize + 'px'); else card.style.removeProperty('--bs');
+  ['body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
+    var sz = (spec.sizes || {})[p], w = (spec.weights || {})[p];
+    if (sz) card.style.setProperty('--fs-' + p, sz + 'px'); else card.style.removeProperty('--fs-' + p);
+    if (w) card.style.setProperty('--fw-' + p, { regular: 400, medium: 500, bold: 600 }[w]); else card.style.removeProperty('--fw-' + p);
+  });
   // The corners each side wins over the top and bottom areas, area:<side>:top,bottom.
   var wins = [];
   ['left', 'right'].forEach(function (side) { ['top', 'bottom'].forEach(function (a) { if (((spec.sides || {})[side] || {})[a]) wins.push(side + '-' + a); }); });
@@ -187,7 +191,7 @@ const apply = `(function (parseName, placeOf, can) {
   // words (1fr) — and one the name leaves out goes back to 0.
   var sp = spec.space || {};
   var rows = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom'];
-  rows.concat(['left_center', 'center_right']).forEach(function (t) {
+  rows.concat(['top_left', 'top_center', 'top_right', 'left_center', 'center_right']).forEach(function (t) {
     if (sp[t]) card.style.setProperty('--sp-' + t, sp[t] !== 'flex' ? sp[t] + 'px' : rows.indexOf(t) >= 0 ? '100fr' : '1fr'); else card.style.removeProperty('--sp-' + t);
   });
   if (rows.some(function (t) { return sp[t] === 'flex'; })) d.vflex = ''; else delete d.vflex;

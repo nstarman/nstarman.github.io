@@ -263,8 +263,11 @@ describe('card names', () => {
     expect(s.space).toEqual({ title_figure: 'flex', center_right: '24' });
     expect(formatName(s)).toMatch(/-space:title_figure=flex,center_right=24$/);
     expect(parseName(formatName(s)).space).toEqual(s.space);
+    expect(formatName(parseName('size:fill:fit-text:none-space:center_bottom=4,top_right=2,top_center=12'))).toMatch(/-space:top_center=12,top_right=2,center_bottom=4$/);
     for (const bad of [
       'space:title_words=4', 'space:title_figure=65', 'space:title_figure=auto',
+      // The top area's space is padding, or the row under the title: a length.
+      'space:top_center=flex', 'space:top_left=flex',
       // A part's own sides were the first Space; the tracks replace them.
       'space:title.x=flex', 'space:buttons.all=4',
     ]) {
@@ -309,16 +312,23 @@ describe('card names', () => {
   });
 
   it('set the text across the center, at its own size and weight', () => {
-    expect(parseName('size:fill:fit-text:summary:center-look:bodysize=13.5,bodyweight=medium')).toMatchObject({ text: 'summary', textAlign: 'center', bodySize: '13.5', bodyWeight: 'medium' });
+    expect(parseName('size:fill:fit-text:summary:center-look:bodysize=13.5,bodyweight=medium')).toMatchObject({ text: 'summary', textAlign: 'center', sizes: { body: '13.5' }, weights: { body: 'medium' } });
     expect(parseName('size:fill:fit-text:details:left').textAlign).toBeUndefined();
     expect(formatName(parseName('size:fill:fit-text:details:right-look:bodyweight=bold'))).toMatch(/-text:details:right-.*-look:bodyweight=bold$/);
-    for (const bad of ['text:none:center', 'text:summary:middle', 'look:bodysize=41', 'look:bodysize=7', 'look:bodyweight=mine']) {
+    for (const bad of ['text:none:center', 'text:summary:middle', 'look:bodysize=41', 'look:bodysize=7', 'look:bodyweight=mine', 'look:titlesize2=9', 'look:extrasweight=bold', 'look:yearsize=12.25']) {
       expect(() => parseName(`size:fill:fit-text:summary-${bad}`.replace('-text:summary-text', '-text'))).toThrow();
     }
   });
 
+  it('give each part with words its own size and weight, in a fixed order', () => {
+    const s = parseName('size:fill:fit-text:summary-look:contextweight=bold,authorssize=12.5,venueweight=medium,yearsize=9,positionsize=10');
+    expect(s.sizes).toEqual({ authors: '12.5', year: '9', position: '10' });
+    expect(s.weights).toEqual({ context: 'bold', venue: 'medium' });
+    expect(formatName(s)).toMatch(/-look:authorssize=12\.5,venueweight=medium,positionsize=10,yearsize=9,contextweight=bold$/);
+  });
+
   it('put a status pill after the title, where the name asks', () => {
-    expect(parseName('size:fill:fit-text:none-title:full:split:link:status:top:center')).toMatchObject({ titleLink: 'link', titleStatus: true, titleAt: 'top', titleAlign: 'center' });
+    expect(parseName('size:fill:fit-text:none-title:full:split:link:status:top:top:center')).toMatchObject({ titleLink: 'link', titleStatus: true, titleAt: 'top', titleAlign: 'center' });
     expect(parseName('size:fill:fit-text:none-title:short').titleStatus).toBeUndefined();
     expect(formatName(parseName('size:fill:fit-text:none-title:nick:status'))).toContain('-title:nick:status-');
     for (const bad of ['title:none:status', 'title:short:top:status', 'title:short:status:link']) {
@@ -326,12 +336,21 @@ describe('card names', () => {
     }
   });
 
+  it('set the title up and down the top area, a center alone up and down', () => {
+    expect(parseName('size:fill:fit-text:none-title:nick:top:center')).toMatchObject({ titleAt: 'top', titleV: 'center' });
+    expect(parseName('size:fill:fit-text:none-title:nick:top:bottom:right')).toMatchObject({ titleV: 'bottom', titleAlign: 'right' });
+    expect(parseName('size:fill:fit-text:none-title:nick:top:top').titleV).toBeUndefined();
+    expect(formatName(parseName('size:fill:fit-text:none-title:nick:top:bottom:center'))).toContain('-title:nick:top:bottom:center-');
+    expect(formatName(parseName('size:fill:fit-text:none-title:nick:top:top'))).toContain('-title:nick:top-');
+  });
+
   it('set the title across its area, at the left left out', () => {
-    expect(parseName('size:fill:fit-text:none-title:nick:top:center')).toMatchObject({ title: 'nick', titleAt: 'top', titleAlign: 'center' });
+    expect(parseName('size:fill:fit-text:none-title:nick:top:top:center')).toMatchObject({ title: 'nick', titleAt: 'top', titleAlign: 'center' });
+    expect(formatName(parseName('size:fill:fit-text:none-title:nick:top:top:center'))).toContain('-title:nick:top:top:center-');
     expect(parseName('size:fill:fit-text:none-title:full:whole:link:right')).toMatchObject({ rest: 'whole', titleLink: 'link', titleAt: 'center', titleAlign: 'right' });
     expect(parseName('size:fill:fit-text:none-title:short:left').titleAlign).toBeUndefined();
     expect(formatName(parseName('size:fill:fit-text:none-title:nick:site:top:right'))).toContain('-title:nick:site:top:right-');
-    for (const bad of ['title:none:center', 'title:short:center:top', 'title:short:right:left']) {
+    for (const bad of ['title:none:center', 'title:short:center:top', 'title:short:right:left', 'title:short:bottom', 'title:none:link']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
   });

@@ -6,9 +6,11 @@
 import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import NumBox from '../../components/NumBox.astro';
+import Place from '../../components/Place.astro';
+import TextLook from '../../components/TextLook.astro';
 import { items, relKey, splitTitle } from '../../lib/data.js';
 import {
-  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
 
 const pool = items.filter((i) => CARD_TYPES.includes(i.type));
@@ -151,7 +153,7 @@ const data = {
               Which title, byline or text is chosen under the preview, with the
               rest of what tunes the card: ticking the pill, or clicking that
               part in the preview, brings it up. */}
-          <div class="eb-row">
+          <div class="eb-row eb-shows">
             <fieldset class="eb-group">
               <legend class="eb-key eb-key--check">
                 <label class="eb-keylabel"><input type="checkbox" class="eb-check" id="eb-title-on" checked />Title</label>
@@ -271,16 +273,15 @@ const data = {
                   figure, the words and the sides — empty, it takes no room —
                   or the center, the words' own column. */}
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" role="radiogroup" aria-label="The area the title sits in">
-                <label title="Across the card, above the figure, the words and the sides"><input type="radio" class="posradio" name="titleat" value="top" />top</label>
-                <label title="In the words' own column"><input type="radio" class="posradio" name="titleat" value="center" checked />center</label>
-              </span>
-              {/* Then its position across that area. */}
-              <span class="eb-dim">position</span>
-              <span class="eb-pair">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The title at the left, center or right of its area">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="titlealign" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
+              <span class="eb-px">
+                <select name="titleat" class="eb-menu" aria-label="The area the title sits in">
+                  <option value="top" title="Across the card, above the figure, the words and the sides">top</option>
+                  <option value="center" title="In the words' own column" selected>center</option>
+                </select>
+                {/* Then, on the same line, its position: up and down in the
+                    top area, across either. */}
+                <span class="eb-dim eb-inkey">position</span>
+                <Place v="titlev" vId="eb-titlev" h="titlealign" label="The title's position" />
               </span>
               <span class="eb-dim">length</span>
               <span class="eb-titles">
@@ -313,16 +314,7 @@ const data = {
                   size — and on the same line its weight, from a menu. */}
               <span class="eb-dim">size</span>
               <span class="eb-px">
-                <NumBox title={STEP_PX.titlesize.what} name="titlesizepx" min={STEP_PX.titlesize.min} max={STEP_PX.titlesize.max} step="0.1" placeholder="auto" label="Title size in pixels" unit="px" />
-                <span class="pilltoggle" role="radiogroup" aria-label="Title size">
-                  <label title="Follows the text size"><input type="radio" class="posradio" name="titlesize" value="text" checked />by text</label>
-                </span>
-                <span class="eb-dim eb-inkey">weight</span>
-                <select name="titleweight" class="eb-menu" aria-label="The title's weight">
-                  <option value="" title="Medium, or regular where I am past second author" selected>auto</option>
-                  {['regular', 'medium', 'bold'].map((v) => <option value={v}>{v}</option>)}
-                  <option value="mine" title="Bold where I am first author, regular otherwise">mine</option>
-                </select>
+                <TextLook label="The title's" sizeName="titlesizepx" byName="titlesize" weightName="titleweight" max={STEP_PX.titlesize.max} sizeTitle={STEP_PX.titlesize.what} autoTitle="Medium, or regular where I am past second author" mine />
               </span>
             </span>
           </fieldset>
@@ -354,6 +346,23 @@ const data = {
                 <label title="Each co-author a link to their ORCID, where they have one"><input type="radio" class="posradio" name="authorlink" value="orcid" />ORCID</label>
                 <label title="Each co-author a link to the papers we wrote together, on the collaborator map at /research/, where they are on it"><input type="radio" class="posradio" name="authorlink" value="site" />our papers</label>
               </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px"><TextLook name="authors" label="The authors'" /></span>
+            </span>
+          </fieldset>
+
+          {/* The venue line, where Published asks for it: where the paper
+              stands as a pill at its end, as the title has one — the status
+              extra — and its size and weight. Clicking it brings it up. */}
+          <fieldset class="eb-row" id="eb-venue-row" data-tune="venue" hidden>
+            <legend class="eb-key">Published</legend>
+            <span class="eb-sub">
+              <span class="eb-dim" id="eb-vstatus-key">show</span>
+              <span class="pilltoggle eb-checks" id="eb-vstatus">
+                <label title="Where it stands — submitted or accepted — as a pill at the end of the venue line"><input type="checkbox" class="eb-check" name="extra" value="status" />status</label>
+              </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px"><TextLook name="venue" label="The venue line's" /></span>
             </span>
           </fieldset>
 
@@ -364,20 +373,17 @@ const data = {
             <legend class="eb-key">Position</legend>
             <span class="eb-sub">
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" id="eb-posat" role="radiogroup" aria-label="The area my position sits in">
-                <label title="A strip across the card's top"><input type="radio" class="posradio" name="posat" value="top" />top</label>
-                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="posat" value="" checked /><span class="eb-boxname">center</span></label>
-                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="posat" value="bottom" />bottom</label>
+              <span class="eb-px">
+                <select name="posat" id="eb-posat" class="eb-menu" aria-label="The area my position sits in">
+                  <option value="top" title="A strip across the card's top">top</option>
+                  <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
+                  <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                </select>
+                <span class="eb-dim eb-inkey">position</span>
+                <Place v="posv" vId="eb-posv" vValue="bottom" h="posh" label="My position" />
               </span>
-              <span class="eb-dim">position</span>
-              <span class="eb-pair" id="eb-pospos">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-posv" role="radiogroup" aria-label="My position at the top, center or bottom of the buttons' area">
-                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="posv" value={v} checked={v === 'bottom'} />{v}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="My position at the left, center or right of its area">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="posh" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
-              </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px"><TextLook name="position" label="My position's" /></span>
             </span>
           </fieldset>
 
@@ -390,40 +396,34 @@ const data = {
             <legend class="eb-key">Year</legend>
             <span class="eb-sub">
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" id="eb-yearat" role="radiogroup" aria-label="The area the year sits in">
-                <label title="A strip across the card's top"><input type="radio" class="posradio" name="yearat" value="top" />top</label>
-                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="yearat" value="" checked /><span class="eb-boxname">center</span></label>
-                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="yearat" value="bottom" />bottom</label>
+              <span class="eb-px">
+                <select name="yearat" id="eb-yearat" class="eb-menu" aria-label="The area the year sits in">
+                  <option value="top" title="A strip across the card's top">top</option>
+                  <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
+                  <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                </select>
+                <span class="eb-dim eb-inkey">position</span>
+                <Place v="yearv" vId="eb-yearv" vValue="bottom" h="yearh" label="The year" />
               </span>
-              <span class="eb-dim">position</span>
-              <span class="eb-pair" id="eb-yearpos">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-yearv" role="radiogroup" aria-label="The year at the top, center or bottom of the buttons' area">
-                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="yearv" value={v} checked={v === 'bottom'} />{v}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The year at the left, center or right of its area">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="yearh" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
-              </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px"><TextLook name="year" label="The year's" /></span>
             </span>
           </fieldset>
           <fieldset class="eb-row" id="eb-ctx-row" data-tune="context" hidden>
             <legend class="eb-key">Context</legend>
             <span class="eb-sub">
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" id="eb-ctxat" role="radiogroup" aria-label="The area the context link sits in">
-                <label title="A strip across the card's top"><input type="radio" class="posradio" name="ctxat" value="top" />top</label>
-                <label title="With the buttons, in their area"><input type="radio" class="posradio" name="ctxat" value="" checked /><span class="eb-boxname">center</span></label>
-                <label class="eb-stripbottom" title="A strip across the card's bottom"><input type="radio" class="posradio" name="ctxat" value="bottom" />bottom</label>
+              <span class="eb-px">
+                <select name="ctxat" id="eb-ctxat" class="eb-menu" aria-label="The area the context link sits in">
+                  <option value="top" title="A strip across the card's top">top</option>
+                  <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
+                  <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                </select>
+                <span class="eb-dim eb-inkey">position</span>
+                <Place v="ctxv" vId="eb-ctxv" vValue="bottom" h="ctxh" label="The context link" />
               </span>
-              <span class="eb-dim">position</span>
-              <span class="eb-pair" id="eb-ctxpos">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-ctxv" role="radiogroup" aria-label="The context link at the top, center or bottom of the buttons' area">
-                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="ctxv" value={v} checked={v === 'bottom'} />{v}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The context link at the left, center or right of its area">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="ctxh" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
-              </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px"><TextLook name="context" label="The context link's" /></span>
             </span>
           </fieldset>
 
@@ -441,19 +441,9 @@ const data = {
                   page narrows. */}
               <span class="eb-dim">position</span>
               <span class="eb-px">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The text at the left, center or right of the center">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="textalign" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
+                <Place h="textalign" label="The text's position" />
                 <span class="eb-dim eb-inkey">size</span>
-                <NumBox title="The text's own size, in pixels; empty follows the card's text size" name="bodysize" min="8" max="40" step="0.1" placeholder="auto" label="Text size in pixels" unit="px" />
-                <span class="pilltoggle" role="radiogroup" aria-label="Text size">
-                  <label title="Follows the card's text size"><input type="radio" class="posradio" name="bodyby" value="text" checked />by text</label>
-                </span>
-                <span class="eb-dim eb-inkey">weight</span>
-                <select name="bodyweight" class="eb-menu" aria-label="The text's weight">
-                  <option value="" title="Regular" selected>auto</option>
-                  {['regular', 'medium', 'bold'].map((v) => <option value={v}>{v}</option>)}
-                </select>
+                <TextLook name="body" label="The text's" />
               </span>
             </span>
           </fieldset>
@@ -470,28 +460,22 @@ const data = {
             <span class="eb-sub">
               {/* The area it sits in, then — in a side — where in that area. */}
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" role="radiogroup" aria-label="The area the figure sits in">
-                {FIGURE_AT.map((v) => <label title={{ left: 'In the left side', center: 'In the center, among the words', right: 'In the right side' }[v]}><input type="radio" class="posradio" name="figat" value={v} checked={v === 'center'} />{{ left: 'LHS', center: 'center', right: 'RHS' }[v]}</label>)}
-              </span>
-              <span class="eb-dim">position</span>
-              <span class="eb-pair">
-                {/* In the center, which of its slots: among its parts. */}
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="5" id="eb-figslot" role="radiogroup" aria-label="Where among the center's parts the figure sits">
-                  {FIGURE_SLOTS.map((v) => [v, v === 'top' ? 'above title' : `below ${v}`]).map(([v, name]) => <label><input type="radio" class="posradio" name="figslot" value={v} checked={v === 'title'} />{name}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-figv" role="radiogroup" aria-label="Figure at the top, center or bottom of its area">
-                  {FIGURE_ALIGN.map((v) => <label><input type="radio" class="posradio" name="figv" value={v} checked={v === 'center'} />{v}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-figh" role="radiogroup" aria-label="Figure at the left, center or right of its area">
-                  {['left', 'center', 'right'].map((v) => <label title={`At the ${v} of its column, where narrower than it`}><input type="radio" class="posradio" name="figh" value={v} checked={v === 'center'} />{v}</label>)}
-                </span>
+              <span class="eb-px">
+                <select name="figat" class="eb-menu" aria-label="The area the figure sits in">
+                  {FIGURE_AT.map((v) => <option value={v} title={{ left: 'In the left side', center: 'In the center, among the words', right: 'In the right side' }[v]} selected={v === 'center'}>{{ left: 'LHS', center: 'center', right: 'RHS' }[v]}</option>)}
+                </select>
+                <span class="eb-dim eb-inkey">position</span>
+                {/* In the center, which of its slots, among its parts; in a
+                    side, up and down and across. */}
+                <Place among={{ name: 'figslot', id: 'eb-figslot', value: 'title', options: FIGURE_SLOTS.map((v) => [v, v === 'top' ? 'above title' : `below ${v}`]) }}
+                  v="figv" vId="eb-figv" vValue="center" h="figh" hId="eb-figh" hValue="center" label="The figure's position" />
               </span>
               <span class="eb-dim">size</span>
               <span class="eb-px">
                 <NumBox title="The figure's width: a share of its column, or its own px; empty fills the column" name="figpx" min="8" max="800" placeholder="auto" label="Figure width" unitName="figunit" unitLabel="The figure's width, as"
                   units={[{ value: '%', label: '%', title: 'A share of its column', checked: true }, { value: 'px', label: 'px', title: 'Its own width in px' }]} />
                 <span class="pilltoggle" role="radiogroup" aria-label="Figure size">
-                  {['auto', 25, 33, 50, 75, 100].map((v) => <label><input type="radio" class="posradio" name="figp" value={v} />{v}</label>)}
+                  <label><input type="radio" class="posradio" name="figp" value="auto" />auto</label>
                 </span>
               </span>
               <span class="eb-dim">link</span>
@@ -505,7 +489,6 @@ const data = {
                 <span class="pilltoggle" role="radiogroup" aria-label="Figure frame">
                   <label title="As it is"><input type="radio" class="posradio" name="frame" value="" checked />auto</label>
                   <label title="The bare image"><input type="radio" class="posradio" name="frame" value="none" />none</label>
-                  {LOOKS.map((v) => <label title={v}><input type="radio" class="posradio" name="frame" value={v} />{{ minor: 3, compact: 4, standard: 4.8, feature: 8, display: 12 }[v]}</label>)}
                 </span>
               </span>
             </span>
@@ -534,17 +517,12 @@ const data = {
               {/* The area they sit in: a side, under the words, or the bottom.
                   Then where in it. */}
               <span class="eb-dim">area</span>
-              <span class="pilltoggle" role="radiogroup" aria-label="The area the buttons sit in">
-                {FOOT_AT.map((v) => <label title={{ left: 'In the left side, under its figure', center: 'Under the words', right: 'In the right side, under its figure', bottom: 'In the bottom area, the full width' }[v]}><input type="radio" class="posradio" name="foot" value={v} />{{ left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[v]}</label>)}
-              </span>
-              <span class="eb-dim">position</span>
-              <span class="eb-pair">
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-footend" role="radiogroup" aria-label="The buttons at the top, center or bottom of their side">
-                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="footend" value={v} checked={v === 'top'} />{v}</label>)}
-                </span>
-                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The buttons at the left, center or right of their area">
-                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="railalign" value={v} checked={v === 'left'} />{v}</label>)}
-                </span>
+              <span class="eb-px">
+                <select name="foot" class="eb-menu" aria-label="The area the buttons sit in">
+                  {FOOT_AT.map((v) => <option value={v} title={{ left: 'In the left side, under its figure', center: 'Under the words', right: 'In the right side, under its figure', bottom: 'In the bottom area, the full width' }[v]}>{{ left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[v]}</option>)}
+                </select>
+                <span class="eb-dim eb-inkey">position</span>
+                <Place v="footend" vId="eb-footend" h="railalign" label="The buttons' position" />
               </span>
               <span class="eb-dim">layout</span>
               <span class="eb-px">
@@ -648,7 +626,10 @@ const data = {
 
 <script>
   import { domToPng } from 'modern-screenshot';
-  import { AUTHORS_MAX, DIALS, SPACE_TRACKS, formatName, parseName, placeOf } from '../../lib/cardname.js';
+  import { AUTHORS_MAX, DIALS, FACES, FIGURE_SLOTS, SPACE_TRACKS, formatName, parseName, placeOf } from '../../lib/cardname.js';
+  // Where each part with a size and weight of its own is drawn, to show what
+  // an empty size comes to.
+  const FACE_Q = { body: '.c-text :is(.c-sum, .c-det)', authors: '.c-by', venue: '.c-venue', position: '.c-place', year: ':is(.c-yr, .c-year)', context: '.c-context' };
 
   const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
   const form = document.getElementById('eb');
@@ -668,7 +649,12 @@ const data = {
     const gap = btns ? parseFloat(doc.defaultView.getComputedStyle(btns).columnGap) || 0 : null, ib = btns?.querySelector('.iconbtn')?.offsetWidth;
     form.elements.bgap.placeholder = gap == null ? 'auto' : String(form.elements.bgapu.value === '%' && ib ? Math.round((gap / ib) * 100) : Math.round(gap * 10) / 10);
   }
-  const setRadio = (n, v) => { for (const r of document.querySelectorAll(`input[type=radio][name="${n}"]`)) r.checked = r.value === String(v); };
+  // A choice set by value, a menu's or a radio group's.
+  const setRadio = (n, v) => {
+    const m = form.querySelector(`select[name="${n}"]`);
+    if (m) m.value = String(v);
+    else for (const r of document.querySelectorAll(`input[type=radio][name="${n}"]`)) r.checked = r.value === String(v);
+  };
   const preview = el('eb-preview');
   const code = el('eb-code');
   const note = el('eb-note');
@@ -691,7 +677,6 @@ const data = {
     const it = items[id];
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
-      + x(it.status, 'status', `Its status, ${it.status}, on the venue line`)
       + x(it.pos, 'position', 'My author position, as 1st')
       + x(it.year, 'year', 'The year')
       + x(it.context, 'context', 'A link to its topic on /research/');
@@ -704,6 +689,10 @@ const data = {
   // My position, the year and the context link: each one's prefix in the
   // form, and its part in a spec.
   const SMALL = [['pos', 'pos'], ['year', 'year'], ['ctx', 'context']];
+  // The figure shown in a side, where the buttons then stack under it, at
+  // the side's foot beside the words' last line: there they have no up and
+  // down of their own.
+  const stackedIn = (a) => el('eb-figure-on').checked && !!items[form.elements.card.value].figure && form.elements.figat.value === a;
   // A part's place as the form has it: a strip's area and across it, or the
   // buttons' area, up and down and across.
   const placed = (f, k) => {
@@ -780,8 +769,10 @@ const data = {
     form.elements.railalign.value = c.railAlign ?? (['left', 'right'].includes(c.foot) ? c.foot : 'left');
     form.elements.titleweight.value = c.titleWeight ?? '';
     const framePx = /^[0-9]/.test(c.frame ?? '');
-    setRadio('frame', framePx ? '' : c.frame ?? '');
-    form.elements.framepx.value = framePx ? c.frame : '';
+    // A step, as its px: the box has no steps of its own.
+    const frameStep = { minor: 3, compact: 4, standard: 5, feature: 8, display: 12 }[c.frame];
+    setRadio('frame', framePx || frameStep ? null : c.frame ?? '');
+    form.elements.framepx.value = framePx ? c.frame : frameStep ?? '';
     form.elements.bgap.value = c.buttonGap != null ? parseInt(c.buttonGap, 10) : '';
     form.elements.bgapu.value = c.buttonGap?.endsWith('%') ? '%' : 'px';
     space = { ...(c.space ?? {}) };
@@ -793,11 +784,14 @@ const data = {
     setRadio('titlelink', c.titleLink || '');
     form.elements.titleat.value = c.titleAt ?? 'center';
     form.elements.titlealign.value = c.titleAlign ?? 'left';
+    form.elements.titlev.value = c.titleV ?? 'top';
     form.elements.titlestatus.checked = !!c.titleStatus;
     form.elements.textalign.value = c.textAlign ?? 'left';
-    form.elements.bodysize.value = c.bodySize ?? '';
-    setRadio('bodyby', c.bodySize ? '' : 'text');
-    form.elements.bodyweight.value = c.bodyWeight ?? '';
+    for (const p of FACES) {
+      form.elements[`${p}size`].value = c.sizes?.[p] ?? '';
+      setRadio(`${p}by`, c.sizes?.[p] ? '' : 'text');
+      form.elements[`${p}weight`].value = c.weights?.[p] ?? '';
+    }
     form.elements.authors.value = typeof c.authors === 'number' ? 'n' : c.authors;
     form.elements.authorsn.value = typeof c.authors === 'number' ? c.authors : '';
     // My position, the year and the context link: the area — '' for the
@@ -834,7 +828,7 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, bodySize: f.get('bodysize') ? String(Math.min(40, Math.max(8, Math.round(+f.get('bodysize') * 10) / 10))) : undefined, bodyWeight: f.get('bodyweight') || undefined, titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
       extras: f.getAll('extra').filter((x) => has(items[id], x)), links: on.length === all.length ? 'all' : on, perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
@@ -887,13 +881,17 @@ const data = {
     const box = form.elements.foot.value;
     for (const [k] of SMALL) {
       el(`eb-${k}at`).querySelector('.eb-boxname').textContent = { left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[box];
-      el(`eb-${k}at`).querySelector('.eb-stripbottom').hidden = box === 'bottom';
+      el(`eb-${k}at`).querySelector('.eb-stripbottom').hidden = el(`eb-${k}at`).querySelector('.eb-stripbottom').disabled = box === 'bottom';
       el(`eb-${k}v`).hidden = !!form.elements[`${k}at`].value;
     }
     // Up and down belongs to buttons in a side.
-    el('eb-footend').hidden = !['left', 'right'].includes(box);
+    el('eb-footend').hidden = !['left', 'right'].includes(box) || stackedIn(box);
+    // Up and down belongs to the title in the top area, whose height may be
+    // more than its own.
+    el('eb-titlev').hidden = form.elements.titleat.value !== 'top';
     // A status pill belongs to a paper that has one to show.
     el('eb-tstatus').hidden = !s.it.tstatus;
+    el('eb-vstatus').hidden = el('eb-vstatus-key').hidden = !s.it.status;
     // whole | split belongs to a full title that has a short title inside it.
     el('eb-rest').hidden = !(form.elements.title.value === 'full' && s.it.split);
     // The title's link pills, named for this item, where it has the place.
@@ -939,13 +937,12 @@ const data = {
     const centred = form.elements.figat.value === 'center';
     el('eb-figslot').hidden = !centred;
     el('eb-figv').hidden = el('eb-figh').hidden = centred;
-    const topSlot = form.querySelector('[name=figslot][value=top]');
+    const topSlot = form.elements.figslot.querySelector('[value=top]');
     topSlot.disabled = form.elements.titleat.value === 'top';
-    if (topSlot.disabled && topSlot.checked) form.elements.figslot.value = 'title';
+    if (topSlot.disabled && topSlot.selected) form.elements.figslot.value = 'title';
     for (const b of form.querySelectorAll('.eb-bywidth')) b.hidden = !fixed;
-    // The figure's pills: auto with no width, else the one it matches.
-    const fig = form.elements.figpx.value === '' ? 'auto' : form.elements.figunit.value === '%' ? String(figWidth()) : '';
-    for (const r of form.elements.figp) r.checked = r.value === fig;
+    // The figure's auto: with no width typed.
+    form.querySelector('[name=figp]').checked = form.elements.figpx.value === '';
     // A number typed is the buttons to a row; with none, square or fit.
     if (form.elements.perrow.value !== '') for (const r of form.elements.perp) r.checked = false;
     else if (!form.elements.perp.value) form.elements.perp.value = 'square';
@@ -1110,10 +1107,13 @@ const data = {
       const v = { ...(width && { width }), ...(top && { top }), ...(bottom && { bottom }) };
       if (areasOn.has(side) || Object.keys(v).length) out[side] = v;
     }
+    // An end's height where it is given, or where its part is in it — the
+    // title at the top, the buttons at the bottom — and has one set.
     for (const end of ['top', 'bottom']) {
-      if (!areasOn.has(end)) continue;
-      const n = f.get(`h${end}`);
-      out[end] = n !== '' && n != null ? { height: clampInt(n, 0, 400) } : {};
+      const n = f.get(`h${end}`), h = n !== '' && n != null;
+      const filled = end === 'top' ? f.get('titleat') === 'top' : f.get('foot') === 'bottom';
+      if (!areasOn.has(end) && !(filled && h)) continue;
+      out[end] = h ? { height: clampInt(n, 0, 400) } : {};
     }
     return out;
   };
@@ -1149,7 +1149,7 @@ const data = {
       const and = trackName(t).replace(' · ', ' and ');
       return `<span class="eb-track eb-px"><span class="eb-dim" data-label="${t}">${trackName(t)}</span>`
         + `<span data-numbox="${t}"></span>`
-        + `<span class="pilltoggle eb-checks"><label><input type="checkbox" class="eb-check" data-trackflex="${t}" ${v === 'flex' ? 'checked' : ''} />flex</label></span>`
+        + (/^top_/.test(t) ? '' : `<span class="pilltoggle eb-checks"><label><input type="checkbox" class="eb-check" data-trackflex="${t}" ${v === 'flex' ? 'checked' : ''} />flex</label></span>`)
         + `<button type="button" class="eb-track-x" data-trackdel="${t}" aria-label="Remove the space between ${and}">✕</button></span>`;
     }).join('') : '<span class="eb-dim">⊕ between two parts in the preview adds one</span>';
     // Each track's box, the page's one NumBox copied, given its track.
@@ -1189,7 +1189,8 @@ const data = {
     if (e.target.name === 'framepx') { for (const r of form.elements.frame) r.checked = false; render(); }
     if (e.target.name === 'bgap' || /^h(top|bottom)$/.test(e.target.name)) render();
     // A text size typed leaves by text.
-    if (e.target.name === 'bodysize') { setRadio('bodyby', e.target.value === '' ? 'text' : ''); render(); }
+    const face = FACES.find((p) => e.target.name === `${p}size`);
+    if (face) { setRadio(`${face}by`, e.target.value === '' ? 'text' : ''); render(); }
     // Typing a number of names chooses it.
     if (e.target.name === 'authorsn') { form.elements.authors.value = 'n'; render(); }
     const d = sizeOf(e.target);
@@ -1218,8 +1219,8 @@ const data = {
       for (const [k] of SMALL) if (!form.elements[`${k}at`].value) resetPlace(k);
     } else if (/^(pos|year|ctx)at$/.test(e.target.name)) {
       resetPlace(e.target.name.slice(0, -2));
-    } else if (e.target.name === 'bodyby') {
-      form.elements.bodysize.value = ''; // by text: no size of its own
+    } else if (FACES.some((p) => e.target.name === `${p}by`)) {
+      form.elements[`${e.target.name.slice(0, -2)}size`].value = ''; // by text: no size of its own
     } else if (e.target.name === 'bgapu') {
       showGap(); // the same gap, shown in its new unit
     } else if (/^w(left|right)u$/.test(e.target.name)) {
@@ -1243,8 +1244,7 @@ const data = {
     } else if (e.target.name === 'perp') {
       form.elements.perrow.value = ''; // square or fit, in place of a number
     } else if (e.target.name === 'figp') {
-      form.elements.figpx.value = e.target.value === 'auto' ? '' : e.target.value;
-      form.elements.figunit.value = '%'; // the pills are shares of the column
+      form.elements.figpx.value = '';
     } else if (e.target.name === 'figpx') {
       if (e.target.value !== '') e.target.value = figWidth(); // as clamped
     } else if (sizeOf(e.target)) {
@@ -1292,8 +1292,7 @@ const data = {
     ['.c-stamp', ['position']],
     ['.c-context', ['context']],
     ['.c-refs', ['foot']],
-    // The venue line has no row of its own: it is on or off, above.
-    ['.c-venue', []],
+    ['.c-venue', ['venue']],
     ['.c-foot', ['foot']],
     // An area, apart from what is in it: clicking its empty room.
     ['.eb-area', []],
@@ -1305,6 +1304,9 @@ const data = {
     .eb-drop{position:absolute; z-index:7; box-sizing:border-box; border:1.5px dashed var(--accent); border-radius:8px; pointer-events:none;
       background:color-mix(in srgb, var(--accent) 5%, transparent)}
     .eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 16%, transparent)}
+    .eb-drop.eb-cell{z-index:8; border:1px dotted var(--accent); border-radius:4px; background:none;
+      display:flex; align-items:center; justify-content:center; font:10px/1.1 var(--mono); color:var(--accent); text-align:center}
+    .eb-drop.eb-cell.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 28%, transparent)}
     .eb-hits .card, .eb-hits :is(${HITS.slice(0, -1).map(([q]) => q).join(', ')}){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
     .eb-hits .card{outline-offset:-2px}
     .eb-hits .eb-hit-hover{outline:1.5px solid var(--accent) !important}
@@ -1354,7 +1356,7 @@ const data = {
     const it = items[form.elements.card.value];
     const t = r.dataset.tune;
     const extra = (x) => [...form.querySelectorAll('[name=extra]')].some((b) => b.value === x && b.checked);
-    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extra('position'))) || (t === 'year' && !(it.year && extra('year'))) || (t === 'context' && !(it.context && extra('context')))
+    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'venue' && !(it.venue && extra('venue'))) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extra('position'))) || (t === 'year' && !(it.year && extra('year'))) || (t === 'context' && !(it.context && extra('context')))
       || (t === 'area-left' && !(sideHas('left') || areasOn.has('left'))) || (t === 'area-right' && !(sideHas('right') || areasOn.has('right')))
       || (t === 'area-top' && !(form.elements.titleat.value === 'top' || areasOn.has('top'))) || (t === 'area-bottom' && !(form.elements.foot.value === 'bottom' || areasOn.has('bottom'))));
   }
@@ -1427,7 +1429,6 @@ const data = {
   const ROW_TRACKS = [[1, 'title_figure'], [3, 'figure_authors'], [5, 'authors_venue'], [7, 'venue_text'], [9, 'text_buttons'], [12, 'center_bottom']];
   const COL_TRACKS = [[1, 'left_center'], [3, 'center_right']];
   const ROW_SLOTS = [0, 2, 4, 6, 8, 11, 13];
-  const COL_SLOTS = [0, 2, 4];
   const COL_NAMES = { 0: 'LHS', 2: 'center', 4: 'RHS' };
   // In the preview, a ⊕ between each two slots that show — the first track
   // between them, where parts left out leave several — to add space there,
@@ -1461,8 +1462,13 @@ const data = {
         Object.assign(e.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
         card.append(e);
       };
-      area('left', pl, lineY(row('--rL0')), cols[0], lineY(row('--rL1')) - lineY(row('--rL0')));
-      area('right', pl + sum(cols, 4), lineY(row('--rR0')), cols[4], lineY(row('--rR1')) - lineY(row('--rR0')));
+      // The center's top space is padding over the card, which the sides
+      // take back, and each side has its own: where a side starts.
+      const titleTop = card.dataset.titleat === 'top';
+      const tc = titleTop ? 0 : +(space.top_center ?? 0);
+      const sideTop = (side) => lineY(row(side === 'left' ? '--rL0' : '--rR0')) - tc + +(space[`top_${side}`] ?? 0);
+      area('left', pl, sideTop('left'), cols[0], lineY(row('--rL1')) - sideTop('left'));
+      area('right', pl + sum(cols, 4), sideTop('right'), cols[4], lineY(row('--rR1')) - sideTop('right'));
       // A box left empty shows what it comes to in the card as drawn — the
       // title's size; the figure's width, a share of its column or px as its
       // unit is; the white around it; the gap between the buttons; an empty
@@ -1470,8 +1476,10 @@ const data = {
       const win = frame.contentWindow, show = (n, v) => { const i = form.elements[n]; if (i) i.placeholder = v == null || Number.isNaN(v) ? 'auto' : String(Math.round(v * 10) / 10); };
       const title = card.querySelector('.c-name'), fig = card.querySelector('.c-fig'), img = fig?.querySelector('img'), btns = card.querySelector('.c-foot .btns--icon');
       show('titlesizepx', title && win.getComputedStyle(title).display !== 'none' ? parseFloat(win.getComputedStyle(title).fontSize) : null);
-      const body = [...card.querySelectorAll('.c-text :is(.c-sum, .c-det)')].find((e) => e.offsetParent);
-      show('bodysize', body ? parseFloat(win.getComputedStyle(body).fontSize) : null);
+      for (const p of FACES) {
+        const e = [...card.querySelectorAll(FACE_Q[p])].find((x) => x.getClientRects().length);
+        show(`${p}size`, e ? parseFloat(win.getComputedStyle(e).fontSize) : null);
+      }
       const figOn = fig && win.getComputedStyle(fig).display !== 'none' && fig.offsetWidth > 0;
       const figCol = figOn ? cols[{ left: 0, center: 2, right: 4 }[card.dataset.fig] ?? 2] : 0;
       show('figpx', figOn ? (form.elements.figunit.value === 'px' ? fig.getBoundingClientRect().width : Math.round((fig.getBoundingClientRect().width / figCol) * 100)) : null);
@@ -1485,13 +1493,13 @@ const data = {
         form.elements[`w${side}n`].placeholder = !['min', 'share'].includes(k) && w > 0.5 ? Math.round(w) : '–';
       }
       // Each side holding anything, a grip on its inner edge to drag its width.
-      for (const [side, x, w, r0, r1] of [['left', pl + cols[0], cols[0], '--rL0', '--rL1'], ['right', pl + sum(cols, 4), cols[4], '--rR0', '--rR1']]) {
+      for (const [side, x, w, r1] of [['left', pl + cols[0], cols[0], '--rL1'], ['right', pl + sum(cols, 4), cols[4], '--rR1']]) {
         if (w < 1) continue;
         const g = doc.createElement('span');
         g.className = 'eb-area-grip';
         g.dataset.side = side;
         g.title = `Drag to set the ${side} side's width`;
-        Object.assign(g.style, { left: `${x}px`, top: `${lineY(row(r0))}px`, height: `${lineY(row(r1)) - lineY(row(r0))}px` });
+        Object.assign(g.style, { left: `${x}px`, top: `${sideTop(side)}px`, height: `${lineY(row(r1)) - sideTop(side)}px` });
         card.append(g);
       }
       for (const [name, q, on] of [['top', '.c-name', card.dataset.titleat === 'top'], ['bottom', '.c-foot', card.dataset.foot === 'bottom']]) {
@@ -1546,7 +1554,13 @@ const data = {
         const r = part && parseInt(frame.contentWindow.getComputedStyle(part).gridRowStart, 10);
         if (r && !(r - 1 in rowNames)) rowNames[r - 1] = name;
       }
-      for (const [i, t] of ROW_TRACKS) trackBetween[t] = named(ROW_SLOTS, rowNames, rows, i);
+      // The title in the top area, the row under it is the space from the
+      // top to the center; else that space is padding over the center.
+      const rowTracks = ROW_TRACKS.map(([i, t]) => [i, titleTop && t === 'title_figure' ? 'top_center' : t]);
+      for (const [i, t] of rowTracks) trackBetween[t] = named(ROW_SLOTS, rowNames, rows, i);
+      if (!titleTop) trackBetween.top_center = 'top · center';
+      Object.assign(trackBetween, { top_left: 'top · LHS', top_right: 'top · RHS' });
+      if (rows[13] < 0.5) trackBetween.center_bottom = 'center · bottom';
       // A column's space is between two areas, there or not: LHS · center, center · RHS.
       for (const [i, t] of COL_TRACKS) trackBetween[t] = `${COL_NAMES[i - 1]} · ${COL_NAMES[i + 1]}`;
       for (const e of el('eb-tracks').querySelectorAll('[data-label]')) e.textContent = trackName(e.dataset.label);
@@ -1575,9 +1589,13 @@ const data = {
           return c.find(([i]) => sizes[i] > 0.5) ?? c[0];
         }).filter(Boolean);
       };
-      for (const [i, t] of between(ROW_SLOTS, ROW_TRACKS, rows)) {
-        add('eb-plus', { top: `${pt + sum(rows, i) + rows[i] / 2}px`, left: `${pl + sum(cols, 2) + cols[2] / 2}px` }, t);
-      }
+      const mid = `${pl + sum(cols, 2) + cols[2] / 2}px`;
+      const shownRows = between(ROW_SLOTS, rowTracks, rows);
+      for (const [i, t] of shownRows) add('eb-plus', { top: `${pt + sum(rows, i) + rows[i] / 2}px`, left: mid }, t);
+      // The spaces from the top area and to the bottom one always, there or
+      // not, as the columns'.
+      if (!titleTop) add('eb-plus', { top: `${pt - tc / 2}px`, left: mid }, 'top_center');
+      if (!shownRows.some(([, t]) => t === 'center_bottom')) add('eb-plus', { top: `${pt + sum(rows, 12) + rows[12] / 2}px`, left: mid }, 'center_bottom');
       // The two column spaces always: an area left out, the card's edge stands
       // in for it, and a space there sets the center in from it.
       for (const [i, t] of COL_TRACKS) {
@@ -1587,14 +1605,23 @@ const data = {
       // the figures and side boxes span those rows — but for the one above
       // the bottom area, which runs the card's width; a column's down to
       // that area, which runs under them all.
-      // A title at the top runs across the card — short of the sides
-      // the top area stops beside — and so does the space under it; the
-      // columns start under it, but for the one beside such a side.
-      const top = card.dataset.titleat === 'top' ? sum(rows, 2) : 0;
-      const name = card.querySelector('.c-name').getBoundingClientRect(), at = card.getBoundingClientRect();
-      for (const [i, t] of ROW_TRACKS) {
+      // A title at the top runs across the card, short of the sides the top
+      // area stops beside; the sides, and the columns' spaces, start under it
+      // — beside the space under it — but for one beside such a side.
+      const top = card.dataset.titleat === 'top' ? sum(rows, 1) : 0;
+      // Each side's own top space, where the side is there.
+      for (const [side, x, w] of [['left', pl, cols[0]], ['right', pl + sum(cols, 4), cols[4]]]) {
+        if (w < 0.5) continue;
+        const t = `top_${side}`, v = +(space[t] ?? 0), y = sideTop(side);
+        add('eb-plus', { top: `${y - v / 2}px`, left: `${x + w / 2}px` }, t);
+        if (v) add('eb-band', { top: `${y - v}px`, height: `${v}px`, left: `${x}px`, width: `${w}px` }, t);
+      }
+      if (tc) add('eb-band', { top: `${pt - tc}px`, height: `${tc}px`, left: `${pl + sum(cols, 2)}px`, width: `${cols[2]}px` }, 'top_center');
+      for (const [i, t] of rowTracks) {
+        // The center's own, but for the one above the bottom area, which runs
+        // the card's width: a title in the top area has the sides start beside
+        // the space under it, so that space is the center's too.
         const across = t === 'center_bottom' ? { left: `${pl}px`, width: `${W}px` }
-          : top && t === 'title_figure' ? { left: `${name.left - at.left}px`, width: `${name.width}px` }
           : { left: `${pl + sum(cols, 2)}px`, width: `${cols[2]}px` };
         if (space[t]) add('eb-band', { top: `${pt + sum(rows, i)}px`, height: `${rows[i]}px`, ...across }, t);
       }
@@ -1692,18 +1719,32 @@ const data = {
     // A part dragged between the areas it may sit in. Each part has its own
     // places and the setting that puts it there; dragged, the part follows
     // the pointer and its places are outlined, the one under the pointer
-    // filled; dropped, it goes there as its area pills would put it. A press
-    // that does not move past 4px is still a click.
+    // filled. Held half a second over one, that area opens into the
+    // positions the part may take there — up and down by across, as its
+    // position menus have them — and dropped on one, it goes there too;
+    // dropped elsewhere in the area, only the area changes. A press that does
+    // not move past 4px is still a click.
     const box = () => form.elements.foot.value;
-    const small = (name, part) => ({ name, part, areas: () => [...new Set(['top', box(), 'bottom'])], now: () => form.elements[name].value || box(), value: (a) => (a === box() ? '' : a) });
+    const V = ['top', 'center', 'bottom'], H = ['left', 'center', 'right'];
+    const axis = (name, values) => ({ name, values });
+    const small = (name, part, k) => ({ name, part, areas: () => [...new Set(['top', box(), 'bottom'])], now: () => form.elements[name].value || box(), value: (a) => (a === box() ? '' : a),
+      axes: (a) => (a === box() ? { v: axis(`${k}v`, V), h: axis(`${k}h`, H) } : { h: axis(`${k}h`, H) }) });
+    const side = (a) => a === 'left' || a === 'right';
     const MOVES = [
-      { q: '.c-name', name: 'titleat', part: 'title', areas: () => ['top', 'center'], now: () => form.elements.titleat.value, value: (a) => a },
-      { q: ':is(.c-yr, .c-year)', ...small('yearat', 'year') },
-      { q: ':is(.c-place, .c-stamp)', ...small('posat', 'position') },
-      { q: '.c-context', ...small('ctxat', 'context') },
-      { q: '.c-fig', name: 'figat', part: 'figure', areas: () => ['left', 'center', 'right'], now: () => form.elements.figat.value, value: (a) => a },
-      { q: '.c-foot', name: 'foot', part: 'foot', areas: () => ['left', 'center', 'right', 'bottom'], now: box, value: (a) => a },
+      { q: '.c-name', name: 'titleat', part: 'title', areas: () => ['top', 'center'], now: () => form.elements.titleat.value, value: (a) => a,
+        axes: (a) => (a === 'top' ? { v: axis('titlev', V), h: axis('titlealign', H) } : { h: axis('titlealign', H) }) },
+      { q: ':is(.c-yr, .c-year)', ...small('yearat', 'year', 'year') },
+      { q: ':is(.c-place, .c-stamp)', ...small('posat', 'position', 'pos') },
+      { q: '.c-context', ...small('ctxat', 'context', 'ctx') },
+      { q: '.c-fig', name: 'figat', part: 'figure', areas: () => ['left', 'center', 'right'], now: () => form.elements.figat.value, value: (a) => a,
+        // In the center, its slots among the parts — above the title only
+        // where the title is not up in the top area.
+        axes: (a) => (side(a) ? { v: axis('figv', V), h: axis('figh', H) }
+          : { v: axis('figslot', FIGURE_SLOTS.filter((x) => x !== 'top' || form.elements.titleat.value !== 'top')) }) },
+      { q: '.c-foot', name: 'foot', part: 'foot', areas: () => ['left', 'center', 'right', 'bottom'], now: box, value: (a) => a,
+        axes: (a) => (side(a) && !stackedIn(a) ? { v: axis('footend', V), h: axis('railalign', H) } : { h: axis('railalign', H) }) },
     ];
+    const SLOT_NAMES = { top: 'above title', title: 'below title', authors: 'below authors', venue: 'below venue', text: 'below text' };
     let dragged = false;
     doc.addEventListener('dragstart', (e) => e.preventDefault());
     doc.addEventListener('pointerdown', (e) => {
@@ -1727,7 +1768,33 @@ const data = {
       const zones = { top: [0, 0, W, T], bottom: [0, H - B, W, B], left: [0, T, L, H - T - B], right: [W - R, T, R, H - T - B], center: [L, T, W - L - R, H - T - B] };
       const x0 = e.clientX, y0 = e.clientY;
       const at = (x, y) => areas.find((z) => { const [zx, zy, zw, zh] = zones[z]; return x >= zx && x <= zx + zw && y >= zy && y <= zy + zh; });
-      let on = false, over = null;
+      let on = false, over = null, timer = null, open = null, cell = null;
+      // The positions in an area: its zone cut into up-and-down rows and
+      // across columns, a menu's values each — grown into the card, where the
+      // zone is a thin band, to at least 18px a row and 36px a column.
+      const grid = (a) => {
+        const ax = m.axes(a), vs = ax.v?.values ?? [null], hs = ax.h?.values ?? [null];
+        let [zx, zy, zw, zh] = zones[a];
+        const mw = hs.length * 36, mh = vs.length * 18;
+        if (zw < mw) { if (a === 'right') zx -= mw - zw; zw = mw; }
+        if (zh < mh) { if (a === 'bottom') zy -= mh - zh; zh = mh; }
+        return { ax, vs, hs, zx, zy, zw, zh, w: zw / hs.length, h: zh / vs.length };
+      };
+      const inGrid = (g, x, y) => x >= g.zx && x <= g.zx + g.zw && y >= g.zy && y <= g.zy + g.zh;
+      const openCells = (a) => {
+        const g = grid(a);
+        g.vs.forEach((v, i) => g.hs.forEach((h, j) => {
+          const c = doc.createElement('span');
+          c.className = 'eb-drop eb-cell';
+          c.dataset.v = v ?? '';
+          c.dataset.h = h ?? '';
+          // The figure's slots are named; a grid's cells speak for themselves.
+          if (g.ax.v?.name === 'figslot') c.textContent = SLOT_NAMES[v];
+          Object.assign(c.style, { left: `${g.zx + j * g.w}px`, top: `${g.zy + i * g.h}px`, width: `${g.w}px`, height: `${g.h}px` });
+          card.append(c);
+        }));
+        open = a;
+      };
       const move = (ev) => {
         if (!on) {
           if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
@@ -1743,22 +1810,49 @@ const data = {
           }
         }
         part.style.translate = `${ev.clientX - x0}px ${ev.clientY - y0}px`;
-        const a = at(ev.clientX - r.left, ev.clientY - r.top);
+        const x = ev.clientX - r.left, y = ev.clientY - r.top;
+        // An area open keeps the pointer while it is over its positions.
+        const a = open && inGrid(grid(open), x, y) ? open : at(x, y), was = over;
         over = areas.includes(a) ? a : null;
-        for (const z of card.querySelectorAll('.eb-drop')) z.classList.toggle('eb-drop-on', z.dataset.drop === over);
+        // A new area: its positions open after half a second there.
+        if (over !== was) {
+          clearTimeout(timer);
+          card.querySelectorAll('.eb-cell').forEach((c) => c.remove());
+          open = cell = null;
+          if (over) timer = setTimeout(() => { openCells(over); move(ev); }, 500);
+        }
+        for (const z of card.querySelectorAll('.eb-drop:not(.eb-cell)')) z.classList.toggle('eb-drop-on', z.dataset.drop === over);
+        if (open) {
+          const g = grid(open), clamp = (n, k) => Math.min(k - 1, Math.max(0, Math.floor(n)));
+          cell = { v: g.vs[clamp((y - g.zy) / g.h, g.vs.length)], h: g.hs[clamp((x - g.zx) / g.w, g.hs.length)] };
+          for (const c of card.querySelectorAll('.eb-cell')) c.classList.toggle('eb-drop-on', c.dataset.v === (cell.v ?? '') && c.dataset.h === (cell.h ?? ''));
+        }
       };
       const up = () => {
         doc.removeEventListener('pointermove', move);
         doc.removeEventListener('pointerup', up);
         if (!on) return;
+        clearTimeout(timer);
         dragged = true; // the click that follows the drop is no click
         part.classList.remove('eb-dragging');
         part.style.translate = '';
         card.querySelectorAll('.eb-drop').forEach((z) => z.remove());
-        if (!over || over === m.now()) return;
-        setRadio(m.name, m.value(over));
-        if (m.name === 'figat') el('eb-figure-on').checked = true;
-        form.querySelector(`[name=${m.name}]:checked`)?.dispatchEvent(new Event('change', { bubbles: true }));
+        if (!over) return;
+        // The area first, which sets the part's position there to its own;
+        // then the position dropped on, if any.
+        const set = (n, v) => {
+          setRadio(n, v);
+          form.querySelector(`select[name=${n}], [name=${n}]:checked`)?.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+        if (over !== m.now()) {
+          if (m.name === 'figat') el('eb-figure-on').checked = true;
+          set(m.name, m.value(over));
+        }
+        if (open === over && cell) {
+          const ax = m.axes(over);
+          if (ax.v && cell.v) set(ax.v.name, cell.v);
+          if (ax.h && cell.h) set(ax.h.name, cell.h);
+        }
         tune([m.part]);
       };
       doc.addEventListener('pointermove', move);
@@ -1851,7 +1945,7 @@ const data = {
   // links the item has not got stay off, as with a preset.
   const THEMES = ['auto', 'light', 'dark'];
   const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
-  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleAlign', 'titleStatus', 'textAlign', 'bodySize', 'bodyWeight', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
   el('eb-export').addEventListener('click', () => {
     const s = spec();
     const c = parseName(s.slug);
@@ -1938,6 +2032,12 @@ const data = {
   /* Two keyed groups in one row: the second key sits inline, after a gap. */
   .eb-group{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0; min-width:0}
   .eb-row > .eb-group + .eb-group{margin-left:.8rem}
+  /* The parts' pills, close: each is its own key. */
+  .eb-row.eb-shows{gap:.4rem}
+  .eb-row.eb-shows > .eb-group + .eb-group{margin-left:0}
+  /* Extras, last, is a menu that drops down over the page: as wide as its
+     key, not the rest of the row, so it wraps only when that will not fit. */
+  .eb-row.eb-shows > .eb-group:last-child{flex:0 1 auto}
   /* The last takes the rest of the row, so what opens in it — the width —
      wraps inside it rather than pushing it to a line of its own. */
   .eb-row > .eb-group:last-child{flex:1 1 12rem}
@@ -1950,9 +2050,9 @@ const data = {
   .eb .eb-preset:hover, .eb .eb-preset:focus-visible{color:var(--ink)}
   /* A menu among the pills: their type, sized to what it shows; its key a
      step apart from what comes before it. */
-  .eb .eb-menu{flex:0 0 auto; field-sizing:content; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+  .eb :global(select.eb-menu){flex:0 0 auto; field-sizing:content; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
     padding:.2rem .5rem; border:1px solid var(--rule-strong); border-radius:999px; background:var(--surface); color:var(--ink); cursor:pointer}
-  .eb .eb-inkey{margin-left:.8rem}
+  .eb :global(.eb-inkey){margin-left:.8rem}
   .eb .pilltoggle{flex-wrap:wrap}
   .eb-sizes, .eb-rest{align-self:center; text-transform:uppercase}
   .eb-dials{margin-top:.8rem}
@@ -2002,6 +2102,7 @@ const data = {
   :global(.eb-track){display:inline-flex; align-items:center; gap:.4rem}
   :global(.eb-track-x){padding:0 .2rem; border:0; background:none; color:var(--ink-faint); cursor:pointer; font:inherit}
   :global(.eb-track-x:hover){color:var(--accent)}
+  :global(.eb-place){display:inline-flex; flex-wrap:wrap; align-items:center; gap:.35rem}
   .eb-pair{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .8rem; justify-self:start}
   .eb-sub{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.35rem .8rem}
   .eb-sub > .pilltoggle, .eb-sub > .eb-px, .eb-sub > .eb-titles{justify-self:start}

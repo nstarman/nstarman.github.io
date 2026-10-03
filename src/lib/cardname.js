@@ -115,7 +115,9 @@
 //            of the width alike with the words. Between rows, named by
 //            the slots either side in their default order — a figure
 //            moved among the center's parts keeps the names where they
-//            are: title_figure · figure_authors ·
+//            are: top_left · top_center · top_right (from the top area,
+//            there or not, to the left area, the center and the right
+//            area, each its own; a length only) · title_figure · figure_authors ·
 //            authors_venue · venue_text · text_buttons (to the buttons under
 //            the words) · center_bottom (to the bottom area); between
 //            columns: left_center · center_right (the left area, the center,
@@ -137,10 +139,10 @@
 //              titleweight = regular · medium · bold      the title's weight;
 //                or mine, bold where I am first author and regular
 //                otherwise; left off, medium, or regular past second author
-//              bodysize = 8–40 px, to a tenth   the text's own size — the
-//                summary's or details' — left off, the card's text size
-//              bodyweight = regular · medium · bold   the text's weight; left
-//                off, regular
+//              <part>size = 8–40 px, to a tenth, and <part>weight =
+//                regular · medium · bold   a part's own size and weight, for
+//                body (the summary or details), authors, venue, position,
+//                year and context; left off, as the card has it
 //              buttongap = 0–32 px, or 0–100%   the space between the link
 //                buttons, in px or a share of a button's size; left off, a
 //                third of the text's height
@@ -183,6 +185,9 @@ export const FOOT_END = ['top', 'center', 'bottom'];
 export const RAIL_ALIGN = ['left', 'center', 'right'];
 export const TITLES = ['full', 'short', 'nick', 'none'];
 export const AUTHORS = ['none', 'full', 'short'];
+// The parts with a size and weight of their own, look:<part>size and
+// <part>weight — the title's are titlesize and titleweight.
+export const FACES = ['body', 'authors', 'venue', 'position', 'year', 'context'];
 /** The most names authors:<n> asks for. */
 export const AUTHORS_MAX = 20;
 export const TEXTS = ['none', 'summary', 'details'];
@@ -193,7 +198,7 @@ export const FIXED_MIN = 120;
 export const FIXED_MAX = 1600;
 export const FIXED_MIN_HEIGHT = 40;
 
-export const SPACE_TRACKS = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom', 'left_center', 'center_right'];
+export const SPACE_TRACKS = ['top_left', 'top_center', 'top_right', 'title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_buttons', 'center_bottom', 'left_center', 'center_right'];
 /** The areas my position, the year and the context link may sit in. */
 export const PLACE_AT = ['top', 'left', 'center', 'right', 'bottom'];
 
@@ -220,7 +225,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, bodySize, bodyWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal' }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {} }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -230,8 +235,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(same ? [dials.textsize] : set.map((d) => `${d}=${dials[d]}`)),
     ...(dials.titlesize ? [`titlesize=${dials.titlesize}`] : []),
     ...(titleWeight ? [`titleweight=${titleWeight}`] : []),
-    ...(bodySize ? [`bodysize=${bodySize}`] : []),
-    ...(bodyWeight ? [`bodyweight=${bodyWeight}`] : []),
+    ...FACES.flatMap((p) => [sizes[p] && `${p}size=${sizes[p]}`, weights[p] && `${p}weight=${weights[p]}`].filter(Boolean)),
     ...(frame ? [`frame=${frame}`] : []),
     ...(buttonGap != null ? [`buttongap=${buttonGap}`] : []),
     ...(background !== 'normal' ? [`background=${background}`] : []),
@@ -255,7 +259,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
   return [
     `size:${width}:${height}`,
     figure === 'none' ? 'figure:none' : `figure:${figure}${figure === 'center' ? (figureSlot && figureSlot !== 'title' ? `:${figureSlot}` : '') : `:${figureAlign}` + (figureH && figureH !== 'center' ? `:${figureH}` : '')}:${figureSize}` + (figureLink ? ':link' : ''),
-    (title === 'full' ? `title:full:${rest}` : `title:${title}`) + (titleLink && title !== 'none' ? `:${titleLink}` : '') + (titleStatus && title !== 'none' ? ':status' : '') + (titleAt === 'top' && title !== 'none' ? ':top' : '') + (titleAlign && titleAlign !== 'left' && title !== 'none' ? `:${titleAlign}` : ''),
+    (title === 'full' ? `title:full:${rest}` : `title:${title}`) + (titleLink && title !== 'none' ? `:${titleLink}` : '') + (titleStatus && title !== 'none' ? ':status' : '') + (titleAt === 'top' && title !== 'none' ? ':top' + (titleV && titleV !== 'top' ? `:${titleV}` : titleAlign === 'center' ? ':top' : '') : '') + (titleAlign && titleAlign !== 'left' && title !== 'none' ? `:${titleAlign}` : ''),
     ...['left', 'right', 'top', 'bottom'].filter((s) => sides[s]).map((s) => {
       const set = [sides[s].width, sides[s].height != null && `min=${sides[s].height}`, sides[s].top && 'top', sides[s].bottom && 'bottom'].filter(Boolean).join(',');
       return `area:${s}` + (set ? `:${set}` : '');
@@ -337,23 +341,25 @@ export function parseName(name) {
       if (kv[2] !== 'left') spec.textAlign = kv[2];
     } else if (key === 'title') {
       // full[:whole|split], short, nick or none; any but none may then link,
-      // :link, :site, :ads or :journal, then sit at the :top, across the
-      // card above all else, rather than in the center column, and very last
-      // across its area, left, center or right.
-      const align = kv.length > 2 && one(kv[kv.length - 1], ['left', 'center', 'right']) ? kv[kv.length - 1] : null;
-      const ka = align ? kv.slice(0, -1) : kv;
-      const top = ka.length > 2 && ka[ka.length - 1] === 'top';
-      const kp = top ? ka.slice(0, -1) : ka;
-      const pill = kp.length > 2 && kp[kp.length - 1] === 'status';
-      const kt = pill ? kp.slice(0, -1) : kp;
-      const link = kt.length > 2 && one(kt[kt.length - 1], ['link', 'site', 'ads', 'journal']) ? kt[kt.length - 1] : false;
-      const t = link ? kt.slice(1, -1) : kt.slice(1);
-      if ((top || align || pill) && t[0] === 'none') throw new Error('"' + name + '": no such title, ' + parts[i]);
-      if (t[0] === 'full' && t.length <= 2 && (t.length === 1 || one(t[1], ['whole', 'split']))) spec.rest = t[1] || 'split';
-      else if (!(t.length === 1 && one(t[0], ['short', 'nick', 'none']) && !(link && t[0] === 'none'))) throw new Error('"' + name + '": no such title, ' + parts[i]);
+      // :link, :site, :ads or :journal; then :status; then sit at the :top,
+      // across the card above all else, rather than in the center column —
+      // and there up and down, top, center or bottom, a center alone being
+      // up and down; and very last across its area, left, center or right.
+      let j = 1;
+      const at = (xs) => (j < kv.length && one(kv[j], xs) ? kv[j++] : null);
+      const t = [at(['full', 'short', 'nick', 'none'])];
+      if (t[0] === 'full') spec.rest = at(['whole', 'split']) || 'split';
+      const link = t[0] !== 'none' && at(['link', 'site', 'ads', 'journal']);
+      const more = t[0] !== 'none';
+      const pill = more && at(['status']);
+      const top = more && at(['top']);
+      const v = top && at(['top', 'center', 'bottom']);
+      const align = more && at(['left', 'center', 'right']);
+      if (!t[0] || j !== kv.length) throw new Error('"' + name + '": no such title, ' + parts[i]);
       spec.title = t[0];
-      spec.titleLink = link;
+      spec.titleLink = link || false;
       spec.titleAt = top ? 'top' : 'center';
+      if (v && v !== 'top') spec.titleV = v;
       if (align && align !== 'left') spec.titleAlign = align;
       if (pill) spec.titleStatus = true;
     } else if (key === 'authors' && (one(kv[1], ['short', 'full']) || (/^[1-9][0-9]?$/.test(kv[1]) && +kv[1] <= 20)) && kv.length <= 4) {
@@ -403,8 +409,8 @@ export function parseName(name) {
       const xs = kv[1].split(',');
       for (let j = 0; j < xs.length; j += 1) {
         // A track between two slots, named by them.
-        const t = /^(title_figure|figure_authors|authors_venue|venue_text|text_buttons|center_bottom|left_center|center_right)=(flex|0|[1-9][0-9]?)$/.exec(xs[j]);
-        if (!t || (t[2] !== 'flex' && +t[2] > 64)) throw new Error('"' + name + '": no such space, ' + xs[j]);
+        const t = /^(top_left|top_center|top_right|title_figure|figure_authors|authors_venue|venue_text|text_buttons|center_bottom|left_center|center_right)=(flex|0|[1-9][0-9]?)$/.exec(xs[j]);
+        if (!t || (t[2] !== 'flex' && +t[2] > 64) || (/^top_/.test(t[1]) && t[2] === 'flex')) throw new Error('"' + name + '": no such space, ' + xs[j]);
         spec.space[t[1]] = t[2];
       }
     } else if (key === 'look') {
@@ -420,8 +426,8 @@ export function parseName(name) {
         else if (s[0] === 'textsize' && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) spec.dials.textsize = s[1];
         else if (s[0] === 'titlesize' && (one(s[1], steps) || (/^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 60))) spec.dials.titlesize = s[1];
         else if (s[0] === 'titleweight' && one(s[1], ['regular', 'medium', 'bold', 'mine'])) spec.titleWeight = s[1];
-        else if (s[0] === 'bodysize' && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) spec.bodySize = s[1];
-        else if (s[0] === 'bodyweight' && one(s[1], ['regular', 'medium', 'bold'])) spec.bodyWeight = s[1];
+        else if (/^(body|authors|venue|position|year|context)size$/.test(s[0]) && /^[1-9][0-9]?(\.[0-9])?$/.test(s[1]) && +s[1] >= 8 && +s[1] <= 40) (spec.sizes = spec.sizes || {})[s[0].slice(0, -4)] = s[1];
+        else if (/^(body|authors|venue|position|year|context)weight$/.test(s[0]) && one(s[1], ['regular', 'medium', 'bold'])) (spec.weights = spec.weights || {})[s[0].slice(0, -6)] = s[1];
         else if (s[0] === 'buttongap' && ((/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32) || (/^(0|[1-9][0-9]?|100)%$/.test(s[1])))) spec.buttonGap = s[1];
         else if (s[0] === 'frame' && (one(s[1], ['none'].concat(steps)) || (/^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 32))) spec.frame = s[1];
         else if (one(s[0], ['padding', 'corners', 'buttons']) && /^(0|[1-9][0-9]?)$/.test(s[1]) && +s[1] <= 64 && +s[1] >= (s[0] === 'buttons' ? 12 : 0)) spec.dials[s[0]] = s[1];

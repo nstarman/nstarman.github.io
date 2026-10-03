@@ -268,8 +268,12 @@ a.card:hover .name{color:var(--accent)}
 .c-text{display:flex; flex-direction:column; gap:.15em; color:var(--ink-mute)}
 .card[data-size] .c-text p{margin:0; font-size:1em; line-height:1.5; color:inherit}
 /* A paper's byline and venue line, each its own part. */
-.card[data-size] :is(.c-by, .c-venue){margin:0; font-size:1em; line-height:1.5; color:var(--ink-mute)}
-.c-by .me{color:var(--ink-2); font-weight:500}
+.card[data-size] :is(.c-by, .c-venue){margin:0; line-height:1.5; color:var(--ink-mute)}
+/* look:<part>size and <part>weight, each part's own (--fs-<part>,
+   --fw-<part>), or as it is. My name never lighter than the rest. */
+.card[data-size] .c-by{font-size:var(--fs-authors, 1em); font-weight:var(--fw-authors, 400)}
+.card[data-size] .c-venue{font-size:var(--fs-venue, 1em); font-weight:var(--fw-venue, 400)}
+.c-by .me{color:var(--ink-2); font-weight:max(500, var(--fw-authors, 400))}
 /* authors:…:plain — my students set like any other co-author, no colour, no † or ‡. */
 .card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate){color:inherit}
 .card[data-students="plain"] .c-by :is(.stu--undergraduate, .stu--graduate) sup{display:none}
@@ -330,12 +334,15 @@ a.card:hover .name{color:var(--accent)}
 .c-foot .iconbtn .ico{width:var(--ii); height:var(--ii)}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
+.c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400)}
+.c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400)}
+.c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400)}
 /* A strip: my position, the year or the context link in the top area, or
    the bottom one where the buttons are not. A strip of the card's padding is
    made for it, and it sits there, at the left, center or right, clear of
    every layout's parts. grid-area:auto, or a grid card would give it a cell
    of its own. */
-.card[data-size][data-strips~="top"]{padding-top:calc(var(--pad-t) + 1.4em)}
+.card[data-size][data-strips~="top"]{padding-top:calc(var(--pad-t) + 1.4em + var(--tc))}
 .card[data-size][data-strips~="bottom"]{padding-bottom:calc(var(--pad-b) + 1.4em)}
 .c-foot [data-strip]{position:absolute; grid-area:auto; line-height:1.2}
 .c-foot [data-strip="top"]{top:var(--pad-t)}
@@ -349,7 +356,7 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size][data-rail="empty"] > .c-foot, .card[data-size][data-rail="empty"] > .c-foot > .c-slot{display:contents}
 .card[data-size][data-rail="empty"] > .c-foot :is(.c-refs, .btns){display:none}
 /* The context extra: the way to the paper's topic on /research/. */
-.c-context{font-family:var(--mono); font-size:.77em; letter-spacing:.06em;
+.c-context{font-family:var(--mono); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); letter-spacing:.06em;
   text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .c-context:hover{color:var(--accent); text-decoration:none}
 
@@ -379,10 +386,10 @@ a.card:hover .name{color:var(--accent)}
   --r-fig:auto; --r-text:auto; --rest:minmax(0,1fr);
   --rowT:1; --rowF:3; --rowB:5; --rowV:7; --rowX:9; --s1:auto; --s3:var(--r-fig); --s5:auto; --s7:auto; --s9:var(--r-text);
   --words:minmax(0,1fr); --figdef:6em; --F:var(--figdef);
-  padding-top:calc(var(--pad-t) + var(--strip-t, 0px) - var(--gr));
+  --tc:var(--sp-top_center, 0px); --r2:var(--sp-title_figure, 0px);
+  padding-top:calc(var(--pad-t) + var(--tc) - var(--gr));
   grid-template-columns:var(--cL) var(--sp-left_center, var(--dL)) var(--words) var(--sp-center_right, var(--dR)) var(--cR);
-  grid-template-rows:var(--s1) var(--sp-title_figure, 0px) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--sp-authors_venue, 0px) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) auto}
-.card[data-size][data-strips~="top"]{--strip-t:1.4em}
+  grid-template-rows:var(--s1) var(--r2) var(--s3) var(--sp-figure_authors, 0px) var(--s5) var(--sp-authors_venue, 0px) var(--s7) var(--sp-venue_text, 0px) var(--s9) var(--sp-text_buttons, 0px) var(--rest) auto var(--sp-center_bottom, 0px) var(--s14, auto)}
 .card[data-size] > :is(.c-name, .c-fig, .c-by, .c-venue, .c-text, .c-foot){margin:var(--gr) 0 0}
 /* The gaps each layout has had: beside a rail, 1em and .15em; a figure
    beside the words with the rail under them, 1.1em and .35em — and there
@@ -401,7 +408,7 @@ a.card:hover .name{color:var(--accent)}
    card's padding, its height or a line's. */
 .card[data-size][data-empty~="left"]{--cL:var(--colL, 3em); --dL:var(--gc)}
 .card[data-size][data-empty~="right"]{--cR:var(--colR, 3em); --dR:var(--gc)}
-.card[data-size][data-empty~="top"]{padding-top:calc(var(--pad-t) + var(--hT, 1.4em))}
+.card[data-size][data-empty~="top"]{padding-top:calc(var(--pad-t) + var(--hT, 1.4em) + var(--tc))}
 .card[data-size][data-empty~="bottom"]{padding-bottom:calc(var(--pad-b) + var(--hB, 1.4em))}
 .card[data-size][data-fig="left"]{--cL:var(--colL, var(--F)); --dL:var(--gc)}
 .card[data-size][data-fig="right"]{--cR:var(--colR, var(--F)); --dR:var(--gc)}
@@ -420,7 +427,15 @@ a.card:hover .name{color:var(--accent)}
    the parts move between them. A side runs from under the top area to over
    the bottom one — those win their corners — unless it wins them itself,
    area:<side>:top, :bottom (data-wins). */
-.card[data-size][data-titleat="top"]{--rL0:3; --rR0:3}
+/* The space from the top area to the center: padding over the card or,
+   the title in the top area, the row under it — the sides then start in
+   that row, so it moves the center alone. A side's own, top_left and
+   top_right, is a margin over its first part, less the center's padding. */
+.card[data-size][data-titleat="top"]{--rL0:2; --rR0:2; --tc:0px; --r2:var(--sp-top_center, var(--sp-title_figure, 0px))}
+.card[data-size][data-fig="left"] > .c-fig,
+.card[data-size][data-foot="left"]:not([data-fig="left"]) > .c-foot{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_left, 0px))}
+.card[data-size][data-fig="right"] > .c-fig,
+.card[data-size][data-foot="right"]:not([data-fig="right"]) > .c-foot{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_right, 0px))}
 .card[data-size][data-titleat="top"][data-wins~="left-top"]{--rL0:1}
 .card[data-size][data-titleat="top"][data-wins~="right-top"]{--rR0:1}
 .card[data-size][data-foot="bottom"][data-wins~="left-bottom"]{--rL1:15}
@@ -450,6 +465,13 @@ a.card:hover .name{color:var(--accent)}
 .card[data-size][data-fig="right"][data-foot="right"]:not([data-rail="empty"]) > .c-fig{grid-row-end:12}
 .card[data-size][data-fig="left"][data-foot="left"] > .c-foot,
 .card[data-size][data-fig="right"][data-foot="right"] > .c-foot{grid-row-start:12}
+/* The center's last part runs on into that row, so the buttons sit beside it
+   at the side's foot, not in a row of their own under everything: the card
+   as high as the words or the side stacked, the higher. */
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"]):not([data-text="none"]) > .c-text,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"][data-venue] > .c-venue,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:not([data-venue])[data-authors] > .c-by,
+.card[data-size]:is([data-fig="left"][data-foot="left"], [data-fig="right"][data-foot="right"]):not([data-rail="empty"])[data-text="none"]:not([data-venue]):not([data-authors]):not([data-titleat="top"]) > .c-name{grid-row-end:13}
 .card[data-size][data-foot="center"] > .c-foot{grid-area:12 / 3}
 .card[data-size][data-foot="bottom"] > .c-foot{grid-area:14 / 1 / 15 / 6}
 .card[data-size][data-foot="bottom"][data-wins~="left-bottom"] > .c-foot{grid-column-start:3}
@@ -457,6 +479,13 @@ a.card:hover .name{color:var(--accent)}
 /* title:…:top — the title in the top area, across the card but for the
    sides that win its corners. */
 .card[data-size][data-titleat="top"] > .c-name{grid-area:1 / 1 / 2 / 6}
+/* title:…:top:center|bottom — the title up and down the top area, as high
+   as the title or the area's own height, area:top:min, the more; and the
+   bottom area as high as its buttons or area:bottom:min. */
+.card[data-size][data-titleat="top"]{--s1:minmax(var(--hT, auto), auto)}
+.card[data-size][data-foot="bottom"]{--s14:minmax(var(--hB, auto), auto)}
+.card[data-titlev="center"] > .c-name{align-self:center}
+.card[data-titlev="bottom"] > .c-name{align-self:end}
 /* title:…:center|right — the title across its area. */
 .card[data-titlealign="center"] > .c-name{text-align:center}
 .card[data-titlealign="right"] > .c-name{text-align:right}
@@ -464,9 +493,7 @@ a.card:hover .name{color:var(--accent)}
    details' place across the center, its own size, and its weight. */
 .card[data-textalign="center"] > .c-text{text-align:center}
 .card[data-textalign="right"] > .c-text{text-align:right}
-.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--bs, 1em)}
-.card[data-bodyweight="medium"] > .c-text :is(.c-sum, .c-det){font-weight:500}
-.card[data-bodyweight="bold"] > .c-text :is(.c-sum, .c-det){font-weight:600}
+.card[data-size] > .c-text :is(.c-sum, .c-det){font-size:var(--fs-body, 1em); font-weight:var(--fw-body, 400)}
 /* title:…:status — the pill after the title, sized with it, never bold. */
 .c-tstatus{font-size:.6em; font-weight:400; vertical-align:.15em; white-space:nowrap}
 .card[data-size][data-titleat="top"][data-wins~="left-top"] > .c-name{grid-column-start:3}
@@ -490,7 +517,7 @@ a.card:hover .name{color:var(--accent)}
    words, centred and no wider than 14rem. */
 @media (max-width:34rem){
   .card[data-size][data-h="fit"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]){--cL:0px; --cR:0px; --dL:0px; --dR:0px}
-  .card[data-size][data-h="fit"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]) > .c-fig{grid-area:3 / 3; width:min(100%,14rem); justify-self:center}
+  .card[data-size][data-h="fit"]:is([data-fig="left"], [data-fig="right"]):is([data-foot="center"], [data-foot="bottom"]) > .c-fig{grid-area:3 / 3; width:min(100%,14rem); justify-self:center; margin-top:var(--gr)}
 }
 
 /* Which parts show — last, so they win over the layouts. The title at the

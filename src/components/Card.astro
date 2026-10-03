@@ -73,7 +73,9 @@ const style = [
   spec.width !== 'fill' && spec.height !== 'fit' && `--aw:${spec.width};--ah:${spec.height}`,
   px('textsize') != null && `--fs:${px('textsize')}px`,
   px('titlesize') != null && `--ts:${px('titlesize')}px`,
-  spec.bodySize && `--bs:${spec.bodySize}px`,
+  // A part's own size and weight, look:<part>size and <part>weight.
+  ...Object.entries(spec.sizes ?? {}).map(([k, v]) => `--fs-${k}:${v}px`),
+  ...Object.entries(spec.weights ?? {}).map(([k, v]) => `--fw-${k}:${{ regular: 400, medium: 500, bold: 600 }[v]}`),
   /^\d/.test(spec.frame ?? '') && `--frame:${spec.frame}px`,
   // The gap between the buttons: px, or a share of a button's size.
   spec.buttonGap != null && `--bgap:${spec.buttonGap.endsWith('%') ? `calc(var(--ib) * ${parseInt(spec.buttonGap, 10) / 100})` : `${spec.buttonGap}px`}`,
@@ -188,7 +190,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-textsize={step('textsize')} data-titlesize={step('titlesize')} data-titleweight={spec.titleWeight === 'mine' ? (pos === 1 ? 'bold' : 'regular') : spec.titleWeight} data-vflex={vflex ? '' : undefined} data-frame={spec.frame ? (/^\d/.test(spec.frame) ? '' : spec.frame) : undefined} data-padding={step('padding')}
          data-corners={step('corners')} data-buttons={step('buttons')}
          data-title={spec.title === 'full' ? undefined : spec.title}
-         data-titleat={spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : undefined} data-titlealign={spec.titleAlign} data-textalign={spec.textAlign} data-bodyweight={spec.bodyWeight} data-titlestatus={spec.titleStatus && titleStatus(item) ? '' : undefined}
+         data-titleat={spec.titleAt === 'top' && spec.title !== 'none' ? 'top' : undefined} data-titlealign={spec.titleAlign} data-titlev={spec.titleAt === 'top' ? spec.titleV : undefined} data-textalign={spec.textAlign} data-titlestatus={spec.titleStatus && titleStatus(item) ? '' : undefined}
          data-wins={wins || undefined} data-empty={empty || undefined}
          data-authors={bylined && byline ? (counted ? 'count' : spec.authors) : undefined}
          data-students={bylined && spec.marks === 'plain' && byline ? 'plain' : undefined}
