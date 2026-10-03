@@ -98,8 +98,8 @@ const label = (pin) =>
                 <ul class="cmap-papers">
                   {pin.papers.map((paper) => (
                     <li>{paper.url
-                      ? <a href={paper.url}>{paper.title}</a>
-                      : <span>{paper.title}</span>}{paper.assist && <span class="cmap-assist"> — assist</span>}</li>
+                      ? <a class="inline-card" href={paper.url}>{paper.title}</a>
+                      : <span class="inline-card">{paper.title}</span>}{paper.assist && <span class="cmap-assist"> — assist</span>}</li>
                   ))}
                 </ul>
               )}

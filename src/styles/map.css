@@ -115,6 +115,9 @@
 .cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
 .cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
 .cmap-papers li{font-size:.76rem; margin-top:.15rem}
+/* Each paper as an inline-card, as /research/ names one in a sentence — but
+   by its full title, so it wraps, each line a chip of its own. */
+.cmap-papers .inline-card{white-space:normal; -webkit-box-decoration-break:clone; box-decoration-break:clone; line-height:1.7}
 .cmap-assist{color:var(--ink-mute)}
 .cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
 
