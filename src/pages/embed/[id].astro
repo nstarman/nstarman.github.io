@@ -180,7 +180,14 @@ const apply = `(function (parseName, placeOf, can) {
   var together = 'pos' in d && 'year' in d && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
   if (together) d.yearwith = ''; else delete d.yearwith;
   var strips = [];
-  [['.btns--icon', true, { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') }],
+  // The paper button: its label, a word or the glyph, and its link, as the
+  // name asks — and with nowhere to go, none. It goes first, with the
+  // buttons.
+  var pb = card.querySelector('.c-paperbtn'), pbt = spec.paperButton, pbHref = pb && pbt && pb.dataset[pbt.to || 'auto'];
+  if (pbHref) { d.paper = ''; pb.setAttribute('href', pbHref); pb.querySelector('.c-pword').textContent = pbt.label === 'icon' ? 'paper' : pbt.label; } else delete d.paper;
+  if (pbHref && pbt.label === 'icon') d.paperlabel = 'icon'; else delete d.paperlabel;
+  var btnsAt = { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') };
+  [['.c-paperbtn', true, btnsAt], ['.btns--icon', true, btnsAt],
     ['.c-stamp', 'pos' in d, at.pos], ['.c-year', 'year' in d && !together, at.year], ['.c-context', 'context' in d, at.context]].forEach(function (p) {
     var el = foot.querySelector(p[0]), pl = p[2];
     if (!el) return;
@@ -191,6 +198,15 @@ const apply = `(function (parseName, placeOf, can) {
   });
   if (strips.length) d.strips = strips.join(' '); else delete d.strips;
   if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
+  // The buttons in the name's order, the keys it lists as it lists them, the
+  // rest after.
+  var ul = card.querySelector('.c-foot .btns--icon');
+  if (ul && spec.links !== 'all') [].map.call(ul.children, function (li, i) { return [li, i]; })
+    .sort(function (a, b) {
+      var ra = spec.links.indexOf(a[0].dataset.rel), rb = spec.links.indexOf(b[0].dataset.rel);
+      return (ra < 0 ? 1e9 : ra) - (rb < 0 ? 1e9 : rb) || a[1] - b[1];
+    })
+    .forEach(function (p) { ul.appendChild(p[0]); });
   // The buttons to a row: as many as fit, so many — no more than are shown —
   // or as near square as the ones shown go.
   var shown = [].filter.call(card.querySelectorAll('.c-foot li[data-rel]'), function (li) { return spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; }).length;
@@ -224,7 +240,7 @@ const apply = `(function (parseName, placeOf, can) {
   // With nothing left in it — every part hidden or in a strip — the box is
   // none: its column closes, and the words take its room.
   delete d.rail;
-  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-stamp, .c-year, .c-context'), function (e) {
+  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-paperbtn, .c-stamp, .c-year, .c-context'), function (e) {
     var s = getComputedStyle(e);
     return s.display !== 'none' && s.position !== 'absolute';
   });

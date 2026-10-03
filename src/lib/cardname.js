@@ -103,8 +103,8 @@
 //   year     <place>                where the year sits. Where my position is
 //            e.g. year:top:right    in the same place, the two read as one,
 //                                   "1st | 2026"
-//   buttons  the link buttons: all · none, or the keys to keep, e.g.
-//            ads,code; then :1–12, the buttons to a row before the next,
+//   buttons  the link buttons: all · none, or the keys to keep, in the
+//            order they are drawn, e.g. ads,code; then :1–12, the buttons to a row before the next,
 //            e.g. buttons:all:2, or :fit, as many as fit — left off, as
 //            near square as they go: ⌈√n⌉ to a row, for n buttons; then
 //            their area — left, center (left off, under the words), right
@@ -113,6 +113,12 @@
 //            toward the card's edge left off; under the words or at the
 //            bottom, left (left off), center or right. buttons:all:fit:right,
 //            buttons:all:bottom:center
+//   paper    a paper's button of words, first in the buttons' box: its
+//            label, a word of up to 16 letters or digits — paper:paper —
+//            or icon, the paper glyph; then where it links: journal, arxiv,
+//            ads or site — left off, the article where it is out, else
+//            arXiv. Left off, no such button; with nowhere to link, none.
+//            e.g. paper:paper, paper:pdf:arxiv, paper:icon:ads
 //
 //   <place>  my position, the year and the context link each sit in an
 //            area, and at a place in it: with the buttons, in their area —
@@ -236,7 +242,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t]).map((t) => `${
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, venueName, venueLink, venueDate, venueAlign, venueAt, venueFirst, authorsFit }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text, extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, venueName, venueLink, venueDate, venueAlign, venueAt, venueFirst, authorsFit, paperButton }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -283,6 +289,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
     `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
+    ...(paperButton ? [`paper:${paperButton.label}${paperButton.to ? `:${paperButton.to}` : ''}`] : []),
     ...(space && Object.keys(space).length ? [`space:${spaceList(space)}`] : []),
     ...(tuned.length ? [`look:${tuned.join(',')}`] : []),
   ].join('-');
@@ -407,6 +414,10 @@ export function parseName(name) {
     } else if ((key === 'context' || key === 'year' || key === 'position') && kv.length >= 2) {
       // A place — settled once the buttons' area is known.
       spec[(key === 'position' ? 'pos' : key) + 'At'] = kv.slice(1);
+    } else if (key === 'paper') {
+      // Its label, a word or icon; then where it links, if not the default.
+      if (!/^[A-Za-z0-9]{1,16}$/.test(kv[1] || '') || kv.length > 3 || (kv.length === 3 && !one(kv[2], ['journal', 'arxiv', 'ads', 'site']))) throw new Error('"' + name + '": no such paper button, ' + parts[i]);
+      spec.paperButton = kv.length === 3 ? { label: kv[1], to: kv[2] } : { label: kv[1] };
     } else if (key === 'buttons' && /^(all|none|[a-z]+(,[a-z]+)*)$/.test(kv[1] || '')) {
       // The keys; then so many to a row, or fit; then the area and the place
       // in it — in a side, up and down then across; else across.

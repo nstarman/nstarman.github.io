@@ -338,6 +338,15 @@ a.card:hover .name{color:var(--accent)}
 .card[data-per]:is([data-foot="left"], [data-foot="right"])[data-footend="bottom"] .c-foot .btns--icon > li{transform:scaleY(-1)}
 .c-foot .iconbtn{width:var(--ib); height:var(--ib); border-radius:calc(var(--ib) * .25)}
 .c-foot .iconbtn .ico{width:var(--ii); height:var(--ii)}
+/* paper:<label>[:<to>] — a paper's button of words, or its glyph, first in
+   the buttons' box and as high as a button. */
+.c-paperbtn{display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; height:var(--ib); min-width:var(--ib); padding:0 .7em;
+  border:1px solid var(--accent-line); border-radius:calc(var(--ib) * .25); background:color-mix(in srgb, var(--accent) 6%, var(--surface));
+  color:var(--accent); font-family:var(--mono); font-size:calc(var(--ib) * .42); line-height:1; letter-spacing:.04em; text-decoration:none}
+.c-paperbtn:hover{background:color-mix(in srgb, var(--accent) 14%, var(--surface)); text-decoration:none}
+.c-paperbtn .ico{width:var(--ii); height:var(--ii); fill:currentColor}
+.card[data-paperlabel="icon"] .c-paperbtn{padding:0}
+.card:not([data-paper]) .c-paperbtn, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
 .c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400)}

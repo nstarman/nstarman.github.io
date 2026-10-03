@@ -10,7 +10,7 @@ import Place from '../../components/Place.astro';
 import TextLook from '../../components/TextLook.astro';
 import { items, relKey, splitTitle, venueLine, venueUrl } from '../../lib/data.js';
 import {
-  LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  paperHref, LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
 
 const pool = items.filter((i) => CARD_TYPES.includes(i.type));
@@ -76,7 +76,7 @@ const data = {
   // The builder's own default first, then the website's cards.
   presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
   items: Object.fromEntries(pool.map((i) => [i.id, {
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), paperTo: Object.fromEntries(['journal', 'arxiv', 'ads', 'site'].map((t) => [t, !!paperHref(i, t)])), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : placeOf(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
   }])),
 };
 ---
@@ -581,6 +581,10 @@ const data = {
                 <span class="eb-dim eb-inkey">position</span>
                 <Place v="footend" vId="eb-footend" h="railalign" label="The buttons' position" />
               </span>
+              {/* Their order: each shown button, moved earlier or later by its
+                  < and > — or dragged among the others in the preview. */}
+              <span class="eb-dim" id="eb-order-key">order</span>
+              <span class="eb-px" id="eb-order"></span>
               <span class="eb-dim">layout</span>
               <span class="eb-px">
                 <NumBox title="The link buttons to a row before the next" name="perrow" min="1" max="12" by={1} placeholder="√n" label="Link buttons per row" after="per row" />
@@ -603,6 +607,34 @@ const data = {
                   {LOOKS.map((v) => <label title={`${v}: ${STEP_PX.buttons[v]}px`}><input type="radio" class="posradio" name="buttons" value={v} />{STEP_PX.buttons[v]}</label>)}
                   <label class="eb-bywidth" title="Follows the box's width"><input type="radio" class="posradio" name="buttons" value="width" />by width</label>
                 </span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* The paper button, a part of its own, where its pill above is
+              ticked: its label, a word or the paper glyph; and where it links
+              — the article, else arXiv, or one of them. Ticking the pill, or
+              clicking the button in the preview, brings it up. */}
+          <fieldset class="eb-row" id="eb-paper-row" data-tune="paper" hidden>
+            <legend class="eb-key">Paper</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">label</span>
+              <span class="eb-px">
+                <select name="paperlabel" class="eb-menu" aria-label="The paper button's label">
+                  <option value="word" selected>word</option>
+                  <option value="icon">icon</option>
+                </select>
+                <input type="text" name="paperword" class="eb-word" value="paper" maxlength="16" pattern="[A-Za-z0-9]{1,16}" aria-label="The paper button's word, letters and digits" />
+              </span>
+              <span class="eb-dim">link</span>
+              <span class="eb-px">
+                <select name="paperto" class="eb-menu" aria-label="Where the paper button links">
+                  <option value="" title="The article where it is out, else arXiv" selected>article, else arXiv</option>
+                  <option value="journal">journal</option>
+                  <option value="arxiv">arXiv</option>
+                  <option value="ads">ADS</option>
+                  <option value="site">/website/</option>
+                </select>
               </span>
             </span>
           </fieldset>
@@ -732,13 +764,16 @@ const data = {
   // above.
   function buildExtras(id) {
     const it = items[id];
+    btnOrder = it.links.map(([k]) => k);
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
       + x(it.pos, 'position', 'My author position, as 1st')
       + x(it.year, 'year', 'The year')
       + x(it.context, 'context', 'A link to its topic on /research/');
     el('eb-extras-drop').hidden = !extras.innerHTML;
-    el('eb-links').innerHTML = it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
+    // The paper button first, as it is in the box, where it has somewhere
+    // to link; then each link's.
+    el('eb-links').innerHTML = (Object.values(it.paperTo).some(Boolean) ? '<label title="A button of words, paper, first among the buttons: to the article, else arXiv"><input type="checkbox" class="eb-check" name="paperbtn" />paper</label>' : '') + it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
   }
 
   // A preset as it comes out for this item: the extras it has not got drop,
@@ -750,6 +785,32 @@ const data = {
   // the side's foot beside the words' last line: there they have no up and
   // down of their own.
   const stackedIn = (a) => el('eb-figure-on').checked && !!items[form.elements.card.value].figure && form.elements.figat.value === a;
+  // The buttons' order, every key the item has: the shown ones, in it, are the
+  // name's list. All, in the item's own order, is the list left out.
+  let btnOrder = [];
+  const sameOrder = (a, b) => a.length === b.length && a.every((k, i) => k === b[i]);
+  // The order line: each shown button, with < and > to move it past the one
+  // shown before or after it.
+  function showOrder() {
+    const it = items[form.elements.card.value], names = Object.fromEntries(it.links.map(([k, name]) => [k, name]));
+    const on = new Set([...form.querySelectorAll('[name=link]')].filter((b) => b.checked).map((b) => b.value));
+    const keys = btnOrder.filter((k) => on.has(k));
+    el('eb-order').innerHTML = keys.map((k, i) => `<span class="eb-num eb-orderpill" data-key="${k}">`
+      + `<button type="button" class="eb-step" data-move="-1" ${i ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
+      + `<span class="eb-ordername">${esc(names[k])}</span>`
+      + `<button type="button" class="eb-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button></span>`).join('');
+    el('eb-order').hidden = el('eb-order-key').hidden = keys.length < 2;
+  }
+  // A shown button moved to where another shown one is, the rest kept.
+  function moveButton(key, to) {
+    const on = new Set([...form.querySelectorAll('[name=link]')].filter((b) => b.checked).map((b) => b.value));
+    const shown = btnOrder.filter((k) => on.has(k)), from = shown.indexOf(key);
+    if (from < 0 || to < 0 || to >= shown.length || to === from) return;
+    shown.splice(to, 0, ...shown.splice(from, 1));
+    btnOrder = [...shown, ...btnOrder.filter((k) => !on.has(k))];
+    showOrder();
+    render();
+  }
   // The venue's area beside the authors', as the Published row and the
   // Authors row each name it: below the authors is the authors above it.
   const V2A = { below: 'above', above: 'below', authors: 'shared' };
@@ -782,8 +843,8 @@ const data = {
     const c = parseName(name);
     // A list of buttons to keep, read against the links this item has.
     const keys = it.links.map(([k]) => k);
-    const kept = c.links === 'all' ? keys : keys.filter((k) => c.links.includes(k));
-    return formatName({ ...c, links: kept.length === keys.length ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
+    const kept = c.links === 'all' ? keys : c.links.filter((k) => keys.includes(k));
+    return formatName({ ...c, links: sameOrder(kept, keys) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
                         rest: it.split ? c.rest : 'split', text: it.text ? c.text : 'none' });
   }
 
@@ -846,6 +907,10 @@ const data = {
     form.elements.titleat.value = c.titleAt ?? 'center';
     form.elements.titlealign.value = c.titleAlign ?? 'left';
     form.elements.titlev.value = c.titleV ?? 'top';
+    if (form.elements.paperbtn) form.elements.paperbtn.checked = !!c.paperButton;
+    form.elements.paperlabel.value = c.paperButton?.label === 'icon' ? 'icon' : 'word';
+    form.elements.paperword.value = c.paperButton && c.paperButton.label !== 'icon' ? c.paperButton.label : 'paper';
+    form.elements.paperto.value = c.paperButton?.to ?? '';
     setRadio('venuename', c.venueName ?? 'full');
     setRadio('venueline', c.venueAt ?? 'below');
     setRadio('authorsline', V2A[c.venueAt ?? 'below']);
@@ -879,6 +944,8 @@ const data = {
     form.elements.text.value = c.text;
     for (const b of form.querySelectorAll('[name=extra]')) b.checked = c.extras.includes(b.value);
     for (const b of form.querySelectorAll('[name=link]')) b.checked = c.links === 'all' || c.links.includes(b.value);
+    const keys = items[form.elements.card.value].links.map(([k]) => k);
+    btnOrder = c.links === 'all' ? keys : [...c.links.filter((k) => keys.includes(k)), ...keys.filter((k) => !c.links.includes(k))];
   }
 
   // The controls → the card's name, written by src/lib/cardname.js.
@@ -898,9 +965,9 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueAt: f.get('venueline') !== 'below' ? f.get('venueline') : undefined, venueFirst: f.get('venueline') === 'authors' && f.get('venueorder') === 'before' ? true : undefined, venueAlign: f.get('venueline') !== 'authors' && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: f.get('venueline') !== 'below' ? f.get('venueline') : undefined, venueFirst: f.get('venueline') === 'authors' && f.get('venueorder') === 'before' ? true : undefined, venueAlign: f.get('venueline') !== 'authors' && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
-      extras: f.getAll('extra').filter((x) => has(items[id], x)), links: on.length === all.length ? 'all' : on, perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
+      extras: f.getAll('extra').filter((x) => has(items[id], x)), links: sameOrder(btnOrder.filter((k) => on.includes(k)), all.map((b) => b.value)) ? 'all' : btnOrder.filter((k) => on.includes(k)), perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
     return { id, it: items[id], slug, width, height, format: f.get('format'), theme: f.get('theme') };
   }
@@ -964,6 +1031,12 @@ const data = {
     el('eb-vstatus').hidden = !s.it.status;
     el('eb-vname').hidden = el('eb-vname-key').hidden = !s.it.vshort;
     el('eb-vlink').hidden = el('eb-vlink-key').hidden = !s.it.vlink;
+    showOrder();
+    // The paper button belongs to a paper; its word to a word label; and of
+    // where it may link, only where this one can.
+    form.elements.paperword.hidden = form.elements.paperlabel.value === 'icon';
+    for (const o of form.elements.paperto.options) o.disabled = !!o.value && !s.it.paperTo[o.value];
+    if (form.elements.paperto.selectedOptions[0]?.disabled) form.elements.paperto.value = '';
     el('eb-vpos').hidden = el('eb-vpos-key').hidden = form.elements.venueline.value === 'authors';
     el('eb-vorder').hidden = el('eb-vorder-key').hidden = el('eb-aorder').hidden = el('eb-aorder-key').hidden = form.elements.venueline.value !== 'authors';
     el('eb-aarea').hidden = el('eb-aarea-key').hidden = !(s.it.venue && [...form.querySelectorAll('[name=extra]')].some((b) => b.value === 'venue' && b.checked));
@@ -1209,8 +1282,8 @@ const data = {
   // from five.
   form.addEventListener('click', (e) => {
     const b = e.target.closest('.eb-step');
-    if (!b) return;
-    const i = b.parentElement.querySelector('input[type=number]');
+    const i = b?.parentElement.querySelector('input[type=number]');
+    if (!i) return;
     const lo = i.min === '' ? 0 : +i.min, hi = i.max === '' ? Infinity : +i.max;
     const from = i.value !== '' ? +i.value : +i.placeholder || +i.dataset.from || lo;
     const unit = +i.step < 1 ? 10 : 1; // to a tenth where the box takes one, else whole
@@ -1265,6 +1338,7 @@ const data = {
     if (e.target.name === 'framepx') { for (const r of form.elements.frame) r.checked = false; render(); }
     if (e.target.name === 'bgap' || /^h(top|bottom)$/.test(e.target.name)) render();
     // A text size typed leaves by text.
+    if (e.target.name === 'paperword') render();
     const face = FACES.find((p) => e.target.name === `${p}size`);
     if (face) { setRadio(`${face}by`, e.target.value === '' ? 'text' : ''); render(); }
     // Typing a number of names chooses it.
@@ -1295,6 +1369,8 @@ const data = {
       for (const [k] of SMALL) if (!form.elements[`${k}at`].value) resetPlace(k);
     } else if (/^(pos|year|ctx)at$/.test(e.target.name)) {
       resetPlace(e.target.name.slice(0, -2));
+    } else if (e.target.name === 'paperbtn') {
+      if (e.target.checked) tune(['paper']); else el('eb-paper-row').hidden = true; // ticked, its settings come up; unticked, they go
     } else if (e.target.name === 'venueline') {
       form.elements.authorsline.value = V2A[e.target.value]; // the same choice, from the authors' side
     } else if (e.target.name === 'authorsline') {
@@ -1366,6 +1442,7 @@ const data = {
     // One rule: a click brings up the settings of what was clicked, and only
     // those — a part's own row, an area's, the card's.
     ['.c-foot .iconbtn', ['foot']],
+    ['.c-paperbtn', ['paper']],
     ['.c-fig', ['figure']],
     ['.c-name', ['title']],
     // The authors' line is an area apart from what is in it: the names, the
@@ -1395,6 +1472,8 @@ const data = {
     .eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 16%, transparent)}
     .eb-drop.eb-cell{z-index:8; border:1px dotted var(--accent); border-radius:4px; background:none;
       display:flex; align-items:center; justify-content:center; font:10px/1.1 var(--mono); color:var(--accent); text-align:center}
+    .eb-hits .card .c-foot li[data-rel]{cursor:grab}
+    .eb-drop-on-btn{outline:2px solid var(--accent) !important; outline-offset:2px; border-radius:6px}
     .eb-drop.eb-cell.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 28%, transparent)}
     .eb-hits .card, .eb-hits :is(${HITS.slice(0, -1).map(([q]) => q).join(', ')}){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
     .eb-hits .card{outline-offset:-2px}
@@ -1445,14 +1524,25 @@ const data = {
     const it = items[form.elements.card.value];
     const t = r.dataset.tune;
     const extra = (x) => [...form.querySelectorAll('[name=extra]')].some((b) => b.value === x && b.checked);
-    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'venue' && !(it.venue && extra('venue'))) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extra('position'))) || (t === 'year' && !(it.year && extra('year'))) || (t === 'context' && !(it.context && extra('context')))
+    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'paper' && !form.elements.paperbtn?.checked) || (t === 'venue' && !(it.venue && extra('venue'))) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extra('position'))) || (t === 'year' && !(it.year && extra('year'))) || (t === 'context' && !(it.context && extra('context')))
       || (t === 'area-left' && !(sideHas('left') || areasOn.has('left'))) || (t === 'area-right' && !(sideHas('right') || areasOn.has('right')))
       || (t === 'area-top' && !(form.elements.titleat.value === 'top' || areasOn.has('top'))) || (t === 'area-bottom' && !(form.elements.foot.value === 'bottom' || areasOn.has('bottom'))));
   }
+  // The buttons and the paper button are one box: either's settings come up
+  // with the other's, the paper's where it is on.
+  const TOGETHER = [['foot', 'paper']];
   function tune(keys) {
+    for (const g of TOGETHER) if (g.some((k) => keys.includes(k))) keys = [...new Set([...keys, ...g])];
     for (const r of tuneRows) r.hidden = !keys.includes(r.dataset.tune) || !canTune(r);
     syncAll();
   }
+  // < and > on a button in the order line: earlier or later by one.
+  el('eb-order').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-move]');
+    if (!b) return;
+    const key = b.closest('[data-key]').dataset.key, on = [...el('eb-order').querySelectorAll('[data-key]')].map((p) => p.dataset.key);
+    moveButton(key, on.indexOf(key) + +b.dataset.move);
+  });
   // ✕ on a track takes its space away.
   el('eb-tracks').addEventListener('click', (e) => {
     const t = e.target.closest('[data-trackdel]')?.dataset.trackdel;
@@ -1836,6 +1926,40 @@ const data = {
     const SLOT_NAMES = { top: 'above title', title: 'below title', authors: 'below authors', venue: 'below venue', text: 'below text' };
     let dragged = false;
     doc.addEventListener('dragstart', (e) => e.preventDefault());
+    // A button dragged among the others: dropped by one of them, it takes its
+    // place — the order line's < and >, by the pointer. The box itself, by
+    // the room around its buttons, moves between areas.
+    doc.addEventListener('pointerdown', (e) => {
+      const li = e.button === 0 && e.target.closest?.('.c-foot li[data-rel]');
+      if (!li) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const sibs = () => [...li.parentElement.children].filter((x) => x.getClientRects().length);
+      const x0 = e.clientX, y0 = e.clientY;
+      let on = false, over = null;
+      const move = (ev) => {
+        if (!on && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
+        on = true;
+        li.classList.add('eb-dragging');
+        li.style.translate = `${ev.clientX - x0}px ${ev.clientY - y0}px`;
+        // The shown button nearest the pointer, but this one.
+        const near = sibs().filter((x) => x !== li).map((x) => { const r = x.getBoundingClientRect(); return [x, Math.hypot(ev.clientX - (r.left + r.width / 2), ev.clientY - (r.top + r.height / 2))]; }).sort((a, b) => a[1] - b[1])[0];
+        over = near && near[1] < near[0].getBoundingClientRect().width ? near[0] : null;
+        for (const x of sibs()) x.classList.toggle('eb-drop-on-btn', x === over);
+      };
+      const up = () => {
+        doc.removeEventListener('pointermove', move);
+        doc.removeEventListener('pointerup', up, true);
+        if (!on) return;
+        dragged = true; // the click that follows the drop is no click
+        li.classList.remove('eb-dragging');
+        li.style.translate = '';
+        for (const x of sibs()) x.classList.remove('eb-drop-on-btn');
+        if (over) moveButton(li.dataset.rel, sibs().indexOf(over));
+      };
+      doc.addEventListener('pointermove', move);
+      doc.addEventListener('pointerup', up, true);
+    }, true);
     doc.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || e.target.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-areabtn, .eb-fig-grip')) return;
       const m = MOVES.find((x) => e.target.closest?.(x.q));
@@ -2034,7 +2158,7 @@ const data = {
   // links the item has not got stay off, as with a preset.
   const THEMES = ['auto', 'light', 'dark'];
   const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
-  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'venueName', 'venueLink', 'venueDate', 'venueAlign', 'venueAt', 'venueFirst', 'authorsFit', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleV', 'titleAlign', 'venueName', 'venueLink', 'venueDate', 'venueAlign', 'venueAt', 'venueFirst', 'authorsFit', 'paperButton', 'titleStatus', 'textAlign', 'sizes', 'weights', 'authors', 'marks', 'authorLink', 'posAt', 'yearAt', 'contextAt', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
   el('eb-export').addEventListener('click', () => {
     const s = spec();
     const c = parseName(s.slug);
@@ -2191,6 +2315,12 @@ const data = {
   :global(.eb-track){display:inline-flex; align-items:center; gap:.4rem}
   :global(.eb-track-x){padding:0 .2rem; border:0; background:none; color:var(--ink-faint); cursor:pointer; font:inherit}
   :global(.eb-track-x:hover){color:var(--accent)}
+  /* A button in the order line: its name between its < and >. */
+  .eb :global(.eb-orderpill){gap:.1em; padding:.15rem .3rem}
+  .eb :global(.eb-ordername){font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); padding:0 .2em}
+  .eb :global(.eb-orderpill .eb-step:disabled){opacity:.3; cursor:default}
+  .eb .eb-word{width:9ch; padding:0 .2em; border:0; border-bottom:1px solid var(--rule-strong); background:none; color:var(--ink); font-family:var(--mono); font-size:.8rem}
+  .eb .eb-word:invalid{border-bottom-color:var(--accent)}
   :global(.eb-place){display:inline-flex; flex-wrap:wrap; align-items:center; gap:.35rem}
   .eb-pair{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .8rem; justify-self:start}
   .eb-sub{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.35rem .8rem}

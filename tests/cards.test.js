@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, placeOf, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 
@@ -325,6 +325,27 @@ describe('card names', () => {
     expect(s.sizes).toEqual({ authors: '12.5', year: '9', position: '10' });
     expect(s.weights).toEqual({ context: 'bold', venue: 'medium' });
     expect(formatName(s)).toMatch(/-look:authorssize=12\.5,venueweight=medium,positionsize=10,yearsize=9,contextweight=bold$/);
+  });
+
+  it('keep the buttons in the order the name lists them', () => {
+    expect(parseName('size:fill:fit-text:none-buttons:code,ads,preprint:right').links).toEqual(['code', 'ads', 'preprint']);
+    expect(formatName(parseName('size:fill:fit-text:none-buttons:code,ads,preprint:right'))).toContain('-buttons:code,ads,preprint:right');
+  });
+
+  it('give a paper a button of words, linked to its article, else arXiv', () => {
+    expect(parseName('size:fill:fit-text:none-buttons:all-paper:paper')).toMatchObject({ paperButton: { label: 'paper' } });
+    expect(parseName('size:fill:fit-text:none-buttons:all-paper:icon:ads').paperButton).toEqual({ label: 'icon', to: 'ads' });
+    expect(formatName(parseName('size:fill:fit-text:none-paper:PDF:arxiv-buttons:all'))).toMatch(/-buttons:all-paper:PDF:arxiv$/);
+    for (const bad of ['paper', 'paper:read:doi', 'paper:a-b', 'paper:waytoolongforabutton', 'paper:pdf:arxiv:ads']) {
+      expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
+    }
+    const out = { type: 'publication', status: 'published', venue: { journal: 'X' }, links: [{ rel: 'paper', url: 'https://j' }], arxiv: '2401.00001' };
+    expect(paperHref(out)).toBe('https://j');
+    expect(paperHref({ type: 'publication', arxiv: '2401.00001' })).toBe('https://arxiv.org/abs/2401.00001');
+    expect(paperHref({ type: 'publication' })).toBeNull();
+    expect(paperHref(out, 'arxiv')).toBe('https://arxiv.org/abs/2401.00001');
+    expect(paperHref({ type: 'software', arxiv: '2401.00001' })).toBeNull();
+    expect(paperHref({ ...out, status: 'submitted' }), 'not out yet: arXiv').toBe('https://arxiv.org/abs/2401.00001');
   });
 
   it('fit the byline to one line, where the name asks', () => {

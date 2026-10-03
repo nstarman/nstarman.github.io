@@ -15,7 +15,7 @@ export const SITE_PRESETS = [
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/. Its title is bold where
   // the paper is mine — I am first author — and regular otherwise.
-  { slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:ads,preprint,paper,doi,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
+  { slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,ads,doi,preprint,repo,code:fit-look:titleweight=mine', where: 'Research — the highlight carousels' },
   { slug: 'size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-buttons:all:fit-look:minor', where: 'Publications — the Assists, papers that thank me' },
   // A row of a list, not a box: no tint and no padding, its link the paper's.
@@ -71,6 +71,16 @@ export function cardText(item) {
   // ponytail: the first sentence ends at the first ". " — an abbreviation such
   // as "e.g. " would cut it short; give the record a summary if one does.
   return { summary: item.summary ?? d?.match(/^.+?[.!?](?=\s|$)/)?.[0], details: d };
+}
+
+/** Where a card's paper button links, paper:…:<to>: the article, arXiv, ADS
+ *  or this site; left unsaid, the article where it is out, else arXiv, else
+ *  nowhere — and with nowhere to go there is no button. */
+export function paperHref(item, to) {
+  if (item.type !== 'publication') return null;
+  const arxiv = links(item).find((l) => l.rel === 'preprint')?.url ?? (item.arxiv ? `https://arxiv.org/abs/${item.arxiv}` : null);
+  const by = { journal: journalHref(item), arxiv, ads: adsHref(item), site: siteHref(item) };
+  return (to ? by[to] : by.journal ?? by.arxiv) ?? null;
 }
 
 /** Where a card's title links, title:…:link — the item itself: a paper's

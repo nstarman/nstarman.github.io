@@ -11,7 +11,7 @@
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
 import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, hasStatus, hasYear, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
+import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, paperHref, hasStatus, hasYear, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, placeOf, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
@@ -33,7 +33,11 @@ const showFig = spec.figure !== 'none' && !!item.highlight?.image;
 const px = (d) => (/^\d/.test(spec.dials[d] ?? '') ? +spec.dials[d] : null);
 // The link buttons to a row: as many as fit, so many — no more than are
 // shown — or, left unsaid, as near square as they go, ⌈√n⌉ for the n shown.
-const kept = cardLinks(item).map((l) => spec.links === 'all' || spec.links.includes(relKey(l)));
+// The buttons in the name's order — the keys it lists, as it lists them —
+// and the rest, hidden, after; all, as the item has them.
+const rank = (l) => (spec.links === 'all' ? 0 : spec.links.indexOf(relKey(l)) + 1 || Infinity);
+const ordered = cardLinks(item).map((l, i) => [l, i]).sort((a, b) => (rank(a[0]) - rank(b[0]) || 0) || a[1] - b[1]).map(([l]) => l);
+const kept = ordered.map((l) => spec.links === 'all' || spec.links.includes(relKey(l)));
 const shown = kept.filter(Boolean).length;
 const per = spec.perRow === 'fit' || !shown ? null : Math.min(shown, spec.perRow ?? Math.ceil(Math.sqrt(shown)));
 const across = spec.foot === 'center' || spec.foot === 'bottom';
@@ -173,7 +177,12 @@ const END = { top: 'start', left: 'start', center: 'center', bottom: 'end', righ
 const slotOf = (k) => (shows[k] && !placed[k].strip ? END[sideBox ? placed[k].v : placed[k].h] : null);
 const crossOf = (k) => END[sideBox ? placed[k].h : placed[k].v];
 const strips = [...new Set(['stamp', 'year', 'context'].filter((k) => shows[k] && placed[k].strip).map((k) => placed[k].area))].join(' ');
-const railEmpty = !refs.length && !shown && !['stamp', 'year', 'context'].some((k) => slotOf(k));
+// The paper button, paper:<label>[:<to>], first in the buttons' box: its
+// link where the name sends it — for the embed page, each, as data — and
+// with nowhere to go, no button.
+const paperTo = { auto: paperHref(item), journal: paperHref(item, 'journal'), arxiv: paperHref(item, 'arxiv'), ads: paperHref(item, 'ads'), site: paperHref(item, 'site') };
+const paperBtn = spec.paperButton && paperTo[spec.paperButton.to ?? 'auto'] ? spec.paperButton : null;
+const railEmpty = !refs.length && !shown && !paperBtn && !['stamp', 'year', 'context'].some((k) => slotOf(k));
 // An area the name gives, area:<a>, that nothing is in is there all the
 // same, empty: a side its column, the top or bottom a strip of the padding.
 const holds = {
@@ -203,7 +212,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-pos={posShown ? '' : undefined}
          data-strips={strips || undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
-         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-venueat={spec.venueAt} data-venuefirst={spec.venueAt === 'authors' && spec.venueFirst ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={spec.venueAt === 'authors' && spec.venueFirst ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
          data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-background={spec.background === 'normal' ? undefined : spec.background}
@@ -285,7 +294,18 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
       const part = (k) => {
         const strip = shows[k] && placed[k].strip ? { 'data-strip': placed[k].area, 'data-h': placed[k].h } : {};
         const cross = { 'data-cross': crossOf(k), ...strip };
-        if (k === 'buttons') return <LinkIcons links={cardLinks(item)} cross={crossOf(k)} />;
+        if (k === 'buttons') return <>
+          {/* Drawn where asked for — or, on the embed page, which draws every
+              part, wherever it has somewhere to link — never without an
+              address: hidden, it keeps one. */}
+          {(paperBtn || (allCounts && Object.values(paperTo).some(Boolean))) && (
+            <a class="c-paperbtn" href={paperBtn ? paperTo[paperBtn.to ?? 'auto'] : Object.values(paperTo).find(Boolean)} data-cross={crossOf(k)} aria-label="paper" title="paper"
+               data-auto={paperTo.auto} data-journal={paperTo.journal} data-arxiv={paperTo.arxiv} data-ads={paperTo.ads} data-site={paperTo.site}>
+              <span class="c-pword">{paperBtn && paperBtn.label !== 'icon' ? paperBtn.label : 'paper'}</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
+            </a>
+          )}
+          <LinkIcons links={ordered} cross={crossOf(k)} />
+        </>;
         if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place && <><span class="c-place">{place}</span><span class="c-sep"> | </span></>}<span class="c-yr">{year(item)}</span></span>;
         if (k === 'year') return !isSoftware && <span class="c-year" {...cross}>{year(item)}</span>;
         return topic && <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} title={`${topic[1]} research highlights`} {...cross}>Context&nbsp;›</a>;
