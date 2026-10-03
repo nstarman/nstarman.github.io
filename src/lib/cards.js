@@ -19,7 +19,7 @@ export const SITE_PRESETS = [
   { slug: 'size:fill:fit-figure:left:center:auto:link-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   { slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
   // A row of a list, not a box: no tint and no padding, its link the paper's.
-  { slug: 'size:fill:fit-figure:none-title:full:whole:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
+  { slug: 'size:fill:fit-figure:none-title:full:split:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
 ];
 
 /** The Card Builder's starting card, for every item: a full strip with its
