@@ -113,7 +113,10 @@
 .cmap-when{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-right:.4rem}
 .cmap-where{color:var(--ink-2)}
 .cmap-role{display:block; color:var(--ink-mute); font-size:.76rem}
-.cmap-papers{list-style:none; margin:.2rem 0 0; padding:0}
+/* A post is the journey, left; the papers it produced sit opposite, right. */
+.cmap-list ol > li{display:flex; flex-wrap:wrap; justify-content:space-between; gap:.2rem 1.2rem}
+.cmap-post{flex:1 1 12rem}
+.cmap-papers{list-style:none; margin:.2rem 0 0 auto; padding:0; flex:0 1 20rem; text-align:right}
 .cmap-papers li{font-size:.76rem; margin-top:.15rem}
 /* Each paper as an inline-card, as /research/ names one in a sentence — but
    by its full title, so it wraps, each line a chip of its own. */

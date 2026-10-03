@@ -91,9 +91,11 @@ const label = (pin) =>
         <ol hidden>
           {p.pins.map((pin) => (
             <li>
+              <div class="cmap-post">
               <span class="cmap-when">{pin.start}–{pin.end ?? 'present'}</span>
               <span class="cmap-where">{pin.organization}{pin.place && <>, {pin.place}</>}</span>
               {pin.role && <span class="cmap-role">{pin.role}</span>}
+              </div>
               {pin.papers.length > 0 && (
                 <ul class="cmap-papers">
                   {pin.papers.map((paper) => (
