@@ -121,7 +121,10 @@
 /* Each paper as an inline-card, as /research/ names one in a sentence — but
    by its full title, so it wraps, each line a chip of its own. */
 .cmap-papers .inline-card{white-space:normal; -webkit-box-decoration-break:clone; box-decoration-break:clone; line-height:1.7}
-.cmap-doi{font-family:var(--mono); font-size:.68rem}
+.cmap-sep{color:var(--ink-faint)}
+.cmap-papers .inline-card a{color:inherit}
+.cmap-papers .inline-card a:hover{color:var(--accent)}
+.cmap-doi{font-size:.9em; color:var(--ink-mute)}
 .cmap-assist{color:var(--ink-mute)}
 .cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
 
