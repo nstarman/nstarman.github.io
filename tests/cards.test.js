@@ -330,13 +330,19 @@ describe('card names', () => {
   it('keep the buttons in the order the name lists them', () => {
     expect(parseName('size:fill:fit-text:none-buttons:code,ads,preprint:right').links).toEqual(['code', 'ads', 'preprint']);
     expect(formatName(parseName('size:fill:fit-text:none-buttons:code,ads,preprint:right'))).toContain('-buttons:code,ads,preprint:right');
+    // Empty ones, as many as asked, each a button's room with nothing in it.
+    expect(parseName('size:fill:fit-text:none-buttons:empty,ads,empty,empty,preprint:3').links).toEqual(['empty', 'ads', 'empty', 'empty', 'preprint']);
+    // The year, my position, the context link and the paper button, among them.
+    expect(formatName(parseName('size:fill:fit-text:none-extras:year-buttons:year,paperbutton,ads:right'))).toContain('-buttons:year,paperbutton,ads:right');
   });
 
   it('give a paper a button of words, linked to its article, else arXiv', () => {
     expect(parseName('size:fill:fit-text:none-buttons:all-paper:paper')).toMatchObject({ paperButton: { label: 'paper' } });
     expect(parseName('size:fill:fit-text:none-buttons:all-paper:icon:ads').paperButton).toEqual({ label: 'icon', to: 'ads' });
+    expect(parseName('size:fill:fit-text:none-buttons:all-paper:paper:grey').paperButton).toEqual({ label: 'paper', color: 'grey' });
+    expect(formatName(parseName('size:fill:fit-text:none-buttons:all-paper:pdf:arxiv:grey'))).toMatch(/-paper:pdf:arxiv:grey$/);
     expect(formatName(parseName('size:fill:fit-text:none-paper:PDF:arxiv-buttons:all'))).toMatch(/-buttons:all-paper:PDF:arxiv$/);
-    for (const bad of ['paper', 'paper:read:doi', 'paper:a-b', 'paper:waytoolongforabutton', 'paper:pdf:arxiv:ads']) {
+    for (const bad of ['paper', 'paper:read:doi', 'paper:a-b', 'paper:waytoolongforabutton', 'paper:pdf:arxiv:ads', 'paper:pdf:grey:arxiv', 'paper:pdf:blue']) {
       expect(() => parseName(`size:fill:fit-text:none-${bad}`)).toThrow();
     }
     const out = { type: 'publication', status: 'published', venue: { journal: 'X' }, links: [{ rel: 'paper', url: 'https://j' }], arxiv: '2401.00001' };

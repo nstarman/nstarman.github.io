@@ -351,6 +351,9 @@ a.card:hover .name{color:var(--accent)}
   color:var(--accent); font-family:var(--mono); font-size:calc(var(--ib) * .42); line-height:1; letter-spacing:.04em; text-decoration:none}
 .c-paperbtn:hover{background:color-mix(in srgb, var(--accent) 14%, var(--surface)); text-decoration:none}
 .c-paperbtn .ico{width:var(--ii); height:var(--ii); fill:currentColor}
+/* paper:…:grey — in the greys the site's word buttons have. */
+.card[data-papercolor="grey"] .c-paperbtn{color:var(--ink-mute); border-color:var(--rule); background:var(--surface)}
+.card[data-papercolor="grey"] .c-paperbtn:is(:hover, :focus-visible){color:var(--ground); background:var(--ink); border-color:var(--ink)}
 .card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
 .card:not([data-paper]) .c-foot li.c-paperli, .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
@@ -625,7 +628,16 @@ a.card:hover .name{color:var(--accent)}
 .card[data-links~="code"] li[data-rel="code"], .card[data-links~="docs"] li[data-rel="docs"],
 .card[data-links~="data"] li[data-rel="data"], .card[data-links~="slides"] li[data-rel="slides"],
 .card[data-links~="event"] li[data-rel="event"], .card[data-links~="homepage"] li[data-rel="homepage"],
-.card[data-links~="ads"] li[data-rel="ads"]{display:block}
+.card[data-links~="ads"] li[data-rel="ads"], .card[data-links~="empty"] li[data-rel="empty"]{display:block}
+.card[data-links~="year"] .c-foot li[data-rel="year"], .card[data-links~="position"] .c-foot li[data-rel="position"], .card[data-links~="context"] .c-foot li[data-rel="context"]{display:flex}
+/* buttons:…,year,…: the year, my position or the context link among the
+   buttons — in a grid a row of its own, at the buttons' place across. */
+.c-foot li.c-cell{display:flex; align-items:center}
+.card[data-per] .c-foot li.c-cell{grid-column:1 / -1}
+.card:is([data-railalign="right"], [data-foot="right"]:not([data-railalign])) .c-foot li.c-cell{justify-content:flex-end}
+.card[data-railalign="center"] .c-foot li.c-cell{justify-content:center}
+/* buttons:…,empty,… — a button's room with nothing in it. */
+.c-foot li[data-rel="empty"]{width:var(--ib); height:var(--ib)}
 
 /* A row of choices as pills — the Card Builder's. Each choice is its own
    pill; the chosen one is outlined in the accent rather than filled, so

@@ -1,24 +1,13 @@
 ---
 // The link trail, as marks rather than words. Every list of links on the site
 // renders through here — publications, the CV, the software cards — so the
-// glyph for a `rel` is decided once.
-import { REL_ICON, relKey } from '../lib/data.js';
+// glyph for a `rel` is decided once, in LinkIcon.
+import LinkIcon from './LinkIcon.astro';
 
-// cross: in a card's buttons' box, its alignment across the box. Anything
-// given — a card's paper button — comes first, among them.
-const { links = [], cross } = Astro.props;
-const lead = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
+const { links = [] } = Astro.props;
 ---
-{(links.length > 0 || lead.trim()) && (
-  <ul class="btns btns--icon" data-cross={cross}>
-    <Fragment set:html={lead} />
-    {links.map((l) => (
-      <li data-rel={relKey(l)}>
-        <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
-          <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} /></svg>
-          {l.year && <span class="iconyear" aria-hidden="true">{l.year}</span>}
-        </a>
-      </li>
-    ))}
+{links.length > 0 && (
+  <ul class="btns btns--icon">
+    {links.map((l) => <LinkIcon link={l} />)}
   </ul>
 )}

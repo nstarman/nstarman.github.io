@@ -10,11 +10,11 @@ export function GET({ site }) {
   const abs = (p) => new URL(p, site).href;
   const body = {
     url: abs('/embed/{id}/?card={name}'),
-    name: 'size:<fill|px>:<fit|px>-figure:<none|center[:slot]:size|side:v[:h]:size>[:link]-title:<…>[:link][:status][:top][:center|right]-area:<left|right>:[min=px|share=%|buttons][,top][,bottom]-authors:<…>-text:<…>[:center|right]-extras:<none|a,b>-venue:<full|short>[:unlinked][:undated][:noarxiv][:above][:center|right]|[:authors[:before]]|[:beside[:before][:<%|px>]]-context:<place>-position:<place>-year:<place>-buttons:<all|none|a,b>[:per-row|:fit][:<side>[:v][:h]|:<center|bottom>[:h]]-paper:<word|icon>[:journal|arxiv|ads|site]-space:<a_b>=<px|flex>,…-look:<setting>=<value>,…  (textsize, padding, corners, buttons, titlesize, titleweight, frame, buttongap, background; the first four at one step written as the step)',
+    name: 'size:<fill|px>:<fit|px>-figure:<none|center[:slot]:size|side:v[:h]:size>[:link]-title:<…>[:link][:status][:top][:center|right]-area:<left|right>:[min=px|share=%|buttons][,top][,bottom]-authors:<…>-text:<…>[:center|right]-extras:<none|a,b>-venue:<full|short>[:unlinked][:undated][:noarxiv][:above][:center|right]|[:authors[:before]]|[:beside[:before][:<%|px>]]-context:<place>-position:<place>-year:<place>-buttons:<all|none|a,b>[:per-row|:fit][:<side>[:v][:h]|:<center|bottom>[:h]]-paper:<word|icon>[:journal|arxiv|ads|site][:grey]-space:<a_b>=<px|flex>,…-look:<setting>=<value>,…  (textsize, padding, corners, buttons, titlesize, titleweight, frame, buttongap, background; the first four at one step written as the step)',
     axes: {
       size: { width: `fill, or px ${FIXED_MIN}–${FIXED_MAX}`, height: `fit, or px ${FIXED_MIN_HEIGHT}–${FIXED_MAX}` },
       figure: { none: true, at: FIGURE_AT, v: FIGURE_ALIGN, h: ['left', 'center', 'right'], slot: FIGURE_SLOTS, size: 'auto, filling its column; a share of its column, 10–100; or its own width, 8–800px' },
-      paper: { label: 'a word, 1–16 letters or digits, or icon', to: ['journal', 'arxiv', 'ads', 'site'] },
+      paper: { label: 'a word, 1–16 letters or digits, or icon', to: ['journal', 'arxiv', 'ads', 'site'], color: ['grey'] },
       buttonsAt: { area: FOOT_AT, v: 'in a side: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
       place: { area: 'top, the buttons\u2019 own area, or bottom where the buttons are not', v: 'with the buttons: ' + FOOT_END.join(', '), h: RAIL_ALIGN },
       area: { left: 'there, even empty; its width — min=<0–800 px>, share=<5–95 %> or buttons, left out fitting what is in it, or 3em empty — then top and bottom, the corners it wins over the top and bottom areas', right: 'as left', top: 'there, even empty; its height empty, min=<0–400 px>, or a line\u2019s', bottom: 'as top' },

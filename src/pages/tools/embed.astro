@@ -445,6 +445,7 @@ const data = {
                   <option value="top" title="A strip across the card's top">top</option>
                   <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
                   <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                  <option value="list" title="Among the buttons, a row of its own in their grid, ordered with them">among buttons</option>
                 </select>
                 <span class="eb-dim eb-inkey">position</span>
                 <Place v="posv" vId="eb-posv" vValue="bottom" h="posh" label="My position" />
@@ -468,6 +469,7 @@ const data = {
                   <option value="top" title="A strip across the card's top">top</option>
                   <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
                   <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                  <option value="list" title="Among the buttons, a row of its own in their grid, ordered with them">among buttons</option>
                 </select>
                 <span class="eb-dim eb-inkey">position</span>
                 <Place v="yearv" vId="eb-yearv" vValue="bottom" h="yearh" label="The year" />
@@ -485,6 +487,7 @@ const data = {
                   <option value="top" title="A strip across the card's top">top</option>
                   <option value="" title="With the buttons, in their area" selected class="eb-boxname">center</option>
                   <option value="bottom" title="A strip across the card's bottom" class="eb-stripbottom">bottom</option>
+                  <option value="list" title="Among the buttons, a row of its own in their grid, ordered with them">among buttons</option>
                 </select>
                 <span class="eb-dim eb-inkey">position</span>
                 <Place v="ctxv" vId="eb-ctxv" vValue="bottom" h="ctxh" label="The context link" />
@@ -636,6 +639,13 @@ const data = {
                 </select>
                 <input type="text" name="paperword" class="eb-word" value="paper" maxlength="16" pattern="[A-Za-z0-9]{1,16}" aria-label="The paper button's word, letters and digits" />
               </span>
+              <span class="eb-dim">color</span>
+              <span class="eb-px">
+                <select name="papercolor" class="eb-menu" aria-label="The paper button's color">
+                  <option value="" title="In the accent" selected>blue</option>
+                  <option value="grey" title="In the greys of the site's word buttons">grey</option>
+                </select>
+              </span>
               <span class="eb-dim">link</span>
               <span class="eb-px">
                 <select name="paperto" class="eb-menu" aria-label="Where the paper button links">
@@ -774,7 +784,7 @@ const data = {
   // above.
   function buildExtras(id) {
     const it = items[id];
-    btnOrder = it.links.map(([k]) => k);
+    btnOrder = ['paperbutton', ...it.links.map(([k]) => k)];
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
       + x(it.pos, 'position', 'My author position, as 1st')
@@ -791,6 +801,8 @@ const data = {
   // My position, the year and the context link: each one's prefix in the
   // form, and its part in a spec.
   const SMALL = [['pos', 'pos'], ['year', 'year'], ['ctx', 'context']];
+  // Each one's key among the buttons, where its area is there, list.
+  const CELL = { pos: 'position', year: 'year', ctx: 'context' };
   // The figure shown in a side, where the buttons then stack under it, at
   // the side's foot beside the words' last line: there they have no up and
   // down of their own.
@@ -799,27 +811,44 @@ const data = {
   // name's list. All, in the item's own order, is the list left out.
   let btnOrder = [];
   const sameOrder = (a, b) => a.length === b.length && a.every((k, i) => k === b[i]);
+  // The buttons shown, in order: each key ticked, and each empty one.
+  const ticked = () => new Set([...form.querySelectorAll('[name=link]')].filter((b) => b.checked).map((b) => b.value));
+  // A part among the buttons shows where its extra is ticked; the paper
+  // button where its pill is.
+  const extraOn = (x) => [...form.querySelectorAll('[name=extra]')].some((b) => b.value === x && b.checked);
+  const isShown = (k, on) => k === 'empty' || on.has(k) || (k === 'paperbutton' && !!form.elements.paperbtn?.checked) || (Object.values(CELL).includes(k) && extraOn(k));
+  const shownOrder = () => { const on = ticked(); return btnOrder.filter((k) => isShown(k, on)); };
+  const hiddenOrder = () => { const on = ticked(); return btnOrder.filter((k) => !isShown(k, on)); };
+  // The list the name writes: all, where it is the item's own order with the
+  // paper button first; else the shown in order, the paper button left out
+  // where it is first.
+  function linksOf(all) {
+    const shown = shownOrder(), def = [...(form.elements.paperbtn?.checked ? ['paperbutton'] : []), ...all];
+    if (sameOrder(shown, def)) return 'all';
+    return shown[0] === 'paperbutton' ? shown.slice(1) : shown;
+  }
   // The order line: each shown button, with < and > to move it past the one
-  // shown before or after it.
+  // shown before or after it — an empty one with a ✕ to take it away — and
+  // + empty to add a button's room with nothing in it, at the end.
   function showOrder() {
-    const it = items[form.elements.card.value], names = Object.fromEntries(it.links.map(([k, name]) => [k, name]));
-    const on = new Set([...form.querySelectorAll('[name=link]')].filter((b) => b.checked).map((b) => b.value));
-    const keys = btnOrder.filter((k) => on.has(k));
-    el('eb-order').innerHTML = keys.map((k, i) => `<span class="eb-num eb-orderpill" data-key="${k}">`
+    const it = items[form.elements.card.value], names = { ...Object.fromEntries(it.links.map(([k, name]) => [k, name])), empty: 'empty', paperbutton: 'paper button', year: 'year', position: 'position', context: 'context' };
+    const keys = shownOrder();
+    el('eb-order').innerHTML = keys.map((k, i) => `<span class="eb-num eb-orderpill${k === 'empty' ? ' eb-orderempty' : ''}" data-i="${i}">`
       + `<button type="button" class="eb-step" data-move="-1" ${i ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
       + `<span class="eb-ordername">${esc(names[k])}</span>`
-      + `<button type="button" class="eb-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button></span>`).join('');
-    el('eb-order').hidden = el('eb-order-key').hidden = keys.length < 2;
+      + `<button type="button" class="eb-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button>`
+      + (k === 'empty' ? `<button type="button" class="eb-step" data-drop aria-label="Take this empty button away" title="Take away">✕</button>` : '') + '</span>').join('')
+      + '<button type="button" class="eb-orderadd" data-add aria-label="Add an empty button at the end" title="A button\'s room with nothing in it">+ empty</button>';
+    el('eb-order').hidden = el('eb-order-key').hidden = !it.links.length;
   }
-  // A shown button moved to where another shown one is, the rest kept.
-  function moveButton(key, to) {
-    const on = new Set([...form.querySelectorAll('[name=link]')].filter((b) => b.checked).map((b) => b.value));
-    const shown = btnOrder.filter((k) => on.has(k)), from = shown.indexOf(key);
+  // The shown buttons set anew, the hidden ones kept after.
+  const setShown = (shown) => { btnOrder = [...shown, ...hiddenOrder()]; showOrder(); render(); };
+  // A shown button, by its place, moved to another's.
+  function moveButton(from, to) {
+    const shown = shownOrder();
     if (from < 0 || to < 0 || to >= shown.length || to === from) return;
     shown.splice(to, 0, ...shown.splice(from, 1));
-    btnOrder = [...shown, ...btnOrder.filter((k) => !on.has(k))];
-    showOrder();
-    render();
+    setShown(shown);
   }
   // Where the venue's own area last was, beside the authors': where it goes
   // back to from their shared one.
@@ -835,6 +864,7 @@ const data = {
   // buttons' area, up and down and across.
   const placed = (f, k) => {
     const a = f.get(`${k}at`);
+    if (a === 'list') return undefined; // among the buttons, in their order
     return a ? { area: a, h: f.get(`${k}h`) } : { area: f.get('foot'), v: f.get(`${k}v`), h: f.get(`${k}h`) };
   };
   // A part's place set back to where it sits in its area left out — with the
@@ -844,6 +874,7 @@ const data = {
     const foot = form.elements.foot.value;
     if (foot === 'bottom' && form.elements[`${k}at`].value === 'bottom') setRadio(`${k}at`, '');
     const a = form.elements[`${k}at`].value;
+    if (a === 'list') return;
     const part = SMALL.find(([x]) => x === k)[1];
     const pl = placeOf({ foot, footEnd: form.elements.footend.value, railAlign: form.elements.railalign.value, [`${part}At`]: a ? { area: a } : undefined }, part);
     if (pl.v) form.elements[`${k}v`].value = pl.v;
@@ -859,7 +890,7 @@ const data = {
     const c = parseName(name);
     // A list of buttons to keep, read against the links this item has.
     const keys = it.links.map(([k]) => k);
-    const kept = c.links === 'all' ? keys : c.links.filter((k) => keys.includes(k));
+    const kept = c.links === 'all' ? keys : c.links.filter((k) => ['empty', 'paperbutton', ...Object.values(CELL)].includes(k) || keys.includes(k));
     return formatName({ ...c, links: sameOrder(kept, keys) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
                         rest: it.split ? c.rest : 'split', text: it.text ? c.text : 'none' });
   }
@@ -927,6 +958,7 @@ const data = {
     form.elements.paperlabel.value = c.paperButton?.label === 'icon' ? 'icon' : 'word';
     form.elements.paperword.value = c.paperButton && c.paperButton.label !== 'icon' ? c.paperButton.label : 'paper';
     form.elements.paperto.value = c.paperButton?.to ?? '';
+    form.elements.papercolor.value = c.paperButton?.color ?? '';
     setRadio('venuename', c.venueName ?? 'full');
     setRadio('venueline', venueArea(c));
     setRadio('authorsline', V2A[venueArea(c)]);
@@ -966,7 +998,10 @@ const data = {
     for (const b of form.querySelectorAll('[name=extra]')) b.checked = c.extras.includes(b.value);
     for (const b of form.querySelectorAll('[name=link]')) b.checked = c.links === 'all' || c.links.includes(b.value);
     const keys = items[form.elements.card.value].links.map(([k]) => k);
-    btnOrder = c.links === 'all' ? keys : [...c.links.filter((k) => keys.includes(k)), ...keys.filter((k) => !c.links.includes(k))];
+    const listed = c.links === 'all' ? keys : c.links.filter((k) => ['empty', 'paperbutton', ...Object.values(CELL)].includes(k) || keys.includes(k));
+    btnOrder = [...(listed.includes('paperbutton') ? [] : ['paperbutton']), ...listed, ...keys.filter((k) => !listed.includes(k))];
+    // A part the name lists among the buttons has its area there.
+    for (const [k] of SMALL) if (listed.includes(CELL[k])) setRadio(`${k}at`, 'list');
   }
 
   // The controls → the card's name, written by src/lib/cardname.js.
@@ -986,9 +1021,9 @@ const data = {
     const slug = formatName({
       width: width ?? 'fill', height: height ?? 'fit', dials,
       figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
-      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueArxiv: f.get('venuearxiv') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), styles: Object.fromEntries(['title', ...FACES].filter((p) => f.get(`${p}style`) === 'italic').map((p) => [p, 'italic'])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && items[id].vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && items[id].vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueArxiv: f.get('venuearxiv') ? undefined : false, paperButton: f.get('paperbtn') && items[id].byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }), ...(f.get('papercolor') && { color: f.get('papercolor') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), styles: Object.fromEntries(['title', ...FACES].filter((p) => f.get(`${p}style`) === 'italic').map((p) => [p, 'italic'])), titleStatus: f.get('titlestatus') && items[id].tstatus ? true : undefined, rest: items[id].split ? f.get('rest') : 'split',
       authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: items[id].text ? f.get('text') : 'none',
-      extras: f.getAll('extra').filter((x) => has(items[id], x)), links: sameOrder(btnOrder.filter((k) => on.includes(k)), all.map((b) => b.value)) ? 'all' : btnOrder.filter((k) => on.includes(k)), perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
+      extras: f.getAll('extra').filter((x) => has(items[id], x)), links: linksOf(all.map((b) => b.value)), perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
     });
     return { id, it: items[id], slug, width, height, format: f.get('format'), theme: f.get('theme') };
   }
@@ -1041,6 +1076,9 @@ const data = {
       el(`eb-${k}at`).querySelector('.eb-boxname').textContent = { left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[box];
       el(`eb-${k}at`).querySelector('.eb-stripbottom').hidden = el(`eb-${k}at`).querySelector('.eb-stripbottom').disabled = box === 'bottom';
       el(`eb-${k}v`).hidden = !!form.elements[`${k}at`].value;
+      // Among the buttons, its place is their order's: no position.
+      const place = el(`eb-${k}v`).closest('.eb-place');
+      place.hidden = place.previousElementSibling.hidden = form.elements[`${k}at`].value === 'list';
     }
     // Up and down belongs to buttons in a side.
     el('eb-footend').hidden = !['left', 'right'].includes(box) || stackedIn(box);
@@ -1391,7 +1429,11 @@ const data = {
       // The buttons moved in their area: what sits with them, away from them.
       for (const [k] of SMALL) if (!form.elements[`${k}at`].value) resetPlace(k);
     } else if (/^(pos|year|ctx)at$/.test(e.target.name)) {
-      resetPlace(e.target.name.slice(0, -2));
+      // Among the buttons, it joins their order, first; elsewhere, it leaves.
+      const k = e.target.name.slice(0, -2);
+      btnOrder = btnOrder.filter((x) => x !== CELL[k]);
+      if (e.target.value === 'list') btnOrder = [CELL[k], ...btnOrder];
+      resetPlace(k);
     } else if (e.target.name === 'paperbtn') {
       if (e.target.checked) tune(['paper']); else el('eb-paper-row').hidden = true; // ticked, its settings come up; unticked, they go
     } else if (e.target.name === 'venueline') {
@@ -1502,6 +1544,7 @@ const data = {
       font:600 10px/1.4 var(--mono); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap}
     .eb-hits .card :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n, .c-byvenue, .c-venue *){cursor:grab}
     .eb-hits .card > :is(.c-by, .c-venue){cursor:move}
+    .eb-hits .card .c-foot li[data-rel="empty"]{outline:1px dashed color-mix(in srgb, var(--accent) 60%, transparent); outline-offset:-1px; border-radius:calc(var(--ib) * .25)}
     .eb-drop-on-btn{outline:2px solid var(--accent) !important; outline-offset:2px; border-radius:6px}
     .eb-drop.eb-cell.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 28%, transparent)}
     .eb-hits .card, .eb-hits :is(${HITS.slice(0, -1).map(([q]) => q).join(', ')}){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
@@ -1567,10 +1610,12 @@ const data = {
   }
   // < and > on a button in the order line: earlier or later by one.
   el('eb-order').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-move]');
+    const b = e.target.closest('button');
     if (!b) return;
-    const key = b.closest('[data-key]').dataset.key, on = [...el('eb-order').querySelectorAll('[data-key]')].map((p) => p.dataset.key);
-    moveButton(key, on.indexOf(key) + +b.dataset.move);
+    const shown = shownOrder(), i = +b.closest('[data-i]')?.dataset.i;
+    if (b.dataset.add != null) setShown([...shown, 'empty']);
+    else if (b.dataset.drop != null) setShown(shown.filter((_, j) => j !== i));
+    else if (b.dataset.move) moveButton(i, i + +b.dataset.move);
   });
   // ✕ on a track takes its space away.
   el('eb-tracks').addEventListener('click', (e) => {
@@ -2116,7 +2161,7 @@ const data = {
         li.classList.remove('eb-dragging');
         li.style.translate = '';
         for (const x of sibs()) x.classList.remove('eb-drop-on-btn');
-        if (over) moveButton(li.dataset.rel, sibs().indexOf(over));
+        if (over) moveButton(sibs().indexOf(li), sibs().indexOf(over));
       };
       doc.addEventListener('pointermove', move);
       doc.addEventListener('pointerup', up, true);
@@ -2480,8 +2525,12 @@ const data = {
   .eb :global(.eb-orderpill){gap:.1em; padding:.15rem .3rem}
   .eb :global(.eb-ordername){font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); padding:0 .2em}
   .eb :global(.eb-orderpill .eb-step:disabled){opacity:.3; cursor:default}
+  .eb :global(.eb-orderempty .eb-ordername){color:var(--ink-faint)}
+  .eb :global(.eb-orderadd){padding:.15rem .6rem; border:1px dashed var(--accent-line); border-radius:999px; background:none; color:var(--accent);
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer}
   .eb .eb-word{width:9ch; padding:0 .2em; border:0; border-bottom:1px solid var(--rule-strong); background:none; color:var(--ink); font-family:var(--mono); font-size:.8rem}
   .eb .eb-word:invalid{border-bottom-color:var(--accent)}
+  :global(.eb-place[hidden]){display:none}
   :global(.eb-place){display:inline-flex; flex-wrap:wrap; align-items:center; gap:.35rem}
   .eb-pair{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .8rem; justify-self:start}
   .eb-sub{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.35rem .8rem}

@@ -111,7 +111,11 @@
 //            e.g. year:top:right    in the same place, the two read as one,
 //                                   "1st | 2026"
 //   buttons  the link buttons: all · none, or the keys to keep, in the
-//            order they are drawn, e.g. ads,code; then :1–12, the buttons to a row before the next,
+//            order they are drawn — empty, any number of times, a
+//            button's room with nothing in it; year, position and context,
+//            those parts among the buttons, each in a grid a row of its
+//            own; paperbutton, the paper button, first left out — e.g.
+//            ads,empty,code or year,paperbutton; then :1–12, the buttons to a row before the next,
 //            e.g. buttons:all:2, or :fit, as many as fit — left off, as
 //            near square as they go: ⌈√n⌉ to a row, for n buttons; then
 //            their area — left, center (left off, under the words), right
@@ -124,8 +128,9 @@
 //            label, a word of up to 16 letters or digits — paper:paper —
 //            or icon, the paper glyph; then where it links: journal, arxiv,
 //            ads or site — left off, the article where it is out, else
-//            arXiv. Left off, no such button; with nowhere to link, none.
-//            e.g. paper:paper, paper:pdf:arxiv, paper:icon:ads
+//            arXiv; then grey, in the greys of the site's word buttons, not
+//            the accent. Left off, no such button; with nowhere to link, none.
+//            e.g. paper:paper, paper:pdf:arxiv, paper:icon:ads:grey
 //
 //   <place>  my position, the year and the context link each sit in an
 //            area, and at a place in it: with the buttons, in their area —
@@ -299,7 +304,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
     `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
-    ...(paperButton ? [`paper:${paperButton.label}${paperButton.to ? `:${paperButton.to}` : ''}`] : []),
+    ...(paperButton ? [`paper:${paperButton.label}${paperButton.to ? `:${paperButton.to}` : ''}${paperButton.color ? `:${paperButton.color}` : ''}`] : []),
     ...(space && Object.keys(space).length ? [`space:${spaceList(space)}`] : []),
     ...(tuned.length ? [`look:${tuned.join(',')}`] : []),
   ].join('-');
@@ -431,9 +436,13 @@ export function parseName(name) {
       // A place — settled once the buttons' area is known.
       spec[(key === 'position' ? 'pos' : key) + 'At'] = kv.slice(1);
     } else if (key === 'paper') {
-      // Its label, a word or icon; then where it links, if not the default.
-      if (!/^[A-Za-z0-9]{1,16}$/.test(kv[1] || '') || kv.length > 3 || (kv.length === 3 && !one(kv[2], ['journal', 'arxiv', 'ads', 'site']))) throw new Error('"' + name + '": no such paper button, ' + parts[i]);
-      spec.paperButton = kv.length === 3 ? { label: kv[1], to: kv[2] } : { label: kv[1] };
+      // Its label, a word or icon; then where it links, if not the default;
+      // then its color, grey as the icon buttons, if not the accent's.
+      let j = 2;
+      const at = (xs) => (j < kv.length && one(kv[j], xs) ? kv[j++] : null);
+      const to = at(['journal', 'arxiv', 'ads', 'site']), color = at(['grey']);
+      if (!/^[A-Za-z0-9]{1,16}$/.test(kv[1] || '') || j !== kv.length) throw new Error('"' + name + '": no such paper button, ' + parts[i]);
+      spec.paperButton = { label: kv[1], ...(to && { to }), ...(color && { color }) };
     } else if (key === 'buttons' && /^(all|none|[a-z]+(,[a-z]+)*)$/.test(kv[1] || '')) {
       // The keys; then so many to a row, or fit; then the area and the place
       // in it — in a side, up and down then across; else across.

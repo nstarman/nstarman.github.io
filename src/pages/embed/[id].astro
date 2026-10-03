@@ -183,7 +183,10 @@ const apply = `(function (parseName, placeOf, can) {
   var side = spec.foot === 'left' || spec.foot === 'right';
   var END = { top: 'start', left: 'start', center: 'center', bottom: 'end', right: 'end' };
   var at = { pos: placeOf(spec, 'pos'), year: placeOf(spec, 'year'), context: placeOf(spec, 'context') };
-  var together = 'pos' in d && 'year' in d && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
+  // The year, my position or the context link the name lists among the
+  // buttons, buttons:…,year,…, is there, and in no place of its own.
+  var inList = function (k) { return spec.links !== 'all' && spec.links.indexOf(k) >= 0; };
+  var together = 'pos' in d && 'year' in d && !inList('year') && !inList('position') && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
   if (together) d.yearwith = ''; else delete d.yearwith;
   var strips = [];
   // The paper button: its label, a word or the glyph, and its link, as the
@@ -192,9 +195,10 @@ const apply = `(function (parseName, placeOf, can) {
   var pb = card.querySelector('.c-paperbtn'), pbt = spec.paperButton, pbHref = pb && pbt && pb.dataset[pbt.to || 'auto'];
   if (pbHref) { d.paper = ''; pb.setAttribute('href', pbHref); pb.querySelector('.c-pword').textContent = pbt.label === 'icon' ? 'paper' : pbt.label; } else delete d.paper;
   if (pbHref && pbt.label === 'icon') d.paperlabel = 'icon'; else delete d.paperlabel;
+  if (pbHref && pbt.color) d.papercolor = pbt.color; else delete d.papercolor;
   var btnsAt = { v: side ? spec.footEnd || 'top' : 'bottom', h: spec.railAlign || (side ? spec.foot : 'left') };
   [['.btns--icon', true, btnsAt],
-    ['.c-stamp', 'pos' in d, at.pos], ['.c-year', 'year' in d && !together, at.year], ['.c-context', 'context' in d, at.context]].forEach(function (p) {
+    ['.c-stamp', 'pos' in d && !inList('position'), at.pos], ['.c-year', 'year' in d && !together && !inList('year'), at.year], ['.c-context', 'context' in d && !inList('context'), at.context]].forEach(function (p) {
     var el = foot.querySelector(p[0]), pl = p[2];
     if (!el) return;
     el.dataset.cross = END[side ? pl.h : pl.v];
@@ -204,15 +208,34 @@ const apply = `(function (parseName, placeOf, can) {
   });
   if (strips.length) d.strips = strips.join(' '); else delete d.strips;
   if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
-  // The buttons in the name's order, the keys it lists as it lists them, the
-  // rest after — the paper button first of all.
+  // The buttons in the name's order — the paper button first unless it says
+  // where, paperbutton, then the keys it lists as it lists them, each empty
+  // one a button's room with nothing in it, and each part it lists, moved
+  // into a row of its own there — and the rest after.
   var ul = card.querySelector('.c-foot .btns--icon');
-  var rank = function (li) { if (!li.dataset.rel) return -1; var r = spec.links.indexOf(li.dataset.rel); return r < 0 ? 1e9 : r; };
-  if (ul && spec.links !== 'all') [].map.call(ul.children, function (li, i) { return [li, i]; })
-    .sort(function (a, b) { return rank(a[0]) - rank(b[0]) || a[1] - b[1]; })
-    .forEach(function (p) { ul.appendChild(p[0]); });
-  // A button shown: the paper button where it is on; a link, where kept.
-  var on = function (li) { return li.dataset.rel ? spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0 : 'paper' in d; };
+  if (ul) {
+    [].forEach.call(ul.querySelectorAll('li[data-rel="empty"]'), function (li) { li.remove(); });
+    if (spec.links !== 'all') {
+      var parts = { year: ['.c-year', 'year' in d], position: ['.c-stamp', 'pos' in d], context: ['.c-context', 'context' in d] };
+      var lis0 = [].slice.call(ul.children), paperLi = ul.querySelector('.c-paperli'), seq = [], done = {};
+      if (paperLi && !inList('paperbutton')) seq.push(paperLi);
+      spec.links.forEach(function (k) {
+        if (k === 'empty') { var e = document.createElement('li'); e.dataset.rel = 'empty'; e.setAttribute('aria-hidden', 'true'); seq.push(e); return; }
+        if (done[k]) return;
+        done[k] = 1;
+        if (k === 'paperbutton') { if (paperLi) seq.push(paperLi); }
+        else if (parts[k]) {
+          var el = card.querySelector(parts[k][0]);
+          if (parts[k][1] && el) { var c = document.createElement('li'); c.className = 'c-cell'; c.dataset.rel = k; c.appendChild(el); seq.push(c); }
+        } else lis0.forEach(function (li) { if (li.dataset.rel === k) seq.push(li); });
+      });
+      lis0.forEach(function (li) { if (seq.indexOf(li) < 0) seq.push(li); });
+      seq.forEach(function (li) { ul.appendChild(li); });
+    }
+  }
+  // A button shown: the paper button where it is on; a link, where kept; an
+  // empty one or a part, where listed.
+  var on = function (li) { return li.classList.contains('c-paperli') ? 'paper' in d : spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; };
   // The buttons to a row: as many as fit, so many — no more than are shown —
   // or as near square as the ones shown go.
   // Counted as the room they take: the paper button so many buttons wide —
@@ -220,7 +243,8 @@ const apply = `(function (parseName, placeOf, can) {
   // each; a row never narrower than it.
   var pn = pbHref ? (pbt.label === 'icon' ? 1 : Math.ceil(0.27 * pbt.label.length + 0.62)) : 1;
   if (pbHref) card.style.setProperty('--pn', pn); else card.style.removeProperty('--pn');
-  var cell = function (li) { return li.dataset.rel ? 1 : pn; };
+  // A part listed there is a row of its own, and none of the room.
+  var cell = function (li) { return li.classList.contains('c-paperli') ? pn : li.classList.contains('c-cell') ? 0 : 1; };
   var shown = [].reduce.call(card.querySelectorAll('.c-foot .btns--icon > li'), function (n, li) { return n + (on(li) ? cell(li) : 0); }, 0);
   var per = spec.perRow === 'fit' || !shown ? 0 : Math.max(pbHref ? pn : 1, Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown))));
   if (per) { d.per = ''; card.style.setProperty('--per', per); } else { delete d.per; card.style.removeProperty('--per'); }
@@ -229,7 +253,7 @@ const apply = `(function (parseName, placeOf, can) {
   var lis = card.querySelectorAll('.c-foot .btns--icon > li'), short = per && (spec.railAlign || (spec.foot === 'right' ? 'right' : 'left')) === 'right' ? shown % per : 0, n = 0;
   delete d.skipat; card.style.removeProperty('--skip');
   if (short) [].forEach.call(lis, function (li, i) {
-    if (!on(li)) return;
+    if (!on(li) || !cell(li)) return;
     if (n === shown - short) { d.skipat = i + 1; card.style.setProperty('--skip', per - short); }
     n += cell(li);
   });

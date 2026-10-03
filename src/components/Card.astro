@@ -14,7 +14,7 @@ import { authors, year, links, resolve, authorPosition, softwarePapers, venueLin
 import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, paperHref, paperSpan, hasStatus, hasYear, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, placeOf, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
-import LinkIcons from './LinkIcons.astro';
+import LinkIcon from './LinkIcon.astro';
 import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import VenueBits from './VenueBits.astro';
@@ -41,26 +41,12 @@ const paperBtn = spec.paperButton && paperTo[spec.paperButton.to ?? 'auto'] ? sp
 // Its item in the buttons' box, first: where it is shown, or, on the embed
 // page, which draws every part, wherever it has somewhere to link.
 const paperLi = !!paperBtn || (allCounts && Object.values(paperTo).some(Boolean));
-// The buttons in the name's order — the keys it lists, as it lists them —
-// and the rest, hidden, after; all, as the item has them.
-const rank = (l) => (spec.links === 'all' ? 0 : spec.links.indexOf(relKey(l)) + 1 || Infinity);
-const ordered = cardLinks(item).map((l, i) => [l, i]).sort((a, b) => (rank(a[0]) - rank(b[0]) || 0) || a[1] - b[1]).map(([l]) => l);
-const kept = [...(paperLi ? [!!paperBtn] : []), ...ordered.map((l) => spec.links === 'all' || spec.links.includes(relKey(l)))];
-// The buttons counted as the room they take: the paper button so many
-// buttons wide, the rest one each — and a row never narrower than it.
+// It is so many buttons wide.
 const pSpan = paperSpan(paperBtn?.label);
-const cellOf = (i) => (paperLi && i === 0 ? pSpan : 1);
-const shown = kept.reduce((n, k, i) => n + (k ? cellOf(i) : 0), 0);
-const per = spec.perRow === 'fit' || !shown ? null : Math.max(paperBtn ? pSpan : 1, Math.min(shown, spec.perRow ?? Math.ceil(Math.sqrt(shown))));
 const across = spec.foot === 'center' || spec.foot === 'bottom';
 // Where across its area the buttons sit: in a side, toward the card's edge
 // unless the name says otherwise; under the words or at the bottom, left.
 const railAt = spec.railAlign ?? (across ? 'left' : spec.foot);
-// On a right rail, a short last row sits at the right: its first button — by
-// its place among them all, shown or not — starts that many columns in.
-const short = per && railAt === 'right' ? shown % per : 0;
-let skipAt = null;
-if (short) { let n = 0; kept.forEach((k, i) => { if (!k) return; if (n === shown - short) skipAt = i + 1; n += cellOf(i); }); }
 // A figure's own width, in its column: a share of it, or px, never wider.
 const figPx = typeof spec.figureSize === 'string' && spec.figureSize.endsWith('px') ? parseInt(spec.figureSize, 10) : null;
 const figW = !showFig || spec.figureSize === 'auto' ? null : figPx ? `min(${figPx}px, 100%)` : `${spec.figureSize}%`;
@@ -113,9 +99,7 @@ const style = [
   figW && `--figw:${figW}`,
   sideCol('left') && `--colL:${sideCol('left')}`,
   sideCol('right') && `--colR:${sideCol('right')}`,
-  per && `--per:${per}`,
-  skipAt && `--skip:${per - short}`,
-].filter(Boolean).join(';') || undefined;
+];
 // A flex track between rows.
 const vflex = SPACE_TRACKS.filter((t) => !COL_TRACKS.includes(t)).some((t) => spec.space?.[t] === 'flex');
 const step = (d) => (px(d) == null ? spec.dials[d] : undefined);
@@ -185,8 +169,43 @@ const sideBox = foot === 'left' || foot === 'right';
 const at = { pos: placeOf(spec, 'pos'), year: placeOf(spec, 'year'), context: placeOf(spec, 'context') };
 // My position and the year read as one, "1st | 2026", where both are shown
 // in the same place; apart, each sits in its own.
-const together = posShown && yearShown && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
-const shows = { buttons: true, stamp: !isSoftware && posShown, year: !isSoftware && yearShown && !together, context: contextShown };
+// The year, my position or the context link the name lists among the
+// buttons, buttons:…,year,…, is there, and in no place of its own.
+const inList = (k) => spec.links !== 'all' && spec.links.includes(k);
+const CELLS = { year: !isSoftware && yearShown, position: !isSoftware && posShown, context: contextShown };
+const together = posShown && yearShown && !inList('year') && !inList('position') && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
+const shows = { buttons: true, stamp: !isSoftware && posShown && !inList('position'), year: !isSoftware && yearShown && !together && !inList('year'), context: contextShown && !inList('context') };
+// The buttons' list as the name orders it: the paper button — first, unless
+// it says where, paperbutton — the links by key, each empty one a button's
+// room with nothing in it, and each part it lists; then the rest, hidden.
+// All, as the item has them, the paper button first.
+const linkList = cardLinks(item);
+const PAPER = { paper: true };
+const seq = (() => {
+  if (spec.links === 'all') return [...(paperLi ? [PAPER] : []), ...linkList];
+  const out = [], done = new Set();
+  if (paperLi && !spec.links.includes('paperbutton')) out.push(PAPER);
+  for (const k of spec.links) {
+    if (k === 'empty') out.push({ empty: true });
+    else if (done.has(k)) continue;
+    else if (k === 'paperbutton') { done.add(k); if (paperLi) out.push(PAPER); }
+    else if (k in CELLS) { done.add(k); if (CELLS[k]) out.push({ cell: k }); }
+    else { done.add(k); out.push(...linkList.filter((l) => relKey(l) === k)); }
+  }
+  return [...out, ...linkList.filter((l) => !spec.links.includes(relKey(l)))];
+})();
+const kept = seq.map((x) => (x.paper ? !!paperBtn : x.empty || !!x.cell || spec.links === 'all' || spec.links.includes(relKey(x))));
+// The buttons counted as the room they take: the paper button so many
+// buttons wide, the parts none — each a row of its own in a grid — the rest
+// one each; and a row never narrower than the paper button.
+const cellOf = (x) => (x.paper ? pSpan : x.cell ? 0 : 1);
+const shown = seq.reduce((n, x, i) => n + (kept[i] ? cellOf(x) : 0), 0);
+const per = spec.perRow === 'fit' || !shown ? null : Math.max(paperBtn ? pSpan : 1, Math.min(shown, spec.perRow ?? Math.ceil(Math.sqrt(shown))));
+// On a right rail, a short last row sits at the right: its first button — by
+// its place among them all, shown or not — starts that many columns in.
+const short = per && railAt === 'right' ? shown % per : 0;
+let skipAt = null;
+if (short) { let n = 0; seq.forEach((x, i) => { if (!kept[i] || x.cell) return; if (n === shown - short) skipAt = i + 1; n += cellOf(x); }); }
 const placed = { buttons: { area: foot, v: sideBox ? spec.footEnd ?? 'top' : 'bottom', h: railAt }, stamp: at.pos, year: at.year, context: at.context };
 // Each part's slot along the box, and its alignment across it; or, hidden or
 // in a strip, none.
@@ -194,7 +213,7 @@ const END = { top: 'start', left: 'start', center: 'center', bottom: 'end', righ
 const slotOf = (k) => (shows[k] && !placed[k].strip ? END[sideBox ? placed[k].v : placed[k].h] : null);
 const crossOf = (k) => END[sideBox ? placed[k].h : placed[k].v];
 const strips = [...new Set(['stamp', 'year', 'context'].filter((k) => shows[k] && placed[k].strip).map((k) => placed[k].area))].join(' ');
-const railEmpty = !refs.length && !shown && !paperBtn && !['stamp', 'year', 'context'].some((k) => slotOf(k));
+const railEmpty = !refs.length && !shown && !seq.some((x, i) => x.cell && kept[i]) && !['stamp', 'year', 'context'].some((k) => slotOf(k));
 // An area the name gives, area:<a>, that nothing is in is there all the
 // same, empty: a side its column, the top or bottom a strip of the padding.
 const holds = {
@@ -207,7 +226,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
 ---
 <article class:list={['card', cls]} id={id} {...attrs}
          data-type={item.type} data-foot={foot} data-footend={spec.footEnd} data-rail={railEmpty ? 'empty' : undefined} data-railalign={spec.railAlign} data-text={spec.text}
-         data-size data-w={spec.width === 'fill' ? 'fill' : 'px'} data-h={spec.height === 'fit' ? 'fit' : 'px'} style={style}
+         data-size data-w={spec.width === 'fill' ? 'fill' : 'px'} data-h={spec.height === 'fit' ? 'fit' : 'px'} style={[...style, per && `--per:${per}`, skipAt && `--skip:${per - short}`].filter(Boolean).join(';') || undefined}
          data-textsize={step('textsize')} data-titlesize={step('titlesize')} data-titleweight={spec.titleWeight === 'mine' ? (pos === 1 ? 'bold' : 'regular') : spec.titleWeight} data-vflex={vflex ? '' : undefined} data-frame={spec.frame ? (/^\d/.test(spec.frame) ? '' : spec.frame) : undefined} data-padding={step('padding')}
          data-corners={step('corners')} data-buttons={step('buttons')}
          data-title={spec.title === 'full' ? undefined : spec.title}
@@ -224,7 +243,7 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
          data-pos={posShown ? '' : undefined}
          data-strips={strips || undefined}
          data-role={has('role') && isSoftware && item.role ? '' : undefined}
-         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuenoarxiv={spec.venueArxiv === false ? '' : undefined} data-varxiv={item.type === 'publication' && !venueLine(item) ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-venueat={spec.venueAt} data-venuefirst={(spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst ? '' : undefined} data-vsplit={spec.venueAt === 'beside' && spec.venueSplit ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
+         data-venue={has('venue') && item.type === 'publication' ? '' : undefined} data-venuename={spec.venueName} data-venueundated={spec.venueDate === false ? '' : undefined} data-venuenoarxiv={spec.venueArxiv === false ? '' : undefined} data-varxiv={item.type === 'publication' && !venueLine(item) ? '' : undefined} data-venuealign={spec.venueAlign} data-paper={paperBtn ? '' : undefined} data-paperlabel={paperBtn?.label === 'icon' ? 'icon' : undefined} data-papercolor={paperBtn?.color} data-venueat={spec.venueAt} data-venuefirst={(spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst ? '' : undefined} data-vsplit={spec.venueAt === 'beside' && spec.venueSplit ? '' : undefined} data-authorsfit={spec.authorsFit ? '' : undefined} data-year={yearShown ? '' : undefined} data-yearwith={together ? '' : undefined}
          data-status={has('status') && hasStatus(item) ? '' : undefined}
          data-context={contextShown ? '' : undefined}
          data-background={spec.background === 'normal' ? undefined : spec.background}
@@ -306,25 +325,34 @@ const empty = ['left', 'right', 'top', 'bottom'].filter((a) => spec.sides?.[a] &
       const part = (k) => {
         const strip = shows[k] && placed[k].strip ? { 'data-strip': placed[k].area, 'data-h': placed[k].h } : {};
         const cross = { 'data-cross': crossOf(k), ...strip };
-        // The paper button, the first of the buttons, laid out with them —
-        // never without an address: hidden, it keeps one.
-        if (k === 'buttons') return (
-          <LinkIcons links={ordered} cross={crossOf(k)}>
-            {paperLi && (
-              <li class="c-paperli">
+        // The buttons' list, in the name's order — the paper button among
+        // them, never without an address (hidden, it keeps one), and the
+        // parts the name lists there, each in a row of its own.
+        if (k === 'buttons') return seq.length > 0 && (
+          <ul class="btns btns--icon" data-cross={crossOf(k)}>
+            {seq.map((x) => x.paper ? (
+              <li class="c-paperli" data-rel="paperbutton">
                 <a class="c-paperbtn" href={paperBtn ? paperTo[paperBtn.to ?? 'auto'] : Object.values(paperTo).find(Boolean)} aria-label="paper" title="paper"
                    data-auto={paperTo.auto} data-journal={paperTo.journal} data-arxiv={paperTo.arxiv} data-ads={paperTo.ads} data-site={paperTo.site}>
                   <span class="c-pword">{paperBtn && paperBtn.label !== 'icon' ? paperBtn.label : 'paper'}</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
                 </a>
               </li>
-            )}
-          </LinkIcons>
+            ) : x.empty ? <li data-rel="empty" aria-hidden="true"></li>
+              : x.cell ? (
+              <li class="c-cell" data-rel={x.cell}>
+                {x.cell === 'year' && <span class="c-year">{year(item)}</span>}
+                {x.cell === 'position' && <span class="c-stamp"><span class="c-place">{place}</span></span>}
+                {x.cell === 'context' && <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} title={`${topic[1]} research highlights`}>Context&nbsp;›</a>}
+              </li>
+            ) : <LinkIcon link={x} />)}
+          </ul>
         );
         if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place && <><span class="c-place">{place}</span><span class="c-sep"> | </span></>}<span class="c-yr">{year(item)}</span></span>;
         if (k === 'year') return !isSoftware && <span class="c-year" {...cross}>{year(item)}</span>;
         return topic && <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} title={`${topic[1]} research highlights`} {...cross}>Context&nbsp;›</a>;
       };
-      const keys = ['buttons', 'stamp', 'year', 'context'];
+      // A part the name lists among the buttons is drawn there alone.
+      const keys = ['buttons', 'stamp', 'year', 'context'].filter((k) => !inList({ stamp: 'position' }[k] ?? k));
       return <>{['start', 'center', 'end'].map((s) => <div class="c-slot" data-at={s}>{keys.filter((k) => slotOf(k) === s).map(part)}</div>)}{keys.filter((k) => !slotOf(k)).map(part)}</>;
     })()}
   </div>

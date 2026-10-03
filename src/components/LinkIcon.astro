@@ -1,0 +1,13 @@
+---
+// One link as a mark: its glyph, decided once for its `rel`, and the year a
+// software package's paper carries beside it.
+import { REL_ICON, relKey } from '../lib/data.js';
+
+const { link: l } = Astro.props;
+---
+<li data-rel={relKey(l)}>
+  <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
+    <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} /></svg>
+    {l.year && <span class="iconyear" aria-hidden="true">{l.year}</span>}
+  </a>
+</li>
