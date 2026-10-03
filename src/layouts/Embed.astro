@@ -1,0 +1,45 @@
+---
+// A single card with nothing around it, for an <iframe> on someone else's page
+// and for the PNG export. The site's stylesheet, so the card looks the same as
+// it does here; none of the site's chrome.
+import '../styles/global.css';
+import IconSprite from '../components/IconSprite.astro';
+
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} — Nathaniel Starkman</title>
+    {/* An embed restates a card that a real page already shows; it must not
+        compete with that page in search. */}
+    <meta name="robots" content="noindex" />
+    {/* Every link leaves the frame: a paper opened inside a 300px iframe is no use. */}
+    <base target="_blank" />
+    <script is:inline>
+      // ?theme=light|dark pins the theme; without it the card follows the
+      // reader's system, the same as the site does.
+      var t = new URLSearchParams(location.search).get('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap"
+    />
+  </head>
+  <body class="embed">
+    <IconSprite />
+    <main><slot /></main>
+    <script is:inline>
+      // Tells the host page how tall the card is, so /embed/resize.js can size
+      // the frame to it. Only a height, so posting to any origin leaks nothing.
+      new ResizeObserver(function () {
+        parent.postMessage({ type: 'nstarkman-embed', height: Math.ceil(document.querySelector('main').getBoundingClientRect().height) }, '*');
+      }).observe(document.querySelector('main'));
+    </script>
+  </body>
+</html>

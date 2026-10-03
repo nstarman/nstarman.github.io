@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, formatName, parseName, cardText,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, CARD_TYPES, formatName, parseName, defaultSlug, linkKeys, cardText,
 } from '../src/lib/cards.js';
-import { titleOf, splitTitle } from '../src/lib/data.js';
+import { items, titleOf, splitTitle } from '../src/lib/data.js';
 
 /** Every preset="…" a component or page passes to Card. */
 function usedPresets(dir = 'src', out = new Set()) {
@@ -394,11 +394,30 @@ describe('the full title around its short one', () => {
 });
 
 describe('presets', () => {
+  it('parse as the embed page has the parser, inlined on its own with nothing around it', () => {
+    const inlined = new Function(`return (${parseName.toString()})`)();
+    const rich = 'size:320:400-figure:center:authors:auto:link-rail:center:left:top-title:nick:top:center-authors:position:left:top-text:none-extras:venue,role,context-context:right:bottom-buttons:all:2-space:title_figure=8,left_words=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
+    for (const n of [...SITE_PRESETS.map((p) => p.slug), NAME, rich, 'size:fill:200-figure:left:top:right:120px-rail:right:center:left-title:short-authors:5:marked:orcid-text:details-extras:none-buttons:none']) {
+      expect(inlined(n), n).toEqual(parseName(n));
+    }
+  });
+
   it('are exactly the cards the website renders', () => {
     expect([...usedPresets()].sort()).toEqual(SITE_PRESETS.map((p) => p.slug).sort());
   });
 
-  it('are written as the canonical name', () => {
-    for (const p of SITE_PRESETS) expect(formatName(parseName(p.slug))).toBe(p.slug);
+  it('are written as the canonical name, and so is every item default', () => {
+    const canonical = (n) => expect(formatName(parseName(n))).toBe(n);
+    for (const p of SITE_PRESETS) canonical(p.slug);
+    for (const i of items.filter((x) => CARD_TYPES.includes(x.type))) canonical(defaultSlug(i));
+  });
+});
+
+describe('embeds', () => {
+  it('offer each link key once', () => {
+    for (const i of items.filter((x) => CARD_TYPES.includes(x.type))) {
+      const keys = linkKeys(i);
+      expect(new Set(keys).size).toBe(keys.length);
+    }
   });
 });

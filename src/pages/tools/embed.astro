@@ -1,0 +1,1709 @@
+---
+// /tools/embed/ — pick an item, then its card: one of the website's presets or
+// any size, layout, title, text, extras, links and look. The preview is the live embed; the
+// snippet is an iframe, HTML or Markdown for an image, or the PNG or PDF
+// itself, drawn here in the browser from the preview — nothing is pre-rendered.
+import fs from 'node:fs';
+import Base from '../../layouts/Base.astro';
+import { items, relKey, splitTitle } from '../../lib/data.js';
+import {
+  LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasContext, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+} from '../../lib/cards.js';
+
+const pool = items.filter((i) => CARD_TYPES.includes(i.type));
+// The steps in px, as global.css has them, for the settings that can be typed
+// in px — the text and title sizes, padding (the top's; the sides are a
+// little wider), corners and buttons: their rows' stops are labelled with these, not the steps' names,
+// which say nothing about a size. With the range a typed size may take.
+const STEP_PX = {
+  textsize: { minor: 11.5, compact: 12.5, standard: 14, feature: 16, display: 18.4, min: 8, max: 40, what: 'The text size, in pixels' },
+  titlesize: { minor: 12.4, compact: 13.5, standard: 15.2, feature: 17.3, display: 19.9, min: 8, max: 60, what: 'The title size, in pixels' },
+  padding: { minor: 8, compact: 11, standard: 15, feature: 19, display: 24, min: 0, max: 64, what: 'The padding, in pixels, the same on every side' },
+  corners: { minor: 10, compact: 12, standard: 16, feature: 18, display: 22, min: 0, max: 64, what: 'The corner radius, in pixels' },
+  buttons: { minor: 21, compact: 23, standard: 26, feature: 30, display: 35, min: 12, max: 64, what: 'The link buttons, in pixels; the icon is half' },
+};
+const groups = [
+  ['publication', 'Publications'],
+  ['highlight', 'Syntheses'],
+  ['software', 'Software'],
+].map(([type, label]) => ({ label, items: pool.filter((i) => i.type === type) }))
+  .filter((g) => g.items.length > 0);
+// Opens on the latest submitted paper — the one most likely to be shown off.
+// Items come newest first.
+const pubs = pool.filter((i) => i.type === 'publication');
+const start = (pubs.find((i) => i.status === 'submitted') ?? pubs[0] ?? pool[0]).id;
+
+// The link keys a card can be cut to, each named in the builder: code, a
+// preprint or data by where it goes — GitHub, arXiv, Zenodo — and ADS; a
+// paper, the docs and the rest by what they are, wherever they are hosted. A
+// key's links share its pill, so one that covers two places names both. The
+// card's name, though, keeps the key.
+const PLACES = { 'arxiv.org': 'arXiv', 'github.com': 'GitHub', 'zenodo.org': 'Zenodo', 'pypi.org': 'PyPI', 'openreview.net': 'OpenReview', 'ui.adsabs.harvard.edu': 'ADS' };
+const BY_PLACE = ['code', 'repo', 'preprint', 'data', 'doi'];
+const placeOf = (l) => {
+  if (relKey(l) === 'ads') return 'ADS';
+  if (!BY_PLACE.includes(l.rel)) return l.rel;
+  const url = new URL(l.url, 'https://nstarkman.space');
+  if (/zenodo/.test(url.pathname)) return 'Zenodo';
+  return PLACES[url.host.replace(/^www\./, '')] ?? (l.rel === 'doi' ? 'DOI' : l.rel);
+};
+const linkChoices = (i) => {
+  const byKey = new Map();
+  for (const l of cardLinks(i)) {
+    const k = relKey(l);
+    const o = byKey.get(k) ?? { names: new Set(), titles: new Set() };
+    o.names.add(placeOf(l));
+    o.titles.add(l.label ?? l.rel);
+    byKey.set(k, o);
+  }
+  return [...byKey].map(([k, o]) => [k, [...o.names].join(' · '), [...o.titles].join(', ')]);
+};
+const data = {
+  site: Astro.site.href.replace(/\/$/, ''),
+  fixedMin: FIXED_MIN,
+  fixedMax: FIXED_MAX,
+  stepPx: STEP_PX,
+  fixedMinHeight: FIXED_MIN_HEIGHT,
+  // The faces a card is set in, for Typst to draw its PDF with.
+  fonts: fs.readdirSync('public/fonts/card').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/card/${f}`),
+  // The builder's own default first, then the website's cards.
+  presets: [{ slug: BUILDER_DEFAULT, where: 'default' }, ...SITE_PRESETS],
+  items: Object.fromEntries(pool.map((i) => [i.id, {
+    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), venue: hasVenue(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? placeOf(ownLink(i)) : null, site: siteHref(i)?.replace(/#.*/, '') ?? null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) ? 'journal' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+  }])),
+};
+---
+<Base title="Card Builder — Nathaniel Starkman" description="Export a card from nstarkman.space as an iframe or an image.">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="h2row"><h2>Card Builder</h2></div>
+        <p class="lede">Any card on this site, for another page: as an <code>&lt;iframe&gt;</code> that stays
+          current, as a PNG for places that strip iframes, such as a GitHub README, or as a PDF. Every card has a
+          name — size, layout, what it shows, then its look — and the website’s own are the presets. Every item is
+          listed in <a href="/embed/index.json">/embed/index.json</a>.</p>
+
+        {/* One form round the controls, the preview and the snippet, so the
+            format toggle beside the snippet is part of it too. */}
+        {/* autocomplete off: the browser would otherwise put back, on a reload,
+            whatever was last typed or ticked, over the item's own card. */}
+        <form id="eb" novalidate autocomplete="off">
+        <div class="eb">
+          <div class="eb-row">
+            <label class="eb-key" for="eb-card">Item</label>
+            <select name="card" id="eb-card">
+              {groups.map((g) => (
+                <optgroup label={g.label}>
+                  {g.items.map((i) => <option value={i.id} selected={i.id === start}>{i.title}</option>)}
+                </optgroup>
+              ))}
+            </select>
+            {/* The website's own cards, to check a setting against — never a
+                place to start, so as small as a control can be. It says which
+                one the controls make, or custom. */}
+            <select name="preset" class="eb-preset" aria-label="The website's card these settings make">
+              <option value={BUILDER_DEFAULT}>default</option>
+              <option value="">custom</option>
+              {SITE_PRESETS.map((p) => <option value={p.slug}>{p.where}</option>)}
+            </select>
+          </div>
+
+          {/* The size, each dimension on its own: the width fills the card's
+              container — the preview's stage, which can then be dragged — or
+              is set; the height fits its content or is set, so cards side by
+              side can share one. A set value opens out of its pill when it is
+              clicked and folds back into it, as "640px", once one is chosen. */}
+          <div class="eb-row">
+            <fieldset class="eb-group">
+              <legend class="eb-key">Size</legend>
+              <span class="eb-dim">width</span>
+              <span class="pilltoggle">
+                <label title="Fills its container"><input type="radio" class="posradio" name="wmode" value="fill" />fill</label>
+                <label class="eb-setpx" title="A set width — click to set it"><input type="radio" class="posradio" name="wmode" value="px" aria-controls="eb-px" /><span id="eb-w-shown">set</span></label>
+              </span>
+              <span class="eb-dim">height</span>
+              <span class="pilltoggle">
+                <label title="Grows with its content"><input type="radio" class="posradio" name="hmode" value="fit" />fit</label>
+                <label class="eb-setpx" title="A set height — click to set it"><input type="radio" class="posradio" name="hmode" value="px" aria-controls="eb-px" /><span id="eb-h-shown">set</span></label>
+              </span>
+              {/* What is set, typed; a few widths, which keep the shape where
+                  the height is set too; and, both set, a few shapes, which set
+                  the height from the width. Only the numbers are kept. */}
+              <span class="eb-px" id="eb-px" role="group" aria-label="Width and height" hidden>
+                <span class="sep" aria-hidden="true">|</span>
+                <label id="eb-px-w" title="The width, in pixels"><input type="number" name="px" min={FIXED_MIN} max={FIXED_MAX} step="1" value="320" aria-label="Width in pixels" />px wide</label>
+                <span class="pilltoggle" id="eb-widths" role="radiogroup" aria-label="Preset widths"></span>
+                <label id="eb-px-h" title="The height, in pixels"><input type="number" name="hpx" min={FIXED_MIN_HEIGHT} max={FIXED_MAX} step="1" value="400" aria-label="Height in pixels" />px high</label>
+                <span class="pilltoggle" id="eb-shapes" role="radiogroup" aria-label="Shape">
+                  {['4x5', '1x1', '8x5', '4x1'].map((a) => <label title={`${a.replace('x', ' wide by ')} high`}><input type="radio" class="posradio" name="shape" value={a} />{a.replace('x', ':')}</label>)}
+                </span>
+              </span>
+            </fieldset>
+          </div>
+
+          {/* What the card shows, on one row of pills: each shown or not by
+              its tick box — title:none, authors:none, text:none when not.
+              Which title, byline or text is chosen under the preview, with the
+              rest of what tunes the card: ticking the pill, or clicking that
+              part in the preview, brings it up. */}
+          <div class="eb-row">
+            <fieldset class="eb-group">
+              <legend class="eb-key eb-key--check">
+                <label class="eb-keylabel"><input type="checkbox" class="eb-check" id="eb-title-on" checked />Title</label>
+              </legend>
+            </fieldset>
+            <fieldset class="eb-group" id="eb-authors">
+              <legend class="eb-key eb-key--check eb-key--inline">
+                <label class="eb-keylabel"><input type="checkbox" class="eb-check" id="eb-authors-on" checked />Authors</label>
+              </legend>
+            </fieldset>
+            {/* Where and when a paper appeared — the venue extra, which reads with
+                its byline. */}
+            <span class="eb-group" id="eb-venue">
+              <label class="eb-key eb-key--check eb-key--inline" title="Where and when it appeared: the journal, or the arXiv number, and the year"><input type="checkbox" class="eb-check" name="extra" value="venue" />Published</label>
+            </span>
+            <fieldset class="eb-group" id="eb-text">
+              <legend class="eb-key eb-key--check eb-key--inline">
+                <label class="eb-keylabel"><input type="checkbox" class="eb-check" id="eb-text-on" checked />Text</label>
+              </legend>
+            </fieldset>
+            {/* The figure: shown or not — figure:none when not. Its size is
+                chosen under the preview. */}
+            <span class="eb-group" id="eb-figure">
+              <label class="eb-key eb-key--check eb-key--inline" title="The highlight figure"><input type="checkbox" class="eb-check" id="eb-figure-on" />Figure</label>
+            </span>
+            {/* The other extras — a package's role, a paper's context link —
+                in a menu of tick boxes, filled per item, and gone where it
+                has neither. Pilled when any is ticked. */}
+            <details class="eb-group eb-drop" id="eb-extras-drop">
+              <summary class="eb-key eb-key--check eb-key--inline" title="A package's role, a paper's context link">Extras <span aria-hidden="true">▾</span></summary>
+              <span class="eb-drop-menu" id="eb-extras"></span>
+            </details>
+          </div>
+
+          {/* The item's link buttons, each named by where it goes. */}
+          <fieldset class="eb-row">
+            <legend class="eb-key">Buttons</legend>
+            <span class="pilltoggle" id="eb-links"></span>
+          </fieldset>
+
+          <fieldset class="eb-row">
+            <legend class="eb-key">Theme</legend>
+            <span class="pilltoggle">
+              <label><input type="radio" class="posradio" name="theme" value="auto" checked />follow the reader</label>
+              <label><input type="radio" class="posradio" name="theme" value="light" />light</label>
+              <label><input type="radio" class="posradio" name="theme" value="dark" />dark</label>
+            </span>
+          </fieldset>
+        </div>
+
+        <div class="eb-h eb-head" id="eb-io-head">
+          {/* The settings as JSON: everything here but the item, to keep or to
+              load onto another one. */}
+          <span class="eb-io">
+            <span class="eb-io-key">Settings</span>
+            <button type="button" class="btn" id="eb-export" title="Save these settings as JSON">Save</button>
+            <button type="button" class="btn" id="eb-import" title="Load settings saved as JSON onto this item">Load</button>
+            <input type="file" id="eb-import-file" accept="application/json,.json" hidden />
+          </span>
+        </div>
+        <div class="eb-preview" id="eb-preview" aria-live="polite"></div>
+        {/* The card's parts are outlined in the preview; clicking one brings up
+            what tunes it. Show all is the way in without a pointer. */}
+        <p class="eb-tune-hint">Click a part of the card to tune it, or <button type="button" class="eb-linkbtn" id="eb-tune-all">show all</button>.</p>
+        <div class="eb eb-dials">
+          {/* The areas: fixed — the top, the left side, the center, the right
+              side and the bottom — the parts moving between them. First of
+              the rows, one for each area that has settings and something in
+              it: a side's width — fitting what is in it, at least so many px,
+              a share of the card, or as wide as its buttons; and for the top
+              and bottom areas, the sides that run beside them, taking their
+              corners — left, the area runs over them. */}
+          {['left', 'right'].map((side) => (
+            <fieldset class="eb-row" id={`eb-area-${side}-row`} data-tune={`area-${side}`} hidden>
+              <legend class="eb-key">Area<small>({side === 'left' ? 'Left' : 'Right'})</small></legend>
+              <span class="eb-sub">
+                <span class="eb-dim">width</span>
+                <span class="eb-px">
+                  <span class="pilltoggle" role="radiogroup" aria-label={`The ${side} side's width`}>
+                    <label title="As wide as what is in it"><input type="radio" class="posradio" name={`w${side}`} value="" checked />fit</label>
+                    <label title="At least so many px, growing to fit what is in it"><input type="radio" class="posradio" name={`w${side}`} value="min" />min</label>
+                    <label title="A share of the card's width"><input type="radio" class="posradio" name={`w${side}`} value="share" />share</label>
+                    <label id={`eb-w-${side}-buttons`} title="As wide as its buttons, laid out so many to a row"><input type="radio" class="posradio" name={`w${side}`} value="buttons" />buttons</label>
+                  </span>
+                  <label id={`eb-w-${side}-n`}><input type="number" name={`w${side}n`} min="0" max="800" step="1" placeholder="–" aria-label={`The ${side} side's width`} /><span id={`eb-w-${side}-unit`}>px</span></label>
+                </span>
+              </span>
+            </fieldset>
+          ))}
+          {['top', 'bottom'].map((end) => (
+            <fieldset class="eb-row" id={`eb-area-${end}-row`} data-tune={`area-${end}`} hidden>
+              <legend class="eb-key">Area<small>({end === 'top' ? 'Top' : 'Bottom'})</small></legend>
+              <span class="eb-sub">
+                <span class="eb-dim">beside it</span>
+                <span class="pilltoggle eb-checks" role="group" aria-label={`The sides that run beside the ${end} area, taking its corners`}>
+                  {['left', 'right'].map((side) => <label id={`eb-win-${side}-${end}`} title={`The ${side} side runs ${end === 'top' ? 'up' : 'down'} beside the ${end} area, taking its corner`}><input type="checkbox" class="eb-check" name={`win${side}`} value={end} />{side === 'left' ? 'LHS' : 'RHS'}</label>)}
+                </span>
+              </span>
+            </fieldset>
+          ))}
+
+          {/* Which title: whole | split sits right after full, the title it
+              weights, and is shown for a full title whose short title is part
+              of it. none is the tick box's above, so its radio is never shown. */}
+          <fieldset class="eb-row" id="eb-title-row" data-tune="title" hidden>
+            <legend class="eb-key">Title</legend>
+            <span class="eb-sub">
+              {/* Its area, first: the top area, across the card above the
+                  figure, the words and the rails — empty, it takes no room —
+                  or the center, the words' own column. */}
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" role="radiogroup" aria-label="The area the title sits in">
+                <label title="In the words' own column"><input type="radio" class="posradio" name="titleat" value="center" checked />center</label>
+                <label title="Across the card, above the figure, the words and the rails"><input type="radio" class="posradio" name="titleat" value="top" />top</label>
+              </span>
+              {/* Then its position across that area. */}
+              <span class="eb-dim">position</span>
+              <span class="eb-pair">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The title at the left, center or right of its area">
+                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="titlealign" value={v} checked={v === 'left'} />{v}</label>)}
+                </span>
+              </span>
+              <span class="eb-dim">length</span>
+              <span class="eb-titles">
+                <span class="pilltoggle">
+                  <label><input type="radio" class="posradio" name="title" value="full" />full</label>
+                </span>
+                <span class="pubfilter pubfilter--inline eb-rest" id="eb-rest" data-stops="2" role="radiogroup" aria-label="Weight of the rest of the full title">
+                  <label title="The whole title at the title's weight"><input type="radio" class="posradio" name="rest" value="whole" />whole</label>
+                  <label title="Only the short title at the title's weight, the rest regular"><input type="radio" class="posradio" name="rest" value="split" checked />split</label>
+                </span>
+                <span class="pilltoggle">
+                  {TITLES.filter((v) => v !== 'full').map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="title" value={v} />{v}</label>)}
+                </span>
+              </span>
+              {/* Where the title links: nowhere, to the item itself — named by
+                  where that is — or to its entry on this site. */}
+              <span class="eb-dim">link</span>
+              <span class="pilltoggle" role="radiogroup" aria-label="Where the title links">
+                <label title="The title as words"><input type="radio" class="posradio" name="titlelink" value="" checked />none</label>
+                <label id="eb-tl-link" title="The title a link to the item itself"><input type="radio" class="posradio" name="titlelink" value="link" /><span></span></label>
+                <label id="eb-tl-ads" title="The title a link to its ADS abstract"><input type="radio" class="posradio" name="titlelink" value="ads" /><span></span></label>
+                <label id="eb-tl-journal" title="The title a link to where it was published: the journal's own page"><input type="radio" class="posradio" name="titlelink" value="journal" /><span></span></label>
+                <label id="eb-tl-site" title="The title a link to its entry on this site"><input type="radio" class="posradio" name="titlelink" value="site" /><span></span></label>
+              </span>
+              <span class="eb-dim">weight</span>
+              <span class="pilltoggle" role="radiogroup" aria-label="The title's weight">
+                <label title="Medium, or regular where I am past second author"><input type="radio" class="posradio" name="titleweight" value="" checked />auto</label>
+                {['regular', 'medium', 'bold'].map((v) => <label><input type="radio" class="posradio" name="titleweight" value={v} />{v}</label>)}
+                <label title="Bold where I am first author, regular otherwise"><input type="radio" class="posradio" name="titleweight" value="mine" />mine</label>
+              </span>
+              {/* Its size: a step, a size typed, or — the default — following
+                  the text size. */}
+              <span class="eb-dim">size</span>
+              <span class="eb-px">
+                <label title={STEP_PX.titlesize.what}><input type="number" name="titlesizepx" min={STEP_PX.titlesize.min} max={STEP_PX.titlesize.max} step="0.1" aria-label="Title size in pixels" />px</label>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops={LOOKS.length + 1} role="radiogroup" aria-label="Title size">
+                  {LOOKS.map((v) => <label title={`${v}: ${STEP_PX.titlesize[v]}px`}><input type="radio" class="posradio" name="titlesize" value={v} />{STEP_PX.titlesize[v]}</label>)}
+                  <label title="Follows the text size"><input type="radio" class="posradio" name="titlesize" value="text" checked />by text</label>
+                </span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* Which byline: short or full — or, in its place, my author
+              position beside the year. Never both, so position is one of the
+              choices. none is the tick box's above. Then, for a byline, my
+              students marked or plain. */}
+          <fieldset class="eb-row" id="eb-authors-row" data-tune="authors" hidden>
+            <legend class="eb-key">Authors</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">length</span>
+              <span class="eb-pair">
+                <span class="pilltoggle">
+                  {AUTHORS.filter((v) => v !== 'position').map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="authors" value={v} />{v}</label>)}
+                  {/* So many names: a choice like the others, its number typed. */}
+                  <label class="eb-px" title={`So many names, 1–${AUTHORS_MAX}, keeping mine`}><input type="radio" class="posradio" name="authors" value="n" /><input type="number" name="authorsn" min="1" max={AUTHORS_MAX} step="1" placeholder="#" aria-label="Number of names" /></label>
+                </span>
+                {/* Set apart: in place of the byline, not a length of it. */}
+                <span class="pilltoggle" id="eb-pos">
+                  <label title="My author position, as 1st | 2026, in place of the byline"><input type="radio" class="posradio" name="authors" value="position" />position</label>
+                </span>
+              </span>
+              <span class="eb-dim" id="eb-marks-key">students</span>
+              <span class="pilltoggle" id="eb-marks" role="radiogroup" aria-label="Marking of my students">
+                <label title="My students set like any other co-author"><input type="radio" class="posradio" name="marks" value="plain" checked />plain</label>
+                <label title="My students coloured, with † and ‡"><input type="radio" class="posradio" name="marks" value="marked" />marked</label>
+              </span>
+              {/* For a byline: each co-author a link — to their ORCID, or to the
+                  papers we wrote together on the collaborator map — or not. */}
+              <span class="eb-dim" id="eb-orcid-key">link</span>
+              <span class="pilltoggle" id="eb-orcid" role="radiogroup" aria-label="Where each co-author links">
+                <label title="The names as words"><input type="radio" class="posradio" name="authorlink" value="" checked />none</label>
+                <label title="Each co-author a link to their ORCID, where they have one"><input type="radio" class="posradio" name="authorlink" value="orcid" />ORCID</label>
+                <label title="Each co-author a link to the papers we wrote together, on the collaborator map at /research/, where they are on it"><input type="radio" class="posradio" name="authorlink" value="site" />our papers</label>
+              </span>
+              {/* For a position: in the rail, or a corner of the card. */}
+              <span class="eb-dim" id="eb-corner-key">corner</span>
+              <span class="eb-pair" id="eb-corner">
+                <span class="pilltoggle" role="radiogroup" aria-label="Where my position sits">
+                  <label title="In the rail, beside the buttons"><input type="radio" class="posradio" name="posx" value="" checked />rail</label>
+                  <label title="The card's left corner"><input type="radio" class="posradio" name="posx" value="left" />left</label>
+                  <label title="The card's right corner"><input type="radio" class="posradio" name="posx" value="right" />right</label>
+                </span>
+                <span class="pilltoggle" id="eb-posy" role="radiogroup" aria-label="The top or bottom corner">
+                  <label><input type="radio" class="posradio" name="posy" value="top" />top</label>
+                  <label><input type="radio" class="posradio" name="posy" value="bottom" checked />bottom</label>
+                </span>
+                {/* In a rail at a side, my position sits at the end the buttons
+                    do not: swapping turns the rail over, top for bottom. An
+                    action, not a setting. */}
+                <span id="eb-swap"><button type="button" class="eb-linkbtn" title="Swap my position and the buttons, end for end in the rail">⇅ swap</button></span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* Which text: the record's summary or its details. none is the
+              tick box's above. */}
+          <fieldset class="eb-row" id="eb-text-row" data-tune="text" hidden>
+            <legend class="eb-key">Text</legend>
+            <span class="pilltoggle">
+              {TEXTS.map((v) => <label hidden={v === 'none'}><input type="radio" class="posradio" name="text" value={v} />{v}</label>)}
+            </span>
+          </fieldset>
+
+          {/* The figure: its area — the left side, the center or the right
+              side — and its position there: at a side, where in the card's
+              height and across its column; in the center, its slot among
+              the parts; its size in
+              its column — filling it (auto), a share of it, or its own px;
+              and whether it is a link. Clicking the figure in the preview
+              brings it up. */}
+          <fieldset class="eb-row" id="eb-figure-row" data-tune="figure" hidden>
+            <legend class="eb-key">Figure</legend>
+            <span class="eb-sub">
+              {/* The area it sits in, then — in a side — where in that area. */}
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" role="radiogroup" aria-label="The area the figure sits in">
+                {FIGURE_AT.map((v) => <label title={{ left: 'In the left side', center: 'In the center, among the words', right: 'In the right side' }[v]}><input type="radio" class="posradio" name="figat" value={v} checked={v === 'center'} />{{ left: 'LHS', center: 'center', right: 'RHS' }[v]}</label>)}
+              </span>
+              <span class="eb-dim">position</span>
+              <span class="eb-pair">
+                {/* In the center, which of its slots: among its parts. */}
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="5" id="eb-figslot" role="radiogroup" aria-label="Where among the center's parts the figure sits">
+                  {FIGURE_SLOTS.map((v) => [v, v === 'top' ? 'above title' : `below ${v}`]).map(([v, name]) => <label><input type="radio" class="posradio" name="figslot" value={v} checked={v === 'title'} />{name}</label>)}
+                </span>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-figv" role="radiogroup" aria-label="Figure at the top, center or bottom of its area">
+                  {FIGURE_ALIGN.map((v) => <label><input type="radio" class="posradio" name="figv" value={v} checked={v === 'center'} />{v}</label>)}
+                </span>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" id="eb-figh" role="radiogroup" aria-label="Figure at the left, center or right of its area">
+                  {['left', 'center', 'right'].map((v) => <label title={`At the ${v} of its column, where narrower than it`}><input type="radio" class="posradio" name="figh" value={v} checked={v === 'center'} />{v}</label>)}
+                </span>
+              </span>
+              <span class="eb-dim">size</span>
+              <span class="eb-px">
+                <label title="The figure's width: a share of its column, or its own px; empty fills the column"><input type="number" name="figpx" min="8" max="800" step="1" placeholder="auto" aria-label="Figure width" /></label>
+                <span class="pilltoggle" role="radiogroup" aria-label="The figure's width, as">
+                  <label title="A share of its column"><input type="radio" class="posradio" name="figunit" value="%" checked />%</label>
+                  <label title="Its own width in px"><input type="radio" class="posradio" name="figunit" value="px" />px</label>
+                </span>
+                <span class="pilltoggle" role="radiogroup" aria-label="Figure size">
+                  {['auto', 25, 33, 50, 75, 100].map((v) => <label><input type="radio" class="posradio" name="figp" value={v} />{v}</label>)}
+                </span>
+              </span>
+              <span class="eb-dim">link</span>
+              <span class="pilltoggle eb-checks">
+                <label title="The figure a link to the item"><input type="checkbox" class="eb-check" name="figlink" />link</label>
+              </span>
+              {/* The white around the figure: as it is, none, a step, or px. */}
+              <span class="eb-dim">frame</span>
+              <span class="eb-px">
+                <label title="The white around the figure, in pixels"><input type="number" name="framepx" min="0" max="32" step="1" placeholder="auto" aria-label="Figure frame in pixels" />px</label>
+                <span class="pilltoggle" role="radiogroup" aria-label="Figure frame">
+                  <label title="As it is"><input type="radio" class="posradio" name="frame" value="" checked />auto</label>
+                  <label title="The bare image"><input type="radio" class="posradio" name="frame" value="none" />none</label>
+                  {LOOKS.map((v) => <label title={v}><input type="radio" class="posradio" name="frame" value={v} />{{ minor: 3, compact: 4, standard: 4.8, feature: 8, display: 12 }[v]}</label>)}
+                </span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* Space between two of the card's slots: added with the ⊕ that
+              shows between two parts in the preview, each then px or flex —
+              what room is left, pushing the two apart. */}
+          <fieldset class="eb-row" data-tune="space" hidden>
+            <legend class="eb-key">Space</legend>
+            <span class="eb-sub">
+              <span class="eb-dim">between</span>
+              <span class="eb-tracks" id="eb-tracks"></span>
+            </span>
+          </fieldset>
+
+          {/* The buttons — with the year and context, the rail — and the area
+              they sit in: the left side, under the words, the right side, or
+              the bottom; where in it; and how they are laid out, so many to a
+              row. Clicking any of them in the preview brings it up. */}
+          <fieldset class="eb-row" data-tune="foot" hidden>
+            <legend class="eb-key">Buttons</legend>
+            <span class="eb-sub">
+              {/* The area they sit in: a side, under the words, or the bottom.
+                  Then where in it. */}
+              <span class="eb-dim">area</span>
+              <span class="pilltoggle" role="radiogroup" aria-label="The area the buttons sit in">
+                {FOOT_AT.map((v) => <label title={{ left: 'In the left side, under its figure', center: 'Under the words', right: 'In the right side, under its figure', bottom: 'In the bottom area, the full width' }[v]}><input type="radio" class="posradio" name="foot" value={v} />{{ left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom' }[v]}</label>)}
+              </span>
+              <span class="eb-dim">position</span>
+              <span class="eb-pair">
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="Up and down: in a side, the buttons at its top, center or bottom; under the words or at the bottom, the year at the top, center or bottom of the buttons">
+                  {FOOT_END.map((v) => <label><input type="radio" class="posradio" name="footend" value={v} checked={v === 'top'} />{v}</label>)}
+                </span>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops="3" role="radiogroup" aria-label="The buttons at the left, center or right of their area">
+                  {RAIL_ALIGN.map((v) => <label><input type="radio" class="posradio" name="railalign" value={v} checked={v === 'left'} />{v}</label>)}
+                </span>
+              </span>
+              <span class="eb-dim">layout</span>
+              <span class="eb-px">
+                <label title="The link buttons to a row before the next"><input type="number" name="perrow" min="1" max="12" step="1" placeholder="√n" aria-label="Link buttons per row" />per row</label>
+                <span class="pilltoggle" role="radiogroup" aria-label="Link buttons to a row">
+                  <label title="As near square as they go: ⌈√n⌉ to a row"><input type="radio" class="posradio" name="perp" value="square" checked />square</label>
+                  <label title="As many to a row as fit"><input type="radio" class="posradio" name="perp" value="fit" />fit</label>
+                </span>
+              </span>
+              {/* Their size: a step, a size typed, or on a fixed box the box's. */}
+              <span class="eb-dim">size</span>
+              <span class="eb-px">
+                <label title={STEP_PX.buttons.what}><input type="number" name="buttonspx" min={STEP_PX.buttons.min} max={STEP_PX.buttons.max} step="1" aria-label="Button size in pixels" />px</label>
+                <span class="pubfilter pubfilter--inline eb-sizes eb-dial" data-stops={LOOKS.length + 1} role="radiogroup" aria-label="Button size">
+                  {LOOKS.map((v) => <label title={`${v}: ${STEP_PX.buttons[v]}px`}><input type="radio" class="posradio" name="buttons" value={v} />{STEP_PX.buttons[v]}</label>)}
+                  <label class="eb-bywidth" title="Follows the box's width"><input type="radio" class="posradio" name="buttons" value="width" />by width</label>
+                </span>
+              </span>
+              <span class="eb-dim">gap</span>
+              <span class="eb-px">
+                <label title="The space between the buttons, in pixels; empty is a third of the text's height"><input type="number" name="bgap" min="0" max="32" step="1" placeholder="auto" aria-label="Space between buttons, in pixels" />px</label>
+              </span>
+              {/* The context link: in the rail, or floating in a corner. */}
+              <span class="eb-dim" id="eb-ctx-key">context</span>
+              <span class="eb-pair" id="eb-ctx">
+                <span class="pilltoggle" role="radiogroup" aria-label="Where the context link sits">
+                  <label title="In the rail"><input type="radio" class="posradio" name="ctxx" value="" checked />rail</label>
+                  <label title="Floating in the card's left corner"><input type="radio" class="posradio" name="ctxx" value="left" />left</label>
+                  <label title="Floating in the card's right corner"><input type="radio" class="posradio" name="ctxx" value="right" />right</label>
+                </span>
+                <span class="pilltoggle" id="eb-ctxy" role="radiogroup" aria-label="The top or bottom corner">
+                  <label><input type="radio" class="posradio" name="ctxy" value="top" />top</label>
+                  <label><input type="radio" class="posradio" name="ctxy" value="bottom" checked />bottom</label>
+                </span>
+              </span>
+            </span>
+          </fieldset>
+
+          {/* The look, under the card it draws: the text size, then the
+              card's tint — a scale: none, the lighter tint /publications/
+              uses, the site's, and twice it — then padding and corners, each
+              set on its own. On a fixed box each may instead follow the box's
+              width — the last stop. The buttons' size is in the Buttons row. */}
+          {DIALS.map((d) => (<>
+            {d === 'padding' && (
+              <fieldset class="eb-row" data-tune="background" hidden>
+                <legend class="eb-key">Background</legend>
+                <span class="pubfilter pubfilter--inline eb-sizes" data-stops={BACKGROUNDS.length} role="radiogroup" aria-label="Background">
+                  {BACKGROUNDS.map((v) => <label><input type="radio" class="posradio" name="background" value={v} checked={v === 'normal'} />{v}</label>)}
+                </span>
+              </fieldset>
+            )}
+            {d !== 'buttons' && <fieldset class="eb-row" data-tune={d} hidden>
+              <legend class="eb-key">{{ textsize: 'Text size' }[d] ?? d[0].toUpperCase() + d.slice(1)}</legend>
+              {/* Text size, padding and corners may be any size typed, as a fixed
+                  box's width may: the box shows the step's in px, and typing
+                  leaves the steps. */}
+              {STEP_PX[d] && (
+                <span class="eb-px">
+                  <label title={STEP_PX[d].what}><input type="number" name={`${d}px`} min={STEP_PX[d].min} max={STEP_PX[d].max} step={d === 'textsize' ? '0.1' : '1'} aria-label={`${d} in pixels`} />px</label>
+                </span>
+              )}
+              <span class="pubfilter pubfilter--inline eb-sizes eb-dial" data-stops={LOOKS.length + 1} role="radiogroup" aria-label={d}>
+                {LOOKS.map((v) => <label title={STEP_PX[d] ? `${v}: ${STEP_PX[d][v]}px` : undefined}><input type="radio" class="posradio" name={d} value={v} />{STEP_PX[d] ? STEP_PX[d][v] : v}</label>)}
+                <label class="eb-bywidth" title="Follows the box's width"><input type="radio" class="posradio" name={d} value="width" />by width</label>
+              </span>
+            </fieldset>}
+          </>))}
+        </div>
+
+        {/* The format changes only the snippet, never the preview — which is
+            always the live card — so it sits here, as a row of pills. */}
+        <div class="eb-h eb-head">
+          <h3>Use</h3>
+          <span class="pilltoggle" role="radiogroup" aria-label="Format">
+            <label title="An iframe that stays current"><input type="radio" class="posradio" name="format" value="iframe" checked />iframe</label>
+            <label title="The PNGs, light and dark, for HTML"><input type="radio" class="posradio" name="format" value="html" />HTML</label>
+            <label title="The PNG, for Markdown"><input type="radio" class="posradio" name="format" value="markdown" />Markdown</label>
+            <label title="The PNGs themselves"><input type="radio" class="posradio" name="format" value="png" />PNG</label>
+            <label title="The card as a PDF, drawn by Typst: its text selectable and its links live"><input type="radio" class="posradio" name="format" value="pdf" />PDF</label>
+          </span>
+        </div>
+        <div class="eb-codebox">
+          <textarea class="eb-code" id="eb-code" readonly rows="6" aria-label="Snippet to copy"></textarea>
+          <span class="eb-tools">
+            <button type="button" class="iconbtn" id="eb-copy" aria-label="Copy snippet" title="Copy snippet">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-copy" /></svg>
+            </button>
+            {/* The PNGs and PDFs are drawn here, from the preview, when asked for. */}
+            <button type="button" class="iconbtn" id="eb-download" hidden aria-label="Download PNG" title="Download PNG">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-download" /></svg>
+            </button>
+          </span>
+        </div>
+        <p class="eb-note" id="eb-note"></p>
+        {/* The card's name: what the snippet and the embed URL carry, and what
+            a preset is called. Under the snippet, as what it is built from.
+            Hidden until asked for — the controls above already say it — and
+            then shown on the same line. A button, not <details>, so the name
+            can sit beside it rather than below. */}
+        <p class="eb-name">
+          <button type="button" class="eb-fold" id="eb-name-toggle" aria-expanded="false" aria-controls="eb-slug">Name</button>
+          <code id="eb-slug" hidden></code>
+        </p>
+        </form>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script id="eb-data" type="application/json" set:html={JSON.stringify(data)} />
+
+<script>
+  import { domToPng } from 'modern-screenshot';
+  import { AUTHORS_MAX, DIALS, SPACE_TRACKS, formatName, parseName } from '../../lib/cardname.js';
+
+  const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
+  const form = document.getElementById('eb');
+  const el = (id) => document.getElementById(id);
+  const preview = el('eb-preview');
+  const code = el('eb-code');
+  const note = el('eb-note');
+  const extras = el('eb-extras');
+  // The Extras menu closes on a click outside it, or Escape.
+  const drop = el('eb-extras-drop');
+  document.addEventListener('click', (e) => { if (drop.open && !drop.contains(e.target)) drop.open = false; });
+  drop.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drop.open) { drop.open = false; drop.querySelector('summary').focus(); } });
+  const download = el('eb-download');
+  const copy = el('eb-copy');
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+  let height = 0; // the previewed card's height, as it last reported it
+  let shown = ''; // the preview's src, so a snippet-only change leaves it alone
+
+  // The role, status and context, where the item has them, and on a row of
+  // their own a toggle per link it carries. The figure and the venue are on the row
+  // above.
+  function buildExtras(id) {
+    const it = items[id];
+    const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
+    extras.innerHTML = x(it.role, 'role', 'My role in the package')
+      + x(it.context, 'context', 'A link to its topic on /research/');
+    el('eb-extras-drop').hidden = !extras.innerHTML;
+    el('eb-links').innerHTML = it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
+  }
+
+  // A preset as it comes out for this item: the extras it has not got drop,
+  // so an item with no figure still matches the default.
+  const has = (it, x) => ({ figure: it.figure, venue: it.venue, role: it.role, context: it.context })[x];
+  // The byline as this item can have it: none with no authors, and none for a
+  // position it has not got.
+  const authorsFor = (it, a) => (!it.byline || (a === 'position' && !it.pos) ? 'none' : a);
+  // The title's link as this item can have it: none to a place it has not got.
+  const linkFor = (it, l) => (l && it[l] ? l : false);
+  function fit(name, it) {
+    const c = parseName(name);
+    // A list of buttons to keep, read against the links this item has.
+    const keys = it.links.map(([k]) => k);
+    const kept = c.links === 'all' ? keys : keys.filter((k) => c.links.includes(k));
+    return formatName({ ...c, links: kept.length === keys.length ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), figure: it.figure ? c.figure : 'none',
+                        rest: it.split ? c.rest : 'split', text: it.text ? c.text : 'none' });
+  }
+
+  // Every item starts from the builder's default, following the reader's theme.
+  function start() {
+    apply(presets[0].slug);
+    form.elements.theme.value = 'auto';
+  }
+
+  // A name → the controls. An extra the item has not got stays off.
+  function apply(name) {
+    let c;
+    try { c = parseName(name); } catch { return; }
+    form.elements.wmode.value = c.width === 'fill' ? 'fill' : 'px';
+    form.elements.hmode.value = c.height === 'fit' ? 'fit' : 'px';
+    if (c.width !== 'fill') form.elements.px.value = c.width;
+    for (const d of DIALS) setDial(d, c.dials[d] ?? (c.width === 'fill' ? 'standard' : 'width'));
+    setDial('titlesize', c.dials.titlesize ?? 'text');
+    for (const d in STEP_PX) if (/^\d/.test(c.dials[d] ?? '')) form.elements[`${d}px`].value = c.dials[d]; // a size, on no step
+    if (c.height !== 'fit') form.elements.hpx.value = c.height;
+    el('eb-figure-on').checked = c.figure !== 'none';
+    if (c.figure !== 'none') form.elements.figat.value = c.figure;
+    form.elements.figv.value = c.figureAlign ?? 'center';
+    form.elements.figpx.value = c.figureSize === 'auto' ? '' : parseInt(c.figureSize, 10);
+    form.elements.figunit.value = typeof c.figureSize === 'string' && c.figureSize.endsWith('px') ? 'px' : '%';
+    form.elements.figh.value = c.figureH ?? 'center';
+    form.elements.figslot.value = c.figureSlot ?? 'title';
+    for (const side of ['left', 'right']) {
+      const { width = '', top, bottom } = c.sides?.[side] ?? {};
+      const [kind, n = ''] = width.split('=');
+      form.elements[`w${side}`].value = kind;
+      form.elements[`w${side}n`].value = n;
+      for (const b of form.querySelectorAll(`[name=win${side}]`)) b.checked = !!{ top, bottom }[b.value];
+    }
+    form.elements.figlink.checked = !!c.figureLink;
+    form.elements.foot.value = c.foot;
+    form.elements.footend.value = c.footEnd ?? (['left', 'right'].includes(c.foot) ? 'top' : 'bottom');
+    form.elements.railalign.value = c.railAlign ?? (['left', 'right'].includes(c.foot) ? c.foot : 'left');
+    form.elements.titleweight.value = c.titleWeight ?? '';
+    const framePx = /^[0-9]/.test(c.frame ?? '');
+    form.elements.frame.value = framePx ? '' : c.frame ?? '';
+    form.elements.framepx.value = framePx ? c.frame : '';
+    form.elements.bgap.value = c.buttonGap ?? '';
+    space = { ...(c.space ?? {}) };
+    showTracks();
+    form.elements.perrow.value = typeof c.perRow === 'number' ? c.perRow : '';
+    form.elements.perp.value = typeof c.perRow === 'number' ? '' : c.perRow === 'fit' ? 'fit' : 'square';
+    form.elements.title.value = c.title;
+    form.elements.rest.value = c.rest ?? 'split';
+    form.elements.titlelink.value = c.titleLink || '';
+    form.elements.titleat.value = c.titleAt ?? 'center';
+    form.elements.titlealign.value = c.titleAlign ?? 'left';
+    form.elements.authors.value = typeof c.authors === 'number' ? 'n' : c.authors;
+    form.elements.authorsn.value = typeof c.authors === 'number' ? c.authors : '';
+    form.elements.posx.value = c.posX ?? '';
+    form.elements.ctxx.value = c.contextX ?? '';
+    form.elements.ctxy.value = c.contextY ?? 'bottom';
+    form.elements.authorlink.value = c.authorLink || '';
+    form.elements.posy.value = c.posY ?? 'bottom';
+    form.elements.marks.value = c.marks ?? 'plain';
+    form.elements.background.value = c.background;
+    form.elements.text.value = c.text;
+    for (const b of form.querySelectorAll('[name=extra]')) b.checked = c.extras.includes(b.value);
+    for (const b of form.querySelectorAll('[name=link]')) b.checked = c.links === 'all' || c.links.includes(b.value);
+  }
+
+  // The controls → the card's name, written by src/lib/cardname.js.
+  function spec() {
+    const f = new FormData(form);
+    const id = f.get('card');
+    const all = [...form.querySelectorAll('[name=link]')];
+    const on = all.filter((b) => b.checked).map((b) => b.value);
+    const width = f.get('wmode') === 'px' ? Math.min(fixedMax, Math.max(fixedMin, Math.round(+f.get('px') || 320))) : null;
+    const height = f.get('hmode') === 'px' ? boxHeight() : null;
+    // By width belongs to a set width: there a setting left at it is left out.
+    const dials = Object.fromEntries(DIALS.map((d) => [d, f.get(d)]).filter(([, v]) => v && v !== 'width'));
+    // The title size, unless it follows the text's.
+    if (f.get('titlesize') && f.get('titlesize') !== 'text') dials.titlesize = f.get('titlesize');
+    // A size typed, on no step, is that many px.
+    for (const d in STEP_PX) if (!f.get(d) && f.get(`${d}px`) !== '') dials[d] = String(typedPx(d));
+    const slug = formatName({
+      width: width ?? 'fill', height: height ?? 'fit', dials,
+      figure: !items[id].figure || !el('eb-figure-on').checked ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth()}px` : figWidth(), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sides(f), figureLink: f.get('figlink') === 'on',
+      foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? String(clampInt(f.get('bgap'), 0, 32)) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(items[id], f.get('titlelink')), titleAt: f.get('titleat'), titleAlign: f.get('titlealign'), rest: items[id].split ? f.get('rest') : 'split',
+      authors: authorsFor(items[id], f.get('authors') === 'n' ? namesN() : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posX: f.get('posx') || undefined, contextX: f.get('ctxx') || undefined, contextY: f.get('ctxy'), posY: f.get('posy'), text: items[id].text ? f.get('text') : 'none',
+      extras: f.getAll('extra').filter((x) => has(items[id], x)), links: on.length === all.length ? 'all' : on, perRow: f.get('perrow') ? Math.min(12, Math.max(1, Math.round(+f.get('perrow')))) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
+    });
+    return { id, it: items[id], slug, width, height, format: f.get('format'), theme: f.get('theme') };
+  }
+
+  const query = (s) => `?card=${s.slug}${s.theme === 'auto' ? '' : `&theme=${s.theme}`}`;
+  // A colon is not safe in a file name on macOS or Windows, so it becomes _.
+  const file = (s, t) => `${s.id}--${s.slug.replaceAll(':', '_')}-${t}.${s.format === 'pdf' ? 'pdf' : 'png'}`;
+  // The images a format needs: both themes when following the reader, except
+  // Markdown, which cannot switch.
+  const themes = (s) => (s.theme !== 'auto' ? [s.theme] : s.format === 'markdown' ? ['light'] : ['light', 'dark']);
+
+  function snippet(s) {
+    const alt = esc(s.it.title);
+    const wrap = (inner) => (s.it.href ? `<a href="${esc(s.it.href)}">${inner}</a>` : inner);
+    if (s.format === 'iframe') {
+      return `<iframe src="${site}/embed/${s.id}/${query(s)}" title="${alt}" width="${s.width ?? '100%'}" height="${height || 200}" style="border:0; max-width:100%" loading="lazy"></iframe>\n`
+        + `<script src="${site}/embed/resize.js" async><\/script>`;
+    }
+    if (s.format === 'html') {
+      return wrap(s.theme === 'auto'
+        ? `<picture><source media="(prefers-color-scheme: dark)" srcset="${file(s, 'dark')}"><img src="${file(s, 'light')}" alt="${alt}"${s.width ? ` width="${s.width}"` : ''}></picture>`
+        : `<img src="${file(s, s.theme)}" alt="${alt}"${s.width ? ` width="${s.width}"` : ''}>`);
+    }
+    if (s.format === 'markdown') {
+      const md = `![${s.it.title.replace(/[[\]]/g, '\\$&')}](${file(s, themes(s)[0])})`;
+      return s.it.href ? `[${md}](${s.it.href})` : md;
+    }
+    return themes(s).map((t) => file(s, t)).join('\n');
+  }
+
+  function render() {
+    const s = spec();
+    // Which of the website's cards, if any, the controls now make.
+    // The default also follows the reader's theme, which the name does not carry.
+    const match = presets.find((p) => fit(p.slug, s.it) === s.slug);
+    form.elements.preset.value = match && !(match === presets[0] && s.theme !== 'auto') ? match.slug : '';
+    el('eb-slug').textContent = s.slug;
+    el('eb-authors').hidden = !s.it.byline;
+    el('eb-text').hidden = !s.it.text;
+    el('eb-figure').hidden = !s.it.figure;
+    el('eb-venue').hidden = !s.it.venue;
+    // marked | plain and the ORCID links belong to a byline that is shown.
+    el('eb-marks').hidden = el('eb-marks-key').hidden = el('eb-orcid').hidden = el('eb-orcid-key').hidden = !(s.it.byline && ['short', 'full', 'n'].includes(form.elements.authors.value));
+    // A corner belongs to a position; top or bottom, to a corner.
+    el('eb-corner').hidden = el('eb-corner-key').hidden = form.elements.authors.value !== 'position';
+    el('eb-posy').hidden = !form.elements.posx.value;
+    // Where the context link sits belongs to a card that has one.
+    el('eb-ctx').hidden = el('eb-ctx-key').hidden = !(s.it.context && [...form.querySelectorAll('[name=extra]')].some((b) => b.value === 'context' && b.checked));
+    el('eb-ctxy').hidden = !form.elements.ctxx.value;
+    el('eb-swap').hidden = !!form.elements.posx.value || ['center', 'bottom'].includes(form.elements.foot.value) || form.elements.footend.value === 'center';
+    el('eb-pos').hidden = !s.it.pos;
+    // whole | split belongs to a full title that has a short title inside it.
+    el('eb-rest').hidden = !(form.elements.title.value === 'full' && s.it.split);
+    // The title's link pills, named for this item, where it has the place.
+    // A place the item's own link already is shows once, as that link —
+    // unless it is the one chosen.
+    for (const l of ['link', 'ads', 'journal', 'site']) {
+      el(`eb-tl-${l}`).hidden = !s.it[l] || (s.it.linkIs === l && form.elements.titlelink.value !== l);
+      el(`eb-tl-${l}`).lastChild.textContent = s.it[l] ?? '';
+    }
+    el('eb-title-on').checked = form.elements.title.value !== 'none';
+    el('eb-authors-on').checked = form.elements.authors.value !== 'none';
+    el('eb-text-on').checked = form.elements.text.value !== 'none';
+    if (!s.it.byline) el('eb-authors-row').hidden = true;
+    if (!s.it.text) el('eb-text-row').hidden = true;
+    if (!s.it.figure) el('eb-figure-row').hidden = true;
+    syncAll();
+    // What is set opens out of its pill, and folds back into it as its value.
+    const wset = s.width != null, hset = s.height != null;
+    if (!wset && !hset) widthOpen = false;
+    wasSet.wmode = wset;
+    wasSet.hmode = hset;
+    el('eb-px').hidden = !widthOpen;
+    el('eb-px-w').hidden = el('eb-widths').hidden = !wset;
+    el('eb-px-h').hidden = !hset;
+    el('eb-shapes').hidden = !(wset && hset);
+    el('eb-w-shown').textContent = wset && !widthOpen ? `${s.width}px` : 'set';
+    el('eb-h-shown').textContent = hset && !widthOpen ? `${s.height}px` : 'set';
+    showWidths(s.width);
+    // The shape lit is the one the two numbers make, if any.
+    for (const r of form.elements.shape) { const [a, b] = r.value.split('x').map(Number); r.checked = wset && hset && Math.round((s.width * b) / a) === s.height; }
+    const fixed = wset;
+    // Each area's settings only where something is in it — a side's width,
+    // and beside the top or bottom area, a side holding anything: a setting
+    // for an empty one would change nothing.
+    for (const side of ['left', 'right']) {
+      const kind = form.elements[`w${side}`].value;
+      el(`eb-w-${side}-buttons`).hidden = form.elements.foot.value !== side;
+      el(`eb-w-${side}-n`).hidden = kind === 'buttons';
+      el(`eb-w-${side}-unit`).textContent = kind === 'share' ? '%' : 'px';
+      el(`eb-win-${side}-top`).hidden = el(`eb-win-${side}-bottom`).hidden = !sideHas(side);
+    }
+    for (const a of ['left', 'right', 'top', 'bottom']) if (!canTune(el(`eb-area-${a}-row`))) el(`eb-area-${a}-row`).hidden = true;
+    // Its position: in a side, up and down and across it; in the center,
+    // among its parts — above the title only where the title is not up in
+    // the top area.
+    const centred = form.elements.figat.value === 'center';
+    el('eb-figslot').hidden = !centred;
+    el('eb-figv').hidden = el('eb-figh').hidden = centred;
+    const topSlot = form.querySelector('[name=figslot][value=top]');
+    topSlot.disabled = form.elements.titleat.value === 'top';
+    if (topSlot.disabled && topSlot.checked) form.elements.figslot.value = 'title';
+    for (const b of form.querySelectorAll('.eb-bywidth')) b.hidden = !fixed;
+    // The figure's pills: auto with no width, else the one it matches.
+    const fig = form.elements.figpx.value === '' ? 'auto' : form.elements.figunit.value === '%' ? String(figWidth()) : '';
+    for (const r of form.elements.figp) r.checked = r.value === fig;
+    // A number typed is the buttons to a row; with none, square or fit.
+    if (form.elements.perrow.value !== '') for (const r of form.elements.perp) r.checked = false;
+    else if (!form.elements.perp.value) form.elements.perp.value = 'square';
+    // A size box shows its step's px; typed, it keeps its own.
+    for (const d in STEP_PX) {
+      const v = form.elements[d].value, box = form.elements[`${d}px`];
+      if (v && document.activeElement !== box) box.value = STEP_PX[d][v] ?? '';
+    }
+    for (const d of form.querySelectorAll('.eb-dial')) d.dataset.stops = fixed ? 6 : 5;
+    // A card that fills its width fills the stage, which can be dragged
+    // narrower or wider to see it reflow; one of a set width has its own,
+    // and the stage goes back to the column's.
+    preview.dataset.w = wset ? 'px' : 'fill';
+    preview.dataset.theme = s.theme;
+    if (fixed) preview.style.width = '';
+    if (s.width && document.activeElement !== form.elements.px) form.elements.px.value = s.width;
+    code.value = snippet(s);
+    const image = s.format !== 'iframe';
+    const n = themes(s).length;
+    const kind = s.format === 'pdf' ? 'PDF' : 'PNG';
+    download.hidden = !image;
+    download.title = `Download ${kind}`;
+    download.setAttribute('aria-label', download.title);
+    note.textContent = !image ? ''
+      : s.format === 'pdf' ? `Download the PDF${n > 1 ? 's, light and dark,' : ','} drawn by Typst: the text selectable and the links live.`
+      : `Download the PNG${n > 1 ? 's' : ''} and keep ${n > 1 ? 'them' : 'it'} beside the page; the snippet names ${n > 1 ? 'them' : 'it'}.`
+        + (s.format === 'markdown' && s.theme === 'auto' ? ' Markdown cannot follow the reader’s theme, so this is the light one.' : '');
+    // The preview loads from this site, not from `site`, so a preview deploy
+    // shows its own build.
+    const src = `/embed/${s.id}/${query(s)}`;
+    if (src === shown) return;
+    shown = src;
+    height = 0;
+    preview.innerHTML = `<iframe src="${src}" title="${esc(s.it.title)} preview" width="${s.width ?? '100%'}" style="border:0; max-width:100%"></iframe>`;
+    const frame = preview.querySelector('iframe');
+    frame.addEventListener('load', () => hits(frame));
+  }
+
+  // The preview frame reports its card's height; the snippet takes it, so the
+  // frame is the right size even without resize.js.
+  addEventListener('message', (e) => {
+    const f = preview.querySelector('iframe');
+    if (!f || e.source !== f.contentWindow || e.data?.type !== 'nstarkman-embed') return;
+    height = e.data.height;
+    f.style.height = `${height}px`;
+    render();
+  });
+
+  // A dial's slider set to a step, or to none — the thumb hides.
+  function setDial(d, v) {
+    for (const r of form.elements[d]) r.checked = r.value === v;
+  }
+
+  // What a box takes when nothing is chosen — in a fixed minor the nick or short
+  // title and no text, else the full title — asked of the grammar itself, by
+  // leaving the part out of the current name. Text has a default only where
+  // the grammar gives one; elsewhere it is left as it was.
+  function defaults() {
+    const name = spec().slug;
+    const c = parseName(name.replace(/-title:[^-]+/, ''));
+    form.elements.title.value = c.title;
+    if (c.title === 'full') form.elements.rest.value = c.rest;
+    try { form.elements.text.value = parseName(name.replace(/-text:[^-]+/, '')).text; } catch { /* no default here */ }
+  }
+
+  // The height typed, held to its range.
+  const boxHeight = () => Math.min(fixedMax, Math.max(fixedMinHeight, Math.round(+form.elements.hpx.value || 400)));
+  // The preset widths: the five steps' widths for a box no wider than it is
+  // high (a 320px one reads as standard), wider for a wider box — by its
+  // width over its height, held between 1 and 2, as global.css has it.
+  const stretch = () => (form.elements.hmode.value === 'px' ? Math.min(2, Math.max(1, (+form.elements.px.value || 320) / boxHeight())) : 1);
+  const presetWidths = () => [200, 260, 320, 400, 520].map((w) => Math.round((w * stretch()) / 10) * 10);
+  const widthPills = el('eb-widths');
+  function showWidths(width) {
+    const key = String(stretch());
+    if (widthPills.dataset.stretch !== key) {
+      widthPills.dataset.stretch = key;
+      widthPills.innerHTML = presetWidths().map((w) => `<label><input type="radio" class="posradio" name="pxp" value="${w}" />${w}</label>`).join('');
+    }
+    for (const r of widthPills.querySelectorAll('input')) r.checked = +r.value === width;
+  }
+
+  // The set width and height open out of their pills — on choosing set, or
+  // on clicking it again — and fold back once chosen: a preset picked, Enter
+  // or Escape in a box, or a click or tab away.
+  let widthOpen = false;
+  const wasSet = { wmode: false, hmode: false }; // as they stood before a click, which comes before its change
+  const widthBox = el('eb-px');
+  function openWidth(open, input = form.elements.px) {
+    widthOpen = open;
+    if (!open) { // as clamped
+      const s = spec();
+      if (s.width != null) form.elements.px.value = s.width;
+      if (s.height != null) form.elements.hpx.value = s.height;
+    }
+    render();
+    if (open) { input.focus(); input.select(); }
+  }
+  for (const pill of form.querySelectorAll('.eb-setpx')) {
+    pill.addEventListener('click', (e) => {
+      if (e.target.type !== 'radio') return; // the label's click comes again from its radio
+      // A click on set when already set fires no change, so it toggles here;
+      // choosing set opens it in the change handler.
+      if (wasSet[e.target.name]) openWidth(!widthOpen, e.target.name === 'hmode' ? form.elements.hpx : form.elements.px);
+    });
+  }
+  document.addEventListener('pointerdown', (e) => {
+    if (widthOpen && !e.target.closest('#eb-px, .eb-setpx')) openWidth(false);
+  });
+  widthBox.addEventListener('focusout', (e) => {
+    if (widthOpen && e.relatedTarget && !e.relatedTarget.closest('#eb-px, .eb-setpx')) openWidth(false);
+  });
+  for (const input of [form.elements.px, form.elements.hpx]) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); openWidth(false); }
+    });
+  }
+
+  // A pill with a tick box — Title, Authors, Text: the box shows the part or
+  // not (none), coming back as it was. Ticked, its options come up under the
+  // preview; unticked, they go.
+  for (const [name, first] of [['title', 'full'], ['authors', 'full'], ['text', 'summary']]) {
+    let last = first;
+    el(`eb-${name}-on`).addEventListener('change', (e) => {
+      e.stopPropagation();
+      if (e.target.checked) form.elements[name].value = last;
+      else { last = form.elements[name].value; form.elements[name].value = 'none'; }
+      render();
+      if (e.target.checked) {
+        tune([name]);
+        el(`eb-${name}-row`).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        el(`eb-${name}-row`).hidden = true;
+        syncAll();
+      }
+    });
+  }
+
+  // The figure's width as typed and held to its range: a share of its
+  // column, 10–100, or px, 8–800.
+  const figWidth = () => {
+    const [lo, hi] = form.elements.figunit.value === 'px' ? [8, 800] : [10, 100];
+    return Math.min(hi, Math.max(lo, Math.round(+form.elements.figpx.value || 0)));
+  };
+  // Each side holding anything: its width — at least so many px, 0–800; a
+  // share of the card, 5–95; or its buttons', where they are in it — and the
+  // corners it wins, where the top or bottom area holds anything.
+  const sides = (f) => Object.fromEntries(['left', 'right'].filter(sideHas).map((side) => {
+    const kind = f.get(`w${side}`), n = f.get(`w${side}n`);
+    const [lo, hi] = kind === 'min' ? [0, 800] : [5, 95];
+    const width = kind === 'buttons' ? (f.get('foot') === side ? 'buttons' : undefined)
+      : kind && n !== '' ? `${kind}=${Math.min(hi, Math.max(lo, Math.round(+n)))}` : undefined;
+    const wins = f.getAll(`win${side}`);
+    const top = wins.includes('top') && f.get('titleat') === 'top', bottom = wins.includes('bottom') && f.get('foot') === 'bottom';
+    return [side, { ...(width && { width }), ...(top && { top }), ...(bottom && { bottom }) }];
+  }).filter(([, v]) => Object.keys(v).length));
+  // A whole number typed, held between lo and hi.
+  const clampInt = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(+v || 0)));
+  // The space tracks set, px or flex, kept here.
+  let space = {};
+  // Each track named by the parts shown either side of it in the preview —
+  // "words · rail" — as it was last laid out; by its own name until then.
+  const trackBetween = {};
+  const trackName = (t) => trackBetween[t] ?? t.replace('_', ' · ');
+  // The tracks set, each with its px, flex and a way to remove it; or how to
+  // add one.
+  function showTracks() {
+    const set = SPACE_TRACKS.filter((t) => space[t]);
+    el('eb-tracks').innerHTML = set.length ? set.map((t) => {
+      const v = space[t];
+      const and = trackName(t).replace(' · ', ' and ');
+      return `<span class="eb-track eb-px"><span class="eb-dim" data-label="${t}">${trackName(t)}</span>`
+        + `<label><input type="number" min="0" max="64" step="1" data-track="${t}" value="${v === 'flex' ? '' : v}" placeholder="–" aria-label="Space between ${and}, in pixels" />px</label>`
+        + `<span class="pilltoggle eb-checks"><label><input type="checkbox" class="eb-check" data-trackflex="${t}" ${v === 'flex' ? 'checked' : ''} />flex</label></span>`
+        + `<button type="button" class="eb-track-x" data-trackdel="${t}" aria-label="Remove the space between ${and}">✕</button></span>`;
+    }).join('') : '<span class="eb-dim">⊕ between two parts in the preview adds one</span>';
+  }
+  // So many names, as typed and clamped; five with nothing typed.
+  const namesN = () => Math.min(AUTHORS_MAX, Math.max(1, Math.round(+form.elements.authorsn.value || 5)));
+  // The text size to a tenth of a pixel; the rest to whole ones.
+  const typedPx = (d) => {
+    const unit = d === 'textsize' || d === 'titlesize' ? 10 : 1;
+    return Math.min(STEP_PX[d].max, Math.max(STEP_PX[d].min, Math.round((+form.elements[`${d}px`].value || 0) * unit) / unit));
+  };
+  // The setting a size box belongs to, if the target is one.
+  const sizeOf = (t) => Object.keys(STEP_PX).find((d) => t.name === `${d}px`);
+
+  form.addEventListener('input', (e) => {
+    if (['px', 'hpx', 'figpx'].includes(e.target.name)) render();
+    // A side's width typed: at least that many px, unless a kind is chosen.
+    const wn = /^w(left|right)n$/.exec(e.target.name);
+    if (wn) {
+      if (!form.elements[`w${wn[1]}`].value) form.elements[`w${wn[1]}`].value = 'min';
+      render();
+    }
+    // A track's px typed; empty is none.
+    if (e.target.dataset?.track) {
+      const t = e.target.dataset.track;
+      if (e.target.value === '') delete space[t]; else space[t] = String(clampInt(e.target.value, 0, 64));
+      render();
+    }
+    // A frame typed is that many px, on no step.
+    if (e.target.name === 'framepx') { for (const r of form.elements.frame) r.checked = false; render(); }
+    if (e.target.name === 'bgap') render();
+    // Typing a number of names chooses it.
+    if (e.target.name === 'authorsn') { form.elements.authors.value = 'n'; render(); }
+    const d = sizeOf(e.target);
+    if (d) { setDial(d, ''); render(); }
+  });
+  // Nothing to send: Enter in the width box keeps the page, and a width out of
+  // range is clamped by spec(), not refused.
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  form.addEventListener('change', (e) => {
+    if (e.target.name === 'card') {
+      buildExtras(e.target.value);
+      start();
+    } else if (e.target.name === 'preset' && e.target.value) {
+      if (e.target.value === presets[0].slug) start(); else apply(e.target.value); // to look at; custom changes nothing
+    } else if (e.target.name === 'foot') {
+      // A new area, its own place: in a side, the links at its top and
+      // toward its edge; under the words or at the bottom, at the left,
+      // the year at the bottom of the buttons.
+      const side = ['left', 'right'].includes(e.target.value);
+      form.elements.railalign.value = side ? e.target.value : 'left';
+      form.elements.footend.value = side ? 'top' : 'bottom';
+    } else if (e.target.name === 'titleat') {
+      // The top area's settings come with the title into it, and go with it.
+      el('eb-area-top-row').hidden = !canTune(el('eb-area-top-row'));
+    } else if (e.target.name === 'title' && e.target.value === 'full') {
+      form.elements.rest.value = 'split'; // choosing full starts it split
+    } else if (e.target.name === 'authorsn') {
+      form.elements.authors.value = 'n'; // a number typed is that choice
+      e.target.value = namesN(); // as clamped
+    } else if (e.target.name === 'authors' && e.target.value === 'n') {
+      if (form.elements.authorsn.value === '') form.elements.authorsn.value = 5;
+    } else if (e.target.dataset?.trackflex) {
+      const t = e.target.dataset.trackflex;
+      space[t] = e.target.checked ? 'flex' : '8';
+      showTracks();
+    } else if (e.target.name === 'frame') {
+      form.elements.framepx.value = ''; // a step or none, in place of a size
+    } else if (e.target.name === 'perp') {
+      form.elements.perrow.value = ''; // square or fit, in place of a number
+    } else if (e.target.name === 'figp') {
+      form.elements.figpx.value = e.target.value === 'auto' ? '' : e.target.value;
+      form.elements.figunit.value = '%'; // the pills are shares of the column
+    } else if (e.target.name === 'figpx') {
+      if (e.target.value !== '') e.target.value = figWidth(); // as clamped
+    } else if (sizeOf(e.target)) {
+      if (e.target.value !== '') e.target.value = typedPx(sizeOf(e.target)); // as clamped
+    } else if (e.target.name === 'pxp') {
+      // A preset width keeps the box's shape where the height is set too.
+      const ratio = boxHeight() / (+form.elements.px.value || 320);
+      form.elements.px.value = e.target.value;
+      if (form.elements.hmode.value === 'px') form.elements.hpx.value = Math.round(e.target.value * ratio);
+      widthOpen = false;
+    } else if (e.target.name === 'wmode' && e.target.value === 'px') {
+      widthOpen = true;
+      setTimeout(() => { form.elements.px.focus(); form.elements.px.select(); });
+    } else if (e.target.name === 'hmode' && e.target.value === 'px') {
+      widthOpen = true;
+      setTimeout(() => { form.elements.hpx.focus(); form.elements.hpx.select(); });
+    } else if (e.target.name === 'shape') {
+      // A shape sets the height from the width.
+      const [a, b] = e.target.value.split('x').map(Number);
+      form.elements.hpx.value = Math.round((+form.elements.px.value * b) / a);
+    } else if (e.target.name === 'wmode' && e.target.value === 'fill') {
+      // A card that fills its width has no set width to follow: a setting by
+      // width is standard.
+      for (const d of DIALS) if (form.elements[d].value === 'width') setDial(d, 'standard');
+    }
+    // A new size or text size brings its own defaults.
+    if (['wmode', 'hmode', 'textsize', 'px', 'hpx', 'shape', 'pxp'].includes(e.target.name)) defaults();
+    render();
+  });
+
+  // The preview's hitboxes: each part of the card, outlined, brings up what
+  // tunes it — first match wins, so a link button beats the rail it sits in,
+  // and the card itself is what is left: its padding and edge.
+  const HITS = [
+    // One rule: a click brings up the settings of what was clicked, and only
+    // those — a part's own row, an area's, the card's.
+    ['.c-foot .iconbtn', ['foot']],
+    ['.c-fig', ['figure']],
+    ['.c-name', ['title']],
+    ['.c-by', ['authors']],
+    ['.c-text', ['text']],
+    // My position, "1st", stands in for the byline: it brings up the authors —
+    // the way back to a byline, and the corner it sits in.
+    ['.c-place', ['authors']],
+    ['.c-stamp', ['foot']],
+    ['.c-context', ['foot']],
+    ['.c-refs', ['foot']],
+    // The venue line has no row of its own: it is on or off, above.
+    ['.c-venue', []],
+    ['.c-foot', ['foot']],
+    // An area, apart from what is in it: clicking its empty room.
+    ['.eb-area', []],
+    ['.card', ['padding', 'corners', 'background']],
+  ];
+  const HIT_CSS = `
+    .eb-hits .card, .eb-hits :is(${HITS.slice(0, -1).map(([q]) => q).join(', ')}){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
+    .eb-hits .card{outline-offset:-2px}
+    .eb-hits .eb-hit-hover{outline:1.5px solid var(--accent) !important}
+    .eb-hits .eb-hit-on{outline:2px solid var(--accent) !important}
+    .eb-fig-grip{display:none}
+    .eb-hits .c-fig{position:relative}
+    /* The figure's corner sits over its side's edge: the corner resizes the
+       figure alone, the rest of the edge the side alone. */
+    .eb-hits .eb-fig-grip{display:block; position:absolute; right:2px; bottom:2px; width:11px; height:11px; z-index:5;
+      border:2px solid var(--accent); border-radius:2px; background:var(--ground); cursor:nwse-resize; touch-action:none}
+    .eb-hits .card{position:relative; isolation:isolate}
+    /* The areas, behind what is in them: outlined, as the parts are. */
+    .eb-area{display:none}
+    .eb-hits .eb-area{display:block; position:absolute; z-index:-1}
+    /* A side's inner edge, dragged to set its width. */
+    .eb-area-grip{display:none}
+    .eb-hits .eb-area-grip{display:block; position:absolute; z-index:4; width:7px; margin-left:-3.5px; cursor:ew-resize; touch-action:none}
+    .eb-hits .eb-area-grip::before{content:''; position:absolute; inset:0 3px; background:var(--accent); opacity:0; transition:opacity .15s}
+    .eb-hits .card:hover .eb-area-grip::before{opacity:.35}
+    .eb-hits .eb-area-grip:hover::before, .eb-hits .eb-area-grip:active::before{opacity:1}
+    .eb-plus{position:absolute; z-index:3; width:18px; height:18px; margin:-9px 0 0 -9px; padding:0; border-radius:50%;
+      border:1.5px solid var(--accent); background:var(--ground); color:var(--accent); font:600 14px/14px system-ui, sans-serif;
+      cursor:pointer; opacity:0; transition:opacity .15s}
+    .eb-hits .card:hover .eb-plus{opacity:.9}
+    .eb-plus:hover, .eb-plus:focus-visible{opacity:1 !important; background:var(--accent); color:var(--ground)}
+    .eb-band{display:none}
+    .eb-hits .eb-band{display:block; position:absolute; z-index:1; padding:0; border:0; cursor:pointer;
+      background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 25%, transparent) 0 3px, transparent 3px 7px)}
+    .eb-hits .eb-band:hover, .eb-hits .eb-band:focus-visible{outline:1.5px solid var(--accent); outline-offset:-1.5px;
+      background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 40%, transparent) 0 3px, transparent 3px 7px)}`;
+  const tuneRows = [...document.querySelectorAll('[data-tune]')];
+  // What a side holds: its figure, its rail, or both.
+  function sideHas(side) {
+    const it = items[form.elements.card.value];
+    return form.elements.foot.value === side || (it.figure && el('eb-figure-on').checked && form.elements.figat.value === side);
+  }
+  // The rows this item can show: none for authors, text or a figure it has
+  // not got; a side's area only with something in it; and the top or bottom
+  // area's only while it holds the title or the buttons, beside a side that
+  // holds anything.
+  function canTune(r) {
+    const it = items[form.elements.card.value];
+    const t = r.dataset.tune;
+    const sides = sideHas('left') || sideHas('right');
+    return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'figure' && !it.figure)
+      || (t === 'area-left' && !sideHas('left')) || (t === 'area-right' && !sideHas('right'))
+      || (t === 'area-top' && !(sides && form.elements.titleat.value === 'top')) || (t === 'area-bottom' && !(sides && form.elements.foot.value === 'bottom')));
+  }
+  function tune(keys) {
+    for (const r of tuneRows) r.hidden = !keys.includes(r.dataset.tune) || !canTune(r);
+    syncAll();
+  }
+  // ✕ on a track takes its space away.
+  el('eb-tracks').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-trackdel]')?.dataset.trackdel;
+    if (!t) return;
+    delete space[t];
+    showTracks();
+    render();
+  });
+  // Swap my position and the buttons in a side rail: its top for its bottom.
+  el('eb-swap').addEventListener('click', () => {
+    form.elements.footend.value = form.elements.footend.value === 'top' ? 'bottom' : 'top';
+    render();
+  });
+
+  // Show all, or — once every row the item can show is up — hide all.
+  const tuneAll = el('eb-tune-all');
+  function syncAll() {
+    tuneAll.textContent = tuneRows.filter(canTune).every((r) => !r.hidden) ? 'hide all' : 'show all';
+  }
+  // The figure's corner grip: dragging it sizes the figure, live in the
+  // preview, as a share of its column or in px as the size is set, and on
+  // release writes it to the size box. A figure that is centred grows on both
+  // sides.
+  function grip(frame) {
+    const doc = frame.contentDocument;
+    const fig = doc.querySelector('.card[data-fig] > .c-fig');
+    if (!fig) return;
+    const handle = doc.createElement('span');
+    handle.className = 'eb-fig-grip';
+    handle.title = 'Drag to size the figure';
+    fig.append(handle);
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handle.setPointerCapture(e.pointerId);
+      const card = doc.querySelector('.card');
+      const cs = frame.contentWindow.getComputedStyle(card);
+      // Its column: the side's, or the words' for a figure above them.
+      const col = cs.gridTemplateColumns.split(' ').map(parseFloat)[{ left: 0, center: 2, right: 4 }[card.dataset.fig]];
+      const px = form.elements.figunit.value === 'px';
+      const box = fig.getBoundingClientRect();
+      // The width from where the drag began: a centred figure grows both
+      // ways, twice the pointer's move, so its corner stays under the pointer.
+      const centred = card.dataset.fig === 'center' || !card.dataset.figh;
+      const x0 = e.clientX;
+      let share = null;
+      const move = (ev) => {
+        const w = box.width + (ev.clientX - x0) * (centred ? 2 : 1);
+        share = px ? Math.min(800, Math.max(8, Math.round(w))) : Math.min(100, Math.max(10, Math.round((w / col) * 100)));
+        card.dataset.figw = '';
+        card.style.setProperty('--figw', px ? `min(${share}px, 100%)` : `${share}%`);
+      };
+      const up = () => {
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', up);
+        if (share == null) return;
+        form.elements.figpx.value = share;
+        el('eb-figure-on').checked = true;
+        tune(['figure']);
+        render();
+      };
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', up);
+    });
+  }
+  // The card's space tracks, as its grid has them: each row track by its
+  // index in the grid's fourteen rows, each column track in its five.
+  const ROW_TRACKS = [[1, 'title_figure'], [3, 'figure_authors'], [5, 'authors_venue'], [7, 'venue_text'], [9, 'text_rail'], [12, 'rail_bottom']];
+  const COL_TRACKS = [[1, 'left_words'], [3, 'words_right']];
+  const ROW_SLOTS = [0, 2, 4, 6, 8, 11, 13];
+  const COL_SLOTS = [0, 2, 4];
+  const COL_NAMES = { 0: 'LHS', 2: 'words', 4: 'RHS' };
+  // In the preview, a ⊕ between each two slots that show — the first track
+  // between them, where parts left out leave several — to add space there,
+  // and a hatched band over each track that has some.
+  function plus(frame) {
+    const doc = frame.contentDocument, card = doc?.querySelector('.card');
+    if (!card) return;
+    // While a side is dragged its grip stays put: redrawn, it would be lost
+    // from under the pointer as the card's height follows the drag.
+    let dragging = false;
+    const place = () => {
+      if (dragging) return;
+      card.querySelectorAll('.eb-plus, .eb-band, .eb-area, .eb-area-grip').forEach((e) => e.remove());
+      const cs = frame.contentWindow.getComputedStyle(card);
+      const rows = cs.gridTemplateRows.split(' ').map(parseFloat), cols = cs.gridTemplateColumns.split(' ').map(parseFloat);
+      if (rows.length !== 14 || cols.length !== 5) return;
+      const pt = parseFloat(cs.paddingTop), pl = parseFloat(cs.paddingLeft);
+      const sum = (a, i) => a.slice(0, i).reduce((x, y) => x + y, 0);
+      const H = sum(rows, 14), W = sum(cols, 5);
+      // The areas, apart from their contents: the sides down the rows they
+      // run, the top and bottom across what they take — each where it has
+      // any room.
+      const at0 = card.getBoundingClientRect();
+      const lineY = (line) => pt + sum(rows, line - 1);
+      const row = (v) => parseInt(cs.getPropertyValue(v), 10);
+      const area = (name, x, y, w, h) => {
+        if (w < 1 || h < 1) return;
+        const e = doc.createElement('span');
+        e.className = 'eb-area';
+        e.dataset.area = name;
+        Object.assign(e.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+        card.append(e);
+      };
+      area('left', pl, lineY(row('--rL0')), cols[0], lineY(row('--rL1')) - lineY(row('--rL0')));
+      area('right', pl + sum(cols, 4), lineY(row('--rR0')), cols[4], lineY(row('--rR1')) - lineY(row('--rR0')));
+      // Each side holding anything, a grip on its inner edge to drag its width.
+      for (const [side, x, w, r0, r1] of [['left', pl + cols[0], cols[0], '--rL0', '--rL1'], ['right', pl + sum(cols, 4), cols[4], '--rR0', '--rR1']]) {
+        if (w < 1) continue;
+        const g = doc.createElement('span');
+        g.className = 'eb-area-grip';
+        g.dataset.side = side;
+        g.title = `Drag to set the ${side} side's width`;
+        Object.assign(g.style, { left: `${x}px`, top: `${lineY(row(r0))}px`, height: `${lineY(row(r1)) - lineY(row(r0))}px` });
+        card.append(g);
+      }
+      for (const [name, q, on] of [['top', '.c-name', card.dataset.titleat === 'top'], ['bottom', '.c-foot', card.dataset.foot === 'bottom']]) {
+        const r = on && card.querySelector(q).getBoundingClientRect();
+        if (r) area(name, r.left - at0.left, lineY(name === 'top' ? 1 : 14), r.width, name === 'top' ? rows[0] : rows[13]);
+      }
+      // Name each track by the parts shown before and after it, or the
+      // card's edge, and relabel the Space row to match — its text only, so
+      // a box being typed in keeps its focus.
+      const named = (slots, names, sizes, i) => {
+        const shown = slots.filter((j) => sizes[j] > 0.5);
+        const a = shown.filter((j) => j < i).at(-1), b = shown.find((j) => j > i);
+        return `${names[a] ?? 'edge'} · ${names[b] ?? 'edge'}`;
+      };
+      // Each row slot named by the part in it, as this card orders them.
+      const rowNames = { 11: 'rail', 13: 'rail' };
+      for (const [q, name] of [['.c-name', 'title'], ['.c-fig', 'figure'], ['.c-by', 'authors'], ['.c-venue', 'venue'], ['.c-text', 'text']]) {
+        const part = card.querySelector(q);
+        const r = part && parseInt(frame.contentWindow.getComputedStyle(part).gridRowStart, 10);
+        if (r && !(r - 1 in rowNames)) rowNames[r - 1] = name;
+      }
+      for (const [i, t] of ROW_TRACKS) trackBetween[t] = named(ROW_SLOTS, rowNames, rows, i);
+      for (const [i, t] of COL_TRACKS) trackBetween[t] = named(COL_SLOTS, COL_NAMES, cols, i);
+      for (const e of el('eb-tracks').querySelectorAll('[data-label]')) e.textContent = trackName(e.dataset.label);
+      // A ⊕ adds a space; on one already set it is a ✕, and takes it away.
+      // The band is a button too: it brings up the space's own settings.
+      const add = (cls, css, track) => {
+        const e = doc.createElement('button');
+        const name = trackName(track);
+        const set = cls === 'eb-plus' && space[track] != null;
+        e.type = 'button';
+        e.className = cls;
+        Object.assign(e.style, css);
+        if (cls === 'eb-plus') e.textContent = set ? '×' : '+';
+        e.title = cls === 'eb-band' ? `Space: ${name}` : `${set ? 'Remove' : 'Add'} space: ${name}`;
+        e.setAttribute('aria-label', e.title);
+        e.dataset.track = track;
+        card.append(e);
+      };
+      // Of the tracks between two parts shown, the one that holds the gap
+      // between them — a rail's sits on the rail's side, past an empty figure
+      // column — so a space set there is the whole of it, not added to it.
+      const between = (slots, tracks, sizes) => {
+        const shown = slots.filter((i) => sizes[i] > 0.5);
+        return shown.slice(1).map((b, k) => {
+          const c = tracks.filter(([i]) => i > shown[k] && i < b);
+          return c.find(([i]) => sizes[i] > 0.5) ?? c[0];
+        }).filter(Boolean);
+      };
+      for (const [i, t] of between(ROW_SLOTS, ROW_TRACKS, rows)) {
+        add('eb-plus', { top: `${pt + sum(rows, i) + rows[i] / 2}px`, left: `${pl + sum(cols, 2) + cols[2] / 2}px` }, t);
+      }
+      for (const [i, t] of between(COL_SLOTS, COL_TRACKS, cols)) {
+        add('eb-plus', { top: `${pt + H / 2}px`, left: `${pl + sum(cols, i) + cols[i] / 2}px` }, t);
+      }
+      // Each band where its track does its work: a row's across the words —
+      // the figures and side rails span those rows — but for the one above
+      // the bottom rail, which runs the card's width; a column's down to
+      // that rail, which runs under them all.
+      // A title at the top runs across the card — short of the side rails
+      // the top area stops beside — and so does the space under it; the
+      // columns start under it, but for the one beside such a rail.
+      const top = card.dataset.titleat === 'top' ? sum(rows, 2) : 0;
+      const name = card.querySelector('.c-name').getBoundingClientRect(), at = card.getBoundingClientRect();
+      for (const [i, t] of ROW_TRACKS) {
+        const across = t === 'rail_bottom' ? { left: `${pl}px`, width: `${W}px` }
+          : top && t === 'title_figure' ? { left: `${name.left - at.left}px`, width: `${name.width}px` }
+          : { left: `${pl + sum(cols, 2)}px`, width: `${cols[2]}px` };
+        if (space[t]) add('eb-band', { top: `${pt + sum(rows, i)}px`, height: `${rows[i]}px`, ...across }, t);
+      }
+      const beside = (card.dataset.wins ?? '').split(' ').map((w) => ({ 'left-top': 'left_words', 'right-top': 'words_right' })[w]);
+      for (const [i, t] of COL_TRACKS) {
+        const y = beside.includes(t) ? 0 : top;
+        if (space[t]) add('eb-band', { left: `${pl + sum(cols, i)}px`, width: `${cols[i]}px`, top: `${pt + y}px`, height: `${sum(rows, 12) - y}px` }, t);
+      }
+    };
+    place();
+    frame.contentWindow.addEventListener('resize', place);
+    // A side's grip dragged: its width as it goes, then — let go — set in the
+    // Area row: a share of the card where it is one, else at least that px.
+    doc.addEventListener('pointerdown', (e) => {
+      const g = e.target.closest?.('.eb-area-grip');
+      if (!g) return;
+      e.preventDefault();
+      e.stopPropagation();
+      dragging = true;
+      const side = g.dataset.side;
+      const cs = frame.contentWindow.getComputedStyle(card), at = card.getBoundingClientRect();
+      const pl = parseFloat(cs.paddingLeft), pr = parseFloat(cs.paddingRight), inner = at.width - pl - pr;
+      const share = form.elements[`w${side}`].value === 'share';
+      let v = null;
+      const move = (ev) => {
+        const w = side === 'left' ? ev.clientX - (at.left + pl) : at.right - pr - ev.clientX;
+        v = share ? Math.min(95, Math.max(5, Math.round((w / inner) * 100))) : Math.min(800, Math.max(0, Math.round(w)));
+        card.style.setProperty(side === 'left' ? '--colL' : '--colR', share ? `${v}%` : `minmax(${v}px, auto)`);
+      };
+      const up = () => {
+        doc.removeEventListener('pointermove', move);
+        doc.removeEventListener('pointerup', up);
+        dragging = false;
+        if (v == null) return place();
+        form.elements[`w${side}`].value = share ? 'share' : 'min';
+        form.elements[`w${side}n`].value = v;
+        tune([`area-${side}`]);
+        render();
+      };
+      doc.addEventListener('pointermove', move);
+      doc.addEventListener('pointerup', up);
+    });
+    doc.addEventListener('click', (e) => {
+      const b = e.target.closest?.('.eb-plus, .eb-band');
+      if (!b) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const t = b.dataset.track;
+      if (b.classList.contains('eb-band')) {
+        // Its settings: the Space row, at this space's px.
+        tune(['space']);
+        el('eb-tracks').querySelector(`[data-track="${t}"]`)?.focus();
+        return;
+      }
+      if (space[t] != null) delete space[t]; else space[t] = '8';
+      showTracks();
+      if (space[t] != null) tune(['space']);
+      render();
+    });
+  }
+  function hits(frame) {
+    const doc = frame.contentDocument;
+    if (!doc || doc.getElementById('eb-hit-css')) return;
+    const style = doc.createElement('style');
+    style.id = 'eb-hit-css';
+    style.textContent = HIT_CSS;
+    doc.head.append(style);
+    doc.documentElement.classList.add('eb-hits');
+    grip(frame);
+    plus(frame);
+    // A part is what it is; what is left — the card's own room, the box a
+    // rail fills its side with, or a title's box past its words — is the
+    // area under the pointer, where there is one, not the part that happens
+    // to fill it.
+    const areaAt = (x, y) => [...doc.querySelectorAll('.eb-area')].find((a) => {
+      const r = a.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+    const onWords = (el, x, y) => {
+      const r = doc.createRange();
+      r.selectNodeContents(el);
+      return [...r.getClientRects()].some((b) => x >= b.left - 2 && x <= b.right + 2 && y >= b.top - 2 && y <= b.bottom + 2);
+    };
+    const find = (t, x, y) => {
+      if (t.closest?.('.eb-plus, .eb-band, .eb-area-grip')) return null;
+      for (const [q, keys] of HITS) {
+        const el = t.closest?.(q);
+        if (!el) continue;
+        const area = q === '.eb-area' ? el : (q === '.card' || q === '.c-foot' || (q === '.c-name' && !onWords(el, x, y))) && areaAt(x, y);
+        return area ? { el: area, keys: [`area-${area.dataset.area}`] } : { el, keys };
+      }
+      return null;
+    };
+    let hover = null;
+    doc.addEventListener('mouseover', (e) => {
+      hover?.classList.remove('eb-hit-hover');
+      hover = find(e.target, e.clientX, e.clientY)?.el ?? null;
+      hover?.classList.add('eb-hit-hover');
+    });
+    // In the preview a click tunes; it does not follow the link.
+    doc.addEventListener('click', (e) => {
+      const hit = find(e.target, e.clientX, e.clientY);
+      if (!hit) return;
+      e.preventDefault();
+      doc.querySelector('.eb-hit-on')?.classList.remove('eb-hit-on');
+      hit.el.classList.add('eb-hit-on');
+      tune(hit.keys);
+    }, true);
+  }
+  tuneAll.addEventListener('click', () => tune(tuneAll.textContent === 'hide all' ? [] : tuneRows.map((r) => r.dataset.tune)));
+
+  // The card in the preview, drawn to a PNG in the theme asked for: the frame
+  // is this site's own page, so its document is ours to read. The hitboxes
+  // are lifted while it is drawn.
+  async function drawn(theme, draw) {
+    const doc = preview.querySelector('iframe').contentDocument;
+    const root = doc.documentElement;
+    const was = root.dataset.theme;
+    // The theme lands at once, not 0.15s later — the buttons ease their
+    // colours, and a card read in between is half in each theme.
+    const still = doc.head.appendChild(doc.createElement('style'));
+    still.textContent = '*, *::before, *::after { transition: none !important }';
+    root.dataset.theme = theme;
+    root.classList.remove('eb-hits');
+    try {
+      await doc.fonts.ready;
+      return await draw(doc.querySelector('.card'));
+    } finally {
+      still.remove();
+      root.classList.add('eb-hits');
+      if (was) root.dataset.theme = was; else delete root.dataset.theme;
+    }
+  }
+  const png = (theme) => drawn(theme, (card) => domToPng(card, { scale: 2 }));
+
+  // The same card as a PDF: measured where the browser laid it out, then set
+  // again by Typst (src/lib/card.typ) in the same faces. The compiler, ~11 MB,
+  // loads on the first one asked for.
+  async function pdf(theme, s) {
+    const { model, images } = await drawn(theme, async (card) => (await import('../../lib/cardpdf.js')).measureCard(card, { title: s.it.title, site }));
+    const [{ compileTypst }, { default: src }] = await Promise.all([import('../../lib/typstcompile.js'), import('../../lib/card.typ?raw')]);
+    const files = { '/card.json': new TextEncoder().encode(JSON.stringify(model)) };
+    for (const [path, url] of images) files[path] = new Uint8Array(await (await fetch(url)).arrayBuffer());
+    const bytes = await compileTypst(src, files, fonts, (m) => (note.textContent = m));
+    return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+  }
+
+  download.addEventListener('click', async () => {
+    const s = spec();
+    download.disabled = true;
+    try {
+      for (const t of themes(s)) {
+        const a = document.createElement('a');
+        a.href = s.format === 'pdf' ? await pdf(t, s) : await png(t);
+        a.download = file(s, t);
+        a.click();
+        if (s.format === 'pdf') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+      render();
+    } catch (err) {
+      note.textContent = `Could not draw the ${s.format === 'pdf' ? 'PDF' : 'PNG'}: ${err.message}`;
+    } finally {
+      download.disabled = false;
+    }
+  });
+
+  // Name ▸ shows the card's name beside it; again hides it.
+  el('eb-name-toggle').addEventListener('click', () => {
+    const open = el('eb-name-toggle').getAttribute('aria-expanded') !== 'true';
+    el('eb-name-toggle').setAttribute('aria-expanded', String(open));
+    el('eb-slug').hidden = !open;
+  });
+
+  // Settings out: the card's spec, as the grammar reads it, and the theme and
+  // format — not the item. In: the same, checked by writing it as a name and
+  // reading that back, then loaded onto whichever item is chosen. Extras and
+  // links the item has not got stay off, as with a preset.
+  const THEMES = ['auto', 'light', 'dark'];
+  const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
+  const KEYS = ['width', 'height', 'figure', 'figureAlign', 'figureH', 'figureSlot', 'figureSize', 'figureLink', 'foot', 'footEnd', 'railAlign', 'sides', 'titleWeight', 'frame', 'buttonGap', 'space', 'title', 'rest', 'titleLink', 'titleAt', 'titleAlign', 'authors', 'marks', 'authorLink', 'posX', 'posY', 'contextX', 'contextY', 'text', 'extras', 'links', 'perRow', 'dials', 'background'];
+  el('eb-export').addEventListener('click', () => {
+    const s = spec();
+    const c = parseName(s.slug);
+    // In the name's own order, so the file reads as the name does.
+    const card = Object.fromEntries(KEYS.filter((k) => k in c).map((k) => [k, c[k]]));
+    const json = JSON.stringify({ ...card, theme: s.theme, format: s.format }, null, 2);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([`${json}\n`], { type: 'application/json' }));
+    a.download = 'card-settings.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  const importFile = el('eb-import-file');
+  el('eb-import').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', async () => {
+    const f = importFile.files[0];
+    importFile.value = ''; // the same file again is a change too
+    if (!f) return;
+    try {
+      const { theme = 'auto', format, ...card } = JSON.parse(await f.text());
+      if (!THEMES.includes(theme)) throw new Error(`no such theme, ${theme}`);
+      if (format !== undefined && !FORMATS.includes(format)) throw new Error(`no such format, ${format}`);
+      const name = formatName(card);
+      parseName(name);
+      apply(name);
+      form.elements.theme.value = theme;
+      if (format) form.elements.format.value = format;
+    } catch (err) {
+      note.textContent = `Could not import ${f.name}: ${err.message}`;
+      return;
+    }
+    render();
+  });
+
+  // The copy mark turns into a tick for a moment once the snippet is on the
+  // clipboard. Where the clipboard is refused, the snippet is selected instead
+  // and the label says how to copy it.
+  const say = (label, icon) => {
+    copy.setAttribute('aria-label', label);
+    copy.title = label;
+    copy.querySelector('use').setAttribute('href', `#${icon}`);
+  };
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(code.value);
+      say('Copied', 'i-check');
+    } catch {
+      code.select();
+      say('Press ⌘C / Ctrl+C to copy', 'i-copy');
+    }
+    setTimeout(() => say('Copy snippet', 'i-copy'), 1500);
+  });
+
+  buildExtras(form.elements.card.value);
+  start();
+  render();
+</script>
+
+<style>
+  .eb{display:grid; grid-template-columns:minmax(0,1fr); gap:.8rem; margin-top:1.2rem}
+  .eb-row{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0}
+  /* The keys bold and in full ink, so a category reads apart from its
+     options, which are faint capitals. As wide as the longest in their
+     block — Authors above the preview, Background below — so the controls
+     line up close by. */
+  .eb-key{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); min-width:7ch; padding:0; float:left}
+  /* Which one, under the key: Area (Left). */
+  .eb-key small{display:block; font-size:inherit; font-weight:400; color:var(--ink-mute)}
+  .eb-dials .eb-key{min-width:10ch}
+  /* Two keyed groups in one row: the second key sits inline, after a gap. */
+  .eb-group{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0; min-width:0}
+  .eb-row > .eb-group + .eb-group{margin-left:.8rem}
+  /* The last takes the rest of the row, so what opens in it — the width —
+     wraps inside it rather than pushing it to a line of its own. */
+  .eb-row > .eb-group:last-child{flex:1 1 12rem}
+  .eb .eb-key--inline{min-width:0}
+  .eb-group[hidden]{display:none}
+  .eb select{flex:1; min-width:0; font:inherit; font-size:.9rem}
+  /* Sized to the choice it shows, not its longest option, so custom sits by its arrow. */
+  .eb .eb-preset{flex:0 1 auto; field-sizing:content; max-width:11rem; padding:0; border:0; background:none; cursor:pointer;
+    font-family:var(--mono); font-size:.66rem; color:var(--ink-faint); text-overflow:ellipsis}
+  .eb .eb-preset:hover, .eb .eb-preset:focus-visible{color:var(--ink)}
+  .eb .pilltoggle{flex-wrap:wrap}
+  .eb-sizes, .eb-rest{align-self:center; text-transform:uppercase}
+  .eb-dials{margin-top:.8rem}
+  .eb-tune-hint{margin:.5rem 0 0; font-size:.78rem; color:var(--ink-faint)}
+  .eb-linkbtn{padding:0; border:0; background:none; font:inherit; color:var(--accent); cursor:pointer}
+  .eb-linkbtn:hover{text-decoration:underline}
+  .eb-titles{display:inline-flex; flex-wrap:wrap; align-items:center; gap:.25rem}
+  .eb-pair[hidden], .eb-dials label[hidden], .eb-dials .pilltoggle[hidden]{display:none}
+  /* A pill with a tick box, as an extra has it: a click anywhere on it
+     toggles it. */
+  .eb-key--check{display:inline-flex; align-items:center; gap:.35em;
+    padding:.2rem .6rem; border:1px solid transparent; border-radius:2rem; line-height:1.4; transition:.15s}
+  /* Ticked, it is pilled, as an extra is. */
+  .eb-key--check:has(.eb-check:checked){color:var(--accent); border-color:var(--accent-line)}
+  /* The first on its row lines its text up with the keys above and below. */
+  .eb-group:first-child > .eb-key--check{margin-left:calc(-.6rem - 1px)}
+  label.eb-key--check{cursor:pointer}
+  .eb-keylabel{display:inline-flex; align-items:center; gap:.35em; cursor:pointer}
+  .eb-keylabel:hover{color:var(--accent)}
+  .eb-rest[hidden], .eb-row[hidden]{display:none}
+  /* The width stop: a number to type, the width of its siblings. */
+  .eb-px{display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:.4rem 1rem}
+  .eb-px > label{display:inline-flex; align-items:baseline; gap:.15em}
+  #eb-w-shown, #eb-h-shown{text-transform:none}
+  :global(.eb-dim){font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
+  .eb-px > [hidden]{display:none}
+  .eb-px[hidden], .eb-sizes[hidden], .eb-sizes [hidden]{display:none}
+  /* Global: the Space row builds its tracks' boxes from script, which the
+     page's scoped styles do not reach. */
+  :global(.eb-px input[type="number"]){width:3.2em; padding:0; border:0; border-bottom:1px solid var(--rule-strong);
+    background:none; font:inherit; color:inherit; text-align:right; -moz-appearance:textfield}
+  :global(.eb-px input[type="number"]::-webkit-inner-spin-button), :global(.eb-px input[type="number"]::-webkit-outer-spin-button){-webkit-appearance:none; margin:0}
+  /* Choose-one rows are bare pills; the extras, any number of which can be on,
+     show their tick box inside the pill, so the two kinds read apart. */
+  /* Global: the extras are written in by the script, so they never get the
+     attribute Astro scopes this page's rules with. */
+  :global(:is(#eb-extras, #eb-links) label){display:inline-flex; align-items:center; gap:.45em}
+  /* The Extras menu: its pill opens a list of tick boxes under it. */
+  .eb-drop{position:relative}
+  .eb-drop > summary{list-style:none; cursor:pointer}
+  .eb-drop > summary::-webkit-details-marker{display:none}
+  .eb-drop:has(.eb-check:checked) > summary{color:var(--accent); border-color:var(--accent-line)}
+  .eb-drop-menu{position:absolute; top:calc(100% + .3rem); left:0; z-index:5; display:flex; flex-direction:column; gap:.35rem;
+    padding:.5rem .75rem; white-space:nowrap; background:var(--surface); border:1px solid var(--rule-strong); border-radius:.6rem;
+    box-shadow:0 .4rem 1.2rem color-mix(in srgb, var(--ink) 12%, transparent)}
+  .eb-checks label{display:inline-flex; align-items:center; gap:.45em}
+  /* Set apart from what is before them: my author position, from the
+     byline's lengths; its corner and the context's; and the swap. */
+  #eb-pos, #eb-posy, #eb-swap, #eb-ctxy{border-left:1px solid var(--rule-strong); padding-left:.8rem}
+  /* Space: the tracks set wrap beside the key. */
+  [data-tune="space"] .eb-sub{flex:1 1 0; min-width:0}
+  :global(.eb-tracks){display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; justify-self:start; align-items:center}
+  :global(.eb-track){display:inline-flex; align-items:center; gap:.4rem}
+  :global(.eb-track-x){padding:0 .2rem; border:0; background:none; color:var(--ink-faint); cursor:pointer; font:inherit}
+  :global(.eb-track-x:hover){color:var(--accent)}
+  .eb-pair{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .8rem; justify-self:start}
+  .eb-sub{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.35rem .8rem}
+  .eb-sub > .pilltoggle, .eb-sub > .eb-px, .eb-sub > .eb-titles{justify-self:start}
+  :global(.eb-check){flex:none; width:.85em; height:.85em; margin:0; accent-color:var(--accent); cursor:pointer}
+  .eb-h{margin:1.6rem 0 .6rem}
+  .eb-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem}
+  .eb-head h3{margin:0}
+  /* Save and Load sit close under the controls, over the preview they act on. */
+  #eb-io-head{margin-top:.5rem}
+  .eb-name{display:flex; align-items:baseline; gap:.6rem; margin:.5rem 0 0; font-size:.78rem; color:var(--ink-mute)}
+  .eb-fold{flex:none; padding:0; border:0; background:none; cursor:pointer; font-family:var(--mono); font-size:.68rem;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint)}
+  .eb-fold::after{content:" \25B8"}
+  /* The name opens sideways, so the arrow does too: ▸ to show it, ◂ to fold it back. */
+  .eb-fold[aria-expanded="true"]::after{content:" \25C2"}
+  .eb-fold:hover{color:var(--ink)}
+
+  .eb-name code{min-width:0; overflow-wrap:anywhere}
+  /* Buttons, as the CV builder's Load and Save are, after a quiet label. */
+  .eb-io{flex:none; margin-left:auto; display:flex; align-items:baseline; gap:.35rem}
+  .eb-io .eb-io-key{margin-right:.15rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint)}
+  /* Outlined, not filled: the cards are grey, and a grey stage would blur into them. */
+  .eb-preview{padding:1rem; border-radius:12px; border:1px dashed var(--rule-strong); overflow-x:auto}
+  /* The stage takes the theme the card is drawn in — the site's grounds,
+     from global.css — so a dark card sits on dark, whatever the page is. */
+  .eb-preview[data-theme="dark"]{background:#0B0E14}
+  .eb-preview[data-theme="light"]{background:#FFFFFF}
+  /* The stage can be dragged taller, for room under the card; one that fills
+     its width can be dragged narrower or wider too, to see it reflow. */
+  .eb-preview{resize:vertical; min-height:6rem}
+  .eb-preview[data-w="fill"]{resize:both; min-width:8rem; max-width:100%}
+  .eb-code{width:100%; font-family:var(--mono); font-size:.78rem; padding:.6rem; border-radius:8px;
+    border:1px solid var(--rule-strong); background:var(--surface); color:var(--ink); resize:vertical}
+  /* Copy in the box's top-right corner, as code blocks have it, and the PNG
+     or PDF download under it; the text keeps clear of both. */
+  .eb-codebox{position:relative}
+  .eb-codebox .eb-code{display:block; padding-right:3rem}
+  .eb-tools{position:absolute; top:.45rem; right:.45rem; display:flex; flex-direction:column; gap:.3rem}
+  .eb-tools [hidden]{display:none}
+  .eb-tools button{cursor:pointer}
+  .eb-note{margin:.5rem 0 0; font-size:.82rem; color:var(--ink-mute)}
+  .eb-note:empty{display:none}
+</style>

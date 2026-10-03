@@ -106,6 +106,29 @@ for (const rec of records.slice(0, 5)) {
   }
 }
 
+// /embed/index.json is a contract other repos build on: every page it names
+// must exist, and each item's entry on this site — where a title:…:site
+// links — must carry its anchor.
+const embedIndex = path.join(DIST, 'embed/index.json');
+if (fs.existsSync(embedIndex)) {
+  for (const e of JSON.parse(fs.readFileSync(embedIndex, 'utf8')).items) {
+    checked += 1;
+    if (!exists(new URL(e.page).pathname)) {
+      console.log(`  MISSING EMBED  /embed/index.json -> ${e.page}`);
+      broken += 1;
+    }
+    if (!e.site) continue;
+    const { pathname, hash } = new URL(e.site);
+    checked += 1;
+    anchors += 1;
+    const html = exists(pathname) && fs.readFileSync(path.join(DIST, pathname.slice(1), 'index.html'), 'utf8');
+    if (!html || !html.includes(`id="${hash.slice(1)}"`)) {
+      console.log(`  MISSING ENTRY  /embed/index.json -> ${e.site}`);
+      broken += 1;
+    }
+  }
+}
+
 if (unbuilt > 0) {
   console.log(`  skipped  ${unbuilt} PDF link(s) — run npm run build:pdf to check them`);
 }

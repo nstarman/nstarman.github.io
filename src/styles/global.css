@@ -565,6 +565,22 @@ a.card:hover .name{color:var(--accent)}
 .card[data-links~="event"] li[data-rel="event"], .card[data-links~="homepage"] li[data-rel="homepage"],
 .card[data-links~="ads"] li[data-rel="ads"]{display:block}
 
+/* A row of choices as pills — the Card Builder's. Each choice is its own
+   pill; the chosen one is outlined in the accent rather than filled, so
+   nothing competes with the content for weight. A choice is a label round a
+   clipped radio, or round a visible tick box where several can be on. (The
+   CV's lengths, a .cvtoggle, are a slider: cv/page.css.) */
+.pilltoggle{display:inline-flex; flex:none; gap:.25rem; align-items:center}
+.pilltoggle label{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute); border:1px solid transparent; border-radius:2rem;
+  padding:.2rem .6rem; line-height:1.4; transition:.15s; cursor:pointer;
+}
+.pilltoggle label:hover{color:var(--ink); border-color:var(--rule-strong)}
+.pilltoggle label:has(:checked){color:var(--accent); border-color:var(--accent-line); font-weight:500}
+.pilltoggle label:has(:checked):hover{border-color:var(--accent)}
+.pilltoggle label:has(:focus-visible){outline:2px solid var(--accent); outline-offset:2px}
+
 /* ---------- page break marker (mockup only) ---------- */
 
 footer{margin-top:1rem}
@@ -859,6 +875,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .pubfilter[data-stops="3"]{--stops:3}
 .pubfilter[data-stops="4"]{--stops:4}
 .pubfilter[data-stops="5"]{--stops:5}
+.pubfilter[data-stops="6"]{--stops:6}
 
 .pubfilter label{
   /* The grid makes the columns equal; the label only has to fill its own. */
@@ -895,6 +912,17 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 #pos-4:checked   ~ .h2row .pubfilter label[for="pos-4"]{color:var(--ink)}
 
 .posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
+/* The same slider with its radios inside its labels, as the Card Builder's
+   size has it: the thumb follows the checked label, and with none checked — a
+   typed width — it is hidden. */
+.pubfilter--inline:not(:has(:checked))::before{opacity:0}
+.pubfilter--inline:has(> label:nth-child(2) :checked)::before{transform:translateX(100%)}
+.pubfilter--inline:has(> label:nth-child(3) :checked)::before{transform:translateX(200%)}
+.pubfilter--inline:has(> label:nth-child(4) :checked)::before{transform:translateX(300%)}
+.pubfilter--inline:has(> label:nth-child(5) :checked)::before{transform:translateX(400%)}
+.pubfilter--inline:has(> label:nth-child(6) :checked)::before{transform:translateX(500%)}
+.pubfilter--inline label:has(:checked){color:var(--ink)}
+.pubfilter--inline:has(:focus-visible){outline:2px solid var(--accent); outline-offset:2px}
 
 /* The filter itself. A paper with no position — no author marked `me` — carries
    no data-pos and hides under any stop, which is what the question means. */
@@ -1143,3 +1171,8 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .entry--full .card[id]{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 7rem)}
 /* An entry's own anchor, #pub-<id>, which a card's title:…:site links to. */
 .entry--full .ttl[id]{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 0.75rem)}
+
+/* ---------- embeds (/embed/<id>/) ----------
+   One card and nothing else, on a transparent page, so it sits on whatever
+   the host page is. A dynamic card takes the frame's width. */
+body.embed{background:transparent}

@@ -1,0 +1,186 @@
+---
+// /embed/<id>/ — one item's card, for an iframe and for the builder's PNGs.
+// The query names the card (src/lib/cardname.js), and may pin the theme:
+//
+//   ?card=size:320:400-figure:center:auto-rail:center-title:short-authors:position-text:none-extras:none-buttons:all-look:standard
+//   ?card=size:800:200-figure:none-rail:right:top-title:full:split-text:summary-look:textsize=feature,buttons=compact
+//   ?card=size:fill:fit-figure:none-rail:right:top-text:summary-look:compact&theme=dark
+//
+// Every part is rendered and the spec, as data attributes, chooses which show,
+// so this applies it before the first paint; with no query it shows the
+// item's default card. A name it cannot read leaves that default in place.
+import Embed from '../../layouts/Embed.astro';
+import Card from '../../components/Card.astro';
+import { items, splitTitle, authorPosition } from '../../lib/data.js';
+import { CARD_TYPES, defaultSlug, hasFigure, hasPosition, hasRole, hasVenue, hasContext } from '../../lib/cards.js';
+import { parseName } from '../../lib/cardname.js';
+
+export const getStaticPaths = () =>
+  items.filter((i) => CARD_TYPES.includes(i.type)).map((item) => ({ params: { id: item.id }, props: { item } }));
+
+const { item } = Astro.props;
+// The same parser the site and the builder use, run here from its own source.
+const apply = `(function (parseName, can) {
+  var name = new URLSearchParams(location.search).get('card');
+  if (!name) return;
+  var spec; try { spec = parseName(name); } catch (e) { return; }
+  var card = document.querySelector('.card'), d = card.dataset;
+  var w = spec.width !== 'fill', h = spec.height !== 'fit';
+  d.w = w ? 'px' : 'fill';
+  d.h = h ? 'px' : 'fit';
+  [['--wpx', w, spec.width + 'px'], ['--hpx', h, spec.height + 'px'], ['--aw', w && h, spec.width], ['--ah', w && h, spec.height]].forEach(function (x) {
+    if (x[1]) card.style.setProperty(x[0], x[2]); else card.style.removeProperty(x[0]);
+  });
+  ['textsize', 'titlesize', 'padding', 'corners', 'buttons'].forEach(function (k) {
+    if (spec.dials[k]) d[k] = spec.dials[k]; else delete d[k];
+  });
+  // A text, padding, corner or button size in px is set as itself — the
+  // padding the same on every side — and a button's icon is half the button.
+  [['textsize', [['--fs', 1]]], ['titlesize', [['--ts', 1]]], ['padding', [['--pad-t', 1], ['--pad-x', 1], ['--pad-b', 1]]], ['corners', [['--rad', 1]]], ['buttons', [['--ib', 1], ['--ii', 0.5]]]].forEach(function (k) {
+    var v = spec.dials[k[0]];
+    var n = /^[0-9]/.test(v || '') ? +v : null;
+    if (n != null) delete d[k[0]];
+    k[1].forEach(function (p) { if (n != null) card.style.setProperty(p[0], n * p[1] + 'px'); else card.style.removeProperty(p[0]); });
+  });
+  var fig = spec.figure !== 'none' && can.figure;
+  if (fig) d.fig = spec.figure; else delete d.fig;
+  if (fig && spec.figureAlign) d.figv = spec.figureAlign; else delete d.figv;
+  // The figure's own width in its column — a share of it, or px, never
+  // wider — and, at a side, where across it; then each side's width, as
+  // Card.astro sets them.
+  var figPx = typeof spec.figureSize === 'string' && /px$/.test(spec.figureSize) ? parseInt(spec.figureSize, 10) : null;
+  if (fig && spec.figureSize !== 'auto') { d.figw = ''; card.style.setProperty('--figw', figPx ? 'min(' + figPx + 'px, 100%)' : spec.figureSize + '%'); } else { delete d.figw; card.style.removeProperty('--figw'); }
+  if (fig && spec.figure !== 'center' && spec.figureH) d.figh = spec.figureH; else delete d.figh;
+  if (fig && spec.figure === 'center' && spec.figureSlot) d.figslot = spec.figureSlot; else delete d.figslot;
+  ['left', 'right'].forEach(function (side) {
+    var w = ((spec.sides || {})[side] || {}).width, here = fig && spec.figure === side, v = null;
+    if (w && w.indexOf('share=') === 0) v = w.slice(6) + '%';
+    else if (w && w.indexOf('min=') === 0) v = 'minmax(' + Math.max(+w.slice(4), here ? figPx || 0 : 0) + 'px, auto)';
+    else if (w === 'buttons') v = spec.foot === side ? 'auto' : null;
+    else if (here && figPx) v = 'minmax(' + figPx + 'px, auto)';
+    var p = side === 'left' ? '--colL' : '--colR';
+    if (v) card.style.setProperty(p, v); else card.style.removeProperty(p);
+  });
+  d.foot = spec.foot;
+  // Up and down: in a side, its buttons at the top, center or bottom of it;
+  // under the words or at the bottom, the year against the buttons. Then
+  // left, centered or right: along a rail under the words or at the
+  // bottom, across one in a side.
+  if (spec.footEnd) d.footend = spec.footEnd; else delete d.footend;
+  if (spec.railAlign) d.railalign = spec.railAlign; else delete d.railalign;
+  d.text = spec.text;
+  if (spec.title === 'full') delete d.title; else d.title = spec.title;
+  if (spec.titleAt === 'top' && spec.title !== 'none') d.titleat = 'top'; else delete d.titleat;
+  if (spec.titleAlign) d.titlealign = spec.titleAlign; else delete d.titlealign;
+  // The corners each side wins over the top and bottom areas, area:<side>:top,bottom.
+  var wins = [];
+  ['left', 'right'].forEach(function (side) { ['top', 'bottom'].forEach(function (a) { if (((spec.sides || {})[side] || {})[a]) wins.push(side + '-' + a); }); });
+  if (wins.length) d.wins = wins.join(' '); else delete d.wins;
+  // The title a link — to the item, its entry on this site, its ADS
+  // abstract or its journal — or words, as the name asks.
+  var ttl = card.querySelector('.c-name'), a = ttl.querySelector(':scope > a');
+  var tHref = { link: ttl.dataset.href, site: ttl.dataset.site, ads: ttl.dataset.ads, journal: ttl.dataset.journal }[spec.titleLink];
+  if (spec.titleLink && tHref) {
+    if (!a) {
+      a = document.createElement('a');
+      ttl.querySelectorAll(':scope > .c-t').forEach(function (t) { a.append(t); });
+      ttl.append(a);
+    }
+    a.href = tHref;
+  } else if (a) {
+    while (a.firstChild) ttl.insertBefore(a.firstChild, a);
+    a.remove();
+  }
+  // The figure a link or not, as the name asks: the same picture, in an a or
+  // a span, out of the tab order when the title is a link too.
+  var old = card.querySelector('.c-fig');
+  if (old) {
+    var want = spec.figureLink && old.dataset.href ? 'A' : 'SPAN';
+    if (old.tagName !== want) {
+      var neu = document.createElement(want);
+      neu.className = old.className;
+      neu.dataset.href = old.dataset.href || '';
+      if (want === 'A') neu.href = old.dataset.href;
+      while (old.firstChild) neu.append(old.firstChild);
+      old.replaceWith(neu);
+      old = neu;
+    }
+    if (want === 'A' && spec.titleLink && tHref) old.tabIndex = -1; else old.removeAttribute('tabindex');
+  }
+  if (spec.title === 'full' && spec.rest === 'split' && can.split) d.rest = 'split'; else delete d.rest;
+  var counted = typeof spec.authors === 'number';
+  var bylined = (spec.authors === 'short' || spec.authors === 'full' || counted) && can.byline;
+  if (bylined) d.authors = counted ? 'count' : spec.authors; else delete d.authors;
+  // So many names: each count is rendered, up to the whole list; show the one
+  // asked for, or the whole list where it asks for more.
+  var cuts = card.querySelectorAll('.c-by-n');
+  var pick = counted ? Math.min(spec.authors, cuts.length) : 0;
+  [].forEach.call(cuts, function (c) { c.hidden = +c.dataset.n !== pick; });
+  if (bylined && spec.marks === 'plain') d.students = 'plain'; else delete d.students;
+  // Each co-author a link — to their ORCID, or to our papers on the
+  // collaborator map — or words, as the name asks and as they have one.
+  [].forEach.call(card.querySelectorAll('.c-by :is([data-orcid], [data-site])'), function (s) {
+    var a = s.querySelector(':scope > a');
+    var href = spec.authorLink === 'orcid' ? s.dataset.orcid : spec.authorLink === 'site' ? s.dataset.site : null;
+    if (href && !a) {
+      a = document.createElement('a');
+      a.className = 'authorlink';
+      a.append(s.firstChild);
+      s.prepend(a);
+    }
+    if (href) a.href = href;
+    else if (a) a.replaceWith(a.textContent);
+  });
+  if (spec.authors === 'position' && can.position) d.pos = ''; else delete d.pos;
+  // My position in a corner of the card, where the name puts it there.
+  if (spec.authors === 'position' && can.position && spec.posX) { d.posx = spec.posX; d.posy = spec.posY; } else { delete d.posx; delete d.posy; }
+  [['venue', 'venue'], ['role', 'role'], ['context', 'context']].forEach(function (x) {
+    if (spec.extras.indexOf(x[0]) >= 0 && can[x[0]]) d[x[1]] = ''; else delete d[x[1]];
+  });
+  if (spec.links === 'all') delete d.links; else d.links = spec.links.join(' ') || 'none';
+  // The buttons to a row: as many as fit, so many — no more than are shown —
+  // or as near square as the ones shown go.
+  var shown = [].filter.call(card.querySelectorAll('.c-foot li[data-rel]'), function (li) { return spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0; }).length;
+  var per = spec.perRow === 'fit' || !shown ? 0 : Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown)));
+  if (per) { d.per = ''; card.style.setProperty('--per', per); } else { delete d.per; card.style.removeProperty('--per'); }
+  // On a right rail, a short last row sits at the right: its first button,
+  // by its place among them all, starts --skip columns in.
+  var lis = card.querySelectorAll('.c-foot li[data-rel]'), short = per && (spec.railAlign || (spec.foot === 'right' ? 'right' : 'left')) === 'right' ? shown % per : 0, n = 0;
+  delete d.skipat; card.style.removeProperty('--skip');
+  if (short) [].forEach.call(lis, function (li, i) {
+    if ((spec.links === 'all' || spec.links.indexOf(li.dataset.rel) >= 0) && n++ === shown - short) { d.skipat = i + 1; card.style.setProperty('--skip', per - short); }
+  });
+  if (spec.background === 'normal') delete d.background; else d.background = spec.background;
+  // The title's weight, and the frame around the figure: a step, or px.
+  // mine: bold where I am first author, regular otherwise.
+  if (spec.titleWeight) d.titleweight = spec.titleWeight === 'mine' ? (can.lead ? 'bold' : 'regular') : spec.titleWeight; else delete d.titleweight;
+  if (spec.buttonGap != null) card.style.setProperty('--bgap', spec.buttonGap + 'px'); else card.style.removeProperty('--bgap');
+  var framePx = /^[0-9]/.test(spec.frame || '');
+  if (spec.frame) d.frame = framePx ? '' : spec.frame; else delete d.frame;
+  if (framePx) card.style.setProperty('--frame', spec.frame + 'px'); else card.style.removeProperty('--frame');
+  // space: a track between two slots is --sp-<a>_<b>, a length or flex —
+  // a row taking what is left (100fr), a column sharing the width with the
+  // words (1fr) — and one the name leaves out goes back to 0.
+  var sp = spec.space || {};
+  var rows = ['title_figure', 'figure_authors', 'authors_venue', 'venue_text', 'text_rail', 'rail_bottom'];
+  rows.concat(['left_words', 'words_right']).forEach(function (t) {
+    if (sp[t]) card.style.setProperty('--sp-' + t, sp[t] !== 'flex' ? sp[t] + 'px' : rows.indexOf(t) >= 0 ? '100fr' : '1fr'); else card.style.removeProperty('--sp-' + t);
+  });
+  if (rows.some(function (t) { return sp[t] === 'flex'; })) d.vflex = ''; else delete d.vflex;
+  // The context link in a corner, where the name floats it there.
+  if (spec.extras.indexOf('context') >= 0 && can.context && spec.contextX) { d.ctxx = spec.contextX; d.ctxy = spec.contextY; } else { delete d.ctxx; delete d.ctxy; }
+  // With nothing left in it — every part hidden or floated to a corner — the
+  // rail is none: its column closes, and the words take its room.
+  delete d.rail;
+  var foot = card.querySelector('.c-foot');
+  var inRail = [].some.call(foot.querySelectorAll('.c-refs, li[data-rel], .c-stamp, .c-context'), function (e) {
+    var s = getComputedStyle(e);
+    return s.display !== 'none' && s.position !== 'absolute';
+  });
+  if (!inRail) d.rail = 'empty';
+})(${parseName.toString()}, ${JSON.stringify({ lead: item.type !== 'software' && authorPosition(item) === 1, figure: hasFigure(item), position: hasPosition(item), role: hasRole(item), venue: hasVenue(item), context: hasContext(item), split: !!splitTitle(item), byline: item.type === 'publication' })});`;
+---
+<Embed title={item.title}>
+  <Card item={item} preset={defaultSlug(item)} allCounts />
+  <script is:inline set:html={apply} />
+</Embed>

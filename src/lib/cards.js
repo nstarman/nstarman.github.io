@@ -1,7 +1,7 @@
 // Which cards exist, and what the website uses. A card's name — its spec — is
 // src/lib/cardname.js; this adds what needs the database: the website's
-// presets, and a card's links and text.
-import { links, primaryLink, softwarePapers, venueUrl } from './data.js';
+// presets, an item's default card, and its links and extras.
+import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl } from './data.js';
 
 export { LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
 
@@ -19,10 +19,36 @@ export const SITE_PRESETS = [
   { slug: 'size:fill:fit-figure:left:center:auto:link-rail:center-title:none-authors:none-text:details-extras:context-context:right:bottom-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
 ];
 
+/** The Card Builder's starting card, for every item: a full strip with its
+ *  byline, summary, figure and venue. Extras an item has not got drop out. */
+export const BUILDER_DEFAULT = 'size:fill:fit-figure:left:top:auto-rail:right:top-title:full:split-authors:full:plain-text:summary-extras:venue-buttons:all';
+
+/** The types that are drawn as cards, and so can be embedded. */
+export const CARD_TYPES = ['publication', 'highlight', 'software'];
+
+export const hasFigure = (item) => !!item.highlight?.image;
+export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
+export const hasRole = (item) => item.type === 'software' && !!item.role;
+export const hasVenue = (item) => item.type === 'publication';
+/** Context links to the item's topic on /research/, so only a topic it shows. */
+export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
+
 /** The links a card carries, in order: for software its papers lead, each
  *  with its year. */
 export function cardLinks(item) {
   return item.type === 'software' ? [...softwarePapers(item), ...links(item)] : links(item);
+}
+
+/** The link keys a card can be cut down to — `ads`, `preprint`, `code` … */
+export const linkKeys = (item) => [...new Set(cardLinks(item).map(relKey))];
+
+/** What an embed shows when its URL asks for nothing in particular: the card
+ *  the website draws for it, in a fixed box at the standard look, so an
+ *  iframe with no width still gets a card of a known shape. */
+export function defaultSlug(item) {
+  if (item.type === 'software') return 'size:320:400-figure:none-rail:center-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit-look:standard';
+  if (!hasFigure(item)) return 'size:640:160-figure:none-rail:right:top-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit-look:standard';
+  return `size:320:400-figure:center:auto:link-rail:center-title:short:link-authors:${hasPosition(item) ? 'position' : 'none'}-text:none-extras:none-buttons:all:fit-look:standard`;
 }
 
 /** A card's two tiers of text. A package has its own summary and details; a
@@ -53,3 +79,6 @@ export const journalHref = (item) => (item.type === 'publication' ? venueUrl(ite
  *  package on /software/, a synthesis on /research/. */
 export const siteHref = (item) => (item.type === 'publication' ? (item.status !== 'in-prep' ? `/publications/#pub-${item.id}` : null)
   : item.type === 'software' ? `/software/#sw-${item.id}` : item.type === 'highlight' ? `/research/#hl-${item.id}` : null);
+
+/** Where a click on an exported image of the card should go. */
+export const embedHref = (item) => (primaryLink(item) ?? links(item)[0])?.url ?? null;

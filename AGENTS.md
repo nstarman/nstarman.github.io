@@ -238,6 +238,22 @@ the presets in `SITE_PRESETS` (`src/lib/cards.js`), and
 a test holds the two lists equal. Never give a card a class of its own for a
 look: a new look is a new preset, and so is available everywhere at once.
 
+Each publication, synthesis and package can be embedded at `/embed/<id>/`,
+with any card named in the query — `?card=size:640:160-figure:none-rail:right:top-text:summary-look:standard`
+— plus `?theme=light|dark`. The page renders every part and the axes choose
+which show, so one static page serves every combination. `/embed/index.json`
+lists the items and presets; `/embed/resize.js` sizes card iframes to fit.
+Like an `id`, these URLs must not move once published.
+
+`/tools/embed/` — under Tools, in the footer — is the point-and-click way in.
+It also draws the PNGs, in the browser, from the live preview: nothing is
+rendered at build time, so any combination can be had as an image. And as a
+PDF: `src/lib/cardpdf.js` measures the preview — every box, figure, icon and
+line of text where the CSS put it — and Typst (`src/lib/card.typ`, with the
+compiler the CV builder uses) sets it again in the site's own faces,
+`public/fonts/card/`, its text selectable and its links live. The layout stays
+the CSS's alone, so a new axis needs nothing in either file.
+
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.
 

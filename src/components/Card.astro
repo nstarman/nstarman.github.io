@@ -1,16 +1,17 @@
 ---
-// Every card on the site: one item, drawn by a preset — the name
-// (src/lib/cardname.js) that says its size, where its figure and rail sit,
-// what it shows and how it looks.
+// Every card on the site, and every embed: one item, drawn by a preset — the
+// name (src/lib/cardname.js) that says its size, where its figure and rail
+// sit, what it shows and how it looks.
 //
 // All of an item's parts are always rendered and the axes, as data attributes,
-// choose which show, so CSS alone draws any combination, with no second
-// renderer.
+// choose which show. That is what lets /embed/<id>/ take any combination from
+// its query string with no second renderer, and what keeps a website card and
+// its embed the same thing.
 //
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
 import { authors, year, links, resolve, authorPosition, softwarePapers, venueLine, titleOf, splitTitle, relKey, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref } from '../lib/cards.js';
+import { cardLinks, cardText, ownLink, siteHref, adsHref, journalHref, hasContext, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, SPACE_TRACKS } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
 import LinkIcons from './LinkIcons.astro';
@@ -18,7 +19,7 @@ import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 
-const { item, preset, id, heading = 'div', maxAuthors = 8 } = Astro.props;
+const { item, preset, id, heading = 'div', maxAuthors = 8, allCounts = false } = Astro.props;
 const spec = parseName(preset);
 const COL_TRACKS = ['left_words', 'words_right'];
 const has = (x) => spec.extras.includes(x);
@@ -118,9 +119,8 @@ const figHref = item.type === 'publication' && item.status !== 'in-prep' ? `/pub
 const figLink = spec.figureLink && !!figHref;
 // A synthesis's papers, each to its card on /research/ — there only if its
 // topic is shown — or out to the paper.
-const onResearch = (p) => HIGHLIGHT_TOPICS.some(([key]) => key === p.highlight?.topic);
 const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
-const refHref = (p) => (onResearch(p) ? `/research/#hl-${p.id}` : links(p)[0]?.url);
+const refHref = (p) => (hasContext(p) ? `/research/#hl-${p.id}` : links(p)[0]?.url);
 // The context extra: the topic this item's highlight sits under on /research/.
 const topic = HIGHLIGHT_TOPICS.find(([key]) => key === h?.topic);
 // Bold only the papers I led or was second on. Past third the place is just
@@ -134,10 +134,12 @@ const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : '
 const byline = item.type === 'publication'
   ? { tight: authors(item, 2), short: authors(item, 3), full: authors(item, maxAuthors) }
   : null;
-// So many names, authors:<n>, past the whole list being the whole list.
+// So many names, authors:<n>, past the whole list being the whole list: the
+// count the name asks for — or, for the embed page, which may ask for any,
+// each count up to the list's length (allCounts), the rest hidden.
 const listed = item.authors?.length ?? 0;
 const count = counted ? Math.min(spec.authors, listed) : null;
-const counts = byline && count ? [count] : [];
+const counts = !byline ? [] : allCounts ? Array.from({ length: Math.min(listed, AUTHORS_MAX) }, (_, i) => i + 1) : count ? [count] : [];
 const { summary: sum, details: det } = cardText(item);
 // What sits in the rail: the papers a synthesis draws on, the buttons, my
 // position or the year, and the context link — less what a name floats to a
@@ -182,8 +184,10 @@ const foot = spec.foot;
   <slot name="corner" />
   {/* The title, a link where the name asks — to the item (title:…:link),
       its entry here (:site), its ADS abstract (:ads) or its journal
-      (:journal) — words otherwise. */}
-  <H class:list={['c-name', pos > 2 && 'c-name--minor']}>
+      (:journal) — words otherwise. data-href, data-site, data-ads and
+      data-journal keep each for the embed page, which sets a name of its
+      own. */}
+  <H class:list={['c-name', pos > 2 && 'c-name--minor']} data-href={href} data-site={site} data-ads={ads} data-journal={journal}>
     <slot name="name" />
     {titleLink
       ? <a href={titleHref}>{wordings.map((x) => (
@@ -199,11 +203,12 @@ const foot = spec.foot;
   </H>
 
   {/* The figure, a link where the name asks (figure:…:link) — out of the
-      tab order when the title is the same link. */}
+      tab order when the title is the same link — and data-href for the
+      embed page, as the title's. */}
   {h?.image && (
     figLink
-      ? <a class="c-fig" href={figHref} tabindex={titleLink ? '-1' : undefined}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
-      : <span class="c-fig"><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></span>
+      ? <a class="c-fig" href={figHref} data-href={figHref} tabindex={titleLink ? '-1' : undefined}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></a>
+      : <span class="c-fig" data-href={figHref}><img src={`/${h.image}`} alt={h.alt} loading="lazy" /></span>
   )}
 
   {byline && (

@@ -156,7 +156,8 @@
 // the look's settings where they are the box's own, and a look with nothing
 // in it. Lists use commas, which survive a URL query where "+" would not.
 //
-// No imports, so the grammar is this one file, written once.
+// No imports: the Card Builder bundles this, and the embed page inlines
+// parseName's own source, so the grammar is written once.
 
 export const LOOKS = ['minor', 'compact', 'standard', 'feature', 'display'];
 export const DIALS = ['textsize', 'padding', 'corners', 'buttons'];
@@ -220,7 +221,10 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
   ].join('-');
 }
 
-/** Name → spec; throws on a name that does not describe a card. */
+/** Name → spec; throws on a name that does not describe a card. Self-contained
+ *  — no outside names, so its lists are written out here rather than taken
+ *  from the exports above — because the embed page runs a copy of its source,
+ *  and a test runs that copy too. */
 export function parseName(name) {
   const one = (v, ok) => ok.indexOf(v) >= 0;
   const steps = ['minor', 'compact', 'standard', 'feature', 'display'];
