@@ -101,7 +101,7 @@ const label = (pin) =>
                   {pin.papers.map((paper) => (
                     <li>{paper.url
                       ? <a class="inline-card" href={paper.url}>{paper.title}</a>
-                      : <span class="inline-card">{paper.title}</span>}{paper.assist && <span class="cmap-assist"> — assist</span>}</li>
+                      : <span class="inline-card">{paper.title}</span>}{paper.doi && !paper.doi.startsWith('10.48550/') && <> <a class="cmap-doi" href={`https://doi.org/${paper.doi}`}>doi</a></>}{paper.assist && <span class="cmap-assist"> — assist</span>}</li>
                   ))}
                 </ul>
               )}

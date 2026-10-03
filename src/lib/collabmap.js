@@ -33,7 +33,8 @@ function papersByAuthor() {
       const preprint = (links(pub) ?? []).find((l) => l.rel === 'preprint');
       out.get(a.orcid).push({
         id: pub.id,
-        title: pub.title,
+        title: pub.highlight?.microTitle ?? pub.highlight?.miniTitle ?? pub.title,
+        doi: pub.doi,
         date: String(pub.date.start),
         url: venueUrl(pub) ?? preprint?.url ?? null,
       });
@@ -44,7 +45,7 @@ function papersByAuthor() {
       if (!au.orcid) continue;
       if (!out.has(au.orcid)) out.set(au.orcid, []);
       out.get(au.orcid).push({
-        id: a.bibcode, title: a.title, date: a.date, url: primaryLink(a)?.url ?? null, assist: true,
+        id: a.bibcode, title: a.title, doi: a.doi, date: a.date, url: primaryLink(a)?.url ?? null, assist: true,
       });
     }
   }
