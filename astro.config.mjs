@@ -6,6 +6,6 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://nstarkman.space',
   build: { format: 'directory' },
-  // The CV builder moved under /tools/ with the other tools; old links still land.
-  redirects: { '/cv/builder': '/tools/cv/' },
+  // Tools that moved; old links still land.
+  redirects: { '/cv/builder': '/tools/cv/', '/tools/embed': '/tools/card/' },
 });
