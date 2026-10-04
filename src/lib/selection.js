@@ -30,10 +30,17 @@ const cleanSpacing = (raw) => {
   return out;
 };
 
-/** How a lone section's heading prints: `none`, or a variant of the style.
- *  A name, not a promise — which variants exist is the style's to say, so the
+/** Section id → how its heading prints: `none`, or a variant of the style.
+ *  Names, not promises — which variants exist is the style's to say, so the
  *  builder decides what an unknown one falls back to, as with `style`. */
-const cleanHeading = (h) => (typeof h === 'string' && h.length <= 64 ? h : null);
+const cleanHeadings = (raw) => {
+  const out = {};
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, h] of Object.entries(raw)) {
+    if (typeof h === 'string' && h.length <= 64) out[id] = h;
+  }
+  return out;
+};
 
 export function encode({ items, lines, style, spacing, heading, site = {}, savedAt }) {
   const clean = {};
@@ -56,9 +63,9 @@ export function encode({ items, lines, style, spacing, heading, site = {}, saved
     // How far apart each section's entries sit, for the sections not at their
     // default. Absent means every one is.
     spacing: cleanSpacing(spacing),
-    // How the heading prints when one section is compiled alone. Absent means
-    // hidden, which is what every earlier selection means.
-    heading: cleanHeading(heading),
+    // How each section's heading prints. A section absent takes the style's
+    // usual heading, which is what every earlier selection means.
+    heading: cleanHeadings(heading),
   };
 }
 
@@ -118,7 +125,7 @@ export function decode(text) {
     lines,
     style,
     spacing: cleanSpacing(raw.spacing),
-    heading: cleanHeading(raw.heading),
+    heading: cleanHeadings(raw.heading),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

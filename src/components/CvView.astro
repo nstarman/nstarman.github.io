@@ -47,12 +47,13 @@ const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
 // The builder's item-spacing stops, as multiples of each section's own gap.
 const GAPS = [0.5, 1, 1.5, 2];
-// How a section's heading prints when it is the only one compiled: hidden —
-// the default, as it was before there was a choice — or one of the heading
-// variants the PDF styles draw, as cv/lib/styles.json lists them. Each button
-// names the styles that draw it, so the builder shows only the current
-// style's; the first style is the menu's first, and so the one showing.
+// How each section's heading prints: hidden, or one of the heading variants
+// the PDF styles draw, as cv/lib/styles.json lists them — the style's first,
+// its usual heading, to start. Each button names the styles that draw it, so
+// the builder shows only the current style's; the first style is the menu's
+// first, and so the one showing.
 const FIRST_STYLE = Object.keys(CV_STYLES)[0];
+const FIRST_USUAL = Object.keys(CV_STYLES[FIRST_STYLE].headings)[0];
 const HEADS = [];
 for (const [name, st] of Object.entries(CV_STYLES)) {
   for (const [v, label] of Object.entries(st.headings)) {
@@ -183,15 +184,15 @@ const mapFor = (s) => {
 
       {pick && (
         <div class="fmtrow" id={`fmt-${s.id}`} hidden>
-          {/* Only means something for a section compiled on its own, so it is
-              shown only in that one; the builder's script decides which. */}
-          <span class="fmtopt fmtopt--heading" hidden>
+          <span class="fmtopt">
             <span class="fmtlab">Heading</span>
-            <span class="fmtopts" role="group" aria-label={`How the ${s.heading} heading prints on its own`}>
-              <button type="button" class="posbtn" data-heading="none" aria-pressed="true">Hidden</button>
+            <span class="fmtopts" role="group" aria-label={`How the ${s.heading} heading prints`}
+                  data-heading-of={s.id}>
+              <button type="button" class="posbtn" data-heading="none" aria-pressed="false">Hidden</button>
               {HEADS.map((h) => (
                 <button type="button" class="posbtn" data-heading={h.v} data-styles={h.styles.join(' ')}
-                        hidden={!h.styles.includes(FIRST_STYLE)} aria-pressed="false">{h.label}</button>
+                        hidden={!h.styles.includes(FIRST_STYLE)}
+                        aria-pressed={h.v === FIRST_USUAL ? 'true' : 'false'}>{h.label}</button>
               ))}
             </span>
           </span>

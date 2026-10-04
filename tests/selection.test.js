@@ -115,13 +115,14 @@ describe('tolerating the merely odd', () => {
     expect(read({ spacing: [2] }).spacing).toEqual({});
   });
 
-  it('carries a lone heading through a round trip, and unsets nonsense', () => {
-    expect(decode(JSON.stringify(encode({ items: [], heading: 'rule' }))).heading).toBe('rule');
-    expect(read({}).heading).toBeNull();
-    expect(read({ heading: 42 }).heading).toBeNull();
-    expect(read({ heading: 'x'.repeat(65) }).heading).toBeNull();
+  it('carries each section heading through a round trip, dropping nonsense', () => {
+    const heading = { publications: 'none', talks: 'rule', grants: 42, media: 'x'.repeat(65) };
+    expect(decode(JSON.stringify(encode({ items: [], heading }))).heading)
+      .toEqual({ publications: 'none', talks: 'rule' });
+    expect(read({}).heading).toEqual({});
+    expect(read({ heading: 'rule' }).heading).toEqual({});
     // Which variants exist is the style's business, not the file reader's.
-    expect(read({ heading: 'banner' }).heading).toBe('banner');
+    expect(read({ heading: { talks: 'banner' } }).heading).toEqual({ talks: 'banner' });
   });
 
   it('refuses an absurdly long style name', () => {

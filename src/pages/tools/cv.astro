@@ -146,7 +146,6 @@ const builderData = {
       retire('Selection changed — compile again.');
       const on = boxes().filter((b) => b.checked).length;
       $('count').textContent = `${on} / ${boxes().length}`;
-      showHeading();
       // a group box reflects its children rather than driving them
       for (const g of document.querySelectorAll('.pickgroup')) {
         const kids = [...g.querySelectorAll('.itembox')];
@@ -182,7 +181,7 @@ const builderData = {
         $(t.getAttribute('aria-controls')).hidden = !open;
       }
       if (t.dataset.heading !== undefined) {
-        setHeading(t.dataset.heading);
+        setHeading(t.closest('.fmtopts'), t.dataset.heading);
         retire('Heading changed — compile again.');
       }
       if (t.dataset.gap !== undefined) {
@@ -263,35 +262,29 @@ const builderData = {
       return out;
     };
 
-    // One choice, mirrored in every section's row, so it holds whichever
-    // section ends up alone.
-    const setHeading = (v) => {
-      for (const b of document.querySelectorAll('[data-heading]')) {
+    // A heading choice per section, each its own group of buttons.
+    const headingGroups = () => [...document.querySelectorAll('[data-heading-of]')];
+    const usualHeading = () => HEADINGS[$('style').value]?.[0] ?? 'none';
+    const setHeading = (group, v) => {
+      for (const b of group.querySelectorAll('[data-heading]')) {
         b.setAttribute('aria-pressed', String(b.dataset.heading === v));
       }
     };
-    const currentHeading = () =>
-      document.querySelector('[data-heading][aria-pressed="true"]:not([hidden])')?.dataset.heading ?? 'none';
-    /** Offer only the heading variants the chosen style draws. A shown
-     *  heading the new style lacks becomes that style's usual one rather than
-     *  vanishing; nothing pressed at all (a file naming an unknown variant)
-     *  becomes hidden. */
+    /** Section id → how its heading prints, for every section. */
+    const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
+      g.dataset.headingOf,
+      g.querySelector('[aria-pressed="true"]:not([hidden])')?.dataset.heading ?? usualHeading(),
+    ]));
+    /** Offer only the heading variants the chosen style draws. A choice the
+     *  style lacks — after a style change, or from a file — becomes its usual
+     *  heading rather than vanishing. */
     const syncHeading = () => {
       const style = $('style').value;
-      const before = document.querySelector('[data-heading][aria-pressed="true"]')?.dataset.heading;
       for (const b of document.querySelectorAll('[data-heading][data-styles]')) {
         b.hidden = !b.dataset.styles.split(' ').includes(style);
       }
-      const now = currentHeading();
-      if (before !== undefined && before !== now) setHeading(HEADINGS[style]?.[0] ?? 'none');
-      else if (before === undefined) setHeading('none');
-    };
-    /** The heading choice is shown only in a section compiled on its own. */
-    const showHeading = () => {
-      const live = [...document.querySelectorAll('.cvsec')]
-        .filter((sec) => sec.querySelector('.itembox:checked'));
-      for (const g of document.querySelectorAll('.fmtopt--heading')) {
-        g.hidden = !(live.length === 1 && live[0].contains(g));
+      for (const g of headingGroups()) {
+        if (!g.querySelector('[aria-pressed="true"]:not([hidden])')) setHeading(g, usualHeading());
       }
     };
 
@@ -313,7 +306,7 @@ const builderData = {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
-                          heading: currentHeading(), site: SITE });
+                          heading: currentHeadings(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -344,7 +337,8 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
-      setHeading(sel.heading ?? 'none');
+      // Before the sync, which then turns any the style lacks into its usual.
+      for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
       // A value no button offers falls back to the default, as a style does.
       for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
@@ -421,7 +415,7 @@ const builderData = {
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
         model.spacing = currentSpacing();
-        model.heading = currentHeading();
+        model.heading = currentHeadings();
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

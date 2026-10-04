@@ -52,10 +52,10 @@
 // the CLI PDFs and their page counts are untouched.
 #let spacing = cv.at("spacing", default: (:))
 
-// How the heading prints when one section is compiled alone: `none`, hidden,
-// or one of the style's heading variants. Builder-only too; absent, the lone
-// heading is hidden as it always was.
-#let loneheading = cv.at("heading", default: "none")
+// How each section's heading prints, keyed by section id: `none`, hidden, or
+// one of the style's heading variants. Builder-only too; a section absent —
+// or naming a variant this style does not draw — takes the style's usual one.
+#let headingof = cv.at("heading", default: (:))
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
@@ -341,16 +341,14 @@
 }
 
 // ── body ──────────────────────────────────────────────────────────────────
-// A lone section needs no heading — e.g. a builder export of only the
-// publications. Empty sections are already dropped by the resolver.
+// Empty sections are already dropped by the resolver.
 #for s in cv.sections {
-  let lone = cv.sections.len() == 1
-  if not lone or loneheading != "none" {
+  let choice = headingof.at(s.id, default: usual)
+  if choice != "none" {
     section(
       s.heading,
       mark: s.at("icon", default: none),
-      // A variant this style does not draw falls back to its usual one.
-      variant: if lone and loneheading in headings { loneheading } else { usual },
+      variant: if choice in headings { choice } else { usual },
     )
   } else {
     v(if tight { 8pt } else { 15pt })
