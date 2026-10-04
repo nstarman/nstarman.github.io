@@ -118,7 +118,10 @@ describe('tolerating the merely odd', () => {
   it('carries a lone heading through a round trip, and unsets nonsense', () => {
     expect(decode(JSON.stringify(encode({ items: [], heading: 'rule' }))).heading).toBe('rule');
     expect(read({}).heading).toBeNull();
-    expect(read({ heading: 'banner' }).heading).toBeNull();
+    expect(read({ heading: 42 }).heading).toBeNull();
+    expect(read({ heading: 'x'.repeat(65) }).heading).toBeNull();
+    // Which variants exist is the style's business, not the file reader's.
+    expect(read({ heading: 'banner' }).heading).toBe('banner');
   });
 
   it('refuses an absurdly long style name', () => {

@@ -30,9 +30,10 @@ const cleanSpacing = (raw) => {
   return out;
 };
 
-/** How a lone section's heading prints; anything else reads as unset. */
-const HEADINGS = ['none', 'title', 'rule'];
-const cleanHeading = (h) => (HEADINGS.includes(h) ? h : null);
+/** How a lone section's heading prints: `none`, or a variant of the style.
+ *  A name, not a promise — which variants exist is the style's to say, so the
+ *  builder decides what an unknown one falls back to, as with `style`. */
+const cleanHeading = (h) => (typeof h === 'string' && h.length <= 64 ? h : null);
 
 export function encode({ items, lines, style, spacing, heading, site = {}, savedAt }) {
   const clean = {};

@@ -13,6 +13,7 @@ import Inline from './Inline.astro';
 import CvToc from './CvToc.astro';
 import CvTimelineItem from './CvTimelineItem.astro';
 import Card from './Card.astro';
+import CV_STYLES from '../../cv/lib/styles.json';
 
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
@@ -46,9 +47,20 @@ const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
 // The builder's item-spacing stops, as multiples of each section's own gap.
 const GAPS = [0.5, 1, 1.5, 2];
-// How a section's heading prints when it is the only one compiled. Hidden is
-// the default, as it was before there was a choice.
-const HEADS = [['none', 'Hidden'], ['title', 'Title'], ['rule', 'Underlined']];
+// How a section's heading prints when it is the only one compiled: hidden —
+// the default, as it was before there was a choice — or one of the heading
+// variants the PDF styles draw, as cv/lib/styles.json lists them. Each button
+// names the styles that draw it, so the builder shows only the current
+// style's; the first style is the menu's first, and so the one showing.
+const FIRST_STYLE = Object.keys(CV_STYLES)[0];
+const HEADS = [];
+for (const [name, st] of Object.entries(CV_STYLES)) {
+  for (const [v, label] of Object.entries(st.headings)) {
+    let h = HEADS.find((x) => x.v === v);
+    if (!h) HEADS.push((h = { v, label, styles: [] }));
+    h.styles.push(name);
+  }
+}
 
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
@@ -176,9 +188,10 @@ const mapFor = (s) => {
           <span class="fmtopt fmtopt--heading" hidden>
             <span class="fmtlab">Heading</span>
             <span class="fmtopts" role="group" aria-label={`How the ${s.heading} heading prints on its own`}>
-              {HEADS.map(([v, label]) => (
-                <button type="button" class="posbtn" data-heading={v}
-                        aria-pressed={v === 'none' ? 'true' : 'false'}>{label}</button>
+              <button type="button" class="posbtn" data-heading="none" aria-pressed="true">Hidden</button>
+              {HEADS.map((h) => (
+                <button type="button" class="posbtn" data-heading={h.v} data-styles={h.styles.join(' ')}
+                        hidden={!h.styles.includes(FIRST_STYLE)} aria-pressed="false">{h.label}</button>
               ))}
             </span>
           </span>

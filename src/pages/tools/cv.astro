@@ -7,6 +7,7 @@ import CvToc from '../../components/CvToc.astro';
 import '../../styles/cv/builder.css';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
+import CV_STYLES from '../../../cv/lib/styles.json';
 
 // The picker is the complete CV itself, rendered server-side with a checkbox on
 // every entry — so what you tick is what you are about to compile, and the page
@@ -35,6 +36,8 @@ const builderData = {
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
   site,
+  // Each PDF style's heading variants, its usual one first.
+  headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
   fonts: fs.readdirSync('public/fonts').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/${f}`),
 };
 ---
@@ -68,9 +71,10 @@ const builderData = {
           {/* Left of Compile, because it is a choice about the thing being
               compiled rather than a second action. */}
           <label class="bl" for="style">Style</label>
+          {/* From cv/lib/styles.json, the manifest styles.typ checks itself
+              against, so the menu cannot offer a style the template lacks. */}
           <select class="btn btn--sel" id="style">
-            <option value="default">Default</option>
-            <option value="plain">Default - 🎨</option>
+            {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -98,7 +102,8 @@ const builderData = {
     import { compilePdf } from '../../lib/typstcompile.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS } =
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
+            headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
     const subs = () => [...document.querySelectorAll('.subbox')];
@@ -266,7 +271,21 @@ const builderData = {
       }
     };
     const currentHeading = () =>
-      document.querySelector('[data-heading][aria-pressed="true"]')?.dataset.heading ?? 'none';
+      document.querySelector('[data-heading][aria-pressed="true"]:not([hidden])')?.dataset.heading ?? 'none';
+    /** Offer only the heading variants the chosen style draws. A shown
+     *  heading the new style lacks becomes that style's usual one rather than
+     *  vanishing; nothing pressed at all (a file naming an unknown variant)
+     *  becomes hidden. */
+    const syncHeading = () => {
+      const style = $('style').value;
+      const before = document.querySelector('[data-heading][aria-pressed="true"]')?.dataset.heading;
+      for (const b of document.querySelectorAll('[data-heading][data-styles]')) {
+        b.hidden = !b.dataset.styles.split(' ').includes(style);
+      }
+      const now = currentHeading();
+      if (before !== undefined && before !== now) setHeading(HEADINGS[style]?.[0] ?? 'none');
+      else if (before === undefined) setHeading('none');
+    };
     /** The heading choice is shown only in a section compiled on its own. */
     const showHeading = () => {
       const live = [...document.querySelectorAll('.cvsec')]
@@ -325,11 +344,12 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
+      setHeading(sel.heading ?? 'none');
+      syncHeading();
       // A value no button offers falls back to the default, as a style does.
       for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
         setGap(group, sel.spacing[group.dataset.key] ?? 1);
       }
-      setHeading(sel.heading ?? 'none');
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);
@@ -383,7 +403,10 @@ const builderData = {
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
-    $('style').addEventListener('change', () => retire('Style changed — compile again.'));
+    $('style').addEventListener('change', () => {
+      syncHeading();
+      retire('Style changed — compile again.');
+    });
 
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
@@ -425,5 +448,7 @@ const builderData = {
 
     recount();
     applyDetail();
+    // A browser may restore the menu to another style on reload.
+    syncHeading();
   </script>
 </Base>
