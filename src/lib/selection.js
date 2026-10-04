@@ -10,6 +10,7 @@
 // sentence a person can act on rather than a TypeError from three frames down.
 
 import { plural } from './inline.js';
+import { readSavedSpacing } from './cvspacing.js';
 
 export const FORMAT = 'starkman-cv-selection';
 export const VERSION = 1;
@@ -20,12 +21,15 @@ const MAX_ITEMS = 5000;
 const MAX_LINES_PER_ITEM = 500;
 
 /** The selection as it is written to disk. */
-/** Spacing key (a section id, or `<id>.legend`) → multiple; anything else is dropped. */
+/** Spacing key (a section id, `<id>.heading` or `<id>.legend`) →
+ *  `{value, unit}`, held to the field's limits; a bare number, as files saved
+ *  before points existed have it, is a multiple. Anything else is dropped. */
 const cleanSpacing = (raw) => {
   const out = {};
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
-  for (const [id, k] of Object.entries(raw)) {
-    if (Number.isFinite(k) && k > 0 && k <= 4) out[id] = k;
+  for (const [id, g] of Object.entries(raw)) {
+    const gap = readSavedSpacing(g);
+    if (gap) out[id] = gap;
   }
   return out;
 };

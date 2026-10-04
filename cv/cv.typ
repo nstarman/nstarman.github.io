@@ -21,6 +21,7 @@
 //   cv/lib/styles.typ  the marks, and one unit per style — see the README
 //   cv/lib/styles.json what each style is called and which headings it
 //                      draws, for the builder; styles.typ checks it
+//   cv/lib/gaps.json   the sizes of the gaps the builder can set
 //
 // So nothing here names a colour, a font or a glyph, and adding a style never
 // touches this file.
@@ -46,11 +47,25 @@
 // The heading every section takes in a CV of several: the style's first.
 #let usual = headings.keys().first()
 
-// How far apart a section's entries sit, as a multiple of its own spacing,
-// keyed by section id — and the gap under its heading, keyed `<id>.heading`,
-// and under the publications' student legend, keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
-// the CLI PDFs and their page counts are untouched.
+// The gaps the builder can set, in points, at normal and at one-page density.
+// One file, lib/gaps.json, so the builder converts between a multiple and
+// points from the same figures this prints with.
+#let GAPS = json("lib/gaps.json")
+
+// How far apart a section's entries sit, keyed by section id — and the gap
+// under its heading, keyed `<id>.heading`, and under the publications'
+// student legend, keyed `publications.legend`. Each is `(value, unit)`: a
+// multiple of the gap's own size (`x`) or a length in points (`pt`). Only the
+// browser builder sets it, as with `style`, so the CLI PDFs and their page
+// counts are untouched.
 #let spacing = cv.at("spacing", default: (:))
+
+/// The gap `key` asks for, of the kind named `name` in lib/gaps.json.
+#let gap(key, name) = {
+  let base = GAPS.at(name).at(if tight { "tight" } else { "normal" }) * 1pt
+  let s = spacing.at(key, default: none)
+  if s == none { base } else if s.unit == "pt" { s.value * 1pt } else { s.value * base }
+}
 
 // How each section's heading prints, keyed by section id: `none`, hidden, or
 // one of the style's heading variants. Builder-only too; a section absent —
@@ -165,7 +180,7 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none, variant: usual, k: 1) = {
+#let section(title, mark: none, variant: usual, below: gap("", "heading")) = {
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
@@ -180,7 +195,7 @@
       #smallcaps(title)
     ])
   ]
-  v(k * if tight { 4pt } else { 7pt })
+  v(below)
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
@@ -228,12 +243,12 @@
 
 // One grid for the whole section, so the date column finds a single width and
 // every entry lines up — the LaTeX CV gets this from one tabularx per section.
-#let entries(items, k: 1) = {
+#let entries(items, gutter) = {
   set par(justify: false)
   grid(
     columns: (auto, 1fr, auto),
     column-gutter: 12pt,
-    row-gutter: k * if tight { 4.5pt } else { 8pt },
+    row-gutter: gutter,
     align: (left + top, left + top, right + top),
     ..items
       .map(it => (
@@ -278,14 +293,14 @@
   )
 }
 
-#let publications(section, k: 1, legend: 1) = {
+#let publications(section) = {
   if section.items.any(i => i.byline.any(s => s.at("student", default: none) != none)) {
     // Sticky, so a wider gap below it can never strand it at a page foot.
     block(sticky: true, {
       text(size: 9pt, fill: faint)[Students I supervised or advised:
         #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
         #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
-      v(legend * if tight { 3pt } else { 6.6pt })
+      v(gap(section.id + ".legend", "legend"))
     })
   }
   let n = 0
@@ -297,7 +312,7 @@
     for it in picked {
       n += 1
       publication(n, it)
-      v(k * if tight { 3pt } else { 6.6pt })
+      v(gap(section.id, "publications"))
     }
   }
 }
@@ -306,12 +321,12 @@
 // Software only. The packages have no dates worth a gutter and no
 // published-vs-other split to draw — the papers behind them are already in
 // Publications — so they read better as a dense list of names.
-#let softgrid(items, k: 1) = {
+#let softgrid(items, gutter) = {
   set par(justify: false)
   grid(
     columns: (1fr, 1fr, 1fr),
     column-gutter: 12pt,
-    row-gutter: k * 6pt,
+    row-gutter: gutter,
     ..items.map(it => block(breakable: false)[
       #let rest = if it.links.len() > 0 { it.links.slice(1) } else { () }
       #strong(if it.links.len() > 0 {
@@ -329,13 +344,14 @@
 
 // ── a bare list ───────────────────────────────────────────────────────────
 // Refereeing venues, review panels. No dates, so no date column.
-#let plainlist(entries, k: 1) = {
+#let plainlist(entries, gutter) = {
   set text(size: 10.1pt)
   if cv.detail == "summary" {
     entries.map(linked).join([, ])
   } else {
-    // A tight list's own spacing is the leading, so `k` scales that.
-    list(indent: 4pt, spacing: k * if tight { 0.42em } else { 0.5em }, ..entries.map(linked))
+    // A tight list's own spacing is the leading — 0.5em, or 0.42em on one
+    // page, at this 10.1pt — which is what lib/gaps.json gives as its size.
+    list(indent: 4pt, spacing: gutter, ..entries.map(linked))
   }
   v(1pt)
 }
@@ -349,19 +365,18 @@
       s.heading,
       mark: s.at("icon", default: none),
       variant: if choice in headings { choice } else { usual },
-      k: spacing.at(s.id + ".heading", default: 1),
+      below: gap(s.id + ".heading", "heading"),
     )
   } else {
     v(if tight { 8pt } else { 15pt })
   }
-  let k = spacing.at(s.id, default: 1)
   if "layout" in s and s.layout == "list" {
-    plainlist(s.entries, k: k)
+    plainlist(s.entries, gap(s.id, "list"))
   } else if "layout" in s and s.layout == "grid" {
-    softgrid(s.items, k: k)
+    softgrid(s.items, gap(s.id, "grid"))
   } else if "layout" in s and s.layout == "publications" {
-    publications(s, k: k, legend: spacing.at(s.id + ".legend", default: 1))
+    publications(s)
   } else {
-    entries(s.items, k: k)
+    entries(s.items, gap(s.id, "entries"))
   }
 }

@@ -1,22 +1,92 @@
 ---
-// The Card Builder's number box, the one wherever a number is set: a grey
-// pill holding < and > either side of the box, by less or more — 5 for a
-// size, 1 for a count — the box showing what is set or, empty, what that
-// comes to in the card; then its unit, a menu where there is a choice
-// (units, under unitName: % and px), or the one unit as it is (unit). A
-// count has none. after is a word that follows the pill, as "per row".
-const { name, min, max, step = 1, by = 5, value, placeholder, label, title, id, from, unit, units, unitName, unitLabel, after } = Astro.props;
+// The number box, the one wherever a number is set — the Card Builder's and
+// the CV builder's alike: a grey pill holding < and > either side of the box,
+// by less or more — 5 for a size, 1 for a count — the box showing what is set
+// or, empty, what that comes to; then its unit, a menu where there is a
+// choice (units, under unitName), or the one unit as it is (unit). A count
+// has none. after is a word that follows the pill, as "per row". compact
+// draws it smaller, to sit among small controls — the CV builder's rows.
+//
+// A unit in `units` may carry its own min, max, step, by and placeholder,
+// which the box takes when it is chosen, and `per`, how much of a common
+// measure one of it is, so a value typed carries over to keep its size —
+// see applyUnit in src/lib/numbox.js. The box itself steps, holds a typed
+// value to its range, and fires `input` and `change` as a typed one would;
+// what the number means is the page's.
+const { name, min, max, step = 1, by = 5, value, placeholder, label, title, id, from, unit, units, unitName, unitLabel, after, compact = false } = Astro.props;
+// The unit chosen to start with sets the box, where it says anything.
+const cur = units?.find((u) => u.checked) ?? units?.[0] ?? {};
+const box = {
+  min: cur.min ?? min, max: cur.max ?? max, step: cur.step ?? step,
+  by: cur.by ?? by, placeholder: cur.placeholder ?? placeholder,
+};
 ---
-<span class="eb-numrow" id={id} title={title}>
-  <span class="eb-num">
-    <button type="button" class="eb-step" data-d={-by} aria-label={`Less by ${by}`} title={`Less by ${by}`}>&lt;</button>
-    <input type="number" name={name} min={min} max={max} step={step} value={value} placeholder={placeholder} data-from={from} aria-label={label} />
-    <button type="button" class="eb-step" data-d={by} aria-label={`More by ${by}`} title={`More by ${by}`}>&gt;</button>
+<span class:list={['numbox', { 'numbox--compact': compact }]} id={id} title={title}>
+  <span class="numbox-pill">
+    <button type="button" class="numbox-step" data-d={-box.by} aria-label={`Less by ${box.by}`} title={`Less by ${box.by}`}>&lt;</button>
+    <input type="number" name={name} min={box.min} max={box.max} step={box.step} value={value} placeholder={box.placeholder} data-from={from} aria-label={label} />
+    <button type="button" class="numbox-step" data-d={box.by} aria-label={`More by ${box.by}`} title={`More by ${box.by}`}>&gt;</button>
     {units
-      ? <select class="eb-unit" name={unitName} aria-label={unitLabel ?? `${label}, in`}>
-          {units.map((u) => <option value={u.value} title={u.title} selected={u.checked}>{u.label}</option>)}
+      ? <select class="numbox-unit" name={unitName} aria-label={unitLabel ?? `${label}, in`} data-last={cur.value}>
+          {units.map((u) => (
+            <option value={u.value} title={u.title} selected={u.checked}
+                    data-min={u.min} data-max={u.max} data-step={u.step} data-by={u.by}
+                    data-placeholder={u.placeholder} data-per={u.per}>{u.label}</option>
+          ))}
         </select>
-      : unit && <span class="eb-unit">{unit}</span>}
+      : unit && <span class="numbox-unit">{unit}</span>}
   </span>
-  {after && <span class="eb-dim">{after}</span>}
+  {after && <span class="numbox-after">{after}</span>}
 </span>
+
+<script>
+  import { stepValue, applyUnit } from '../lib/numbox.js';
+
+  // < and >, less or more by the box's step, held to its range. An empty box
+  // starts from what it shows — what that comes to — or, with nothing to
+  // show, from where it says to (data-from), or its least.
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest?.('.numbox-step');
+    const i = b?.parentElement.querySelector('input[type=number]');
+    if (!i) return;
+    const lo = i.min === '' ? 0 : +i.min, hi = i.max === '' ? Infinity : +i.max;
+    const from = i.value !== '' ? +i.value : +i.placeholder || +i.dataset.from || lo;
+    i.value = stepValue(from, +b.dataset.d, lo, hi, i.step === 'any' ? 1 : +i.step || 1);
+    i.dispatchEvent(new Event('input', { bubbles: true }));
+    i.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+
+  // Capturing, so a page's own listeners see the box settled: a unit chosen
+  // has been taken, and a typed value outside the range is brought into it.
+  document.addEventListener('change', (e) => {
+    const box = e.target.closest?.('.numbox');
+    if (!box) return;
+    if (e.target.matches('select.numbox-unit')) return applyUnit(box);
+    const i = e.target;
+    if (i.type !== 'number' || i.value === '') return;
+    const lo = i.min === '' ? -Infinity : +i.min, hi = i.max === '' ? Infinity : +i.max;
+    if (+i.value < lo || +i.value > hi) i.value = Math.min(hi, Math.max(lo, +i.value));
+  }, true);
+</script>
+
+<style is:global>
+  /* < and >: small, quiet, either side of a box. */
+  .numbox-step{padding:0 .25rem; border:0; background:none; color:var(--ink-mute); cursor:pointer; font:inherit; font-family:var(--mono); font-size:.8rem}
+  .numbox-step:hover{color:var(--accent)}
+  /* The box: < input >, then its unit — one, or a menu of them. */
+  .numbox{display:inline-flex; align-items:center; gap:.4em}
+  .numbox-pill{display:inline-flex; align-items:baseline; gap:.15em; padding:.15rem .55rem; border-radius:999px; background:var(--sunk)}
+  .numbox-pill input[type="number"]{width:3.2em; padding:0; border:0; border-bottom:1px solid var(--rule-strong); background:none;
+    font:inherit; font-size:1.05rem; text-align:right; color:var(--ink); -moz-appearance:textfield}
+  .numbox-pill input[type="number"]::-webkit-inner-spin-button, .numbox-pill input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none; margin:0}
+  .numbox-unit{margin-left:.3em; padding:0; border:0; background:none; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--accent)}
+  select.numbox-unit{cursor:pointer}
+  .numbox-after{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
+  .numbox[hidden], .numbox-pill [hidden]{display:none}
+  /* Compact: the same pill at the size of the small mono controls around it. */
+  .numbox--compact .numbox-pill{padding:.05rem .45rem; gap:.1em}
+  .numbox--compact .numbox-step{font-size:.62rem; padding:0 .15rem}
+  .numbox--compact .numbox-pill input[type="number"]{width:2.6em; font-size:.72rem}
+  .numbox--compact .numbox-unit{font-size:.6rem; margin-left:.2em}
+</style>

@@ -109,8 +109,15 @@ describe('tolerating the merely odd', () => {
   });
 
   it('carries the spacing through a round trip, dropping nonsense', () => {
-    const doc = encode({ items: [], spacing: { publications: 1.5, 'publications.legend': 2, talks: 'x', grants: 99 } });
-    expect(decode(JSON.stringify(doc)).spacing).toEqual({ publications: 1.5, 'publications.legend': 2 });
+    const doc = encode({ items: [], spacing: {
+      publications: { value: 1.5, unit: 'x' }, 'talks.heading': { value: 12, unit: 'pt' },
+      talks: 'x', grants: { value: 99, unit: 'x' }, media: { value: 2, unit: 'em' },
+    } });
+    expect(decode(JSON.stringify(doc)).spacing).toEqual({
+      publications: { value: 1.5, unit: 'x' }, 'talks.heading': { value: 12, unit: 'pt' },
+    });
+    // Saved before points existed: a bare number is a multiple.
+    expect(read({ spacing: { publications: 2 } }).spacing).toEqual({ publications: { value: 2, unit: 'x' } });
     expect(read({}).spacing).toEqual({});
     expect(read({ spacing: [2] }).spacing).toEqual({});
   });
