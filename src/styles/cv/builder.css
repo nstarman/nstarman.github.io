@@ -96,7 +96,12 @@
 .fmtbtn{margin-left:auto; color:var(--ink-faint); border-color:var(--rule)}
 .subgrouplab + .fmtbtn{margin-left:-.5rem}
 .fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
-.fmtrow{display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:.4rem 1.2rem; margin:.1rem 0 .6rem}
+/* A line per subject, in three columns — the subject in bold, its style,
+   its spacing — so each kind of option lines up down the block; the block at
+   the right, under the button that opened it. */
+.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:end; align-items:center;
+  gap:.35rem 1.2rem; margin:.1rem 0 .6rem}
+.fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink); justify-self:end}
 .fmtopt{display:inline-flex; align-items:center; gap:.5rem}
 .fmtopt[hidden]{display:none}
 .fmtrow[hidden]{display:none}
