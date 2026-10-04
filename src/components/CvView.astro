@@ -209,8 +209,8 @@ const mapFor = (s) => {
           ].map((o) => (
             <>
               <span class="fmtsub">{o.sub}</span>
-              {/* A column for the style or the place, empty where there is
-                  neither, so every line's spacing lines up after it. */}
+              {/* The subject's options, from the left, straight after it. */}
+              <span class="fmtline">
               {o.place && (
                 <span class="fmtopt fmtopt--place">
                   <span class="fmtlab">Place</span>
@@ -239,12 +239,13 @@ const mapFor = (s) => {
                         <input type="radio" class="posradio" name={`heading:${s.id}`} value="none" />None</label>
                     </span>
                   </span>
-                ) : <span />}
+                ) : null}
                 <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
                   <span class="fmtlab">Spacing</span>
                   <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}
                           unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} compact />
                 </span>
+              </span>
             </>
           ))}
         </div>
