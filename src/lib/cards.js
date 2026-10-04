@@ -24,6 +24,23 @@ export const SITE_PRESETS = [
 ];
 export const PRESET = Object.fromEntries(SITE_PRESETS.map((p) => [p.key, p.slug]));
 
+/** The steps in px, as global.css has them — a test holds the two to half
+ *  a pixel — for the settings that can be typed in px: the text and title
+ *  sizes, padding (the top's; the sides are a little wider), corners and
+ *  buttons. The Card Builder labels their stops with these, not the steps'
+ *  names, which say nothing about a size. With the range a typed size may
+ *  take. */
+export const STEP_PX = {
+  textsize: { minor: 11.5, compact: 12.5, standard: 14, feature: 16, display: 18.4, min: 8, max: 40, what: 'The text size, in pixels' },
+  titlesize: { minor: 12.4, compact: 13.5, standard: 15.2, feature: 17.3, display: 19.9, min: 8, max: 60, what: 'The title size, in pixels' },
+  padding: { minor: 8, compact: 11, standard: 15, feature: 19, display: 24, min: 0, max: 64, what: 'The padding, in pixels, the same on every side' },
+  corners: { minor: 10, compact: 12, standard: 16, feature: 18, display: 22, min: 0, max: 64, what: 'The corner radius, in pixels' },
+  buttons: { minor: 21, compact: 23, standard: 26, feature: 30, display: 35, min: 12, max: 64, what: 'The link buttons, in pixels; the icon is half' },
+};
+/** The frame's steps in px, look:frame=<step>, as global.css has them: the
+ *  builder shows a step as its px, the box having no steps of its own. */
+export const FRAME_PX = { minor: 3, compact: 4, standard: 5, feature: 8, display: 12 };
+
 /** The Card Builder's starting card, for every item: a full strip with its
  *  byline, summary, figure and venue. Extras an item has not got drop out. */
 export const BUILDER_DEFAULT = 'size:fill:fit-figure:left:top:auto-title:full:split-authors:full:plain-text:summary-extras:venue-buttons:all:right';
