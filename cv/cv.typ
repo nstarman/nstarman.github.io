@@ -270,11 +270,15 @@
 
 // ── publications ──────────────────────────────────────────────────────────
 // Numbered, and the count runs through the Submitted / Accepted / Published
-// subsections rather than restarting — enumerate[resume] in the LaTeX CV.
-#let publication(n, it) = {
+// subsections rather than restarting — enumerate[resume] in the LaTeX CV. It
+// counts down: the list runs newest first, so the first paper is 1 and the
+// newest the highest, and a new paper never renumbers the ones before it.
+// The number column is as wide as the widest number, so that one starts at the
+// margin as the dates do in every other section, and the rest align on the dot.
+#let publication(n, it, numwidth) = {
   grid(
-    columns: (1.6em, 1fr),
-    column-gutter: 4pt,
+    columns: (numwidth, 1fr),
+    column-gutter: 7pt,
     align: (right + top, left + top),
     tnum(text(size: 10.1pt)[#n.]),
     {
@@ -317,16 +321,20 @@
       v(gap(section.id + ".legend", "legend"))
     })
   }
-  let n = 0
   let groups = if section.groups.len() > 0 { section.groups } else {
     ((label: none, ids: section.items.map(i => i.id)),)
   }
-  for g in groups {
-    let picked = section.items.filter(i => i.id in g.ids)
-    for it in picked {
-      n += 1
-      publication(n, it)
-      v(gap(section.id, "publications"))
+  let total = groups.map(g => section.items.filter(i => i.id in g.ids).len()).sum(default: 0)
+  context {
+    let numwidth = measure(tnum(text(size: 10.1pt)[#total.])).width
+    let n = total + 1
+    for g in groups {
+      let picked = section.items.filter(i => i.id in g.ids)
+      for it in picked {
+        n -= 1
+        publication(n, it, numwidth)
+        v(gap(section.id, "publications"))
+      }
     }
   }
 }
