@@ -196,23 +196,37 @@ const mapFor = (s) => {
               that opens Publications, its entries — the subject in bold,
               then its options. Each spacing is one key of the template's
               `spacing`: `<id>.heading`, `<id>.legend`, and the section's id
-              for its entries. The heading's spacing is hidden while the
-              heading is. */}
+              for its entries; the legend's place is `<id>.legend` of its
+              `place`. An option hides where it would do nothing: the
+              heading's spacing and the legend's place with no heading, the
+              legend's spacing with the legend up on the heading's line. */}
           {[
             { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
             ...(s.id === 'publications'
-              ? [{ sub: 'Legend', key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
+              ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
               : []),
             { sub: 'Items', key: s.id, gap: entryGap(s), words: `Space between ${s.heading} entries` },
           ].map((o) => (
             <>
               <span class="fmtsub">{o.sub}</span>
-              {/* A column for the style, empty where there is none, so every
-                  line's spacing lines up in the column after it. */}
-              {o.style ? (
+              {/* A column for the style or the place, empty where there is
+                  neither, so every line's spacing lines up after it. */}
+              {o.place && (
+                <span class="fmtopt fmtopt--place">
+                  <span class="fmtlab">Place</span>
+                  <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="2"
+                        aria-label={`Where the ${s.heading} legend sits`} data-place-of={o.key}>
+                    <label title="On its own line, below the heading">
+                      <input type="radio" class="posradio" name={`place:${o.key}`} value="below" checked />Below</label>
+                    <label title="On the heading's line, at its right">
+                      <input type="radio" class="posradio" name={`place:${o.key}`} value="title" />Title</label>
+                  </span>
+                </span>
+              )}
+              {o.place ? null : o.style ? (
                   <span class="fmtopt">
                     <span class="fmtlab">Style</span>
-                    <span class="pubfilter pubfilter--inline headslider" role="radiogroup"
+                    <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup"
                           aria-label={`How the ${s.heading} heading prints`} data-heading-of={s.id}
                           data-stops={1 + HEADS.filter((h) => h.styles.includes(FIRST_STYLE)).length}>
                       {HEADS.map((h) => (
@@ -226,7 +240,7 @@ const mapFor = (s) => {
                     </span>
                   </span>
                 ) : <span />}
-                <span class:list={['fmtopt', { 'fmtopt--headgap': o.style }]}>
+                <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
                   <span class="fmtlab">Spacing</span>
                   <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}
                           unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} compact />

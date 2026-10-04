@@ -132,6 +132,12 @@ describe('tolerating the merely odd', () => {
     expect(read({ heading: { talks: 'banner' } }).heading).toEqual({ talks: 'banner' });
   });
 
+  it('carries where a part sits through a round trip', () => {
+    const doc = encode({ items: [], place: { 'publications.legend': 'title', x: 3 } });
+    expect(decode(JSON.stringify(doc)).place).toEqual({ 'publications.legend': 'title' });
+    expect(read({}).place).toEqual({});
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

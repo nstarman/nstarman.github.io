@@ -46,7 +46,11 @@ const cleanHeadings = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, style, spacing, heading, site = {}, savedAt }) {
+/** Part key (`<id>.legend`) → where it sits. Names, as headings are: which
+ *  places exist is the template's to say, and the builder falls back. */
+const cleanPlace = (raw) => cleanHeadings(raw);
+
+export function encode({ items, lines, style, spacing, heading, place, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -70,6 +74,8 @@ export function encode({ items, lines, style, spacing, heading, site = {}, saved
     // How each section's heading prints. A section absent takes the style's
     // usual heading, which is what every earlier selection means.
     heading: cleanHeadings(heading),
+    // Where a part sits, for the parts not in their usual place.
+    place: cleanPlace(place),
   };
 }
 
@@ -81,7 +87,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -130,6 +136,7 @@ export function decode(text) {
     style,
     spacing: cleanSpacing(raw.spacing),
     heading: cleanHeadings(raw.heading),
+    place: cleanPlace(raw.place),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,
