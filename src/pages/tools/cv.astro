@@ -100,6 +100,7 @@ const builderData = {
     import { encode, decode, loadReport } from '../../lib/selection.js';
     import { plural } from '../../lib/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
+    import { readGap, writeGap, isDefault, DEFAULT_GAP } from '../../lib/gapin.js';
 
     const $ = (id) => document.getElementById(id);
     const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
@@ -158,6 +159,8 @@ const builderData = {
 
     document.addEventListener('change', (e) => {
       const t = e.target;
+      // A spacing field has settled its own value by now (it listens first).
+      if (t.closest?.('.gapin')) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
         t.closest('.pickgroup').querySelectorAll('.subbox')
           .forEach((b) => (b.checked = t.checked));
@@ -183,10 +186,6 @@ const builderData = {
       if (t.dataset.heading !== undefined) {
         setHeading(t.closest('.fmtopts'), t.dataset.heading);
         retire('Heading changed — compile again.');
-      }
-      if (t.dataset.gap !== undefined) {
-        setGap(t.closest('.fmtopts'), Number(t.dataset.gap));
-        retire('Spacing changed — compile again.');
       }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
@@ -246,18 +245,14 @@ const builderData = {
     });
 
     // ── formatting ──────────────────────────────────────────────────────
-    // The pressed button is the state, so there is no second copy to drift.
-    const setGap = (group, k) => {
-      for (const b of group.querySelectorAll('[data-gap]')) {
-        b.setAttribute('aria-pressed', String(Number(b.dataset.gap) === k));
-      }
-    };
-    /** Spacing key → multiple, for the keys not at their default. */
+    // The fields are the state, so there is no second copy to drift.
+    const gapFields = () => [...document.querySelectorAll('.gapin')];
+    /** Spacing key → `{value, unit}`, for the keys not at their default. */
     const currentSpacing = () => {
       const out = {};
-      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
-        const k = Number(group.querySelector('[aria-pressed="true"]')?.dataset.gap ?? 1);
-        if (k !== 1) out[group.dataset.key] = k;
+      for (const f of gapFields()) {
+        const g = readGap(f);
+        if (!isDefault(g)) out[f.dataset.key] = g;
       }
       return out;
     };
@@ -342,10 +337,8 @@ const builderData = {
       // Before the sync, which then turns any the style lacks into its usual.
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
-      // A value no button offers falls back to the default, as a style does.
-      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
-        setGap(group, sel.spacing[group.dataset.key] ?? 1);
-      }
+      // A gap the file does not set, or sets out of bounds, is the default.
+      for (const f of gapFields()) writeGap(f, sel.spacing[f.dataset.key] ?? DEFAULT_GAP);
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);
