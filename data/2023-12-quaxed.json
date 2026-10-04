@@ -27,7 +27,7 @@
     "source": {
       "repo": "GalacticDynamics/quaxed",
       "path": "docs/_static/favicon.svg",
-      "sha": "7390fd4dff64826c1ab5391295131981460b5636"
+      "sha": "dd15979210c8836f23f034ae7096d6f9a25b02e7"
     },
     "alt": "The quaxed logo: a black rubber duck, quax's, with a white badge on its body carrying a blue tick.",
     "description": "Pre-quaxed libraries: jax.numpy and friends, already wrapped for multiple dispatch over quax's abstract array types."
