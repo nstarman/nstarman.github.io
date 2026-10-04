@@ -10,6 +10,17 @@
   },
   "title": "plotting_backends",
   "summary": "Dispatch over plotting backends",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/plotting-backends.webp",
+    "source": {
+      "repo": "GalacticDynamics/plotting_backends",
+      "path": "docs/_static/favicon.svg",
+      "sha": "7902d7991e02c94c6b59f7b6c44a39c2be2547fe"
+    },
+    "alt": "The plotting_backends logo: a navy dot branching to three small charts, each the same line plot in a different colour, teal, blue and purple.",
+    "description": "Dispatch over plotting backends: types for matplotlib, seaborn, plotly, bokeh, altair and ggplot, to dispatch one plotting function to whichever backend is asked for."
+  },
   "repo": "GalacticDynamics/plotting_backends",
   "links": [
     {
