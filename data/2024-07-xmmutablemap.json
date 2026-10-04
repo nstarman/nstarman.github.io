@@ -10,6 +10,17 @@
   },
   "title": "xmmutablemap",
   "summary": "An immutable mapping, JAX-compatible",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/xmmutablemap.webp",
+    "source": {
+      "repo": "GalacticDynamics/xmmutablemap",
+      "path": "docs/_static/favicon.svg",
+      "sha": "7c4dccb4f8c59b453ebd0fbcbb892f0f4886cda6"
+    },
+    "alt": "The xmmutablemap logo: a teal snowflake between a pair of purple dict braces, a frozen mapping.",
+    "description": "An immutable mapping for JAX: a lightweight frozen dict that JAX understands as a PyTree."
+  },
   "repo": "GalacticDynamics/xmmutablemap",
   "links": [
     {
