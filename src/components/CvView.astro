@@ -216,7 +216,7 @@ const mapFor = (s) => {
             <span class:list={['fmtopt', o.cls]}>
               <span class="fmtlab">{o.label}</span>
               <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}
-                      unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} />
+                      unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} compact />
             </span>
           ))}
         </div>
