@@ -256,7 +256,7 @@ which show, so one static page serves every combination. `/embed/index.json`
 lists the items and presets; `/embed/resize.js` sizes card iframes to fit.
 Like an `id`, these URLs must not move once published.
 
-`/tools/embed/` — under Tools, in the footer — is the point-and-click way in.
+`/tools/card/` — under Tools, in the footer — is the point-and-click way in.
 It also draws the PNGs, in the browser, from the live preview: nothing is
 rendered at build time, so any combination can be had as an image. And as a
 PDF: `src/lib/cardpdf.js` measures the preview — every box, figure, icon and
