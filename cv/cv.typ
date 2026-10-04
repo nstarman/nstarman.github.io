@@ -42,6 +42,12 @@
 // always the default and their page-count contracts are unaffected.
 #let (glyph, solo, trail, marked) = styled(cv.at("style", default: "default"))
 
+// How far apart a section's entries sit, as a multiple of its own spacing,
+// keyed by section id — and the gap under the publications' student legend,
+// keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
+// the CLI PDFs and their page counts are untouched.
+#let spacing = cv.at("spacing", default: (:))
+
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
@@ -215,12 +221,12 @@
 
 // One grid for the whole section, so the date column finds a single width and
 // every entry lines up — the LaTeX CV gets this from one tabularx per section.
-#let entries(items) = {
+#let entries(items, k: 1) = {
   set par(justify: false)
   grid(
     columns: (auto, 1fr, auto),
     column-gutter: 12pt,
-    row-gutter: if tight { 4.5pt } else { 8pt },
+    row-gutter: k * if tight { 4.5pt } else { 8pt },
     align: (left + top, left + top, right + top),
     ..items
       .map(it => (
@@ -265,12 +271,15 @@
   )
 }
 
-#let publications(section) = {
+#let publications(section, k: 1, legend: 1) = {
   if section.items.any(i => i.byline.any(s => s.at("student", default: none) != none)) {
-    text(size: 9pt, fill: faint)[Students I supervised or advised:
-      #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
-      #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
-    v(if tight { 3pt } else { 6.6pt })
+    // Sticky, so a wider gap below it can never strand it at a page foot.
+    block(sticky: true, {
+      text(size: 9pt, fill: faint)[Students I supervised or advised:
+        #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
+        #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
+      v(legend * if tight { 3pt } else { 6.6pt })
+    })
   }
   let n = 0
   let groups = if section.groups.len() > 0 { section.groups } else {
@@ -281,7 +290,7 @@
     for it in picked {
       n += 1
       publication(n, it)
-      v(if tight { 3pt } else { 6.6pt })
+      v(k * if tight { 3pt } else { 6.6pt })
     }
   }
 }
@@ -290,12 +299,12 @@
 // Software only. The packages have no dates worth a gutter and no
 // published-vs-other split to draw — the papers behind them are already in
 // Publications — so they read better as a dense list of names.
-#let softgrid(items) = {
+#let softgrid(items, k: 1) = {
   set par(justify: false)
   grid(
     columns: (1fr, 1fr, 1fr),
     column-gutter: 12pt,
-    row-gutter: 6pt,
+    row-gutter: k * 6pt,
     ..items.map(it => block(breakable: false)[
       #let rest = if it.links.len() > 0 { it.links.slice(1) } else { () }
       #strong(if it.links.len() > 0 {
@@ -313,12 +322,13 @@
 
 // ── a bare list ───────────────────────────────────────────────────────────
 // Refereeing venues, review panels. No dates, so no date column.
-#let plainlist(entries) = {
+#let plainlist(entries, k: 1) = {
   set text(size: 10.1pt)
   if cv.detail == "summary" {
     entries.map(linked).join([, ])
   } else {
-    list(indent: 4pt, ..entries.map(linked))
+    // A tight list's own spacing is the leading, so `k` scales that.
+    list(indent: 4pt, spacing: k * if tight { 0.42em } else { 0.5em }, ..entries.map(linked))
   }
   v(1pt)
 }
@@ -335,13 +345,14 @@
   } else {
     v(if tight { 8pt } else { 15pt })
   }
+  let k = spacing.at(s.id, default: 1)
   if "layout" in s and s.layout == "list" {
-    plainlist(s.entries)
+    plainlist(s.entries, k: k)
   } else if "layout" in s and s.layout == "grid" {
-    softgrid(s.items)
+    softgrid(s.items, k: k)
   } else if "layout" in s and s.layout == "publications" {
-    publications(s)
+    publications(s, k: k, legend: spacing.at(s.id + ".legend", default: 1))
   } else {
-    entries(s.items)
+    entries(s.items, k: k)
   }
 }

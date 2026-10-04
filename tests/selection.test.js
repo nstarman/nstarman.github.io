@@ -108,6 +108,13 @@ describe('tolerating the merely odd', () => {
     expect(read({ style: 'from-the-future' }).style).toBe('from-the-future');
   });
 
+  it('carries the spacing through a round trip, dropping nonsense', () => {
+    const doc = encode({ items: [], spacing: { publications: 1.5, 'publications.legend': 2, talks: 'x', grants: 99 } });
+    expect(decode(JSON.stringify(doc)).spacing).toEqual({ publications: 1.5, 'publications.legend': 2 });
+    expect(read({}).spacing).toEqual({});
+    expect(read({ spacing: [2] }).spacing).toEqual({});
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

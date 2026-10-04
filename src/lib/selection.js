@@ -20,7 +20,17 @@ const MAX_ITEMS = 5000;
 const MAX_LINES_PER_ITEM = 500;
 
 /** The selection as it is written to disk. */
-export function encode({ items, lines, style, site = {}, savedAt }) {
+/** Spacing key (a section id, or `<id>.legend`) → multiple; anything else is dropped. */
+const cleanSpacing = (raw) => {
+  const out = {};
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, k] of Object.entries(raw)) {
+    if (Number.isFinite(k) && k > 0 && k <= 4) out[id] = k;
+  }
+  return out;
+};
+
+export function encode({ items, lines, style, spacing, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -38,6 +48,9 @@ export function encode({ items, lines, style, site = {}, savedAt }) {
     // Which pre-built style to compile in. Absent means the default, which is
     // also what every selection saved before styles existed means.
     style: typeof style === 'string' ? style : null,
+    // How far apart each section's entries sit, for the sections not at their
+    // default. Absent means every one is.
+    spacing: cleanSpacing(spacing),
   };
 }
 
@@ -49,7 +62,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -96,6 +109,7 @@ export function decode(text) {
     items,
     lines,
     style,
+    spacing: cleanSpacing(raw.spacing),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,
