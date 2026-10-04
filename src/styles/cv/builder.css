@@ -98,21 +98,36 @@
 .fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 /* A line per subject, in three columns — the subject in bold, its style,
    its spacing — so each kind of option lines up down the block; the block at
-   the right, under the button that opened it. */
-.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:end; align-items:center;
+   the left, where reading starts. */
+.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:start; align-items:center;
   gap:.35rem 1.2rem; margin:.1rem 0 .6rem}
-.fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink); justify-self:end}
+/* Set apart from the CV it formats: a grey squircle across the section's
+   full width. The grey is the ink
+   faintly over the ground, so it is a step off the page in either theme —
+   the site's own --sunk all but vanishes on the dark ground. The page's
+   ground inside the pills, so they still read as pills on it, and the
+   sliders' thumbs the grey again. corner-shape where the browser has it; a
+   plain round corner where not. */
+.fmtrow{--fmtgrey:color-mix(in srgb, var(--ink) 7%, var(--ground));
+  padding:.55rem .8rem; background:var(--fmtgrey);
+  border-radius:16px; corner-shape:squircle}
+.fmtrow .numbox-pill, .fmtrow .fmtslider{background:var(--ground)}
+.fmtrow .fmtslider::before{background:var(--fmtgrey); box-shadow:none}
+.fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink)}
 .fmtopt{display:inline-flex; align-items:center; gap:.5rem}
 .fmtopt[hidden]{display:none}
+/* In the formatting grid an option hidden keeps its cell, or every cell
+   after it would slide into the wrong column. */
+.fmtrow > .fmtopt[hidden]{display:inline-flex; visibility:hidden}
 .fmtrow[hidden]{display:none}
 .fmtlab{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
 .fmtopts{display:inline-flex; gap:.15rem}
-/* The heading slider, at the height of the compact number boxes beside it:
-   a thinner track and thumb, and smaller stops. Its stops are a sample X,
-   drawn as that heading is, and None. */
-.headslider{padding:1px}
-.headslider::before{top:1px; bottom:1px; left:1px; width:calc((100% - 2px) / var(--stops))}
-.headslider label{min-width:1.6rem; padding:.02rem .45rem; font-size:.6rem; line-height:1.6}
+/* The formatting sliders, at the height of the compact number boxes beside
+   them: a thinner track and thumb, and smaller stops. The heading's stops
+   are a sample X, drawn as that heading is, and None. */
+.fmtslider{padding:1px}
+.fmtslider::before{top:1px; bottom:1px; left:1px; width:calc((100% - 2px) / var(--stops))}
+.fmtslider label{min-width:1.6rem; padding:.02rem .45rem; font-size:.6rem; line-height:1.6}
 .headsample{font-family:var(--serif); font-size:.78rem; line-height:1; text-transform:none; letter-spacing:0}
 .headsample--under{text-decoration:underline; text-underline-offset:2px}
 .posbtn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}

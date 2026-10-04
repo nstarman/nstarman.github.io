@@ -164,6 +164,11 @@ const builderData = {
         retire('Heading changed — compile again.');
         return;
       }
+      if (t.name?.startsWith('place:')) {
+        syncFmt(t.closest('.fmtrow'));
+        retire('Placement changed — compile again.');
+        return;
+      }
       // A spacing field has settled its own value by now (it listens first).
       if (t.closest?.('.fmtrow .numbox')) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
@@ -267,9 +272,30 @@ const builderData = {
     const shownChoice = (g) => g.querySelector('label:not([hidden]) > :checked')?.value;
     const setHeading = (group, v) => {
       for (const r of group.querySelectorAll('input')) r.checked = r.value === v;
-      // No heading, no gap under it to set.
-      group.closest('.fmtrow').querySelector('.fmtopt--headgap').hidden = v === 'none';
+      syncFmt(group.closest('.fmtrow'));
     };
+    /** Hide what would do nothing: with no heading, its spacing and the
+     *  legend's place — there is no line to put the legend on — and, with
+     *  the legend up on the heading's line, the gap below it. */
+    const syncFmt = (row) => {
+      const none = row.querySelector('[data-heading-of] label:not([hidden]) > :checked')?.value === 'none';
+      row.querySelector('.fmtopt--headgap').hidden = none;
+      const place = row.querySelector('.fmtopt--place');
+      if (!place) return;
+      place.hidden = none;
+      row.querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+    };
+    // Where a part sits, by its key; a name no stop has is the default.
+    const placeGroups = () => [...document.querySelectorAll('[data-place-of]')];
+    const setPlace = (group, v) => {
+      const radios = [...group.querySelectorAll('input')];
+      const want = radios.some((r) => r.value === v) ? v : 'below';
+      for (const r of radios) r.checked = r.value === want;
+    };
+    /** Part key → where it sits, for the parts not in their usual place. */
+    const currentPlace = () => Object.fromEntries(placeGroups()
+      .map((g) => [g.dataset.placeOf, g.querySelector(':checked')?.value])
+      .filter(([, v]) => v && v !== 'below'));
     /** Section id → how its heading prints, for every section. */
     const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
       g.dataset.headingOf, shownChoice(g) ?? usualHeading(),
@@ -308,7 +334,7 @@ const builderData = {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
-                          heading: currentHeadings(), site: SITE });
+                          heading: currentHeadings(), place: currentPlace(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -342,6 +368,8 @@ const builderData = {
       // Before the sync, which then turns any the style lacks into its usual.
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
+      for (const g of placeGroups()) setPlace(g, sel.place[g.dataset.placeOf]);
+      for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -416,6 +444,7 @@ const builderData = {
         model.style = $('style').value;
         model.spacing = currentSpacing();
         model.heading = currentHeadings();
+        model.place = currentPlace();
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

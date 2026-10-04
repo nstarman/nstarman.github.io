@@ -72,6 +72,11 @@
 // or naming a variant this style does not draw — takes the style's usual one.
 #let headingof = cv.at("heading", default: (:))
 
+// Where a part of a section sits, keyed `<id>.<part>`: so far only the
+// publications' student legend, `below` its heading (the default) or on the
+// heading's own line, `title`. Builder-only too.
+#let placeof = cv.at("place", default: (:))
+
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
@@ -180,7 +185,9 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none, variant: usual, below: gap("", "heading")) = {
+// `aside` is set at the right of the heading's line — the student legend,
+// where it is placed there — on the title's baseline.
+#let section(title, mark: none, variant: usual, below: gap("", "heading"), aside: none) = {
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
@@ -190,10 +197,11 @@
   let g = if mark == none { none } else { glyph(mark, size: 0.95em, fill: ink) }
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
-    #(headings.at(variant))(text(size: 15.6pt)[
+    #let words = text(size: 15.6pt)[
       #if g != none [#g #h(2pt)]
       #smallcaps(title)
-    ])
+    ]
+    #(headings.at(variant))(if aside == none { words } else { words + h(1fr) + aside })
   ]
   v(below)
 }
@@ -293,13 +301,19 @@
   )
 }
 
-#let publications(section) = {
-  if section.items.any(i => i.byline.any(s => s.at("student", default: none) != none)) {
+// The key to those colours and marks, for a section with a student of mine
+// in a byline.
+#let hasstudents(section) = section.items.any(i => i.byline.any(s => s.at("student", default: none) != none))
+#let studentkey = text(size: 9pt, fill: faint)[Students I supervised or advised:
+  #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
+  #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
+
+// `legend: false` where the key has gone up onto the heading's line.
+#let publications(section, legend: true) = {
+  if legend and hasstudents(section) {
     // Sticky, so a wider gap below it can never strand it at a page foot.
     block(sticky: true, {
-      text(size: 9pt, fill: faint)[Students I supervised or advised:
-        #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
-        #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
+      studentkey
       v(gap(section.id + ".legend", "legend"))
     })
   }
@@ -360,12 +374,16 @@
 // Empty sections are already dropped by the resolver.
 #for s in cv.sections {
   let choice = headingof.at(s.id, default: usual)
+  // The legend goes up only onto a heading that is there.
+  let keyup = (s.at("layout", default: none) == "publications" and choice != "none"
+    and placeof.at(s.id + ".legend", default: "below") == "title" and hasstudents(s))
   if choice != "none" {
     section(
       s.heading,
       mark: s.at("icon", default: none),
       variant: if choice in headings { choice } else { usual },
       below: gap(s.id + ".heading", "heading"),
+      aside: if keyup { studentkey } else { none },
     )
   } else {
     v(if tight { 8pt } else { 15pt })
@@ -375,7 +393,7 @@
   } else if "layout" in s and s.layout == "grid" {
     softgrid(s.items, gap(s.id, "grid"))
   } else if "layout" in s and s.layout == "publications" {
-    publications(s)
+    publications(s, legend: not keyup)
   } else {
     entries(s.items, gap(s.id, "entries"))
   }
