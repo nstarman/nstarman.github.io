@@ -102,9 +102,10 @@ function trailing(item) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
+ * @param {{ prefix?: Record<string, string> }} [opts]  passed to resolve()
  */
-export function cvModel(presetName, only, keepLine) {
-  const cv = resolve(presetName, only);
+export function cvModel(presetName, only, keepLine, opts) {
+  const cv = resolve(presetName, only, opts);
 
   return {
     preset: cv.name,

@@ -242,6 +242,14 @@ const mapFor = (s) => {
                     </span>
                   </span>
                 ) : null}
+              {/* "Select Publications" when only some are ticked — or not.
+                  A list section is taken whole, so never says it. */}
+              {o.style && s.items.length > 0 && (
+                <span class="fmtopt fmtopt--prefix" hidden>
+                  <label class="bl" title={`“Select ${s.heading}” while only some are ticked`}>
+                    <input type="checkbox" name={`prefix:${s.id}`} data-prefix-of={s.id} checked /> “Select” prefix</label>
+                </span>
+              )}
                 <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
                   <span class="fmtlab">Spacing</span>
                   <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}

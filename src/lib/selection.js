@@ -50,7 +50,11 @@ const cleanHeadings = (raw) => {
  *  places exist is the template's to say, and the builder falls back. */
 const cleanPlace = (raw) => cleanHeadings(raw);
 
-export function encode({ items, lines, style, spacing, heading, place, site = {}, savedAt }) {
+/** Section id → `none`, for the sections whose heading leaves off "Select". */
+const cleanPrefix = (raw) => Object.fromEntries(
+  Object.entries(cleanHeadings(raw)).filter(([, v]) => v === 'none'));
+
+export function encode({ items, lines, style, spacing, heading, place, prefix, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -76,6 +80,8 @@ export function encode({ items, lines, style, spacing, heading, place, site = {}
     heading: cleanHeadings(heading),
     // Where a part sits, for the parts not in their usual place.
     place: cleanPlace(place),
+    // The sections whose heading leaves off "Select". Absent, it says it.
+    prefix: cleanPrefix(prefix),
   };
 }
 
@@ -87,7 +93,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, prefix, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -137,6 +143,7 @@ export function decode(text) {
     spacing: cleanSpacing(raw.spacing),
     heading: cleanHeadings(raw.heading),
     place: cleanPlace(raw.place),
+    prefix: cleanPrefix(raw.prefix),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,
