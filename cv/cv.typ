@@ -268,7 +268,7 @@
 #let publication(n, it) = {
   grid(
     columns: (1.6em, 1fr),
-    column-gutter: 4pt,
+    column-gutter: 7pt,
     align: (right + top, left + top),
     tnum(text(size: 10.1pt)[#n.]),
     {
