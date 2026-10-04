@@ -275,14 +275,18 @@ const builderData = {
       syncFmt(group.closest('.fmtrow'));
     };
     /** Hide what would do nothing: with no heading, its spacing and the
-     *  legend's place — there is no line to put the legend on — and, with
-     *  the legend up on the heading's line, the gap below it. */
+     *  legend's Title place — there is no line to put the legend on — and,
+     *  with the legend up on the heading's line, the gap below it. */
     const syncFmt = (row) => {
       const none = row.querySelector('[data-heading-of] label:not([hidden]) > :checked')?.value === 'none';
       row.querySelector('.fmtopt--headgap').hidden = none;
       const place = row.querySelector('.fmtopt--place');
       if (!place) return;
-      place.hidden = none;
+      // Title is the last stop, so dropping it moves no other.
+      const title = place.querySelector('input[value="title"]');
+      title.parentElement.hidden = none;
+      place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
+      if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
       row.querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
     };
     // Where a part sits, by its key; a name no stop has is the default.
