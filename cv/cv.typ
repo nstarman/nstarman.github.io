@@ -19,6 +19,8 @@
 //   cv/cv.typ          the header, the section shapes, and the body loop
 //   cv/lib/theme.typ   the palette, and the figures that are not old-style
 //   cv/lib/styles.typ  the marks, and one unit per style — see the README
+//   cv/lib/styles.json what each style is called and which headings it
+//                      draws, for the builder; styles.typ checks it
 //
 // So nothing here names a colour, a font or a glyph, and adding a style never
 // touches this file.
@@ -40,13 +42,20 @@
 // mark is drawn beside words (`marked`), standing alone (`solo`), and in a run
 // of them (`trail`). Only the browser builder sets the key, so the CLI PDFs are
 // always the default and their page-count contracts are unaffected.
-#let (glyph, solo, trail, marked) = styled(cv.at("style", default: "default"))
+#let (glyph, solo, trail, marked, headings) = styled(cv.at("style", default: "default"))
+// The heading every section takes in a CV of several: the style's first.
+#let usual = headings.keys().first()
 
 // How far apart a section's entries sit, as a multiple of its own spacing,
-// keyed by section id — and the gap under the publications' student legend,
-// keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
+// keyed by section id — and the gap under its heading, keyed `<id>.heading`,
+// and under the publications' student legend, keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
 // the CLI PDFs and their page counts are untouched.
 #let spacing = cv.at("spacing", default: (:))
+
+// How each section's heading prints, keyed by section id: `none`, hidden, or
+// one of the style's heading variants. Builder-only too; a section absent —
+// or naming a variant this style does not draw — takes the style's usual one.
+#let headingof = cv.at("heading", default: (:))
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
@@ -156,7 +165,7 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none) = {
+#let section(title, mark: none, variant: usual, k: 1) = {
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
@@ -166,14 +175,12 @@
   let g = if mark == none { none } else { glyph(mark, size: 0.95em, fill: ink) }
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
-    #text(size: 15.6pt)[
+    #(headings.at(variant))(text(size: 15.6pt)[
       #if g != none [#g #h(2pt)]
       #smallcaps(title)
-    ]
-    #v(4.5pt)
-    #line(length: 100%, stroke: 0.4pt + ink)
+    ])
   ]
-  v(if tight { 4pt } else { 7pt })
+  v(k * if tight { 4pt } else { 7pt })
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
@@ -334,13 +341,15 @@
 }
 
 // ── body ──────────────────────────────────────────────────────────────────
-// A lone section needs no heading — e.g. a builder export of only the
-// publications. Empty sections are already dropped by the resolver.
+// Empty sections are already dropped by the resolver.
 #for s in cv.sections {
-  if cv.sections.len() > 1 {
+  let choice = headingof.at(s.id, default: usual)
+  if choice != "none" {
     section(
       s.heading,
       mark: s.at("icon", default: none),
+      variant: if choice in headings { choice } else { usual },
+      k: spacing.at(s.id + ".heading", default: 1),
     )
   } else {
     v(if tight { 8pt } else { 15pt })

@@ -7,6 +7,7 @@ import CvToc from '../../components/CvToc.astro';
 import '../../styles/cv/builder.css';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
+import CV_STYLES from '../../../cv/lib/styles.json';
 
 // The picker is the complete CV itself, rendered server-side with a checkbox on
 // every entry — so what you tick is what you are about to compile, and the page
@@ -35,6 +36,8 @@ const builderData = {
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
   site,
+  // Each PDF style's heading variants, its usual one first.
+  headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
   fonts: fs.readdirSync('public/fonts').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/${f}`),
 };
 ---
@@ -68,9 +71,10 @@ const builderData = {
           {/* Left of Compile, because it is a choice about the thing being
               compiled rather than a second action. */}
           <label class="bl" for="style">Style</label>
+          {/* From cv/lib/styles.json, the manifest styles.typ checks itself
+              against, so the menu cannot offer a style the template lacks. */}
           <select class="btn btn--sel" id="style">
-            <option value="default">Default</option>
-            <option value="plain">Default - 🎨</option>
+            {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -98,7 +102,8 @@ const builderData = {
     import { compilePdf } from '../../lib/typstcompile.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS } =
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
+            headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
     const subs = () => [...document.querySelectorAll('.subbox')];
@@ -175,6 +180,10 @@ const builderData = {
         t.setAttribute('aria-expanded', String(open));
         $(t.getAttribute('aria-controls')).hidden = !open;
       }
+      if (t.dataset.heading !== undefined) {
+        setHeading(t.closest('.fmtopts'), t.dataset.heading);
+        retire('Heading changed — compile again.');
+      }
       if (t.dataset.gap !== undefined) {
         setGap(t.closest('.fmtopts'), Number(t.dataset.gap));
         retire('Spacing changed — compile again.');
@@ -246,11 +255,39 @@ const builderData = {
     /** Spacing key → multiple, for the keys not at their default. */
     const currentSpacing = () => {
       const out = {};
-      for (const group of document.querySelectorAll('.fmtopts')) {
+      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
         const k = Number(group.querySelector('[aria-pressed="true"]')?.dataset.gap ?? 1);
         if (k !== 1) out[group.dataset.key] = k;
       }
       return out;
+    };
+
+    // A heading choice per section, each its own group of buttons.
+    const headingGroups = () => [...document.querySelectorAll('[data-heading-of]')];
+    const usualHeading = () => HEADINGS[$('style').value]?.[0] ?? 'none';
+    const setHeading = (group, v) => {
+      for (const b of group.querySelectorAll('[data-heading]')) {
+        b.setAttribute('aria-pressed', String(b.dataset.heading === v));
+      }
+      // No heading, no gap under it to set.
+      group.closest('.fmtrow').querySelector('.fmtopt--headgap').hidden = v === 'none';
+    };
+    /** Section id → how its heading prints, for every section. */
+    const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
+      g.dataset.headingOf,
+      g.querySelector('[aria-pressed="true"]:not([hidden])')?.dataset.heading ?? usualHeading(),
+    ]));
+    /** Offer only the heading variants the chosen style draws. A choice the
+     *  style lacks — after a style change, or from a file — becomes its usual
+     *  heading rather than vanishing. */
+    const syncHeading = () => {
+      const style = $('style').value;
+      for (const b of document.querySelectorAll('[data-heading][data-styles]')) {
+        b.hidden = !b.dataset.styles.split(' ').includes(style);
+      }
+      for (const g of headingGroups()) {
+        if (!g.querySelector('[aria-pressed="true"]:not([hidden])')) setHeading(g, usualHeading());
+      }
     };
 
     // ── save & load ───────────────────────────────────────────────────────
@@ -270,7 +307,8 @@ const builderData = {
     const saveSelection = () => {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
-                          style: $('style').value, spacing: currentSpacing(), site: SITE });
+                          style: $('style').value, spacing: currentSpacing(),
+                          heading: currentHeadings(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -301,8 +339,11 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
+      // Before the sync, which then turns any the style lacks into its usual.
+      for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
+      syncHeading();
       // A value no button offers falls back to the default, as a style does.
-      for (const group of document.querySelectorAll('.fmtopts')) {
+      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
         setGap(group, sel.spacing[group.dataset.key] ?? 1);
       }
 
@@ -358,7 +399,10 @@ const builderData = {
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
-    $('style').addEventListener('change', () => retire('Style changed — compile again.'));
+    $('style').addEventListener('change', () => {
+      syncHeading();
+      retire('Style changed — compile again.');
+    });
 
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
@@ -373,6 +417,7 @@ const builderData = {
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
         model.spacing = currentSpacing();
+        model.heading = currentHeadings();
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
@@ -399,5 +444,7 @@ const builderData = {
 
     recount();
     applyDetail();
+    // A browser may restore the menu to another style on reload.
+    syncHeading();
   </script>
 </Base>

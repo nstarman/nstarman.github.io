@@ -1,10 +1,13 @@
 // The CV's styles — one self-contained unit each.
 //
-// A style answers three questions and nothing else:
+// A style answers four questions and nothing else:
 //
-//   glyph  how a mark is drawn beside words
-//   solo   how a mark standing alone is drawn, given the word behind it
-//   trail  how a run of marks — a resource trail — is drawn
+//   glyph     how a mark is drawn beside words
+//   solo      how a mark standing alone is drawn, given the word behind it
+//   trail     how a run of marks — a resource trail — is drawn
+//   headings  how a section heading is drawn, by variant; the first is the
+//             one every section takes in a CV of several, and the builder
+//             offers each for a section compiled on its own
 //
 // Everything else about the CV is the same in every style: the same type, the
 // same spacing, the same sections, from the same render model. That is why a
@@ -12,11 +15,15 @@
 // two templates would be two things to keep in agreement, and the page-count
 // contracts hold in either style only because the layout is shared.
 //
-// Adding one is an entry in STYLES and an <option> in
-// src/pages/tools/cv.astro. Nothing in cv.typ changes: it names no font, no
-// glyph and no style, and asks `styled()` for whichever one cv.json chose.
+// Adding one is an entry in STYLES and one in styles.json beside this file,
+// which names it, labels it and lists its heading variants for the builder —
+// the Style menu and the Heading buttons are made from it, so the builder
+// cannot offer what a style does not draw. The check at the foot of this file
+// fails every compile if the two disagree. Nothing in cv.typ changes: it
+// names no font, no glyph and no style, and asks `styled()` for whichever one
+// cv.json chose.
 
-#import "theme.typ": accent
+#import "theme.typ": accent, ink
 
 // ── the marks ─────────────────────────────────────────────────────────────
 // The same fonts the LaTeX CV uses — Font Awesome 5 Free Solid, its Brands
@@ -65,6 +72,18 @@
   text(font: family, size: size, fill: fill, glyph)
 }
 
+// ── headings ──────────────────────────────────────────────────────────────
+// Given the heading's words, already set, each draws what goes with them.
+#let HEADINGS = (
+  // \titlerule, as in the LaTeX CV.
+  rule: body => {
+    body
+    v(4.5pt)
+    line(length: 100%, stroke: 0.4pt + ink)
+  },
+  title: body => body,
+)
+
 // ── the styles ────────────────────────────────────────────────────────────
 #let STYLES = (
   // What the pre-built PDFs are, and what the CLI always compiles.
@@ -77,6 +96,7 @@
         [#icon(l.icon, size: size, fill: tint)#h(1.5pt)#text(size: size * 0.86, fill: tint, l.year)]
       } else { icon(l.icon, size: size, fill: tint) }))
       .join(h(3pt)),
+    headings: HEADINGS,
   ),
 
   // The same CV with none of the marks — for anywhere a row of glyphs is
@@ -93,8 +113,18 @@
     trail: (links, size: 1em, tint: accent) => links
       .map(l => link(l.url, text(size: size * 0.86, fill: tint, l.label)))
       .join([, ]),
+    headings: HEADINGS,
   ),
 )
+
+// The builder's manifest says what each style offers; this says it is true.
+#let MANIFEST = json("styles.json")
+#assert.eq(STYLES.keys(), MANIFEST.keys(),
+  message: "styles.json and STYLES name different styles")
+#for (name, m) in MANIFEST {
+  assert.eq(STYLES.at(name).headings.keys(), m.headings.keys(),
+    message: "styles.json lists other headings for " + name + " than STYLES draws")
+}
 
 /// The style cv.json names, with the one helper every style shares.
 ///

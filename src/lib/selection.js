@@ -30,7 +30,19 @@ const cleanSpacing = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, style, spacing, site = {}, savedAt }) {
+/** Section id → how its heading prints: `none`, or a variant of the style.
+ *  Names, not promises — which variants exist is the style's to say, so the
+ *  builder decides what an unknown one falls back to, as with `style`. */
+const cleanHeadings = (raw) => {
+  const out = {};
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, h] of Object.entries(raw)) {
+    if (typeof h === 'string' && h.length <= 64) out[id] = h;
+  }
+  return out;
+};
+
+export function encode({ items, lines, style, spacing, heading, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -51,6 +63,9 @@ export function encode({ items, lines, style, spacing, site = {}, savedAt }) {
     // How far apart each section's entries sit, for the sections not at their
     // default. Absent means every one is.
     spacing: cleanSpacing(spacing),
+    // How each section's heading prints. A section absent takes the style's
+    // usual heading, which is what every earlier selection means.
+    heading: cleanHeadings(heading),
   };
 }
 
@@ -62,7 +77,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -110,6 +125,7 @@ export function decode(text) {
     lines,
     style,
     spacing: cleanSpacing(raw.spacing),
+    heading: cleanHeadings(raw.heading),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,
