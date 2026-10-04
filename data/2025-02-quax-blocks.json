@@ -27,7 +27,7 @@
     "source": {
       "repo": "GalacticDynamics/quax-blocks",
       "path": "docs/_static/favicon.svg",
-      "sha": "553eeb057f326377f1fde567696841862f9d6b10"
+      "sha": "ffc47a7c877a9d6565d3d26991560f33e2c25fed"
     },
     "alt": "The quax-blocks logo: a black rubber duck, quax's, with a white badge on its body carrying three blue blocks stacked into a pyramid.",
     "description": "Building blocks for quax classes: mixins for arithmetic, comparison and array protocols, so a new array type takes a few lines."
