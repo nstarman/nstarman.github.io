@@ -10,6 +10,17 @@
   },
   "title": "is_annotated",
   "summary": "Check whether a type hint is Annotated",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/is-annotated.webp",
+    "source": {
+      "repo": "GalacticDynamics/is_annotated",
+      "path": "docs/_static/favicon.svg",
+      "sha": "f1aad1975dba68d9595261f148140c82883c1ae1"
+    },
+    "alt": "The is_annotated logo: square brackets around a teal block and a purple flag, the shape of Annotated[T, metadata], with a yellow badge carrying a tick.",
+    "description": "Checks whether a type hint is typing.Annotated, which an ordinary isinstance check cannot tell."
+  },
   "repo": "GalacticDynamics/is_annotated",
   "links": [
     {
