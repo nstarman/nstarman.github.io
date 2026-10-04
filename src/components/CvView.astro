@@ -198,7 +198,7 @@ const mapFor = (s) => {
               `spacing`: `<id>.heading`, `<id>.legend`, and the section's id
               for its entries; the legend's place is `<id>.legend` of its
               `place`. An option hides where it would do nothing: the
-              heading's spacing and the legend's place with no heading, the
+              heading's spacing and the legend's Title place with no heading, the
               legend's spacing with the legend up on the heading's line. */}
           {[
             { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
@@ -214,10 +214,12 @@ const mapFor = (s) => {
               {o.place && (
                 <span class="fmtopt fmtopt--place">
                   <span class="fmtlab">Place</span>
-                  <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="2"
+                  <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="3"
                         aria-label={`Where the ${s.heading} legend sits`} data-place-of={o.key}>
                     <label title="On its own line, below the heading">
                       <input type="radio" class="posradio" name={`place:${o.key}`} value="below" checked />Below</label>
+                    <label title="On its own line, below the heading, at its right">
+                      <input type="radio" class="posradio" name={`place:${o.key}`} value="right" />Right</label>
                     <label title="On the heading's line, at its right">
                       <input type="radio" class="posradio" name={`place:${o.key}`} value="title" />Title</label>
                   </span>

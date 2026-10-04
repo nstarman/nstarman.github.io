@@ -73,8 +73,9 @@
 #let headingof = cv.at("heading", default: (:))
 
 // Where a part of a section sits, keyed `<id>.<part>`: so far only the
-// publications' student legend, `below` its heading (the default) or on the
-// heading's own line, `title`. Builder-only too.
+// publications' student legend, `below` its heading at the left (the
+// default), below it at the `right`, or on the heading's own line, `title`.
+// Builder-only too.
 #let placeof = cv.at("place", default: (:))
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
@@ -312,12 +313,14 @@
   #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
   #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
 
-// `legend: false` where the key has gone up onto the heading's line.
-#let publications(section, legend: true) = {
-  if legend and hasstudents(section) {
-    // Sticky, so a wider gap below it can never strand it at a page foot.
-    block(sticky: true, {
-      studentkey
+// `legend` is the key's alignment on its own line, or `none` where it has
+// gone up onto the heading's.
+#let publications(section, legend: left) = {
+  if legend != none and hasstudents(section) {
+    // Sticky, so a wider gap below it can never strand it at a page foot;
+    // full width, or an auto block shrinks to the key and it cannot go right.
+    block(sticky: true, width: 100%, {
+      align(legend, studentkey)
       v(gap(section.id + ".legend", "legend"))
     })
   }
@@ -383,8 +386,9 @@
 #for s in cv.sections {
   let choice = headingof.at(s.id, default: usual)
   // The legend goes up only onto a heading that is there.
+  let keyplace = placeof.at(s.id + ".legend", default: "below")
   let keyup = (s.at("layout", default: none) == "publications" and choice != "none"
-    and placeof.at(s.id + ".legend", default: "below") == "title" and hasstudents(s))
+    and keyplace == "title" and hasstudents(s))
   if choice != "none" {
     section(
       s.heading,
@@ -401,7 +405,7 @@
   } else if "layout" in s and s.layout == "grid" {
     softgrid(s.items, gap(s.id, "grid"))
   } else if "layout" in s and s.layout == "publications" {
-    publications(s, legend: not keyup)
+    publications(s, legend: if keyup { none } else if keyplace == "right" { right } else { left })
   } else {
     entries(s.items, gap(s.id, "entries"))
   }
