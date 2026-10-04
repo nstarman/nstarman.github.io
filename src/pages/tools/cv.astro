@@ -141,6 +141,7 @@ const builderData = {
       retire('Selection changed — compile again.');
       const on = boxes().filter((b) => b.checked).length;
       $('count').textContent = `${on} / ${boxes().length}`;
+      showHeading();
       // a group box reflects its children rather than driving them
       for (const g of document.querySelectorAll('.pickgroup')) {
         const kids = [...g.querySelectorAll('.itembox')];
@@ -174,6 +175,10 @@ const builderData = {
         const open = t.getAttribute('aria-expanded') !== 'true';
         t.setAttribute('aria-expanded', String(open));
         $(t.getAttribute('aria-controls')).hidden = !open;
+      }
+      if (t.dataset.heading !== undefined) {
+        setHeading(t.dataset.heading);
+        retire('Heading changed — compile again.');
       }
       if (t.dataset.gap !== undefined) {
         setGap(t.closest('.fmtopts'), Number(t.dataset.gap));
@@ -246,11 +251,29 @@ const builderData = {
     /** Spacing key → multiple, for the keys not at their default. */
     const currentSpacing = () => {
       const out = {};
-      for (const group of document.querySelectorAll('.fmtopts')) {
+      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
         const k = Number(group.querySelector('[aria-pressed="true"]')?.dataset.gap ?? 1);
         if (k !== 1) out[group.dataset.key] = k;
       }
       return out;
+    };
+
+    // One choice, mirrored in every section's row, so it holds whichever
+    // section ends up alone.
+    const setHeading = (v) => {
+      for (const b of document.querySelectorAll('[data-heading]')) {
+        b.setAttribute('aria-pressed', String(b.dataset.heading === v));
+      }
+    };
+    const currentHeading = () =>
+      document.querySelector('[data-heading][aria-pressed="true"]')?.dataset.heading ?? 'none';
+    /** The heading choice is shown only in a section compiled on its own. */
+    const showHeading = () => {
+      const live = [...document.querySelectorAll('.cvsec')]
+        .filter((sec) => sec.querySelector('.itembox:checked'));
+      for (const g of document.querySelectorAll('.fmtopt--heading')) {
+        g.hidden = !(live.length === 1 && live[0].contains(g));
+      }
     };
 
     // ── save & load ───────────────────────────────────────────────────────
@@ -270,7 +293,8 @@ const builderData = {
     const saveSelection = () => {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
-                          style: $('style').value, spacing: currentSpacing(), site: SITE });
+                          style: $('style').value, spacing: currentSpacing(),
+                          heading: currentHeading(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -302,9 +326,10 @@ const builderData = {
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
       // A value no button offers falls back to the default, as a style does.
-      for (const group of document.querySelectorAll('.fmtopts')) {
+      for (const group of document.querySelectorAll('.fmtopts[data-key]')) {
         setGap(group, sel.spacing[group.dataset.key] ?? 1);
       }
+      setHeading(sel.heading ?? 'none');
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);
@@ -373,6 +398,7 @@ const builderData = {
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
         model.spacing = currentSpacing();
+        model.heading = currentHeading();
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

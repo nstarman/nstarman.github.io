@@ -46,6 +46,9 @@ const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
 // The builder's item-spacing stops, as multiples of each section's own gap.
 const GAPS = [0.5, 1, 1.5, 2];
+// How a section's heading prints when it is the only one compiled. Hidden is
+// the default, as it was before there was a choice.
+const HEADS = [['none', 'Hidden'], ['title', 'Title'], ['rule', 'Underlined']];
 
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
@@ -168,6 +171,17 @@ const mapFor = (s) => {
 
       {pick && (
         <div class="fmtrow" id={`fmt-${s.id}`} hidden>
+          {/* Only means something for a section compiled on its own, so it is
+              shown only in that one; the builder's script decides which. */}
+          <span class="fmtopt fmtopt--heading" hidden>
+            <span class="fmtlab">Heading</span>
+            <span class="fmtopts" role="group" aria-label={`How the ${s.heading} heading prints on its own`}>
+              {HEADS.map(([v, label]) => (
+                <button type="button" class="posbtn" data-heading={v}
+                        aria-pressed={v === 'none' ? 'true' : 'false'}>{label}</button>
+              ))}
+            </span>
+          </span>
           {/* Each group is one key of the template's `spacing`: the section's
               id for its entries, and `<id>.legend` for the line of student
               marks that opens Publications. */}

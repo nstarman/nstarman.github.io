@@ -30,7 +30,11 @@ const cleanSpacing = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, style, spacing, site = {}, savedAt }) {
+/** How a lone section's heading prints; anything else reads as unset. */
+const HEADINGS = ['none', 'title', 'rule'];
+const cleanHeading = (h) => (HEADINGS.includes(h) ? h : null);
+
+export function encode({ items, lines, style, spacing, heading, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -51,6 +55,9 @@ export function encode({ items, lines, style, spacing, site = {}, savedAt }) {
     // How far apart each section's entries sit, for the sections not at their
     // default. Absent means every one is.
     spacing: cleanSpacing(spacing),
+    // How the heading prints when one section is compiled alone. Absent means
+    // hidden, which is what every earlier selection means.
+    heading: cleanHeading(heading),
   };
 }
 
@@ -62,7 +69,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -110,6 +117,7 @@ export function decode(text) {
     lines,
     style,
     spacing: cleanSpacing(raw.spacing),
+    heading: cleanHeading(raw.heading),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

@@ -115,6 +115,12 @@ describe('tolerating the merely odd', () => {
     expect(read({ spacing: [2] }).spacing).toEqual({});
   });
 
+  it('carries a lone heading through a round trip, and unsets nonsense', () => {
+    expect(decode(JSON.stringify(encode({ items: [], heading: 'rule' }))).heading).toBe('rule');
+    expect(read({}).heading).toBeNull();
+    expect(read({ heading: 'banner' }).heading).toBeNull();
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

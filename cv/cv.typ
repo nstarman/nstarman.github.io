@@ -48,6 +48,11 @@
 // the CLI PDFs and their page counts are untouched.
 #let spacing = cv.at("spacing", default: (:))
 
+// How the heading prints when one section is compiled alone: `none` (hidden),
+// `title`, or `rule` (the title over its rule, as every other heading has).
+// Builder-only too; absent, the lone heading is hidden as it always was.
+#let loneheading = cv.at("heading", default: "none")
+
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
@@ -156,7 +161,7 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none) = {
+#let section(title, mark: none, rule: true) = {
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
@@ -170,8 +175,10 @@
       #if g != none [#g #h(2pt)]
       #smallcaps(title)
     ]
-    #v(4.5pt)
-    #line(length: 100%, stroke: 0.4pt + ink)
+    #if rule [
+      #v(4.5pt)
+      #line(length: 100%, stroke: 0.4pt + ink)
+    ]
   ]
   v(if tight { 4pt } else { 7pt })
 }
@@ -337,10 +344,11 @@
 // A lone section needs no heading — e.g. a builder export of only the
 // publications. Empty sections are already dropped by the resolver.
 #for s in cv.sections {
-  if cv.sections.len() > 1 {
+  if cv.sections.len() > 1 or loneheading != "none" {
     section(
       s.heading,
       mark: s.at("icon", default: none),
+      rule: cv.sections.len() > 1 or loneheading == "rule",
     )
   } else {
     v(if tight { 8pt } else { 15pt })
