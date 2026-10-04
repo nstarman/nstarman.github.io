@@ -197,14 +197,14 @@ const mapFor = (s) => {
             <span class="pubfilter pubfilter--inline headslider" role="radiogroup"
                   aria-label={`How the ${s.heading} heading prints`} data-heading-of={s.id}
                   data-stops={1 + HEADS.filter((h) => h.styles.includes(FIRST_STYLE)).length}>
-              <label title="No heading">
-                <input type="radio" class="posradio" name={`heading:${s.id}`} value="none" />None</label>
               {HEADS.map((h) => (
                 <label title={h.label} data-styles={h.styles.join(' ')} hidden={!h.styles.includes(FIRST_STYLE)}>
                   <input type="radio" class="posradio" name={`heading:${s.id}`} value={h.v} aria-label={h.label}
                          checked={h.v === FIRST_USUAL} />
                   <span class:list={['headsample', { 'headsample--under': h.underline }]} aria-hidden="true">X</span></label>
               ))}
+              <label title="No heading">
+                <input type="radio" class="posradio" name={`heading:${s.id}`} value="none" />None</label>
             </span>
           </span>
           {/* Each group is one key of the template's `spacing`: the section's

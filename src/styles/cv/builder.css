@@ -102,8 +102,13 @@
 .fmtrow[hidden]{display:none}
 .fmtlab{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
 .fmtopts{display:inline-flex; gap:.15rem}
-/* The heading slider's stops: a sample X, drawn as that heading is. */
-.headsample{font-family:var(--serif); font-size:.8rem; text-transform:none; letter-spacing:0}
+/* The heading slider, at the height of the compact number boxes beside it:
+   a thinner track and thumb, and smaller stops. Its stops are a sample X,
+   drawn as that heading is, and None. */
+.headslider{padding:1px}
+.headslider::before{top:1px; bottom:1px; left:1px; width:calc((100% - 2px) / var(--stops))}
+.headslider label{min-width:1.6rem; padding:.02rem .45rem; font-size:.6rem; line-height:1.6}
+.headsample{font-family:var(--serif); font-size:.78rem; line-height:1; text-transform:none; letter-spacing:0}
 .headsample--under{text-decoration:underline; text-underline-offset:2px}
 .posbtn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 

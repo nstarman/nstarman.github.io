@@ -277,8 +277,8 @@ const builderData = {
     /** Offer only the heading variants the chosen style draws. A choice the
      *  style lacks — after a style change, or from a file — becomes its usual
      *  heading rather than vanishing. The slider's thumb finds its stop by
-     *  position, so a stop taken away goes to the end, and the count of
-     *  stops follows. */
+     *  position, so a stop taken away goes to the end — after None — and the
+     *  count of stops follows. */
     const syncHeading = () => {
       const style = $('style').value;
       for (const g of headingGroups()) {
