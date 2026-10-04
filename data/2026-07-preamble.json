@@ -9,6 +9,17 @@
   },
   "title": "preamble",
   "summary": "A LaTeX preamble worth reusing",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/preamble.webp",
+    "source": {
+      "repo": "nstarman/preamble",
+      "path": "docs/_static/favicon.svg",
+      "sha": "2e861aebba5975c3776081eb2d156ea813bbf847"
+    },
+    "alt": "The preamble logo: a document page whose top band, the preamble, is shaded purple and crossed by a big purple backslash, above grey lines of text.",
+    "description": "A LaTeX preamble worth reusing: packages of base commands, maths notation, and astronomy units, survey names and software links."
+  },
   "repo": "nstarman/preamble",
   "role": "author",
   "links": [
