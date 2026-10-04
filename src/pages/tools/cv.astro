@@ -100,7 +100,7 @@ const builderData = {
     import { encode, decode, loadReport } from '../../lib/selection.js';
     import { plural } from '../../lib/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
-    import { readGap, writeGap, isDefault, DEFAULT_GAP } from '../../lib/gapin.js';
+    import { readLength, writeLength, isDefault, DEFAULT_LENGTH } from '../../lib/lengthinput.js';
 
     const $ = (id) => document.getElementById(id);
     const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
@@ -160,7 +160,7 @@ const builderData = {
     document.addEventListener('change', (e) => {
       const t = e.target;
       // A spacing field has settled its own value by now (it listens first).
-      if (t.closest?.('.gapin')) { retire('Spacing changed — compile again.'); return; }
+      if (t.closest?.('.lengthin')) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
         t.closest('.pickgroup').querySelectorAll('.subbox')
           .forEach((b) => (b.checked = t.checked));
@@ -246,12 +246,12 @@ const builderData = {
 
     // ── formatting ──────────────────────────────────────────────────────
     // The fields are the state, so there is no second copy to drift.
-    const gapFields = () => [...document.querySelectorAll('.gapin')];
+    const spacingFields = () => [...document.querySelectorAll('.lengthin')];
     /** Spacing key → `{value, unit}`, for the keys not at their default. */
     const currentSpacing = () => {
       const out = {};
-      for (const f of gapFields()) {
-        const g = readGap(f);
+      for (const f of spacingFields()) {
+        const g = readLength(f);
         if (!isDefault(g)) out[f.dataset.key] = g;
       }
       return out;
@@ -338,7 +338,7 @@ const builderData = {
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
       // A gap the file does not set, or sets out of bounds, is the default.
-      for (const f of gapFields()) writeGap(f, sel.spacing[f.dataset.key] ?? DEFAULT_GAP);
+      for (const f of spacingFields()) writeLength(f, sel.spacing[f.dataset.key] ?? DEFAULT_LENGTH);
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);

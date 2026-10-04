@@ -10,7 +10,7 @@
 // sentence a person can act on rather than a TypeError from three frames down.
 
 import { plural } from './inline.js';
-import { readSavedGap } from './gapin.js';
+import { readSavedLength } from './lengthinput.js';
 
 export const FORMAT = 'starkman-cv-selection';
 export const VERSION = 1;
@@ -28,7 +28,7 @@ const cleanSpacing = (raw) => {
   const out = {};
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
   for (const [id, g] of Object.entries(raw)) {
-    const gap = readSavedGap(g);
+    const gap = readSavedLength(g);
     if (gap) out[id] = gap;
   }
   return out;
