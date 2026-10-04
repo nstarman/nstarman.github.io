@@ -159,6 +159,11 @@ const builderData = {
 
     document.addEventListener('change', (e) => {
       const t = e.target;
+      if (t.name?.startsWith('heading:')) {
+        setHeading(t.closest('[data-heading-of]'), t.value);
+        retire('Heading changed — compile again.');
+        return;
+      }
       // A spacing field has settled its own value by now (it listens first).
       if (t.closest?.('.fmtrow .numbox')) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
@@ -182,10 +187,6 @@ const builderData = {
         const open = t.getAttribute('aria-expanded') !== 'true';
         t.setAttribute('aria-expanded', String(open));
         $(t.getAttribute('aria-controls')).hidden = !open;
-      }
-      if (t.dataset.heading !== undefined) {
-        setHeading(t.closest('.fmtopts'), t.dataset.heading);
-        retire('Heading changed — compile again.');
       }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
@@ -260,31 +261,32 @@ const builderData = {
       return out;
     };
 
-    // A heading choice per section, each its own group of buttons.
+    // A heading choice per section, each a slider of radios.
     const headingGroups = () => [...document.querySelectorAll('[data-heading-of]')];
     const usualHeading = () => HEADINGS[$('style').value]?.[0] ?? 'none';
+    const shownChoice = (g) => g.querySelector('label:not([hidden]) > :checked')?.value;
     const setHeading = (group, v) => {
-      for (const b of group.querySelectorAll('[data-heading]')) {
-        b.setAttribute('aria-pressed', String(b.dataset.heading === v));
-      }
+      for (const r of group.querySelectorAll('input')) r.checked = r.value === v;
       // No heading, no gap under it to set.
       group.closest('.fmtrow').querySelector('.fmtopt--headgap').hidden = v === 'none';
     };
     /** Section id → how its heading prints, for every section. */
     const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
-      g.dataset.headingOf,
-      g.querySelector('[aria-pressed="true"]:not([hidden])')?.dataset.heading ?? usualHeading(),
+      g.dataset.headingOf, shownChoice(g) ?? usualHeading(),
     ]));
     /** Offer only the heading variants the chosen style draws. A choice the
      *  style lacks — after a style change, or from a file — becomes its usual
-     *  heading rather than vanishing. */
+     *  heading rather than vanishing. The slider's thumb finds its stop by
+     *  position, so a stop taken away goes to the end — after None — and the
+     *  count of stops follows. */
     const syncHeading = () => {
       const style = $('style').value;
-      for (const b of document.querySelectorAll('[data-heading][data-styles]')) {
-        b.hidden = !b.dataset.styles.split(' ').includes(style);
-      }
       for (const g of headingGroups()) {
-        if (!g.querySelector('[aria-pressed="true"]:not([hidden])')) setHeading(g, usualHeading());
+        const stops = [...g.querySelectorAll('label[data-styles]')];
+        for (const l of stops) l.hidden = !l.dataset.styles.split(' ').includes(style);
+        for (const l of stops.filter((l) => l.hidden)) g.append(l);
+        g.dataset.stops = 1 + stops.filter((l) => !l.hidden).length;
+        if (!shownChoice(g)) setHeading(g, usualHeading());
       }
     };
 
