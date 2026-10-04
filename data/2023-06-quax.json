@@ -14,6 +14,17 @@
   "title": "quax",
   "summary": "Multiple dispatch in JAX",
   "details": "Custom array-ish types that work with JAX primitives — the substrate the rest of the stack builds on.",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/quax.webp",
+    "source": {
+      "repo": "nstarman/quax",
+      "path": "docs/_static/favicon.svg",
+      "sha": "736278a19d219aa3264df45a379cf6db9244d2fd"
+    },
+    "alt": "The quax logo: a black rubber duck, Material Design Icons' duck.",
+    "description": "Multiple dispatch over abstract array types in JAX: custom array-ish types that work with JAX's primitives, the substrate the rest of the stack builds on."
+  },
   "repo": "nstarman/quax",
   "role": "maintainer",
   "links": [
