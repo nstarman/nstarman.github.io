@@ -101,15 +101,16 @@
    the right, under the button that opened it. */
 .fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:end; align-items:center;
   gap:.35rem 1.2rem; margin:.1rem 0 .6rem}
-/* Set apart from the CV it formats: a grey squircle, as wide as what is in
-   it and at the right, under the button that opened it. The grey is the ink
+/* Set apart from the CV it formats: a grey squircle across the section's
+   full width, its contents at the right, under the button that opened it
+   (the grid's justify-content, above). The grey is the ink
    faintly over the ground, so it is a step off the page in either theme —
    the site's own --sunk all but vanishes on the dark ground. The page's
    ground inside the pills, so they still read as pills on it, and the
    sliders' thumbs the grey again. corner-shape where the browser has it; a
    plain round corner where not. */
 .fmtrow{--fmtgrey:color-mix(in srgb, var(--ink) 7%, var(--ground));
-  width:fit-content; margin-left:auto; padding:.55rem .8rem; background:var(--fmtgrey);
+  padding:.55rem .8rem; background:var(--fmtgrey);
   border-radius:16px; corner-shape:squircle}
 .fmtrow .numbox-pill, .fmtrow .fmtslider{background:var(--ground)}
 .fmtrow .fmtslider::before{background:var(--fmtgrey); box-shadow:none}
