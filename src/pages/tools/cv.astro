@@ -100,7 +100,7 @@ const builderData = {
     import { encode, decode, loadReport } from '../../lib/selection.js';
     import { plural } from '../../lib/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
-    import { readLength, writeLength, isDefault, DEFAULT_LENGTH } from '../../lib/lengthinput.js';
+    import { readSpacing, writeSpacing } from '../../lib/cvspacing.js';
 
     const $ = (id) => document.getElementById(id);
     const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
@@ -160,7 +160,7 @@ const builderData = {
     document.addEventListener('change', (e) => {
       const t = e.target;
       // A spacing field has settled its own value by now (it listens first).
-      if (t.closest?.('.lengthin')) { retire('Spacing changed — compile again.'); return; }
+      if (t.closest?.('.fmtrow .numbox')) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
         t.closest('.pickgroup').querySelectorAll('.subbox')
           .forEach((b) => (b.checked = t.checked));
@@ -246,13 +246,16 @@ const builderData = {
 
     // ── formatting ──────────────────────────────────────────────────────
     // The fields are the state, so there is no second copy to drift.
-    const spacingFields = () => [...document.querySelectorAll('.lengthin')];
-    /** Spacing key → `{value, unit}`, for the keys not at their default. */
+    // Each box's input is named for its spacing key; empty, it is the gap's
+    // own size and is left out.
+    const spacingFields = () => [...document.querySelectorAll('.fmtrow .numbox')];
+    const keyOf = (box) => box.querySelector('input').name;
+    /** Spacing key → `{value, unit}`, for the boxes with a value. */
     const currentSpacing = () => {
       const out = {};
       for (const f of spacingFields()) {
-        const g = readLength(f);
-        if (!isDefault(g)) out[f.dataset.key] = g;
+        const g = readSpacing(f);
+        if (g) out[keyOf(f)] = g;
       }
       return out;
     };
@@ -338,7 +341,7 @@ const builderData = {
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
       // A gap the file does not set, or sets out of bounds, is the default.
-      for (const f of spacingFields()) writeLength(f, sel.spacing[f.dataset.key] ?? DEFAULT_LENGTH);
+      for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);

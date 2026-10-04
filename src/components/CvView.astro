@@ -13,7 +13,8 @@ import Inline from './Inline.astro';
 import CvToc from './CvToc.astro';
 import CvTimelineItem from './CvTimelineItem.astro';
 import Card from './Card.astro';
-import LengthInput from './LengthInput.astro';
+import NumBox from './NumBox.astro';
+import { spacingUnits } from '../lib/cvspacing.js';
 import CV_STYLES from '../../cv/lib/styles.json';
 import CV_GAPS from '../../cv/lib/gaps.json';
 
@@ -214,7 +215,8 @@ const mapFor = (s) => {
           ].map((o) => (
             <span class:list={['fmtopt', o.cls]}>
               <span class="fmtlab">{o.label}</span>
-              <LengthInput key={o.key} label={o.words} base={gapBase(o.gap)} />
+              <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}
+                      unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} />
             </span>
           ))}
         </div>

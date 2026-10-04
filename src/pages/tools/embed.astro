@@ -842,11 +842,11 @@ const data = {
   function showOrder() {
     const it = items[form.elements.card.value], names = { ...Object.fromEntries(it.links.map(([k, name]) => [k, name])), empty: 'empty', paperbutton: 'paper button', year: 'year', position: 'position', context: 'context' };
     const keys = shownOrder();
-    el('eb-order').innerHTML = keys.map((k, i) => `<span class="eb-num eb-orderpill${k === 'empty' ? ' eb-orderempty' : ''}" data-i="${i}">`
-      + `<button type="button" class="eb-step" data-move="-1" ${i ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
+    el('eb-order').innerHTML = keys.map((k, i) => `<span class="numbox-pill eb-orderpill${k === 'empty' ? ' eb-orderempty' : ''}" data-i="${i}">`
+      + `<button type="button" class="numbox-step" data-move="-1" ${i ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
       + `<span class="eb-ordername">${esc(names[k])}</span>`
-      + `<button type="button" class="eb-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button>`
-      + (k === 'empty' ? `<button type="button" class="eb-step" data-drop aria-label="Take this empty button away" title="Take away">✕</button>` : '') + '</span>').join('')
+      + `<button type="button" class="numbox-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button>`
+      + (k === 'empty' ? `<button type="button" class="numbox-step" data-drop aria-label="Take this empty button away" title="Take away">✕</button>` : '') + '</span>').join('')
       + '<button type="button" class="eb-orderadd" data-add aria-label="Add an empty button at the end" title="A button\'s room with nothing in it">+ empty</button>';
     el('eb-order').hidden = el('eb-order-key').hidden = !it.links.length && !keys.length;
   }
@@ -1320,21 +1320,9 @@ const data = {
   const trackName = (t) => trackBetween[t] ?? t.replace('_', ' · ');
   // The tracks set, each with its px, flex and a way to remove it; or how to
   // add one.
-  // < and > beside every number box — NumBox — less or more by its step,
-  // held to its range. An empty box starts from what it shows — what that
-  // comes to in the card as drawn — or, with nothing to show, so many names
-  // from five.
-  form.addEventListener('click', (e) => {
-    const b = e.target.closest('.eb-step');
-    const i = b?.parentElement.querySelector('input[type=number]');
-    if (!i) return;
-    const lo = i.min === '' ? 0 : +i.min, hi = i.max === '' ? Infinity : +i.max;
-    const from = i.value !== '' ? +i.value : +i.placeholder || +i.dataset.from || lo;
-    const unit = +i.step < 1 ? 10 : 1; // to a tenth where the box takes one, else whole
-    i.value = Math.min(hi, Math.max(lo, Math.round((from + +b.dataset.d) * unit) / unit));
-    i.dispatchEvent(new Event('input', { bubbles: true }));
-    i.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  // < and > beside every number box step it themselves — NumBox — from what
+  // the box shows where it is empty: what that comes to in the card as drawn,
+  // or, with nothing to show, so many names from five (its data-from).
   function showTracks() {
     const set = SPACE_TRACKS.filter((t) => space[t]);
     el('eb-tracks').innerHTML = set.length ? set.map((t) => {
@@ -2403,20 +2391,7 @@ const data = {
      options, which are faint capitals. As wide as the longest in their
      block — Authors above the preview, Background below — so the controls
      line up close by. */
-  /* < and >: small, quiet, either side of a box. */
-  :global(.eb-step){padding:0 .25rem; border:0; background:none; color:var(--ink-mute); cursor:pointer; font:inherit; font-family:var(--mono); font-size:.8rem}
-  :global(.eb-step:hover){color:var(--accent)}
-  /* The number box: < input >, then its unit — one, as a pill, or a choice
-     of pills. */
-  :global(.eb-numrow){display:inline-flex; align-items:center; gap:.4em}
-  :global(.eb-num){display:inline-flex; align-items:baseline; gap:.15em; padding:.15rem .55rem; border-radius:999px; background:var(--sunk)}
-  :global(.eb-num input[type="number"]){width:3.2em; padding:0; border:0; border-bottom:1px solid var(--rule-strong); background:none;
-    font:inherit; font-size:1.05rem; text-align:right; color:var(--ink); -moz-appearance:textfield}
-  :global(.eb-num input[type="number"]::-webkit-inner-spin-button), :global(.eb-num input[type="number"]::-webkit-outer-spin-button){-webkit-appearance:none; margin:0}
-  :global(.eb-unit){margin-left:.3em; padding:0; border:0; background:none; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em;
-    text-transform:uppercase; color:var(--accent)}
-  :global(select.eb-unit){cursor:pointer}
-  :global(.eb-numrow[hidden]), :global(.eb-num [hidden]){display:none}
+  /* The number box — its pill, < and > and unit — is NumBox's own. */
   .eb-key{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); min-width:7ch; padding:0; float:left}
   /* Which one, under the key: Area (Left). */
   .eb-key small{display:block; font-size:inherit; font-weight:400; color:var(--ink-mute)}
@@ -2497,7 +2472,7 @@ const data = {
   /* A button in the order line: its name between its < and >. */
   .eb :global(.eb-orderpill){gap:.1em; padding:.15rem .3rem}
   .eb :global(.eb-ordername){font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); padding:0 .2em}
-  .eb :global(.eb-orderpill .eb-step:disabled){opacity:.3; cursor:default}
+  .eb :global(.eb-orderpill .numbox-step:disabled){opacity:.3; cursor:default}
   .eb :global(.eb-orderempty .eb-ordername){color:var(--ink-faint)}
   .eb :global(.eb-orderadd){padding:.15rem .6rem; border:1px dashed var(--accent-line); border-radius:999px; background:none; color:var(--accent);
     font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer}
