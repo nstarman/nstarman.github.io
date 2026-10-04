@@ -262,7 +262,9 @@
 
 // ── publications ──────────────────────────────────────────────────────────
 // Numbered, and the count runs through the Submitted / Accepted / Published
-// subsections rather than restarting — enumerate[resume] in the LaTeX CV.
+// subsections rather than restarting — enumerate[resume] in the LaTeX CV. It
+// counts down: the list runs newest first, so the first paper is 1 and the
+// newest the highest, and a new paper never renumbers the ones before it.
 #let publication(n, it) = {
   grid(
     columns: (1.6em, 1fr),
@@ -303,14 +305,14 @@
       v(gap(section.id + ".legend", "legend"))
     })
   }
-  let n = 0
   let groups = if section.groups.len() > 0 { section.groups } else {
     ((label: none, ids: section.items.map(i => i.id)),)
   }
+  let n = groups.map(g => section.items.filter(i => i.id in g.ids).len()).sum(default: 0) + 1
   for g in groups {
     let picked = section.items.filter(i => i.id in g.ids)
     for it in picked {
-      n += 1
+      n -= 1
       publication(n, it)
       v(gap(section.id, "publications"))
     }
