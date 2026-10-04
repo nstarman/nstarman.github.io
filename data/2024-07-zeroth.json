@@ -10,6 +10,17 @@
   },
   "title": "zeroth",
   "summary": "Efficiently get the index-0 element of any iterable",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/zeroth.webp",
+    "source": {
+      "repo": "GalacticDynamics/zeroth",
+      "path": "docs/_static/favicon.svg",
+      "sha": "5a2a59edfe80aa5e33d580f35fe9e51e69b9bab0"
+    },
+    "alt": "The zeroth logo: [0], a purple zero between navy square brackets.",
+    "description": "The first element of any iterable: zeroth(obj) is next(iter(obj)), for lists, tuples, dicts, ranges and anything else that iterates."
+  },
   "repo": "GalacticDynamics/zeroth",
   "links": [
     {
