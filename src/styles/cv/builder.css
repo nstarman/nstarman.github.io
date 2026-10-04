@@ -98,12 +98,11 @@
 .fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 /* A line per subject, in three columns — the subject in bold, its style,
    its spacing — so each kind of option lines up down the block; the block at
-   the right, under the button that opened it. */
-.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:end; align-items:center;
+   the left, where reading starts. */
+.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:start; align-items:center;
   gap:.35rem 1.2rem; margin:.1rem 0 .6rem}
 /* Set apart from the CV it formats: a grey squircle across the section's
-   full width, its contents at the right, under the button that opened it
-   (the grid's justify-content, above). The grey is the ink
+   full width. The grey is the ink
    faintly over the ground, so it is a step off the page in either theme —
    the site's own --sunk all but vanishes on the dark ground. The page's
    ground inside the pills, so they still read as pills on it, and the
@@ -114,7 +113,7 @@
   border-radius:16px; corner-shape:squircle}
 .fmtrow .numbox-pill, .fmtrow .fmtslider{background:var(--ground)}
 .fmtrow .fmtslider::before{background:var(--fmtgrey); box-shadow:none}
-.fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink); justify-self:end}
+.fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink)}
 .fmtopt{display:inline-flex; align-items:center; gap:.5rem}
 .fmtopt[hidden]{display:none}
 /* In the formatting grid an option hidden keeps its cell, or every cell
