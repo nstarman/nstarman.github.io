@@ -10,6 +10,17 @@
   },
   "title": "oncequinox",
   "summary": "Singletons for Equinox",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/oncequinox.webp",
+    "source": {
+      "repo": "GalacticDynamics/oncequinox",
+      "path": "docs/_static/favicon.svg",
+      "sha": "b318a9442380c179f56b2e4b1175a64f851ff4c1"
+    },
+    "alt": "The oncequinox logo: Equinox's, a navy circle solid on the left and a checkerboard on the right, with a big 1 cut out of its solid half.",
+    "description": "Singletons for Equinox: a metaclass for Equinox modules of which only one instance exists, each class keeping its own."
+  },
   "repo": "GalacticDynamics/oncequinox",
   "links": [
     {
