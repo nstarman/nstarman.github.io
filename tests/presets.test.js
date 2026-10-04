@@ -55,10 +55,13 @@ describe('resolve', () => {
     }
   });
 
-  it('leaves "Select" off every heading when asked to', () => {
-    const one = (opts) => resolve('2page', undefined, opts).sections.map((s) => s.heading);
-    expect(one().some((h) => h.startsWith('Select '))).toBe(true);
-    expect(one({ select: false }).some((h) => h.startsWith('Select '))).toBe(false);
+  it('leaves "Select" off the headings of the sections asked', () => {
+    const heads = (opts) => Object.fromEntries(resolve('2page', undefined, opts).sections.map((s) => [s.id, s.heading]));
+    const was = heads();
+    const off = Object.keys(was).find((id) => was[id].startsWith('Select '));
+    const now = heads({ prefix: { [off]: 'none' } });
+    expect(now[off]).toBe(was[off].slice('Select '.length));
+    for (const id of Object.keys(was)) if (id !== off) expect(now[id]).toBe(was[id]);
   });
 
   it('counts what it leaves out', () => {

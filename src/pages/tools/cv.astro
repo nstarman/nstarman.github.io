@@ -76,9 +76,6 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
-          {/* A trimmed section's heading reads "Select Publications"; this
-              drops the "Select". */}
-          <label class="bl"><input type="checkbox" id="selectword" checked /> “Select” in headings</label>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
           <span class="status" id="status">The compiler is ~10 MB and loads on first use.</span>
@@ -158,6 +155,7 @@ const builderData = {
         head.checked = n === kids.length;
         head.indeterminate = n > 0 && n < kids.length;
       }
+      for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
     };
 
     document.addEventListener('change', (e) => {
@@ -167,6 +165,7 @@ const builderData = {
         retire('Heading changed — compile again.');
         return;
       }
+      if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
         retire('Placement changed — compile again.');
@@ -279,10 +278,14 @@ const builderData = {
     };
     /** Hide what would do nothing: with no heading, its spacing and the
      *  legend's Title place — there is no line to put the legend on — and,
-     *  with the legend up on the heading's line, the gap below it. */
+     *  with the legend up on the heading's line, the gap below it. The prefix
+     *  shows only while the section is part-ticked, the one time its
+     *  heading says "Select". */
     const syncFmt = (row) => {
       const none = row.querySelector('[data-heading-of] label:not([hidden]) > :checked')?.value === 'none';
       row.querySelector('.fmtopt--headgap').hidden = none;
+      const prefix = row.querySelector('.fmtopt--prefix');
+      if (prefix) prefix.hidden = none || !row.closest('.pickgroup').querySelector('.groupbox').indeterminate;
       const place = row.querySelector('.fmtopt--place');
       if (!place) return;
       // Title is the last stop, so dropping it moves no other.
@@ -303,6 +306,15 @@ const builderData = {
     const currentPlace = () => Object.fromEntries(placeGroups()
       .map((g) => [g.dataset.placeOf, g.querySelector(':checked')?.value])
       .filter(([, v]) => v && v !== 'below'));
+    // Whether a part-ticked section's heading says "Select", by section id.
+    const prefixGroups = () => [...document.querySelectorAll('[data-prefix-of]')];
+    const setPrefix = (group, v) => {
+      for (const r of group.querySelectorAll('input')) r.checked = r.value === (v === 'none' ? 'none' : 'select');
+    };
+    /** Section id → `none`, for the sections that leave "Select" off. */
+    const currentPrefix = () => Object.fromEntries(prefixGroups()
+      .filter((g) => g.querySelector(':checked')?.value === 'none')
+      .map((g) => [g.dataset.prefixOf, 'none']));
     /** Section id → how its heading prints, for every section. */
     const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
       g.dataset.headingOf, shownChoice(g) ?? usualHeading(),
@@ -342,7 +354,7 @@ const builderData = {
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
-                          select: $('selectword').checked, site: SITE });
+                          prefix: currentPrefix(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -373,7 +385,7 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
-      $('selectword').checked = sel.select;
+      for (const g of prefixGroups()) setPrefix(g, sel.prefix[g.dataset.prefixOf]);
       // Before the sync, which then turns any the style lacks into its usual.
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
@@ -439,8 +451,6 @@ const builderData = {
       retire('Style changed — compile again.');
     });
 
-    $('selectword').addEventListener('change', () => retire('Headings changed — compile again.'));
-
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
       if (!chosen.size) return status('Nothing selected.');
@@ -450,7 +460,7 @@ const builderData = {
         // section set, then the tick-boxes narrow it.
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
-                              { select: $('selectword').checked });
+                              { prefix: currentPrefix() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
