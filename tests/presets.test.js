@@ -55,6 +55,12 @@ describe('resolve', () => {
     }
   });
 
+  it('leaves "Select" off every heading when asked to', () => {
+    const one = (opts) => resolve('2page', undefined, opts).sections.map((s) => s.heading);
+    expect(one().some((h) => h.startsWith('Select '))).toBe(true);
+    expect(one({ select: false }).some((h) => h.startsWith('Select '))).toBe(false);
+  });
+
   it('counts what it leaves out', () => {
     const sw = resolve('2page').sections.find((s) => s.id === 'software');
     const all = items.filter((i) => i.type === 'software').length;

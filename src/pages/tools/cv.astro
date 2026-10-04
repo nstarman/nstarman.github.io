@@ -76,6 +76,9 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
+          {/* A trimmed section's heading reads "Select Publications"; this
+              drops the "Select". */}
+          <label class="bl"><input type="checkbox" id="selectword" checked /> “Select” in headings</label>
           <button class="btn btn--go" type="button" id="build">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
           <span class="status" id="status">The compiler is ~10 MB and loads on first use.</span>
@@ -338,7 +341,8 @@ const builderData = {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
-                          heading: currentHeadings(), place: currentPlace(), site: SITE });
+                          heading: currentHeadings(), place: currentPlace(),
+                          select: $('selectword').checked, site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -369,6 +373,7 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
+      $('selectword').checked = sel.select;
       // Before the sync, which then turns any the style lacks into its usual.
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
@@ -434,6 +439,8 @@ const builderData = {
       retire('Style changed — compile again.');
     });
 
+    $('selectword').addEventListener('change', () => retire('Headings changed — compile again.'));
+
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
       if (!chosen.size) return status('Nothing selected.');
@@ -442,7 +449,8 @@ const builderData = {
         // Same resolver as the site and the CI PDFs — "complete" is the widest
         // section set, then the tick-boxes narrow it.
         const lines = currentLines();
-        const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false);
+        const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
+                              { select: $('selectword').checked });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;

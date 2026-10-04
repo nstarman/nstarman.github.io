@@ -43,8 +43,9 @@ export function preset(name) {
 /**
  * @param {string} name          preset key, e.g. "2page"
  * @param {Set<string>} [only]   optional id allow-list, used by the builder's checkboxes
+ * @param {{ select?: boolean }} [opts]  `select: false` keeps "Select " off every heading
  */
-export function resolve(name, only) {
+export function resolve(name, only, { select = true } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -91,7 +92,7 @@ export function resolve(name, only) {
       // so a heading cannot go on claiming to be a selection after the CV
       // grows to include everything.
       heading:
-        picked.length < whole && !section.heading.startsWith('Select')
+        select && picked.length < whole && !section.heading.startsWith('Select')
           ? `Select ${section.heading}`
           : section.heading,
       groupBy: section.groupBy ?? null,

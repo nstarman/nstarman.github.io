@@ -89,6 +89,12 @@ describe('tolerating the merely odd', () => {
     expect(read({ somethingNew: { a: 1 } }).items.size).toBe(0);
   });
 
+  it('carries "Select" in headings through a round trip, on unless said off', () => {
+    expect(decode(JSON.stringify(encode({ items: [], select: false }))).select).toBe(false);
+    expect(encode({ items: [] }).select).toBe(true);
+    expect(read({}).select).toBe(true);
+  });
+
   it('carries the style through a round trip', () => {
     const doc = encode({ items: ['a'], lines: {}, style: 'plain' });
     expect(doc.style).toBe('plain');
