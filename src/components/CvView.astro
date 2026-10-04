@@ -53,18 +53,20 @@ const pageName = (page) => page.replaceAll('/', '');
 // density, lets a field convert between a multiple and points.
 const entryGap = (s) => (['list', 'grid', 'publications'].includes(s.layout) ? s.layout : 'entries');
 const gapBase = (name) => CV_GAPS[name].normal;
-// How each section's heading prints: hidden, or one of the heading variants
+// How each section's heading prints: none, or one of the heading variants
 // the PDF styles draw, as cv/lib/styles.json lists them — the style's first,
-// its usual heading, to start. Each button names the styles that draw it, so
-// the builder shows only the current style's; the first style is the menu's
-// first, and so the one showing.
+// its usual heading, to start. Each is a stop of a slider, shown as a sample
+// letter drawn as the manifest says (underlined, or plain), named in words
+// for its title; each names the styles that draw it, so the builder shows
+// only the current style's. The first style is the menu's first, and so the
+// one showing.
 const FIRST_STYLE = Object.keys(CV_STYLES)[0];
 const FIRST_USUAL = Object.keys(CV_STYLES[FIRST_STYLE].headings)[0];
 const HEADS = [];
 for (const [name, st] of Object.entries(CV_STYLES)) {
-  for (const [v, label] of Object.entries(st.headings)) {
+  for (const [v, look] of Object.entries(st.headings)) {
     let h = HEADS.find((x) => x.v === v);
-    if (!h) HEADS.push((h = { v, label, styles: [] }));
+    if (!h) HEADS.push((h = { v, ...look, styles: [] }));
     h.styles.push(name);
   }
 }
@@ -192,13 +194,16 @@ const mapFor = (s) => {
         <div class="fmtrow" id={`fmt-${s.id}`} hidden>
           <span class="fmtopt">
             <span class="fmtlab">Heading</span>
-            <span class="fmtopts" role="group" aria-label={`How the ${s.heading} heading prints`}
-                  data-heading-of={s.id}>
-              <button type="button" class="posbtn" data-heading="none" aria-pressed="false">Hidden</button>
+            <span class="pubfilter pubfilter--inline headslider" role="radiogroup"
+                  aria-label={`How the ${s.heading} heading prints`} data-heading-of={s.id}
+                  data-stops={1 + HEADS.filter((h) => h.styles.includes(FIRST_STYLE)).length}>
+              <label title="No heading">
+                <input type="radio" class="posradio" name={`heading:${s.id}`} value="none" />None</label>
               {HEADS.map((h) => (
-                <button type="button" class="posbtn" data-heading={h.v} data-styles={h.styles.join(' ')}
-                        hidden={!h.styles.includes(FIRST_STYLE)}
-                        aria-pressed={h.v === FIRST_USUAL ? 'true' : 'false'}>{h.label}</button>
+                <label title={h.label} data-styles={h.styles.join(' ')} hidden={!h.styles.includes(FIRST_STYLE)}>
+                  <input type="radio" class="posradio" name={`heading:${s.id}`} value={h.v} aria-label={h.label}
+                         checked={h.v === FIRST_USUAL} />
+                  <span class:list={['headsample', { 'headsample--under': h.underline }]} aria-hidden="true">X</span></label>
               ))}
             </span>
           </span>

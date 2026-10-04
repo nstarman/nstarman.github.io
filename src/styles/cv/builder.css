@@ -102,6 +102,9 @@
 .fmtrow[hidden]{display:none}
 .fmtlab{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
 .fmtopts{display:inline-flex; gap:.15rem}
+/* The heading slider's stops: a sample X, drawn as that heading is. */
+.headsample{font-family:var(--serif); font-size:.8rem; text-transform:none; letter-spacing:0}
+.headsample--under{text-decoration:underline; text-underline-offset:2px}
 .posbtn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
 
 /* An unticked line stays readable but recedes — the same bargain the unticked

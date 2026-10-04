@@ -1,10 +1,16 @@
 {
   "default": {
     "label": "Default",
-    "headings": { "rule": "Underlined", "title": "Title" }
+    "headings": {
+      "rule": { "label": "Underlined", "underline": true },
+      "title": { "label": "Title" }
+    }
   },
   "plain": {
     "label": "Default - 🎨",
-    "headings": { "rule": "Underlined", "title": "Title" }
+    "headings": {
+      "rule": { "label": "Underlined", "underline": true },
+      "title": { "label": "Title" }
+    }
   }
 }
