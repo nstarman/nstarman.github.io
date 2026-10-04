@@ -10,6 +10,17 @@
   },
   "title": "galactic_dynamics_interoperability",
   "summary": "Interoperability between galactic dynamics libraries",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/galactic-dynamics-interoperability.webp",
+    "source": {
+      "repo": "GalacticDynamics/galactic_dynamics_interoperability",
+      "path": "docs/_static/favicon.svg",
+      "sha": "e24e46a6fb0409fbd06e6464807887224a695975"
+    },
+    "alt": "The galactic_dynamics_interoperability logo: a blue two-armed spiral galaxy inside two circular arrows, one teal and one purple, on a dark rounded square.",
+    "description": "Interoperability between galactic dynamics libraries: converts potentials and other objects between agama, gala, galax and galpy."
+  },
   "repo": "GalacticDynamics/galactic_dynamics_interoperability",
   "links": [
     {
