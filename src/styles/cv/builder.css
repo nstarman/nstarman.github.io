@@ -96,10 +96,9 @@
 .fmtbtn{margin-left:auto; color:var(--ink-faint); border-color:var(--rule)}
 .subgrouplab + .fmtbtn{margin-left:-.5rem}
 .fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
-/* A line per subject, in three columns — the subject in bold, its style,
-   its spacing — so each kind of option lines up down the block; the block at
-   the left, where reading starts. */
-.fmtrow{display:grid; grid-template-columns:repeat(3, max-content); justify-content:start; align-items:center;
+/* A line per subject: the subject in bold, in a column of its own so the
+   lines' options all start at one edge, then its options from the left. */
+.fmtrow{display:grid; grid-template-columns:max-content 1fr; justify-content:start; align-items:center;
   gap:.35rem 1.2rem; margin:.1rem 0 .6rem}
 /* Set apart from the CV it formats: a grey squircle across the section's
    full width. The grey is the ink
@@ -114,11 +113,9 @@
 .fmtrow .numbox-pill, .fmtrow .fmtslider{background:var(--ground)}
 .fmtrow .fmtslider::before{background:var(--fmtgrey); box-shadow:none}
 .fmtsub{font-family:var(--mono); font-size:.66rem; font-weight:600; color:var(--ink)}
+.fmtline{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem 1.2rem}
 .fmtopt{display:inline-flex; align-items:center; gap:.5rem}
 .fmtopt[hidden]{display:none}
-/* In the formatting grid an option hidden keeps its cell, or every cell
-   after it would slide into the wrong column. */
-.fmtrow > .fmtopt[hidden]{display:inline-flex; visibility:hidden}
 .fmtrow[hidden]{display:none}
 .fmtlab{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
 .fmtopts{display:inline-flex; gap:.15rem}
