@@ -9,6 +9,17 @@
   },
   "title": "cosmology.api",
   "summary": "A standard interface for cosmology libraries",
+  "highlight": {
+    "topic": "software",
+    "image": "highlights/cosmology-api.webp",
+    "source": {
+      "repo": "cosmology-api/cosmology.api",
+      "path": "docs/_static/favicon.svg",
+      "sha": "6d414fb31f2229424acfb17c09cfab4ad8e1ef6a"
+    },
+    "alt": "The cosmology.api logo, the cosmology-api organisation's mark: a near-white hexagon holding three linked cube outlines, on slate.",
+    "description": "The Cosmology API standard: Python protocols that let code work with any cosmology library implementing them, from Astropy to CLASS and CAMB."
+  },
   "repo": "cosmology-api/cosmology.api",
   "role": "lead developer",
   "doi": "10.5281/zenodo.8331505",
