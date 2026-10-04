@@ -30,26 +30,22 @@ const useful = (tail ? all.filter((s) => s.tier === 'useful') : [])
 // If nothing in a tier has a paper, the paper filter empties it — and a
 // divider above an empty grid separates nothing. Marked here rather than in
 // CSS because it is a fact about the data, and it is recomputed every build.
-const usefulEmptied = useful.length > 0 && !useful.some((s) => softwarePapers(s).length);
-
-// Marks the card for the filter — present or absent, so the CSS tests for the
-// attribute. An empty string is dropped from the output, hence the value.
-const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
+const emptied = (tier) => (tier.length > 0 && !tier.some((s) => softwarePapers(s).length) ? 'tier-nopaper' : undefined);
 ---
 {lead && (
-  <div class:list={['lead', !tail && 'lead--last']} data-paper={hasPaper(lead)}>
+  <div class:list={['lead', !tail && 'lead--last']}>
     <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
   </div>
 )}
 
-<div class="soft">
+<div class:list={['soft', emptied(headline)]}>
   {headline.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
 </div>
 
 {other.length > 0 && (
   <>
-    <div class="tierbreak" role="presentation"></div>
-    <div class="soft soft--mini">
+    <div class:list={['tierbreak', emptied(other)]} role="presentation"></div>
+    <div class:list={['soft', 'soft--mini', emptied(other)]}>
       {other.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
     </div>
   </>
@@ -57,8 +53,8 @@ const hasPaper = (s) => (softwarePapers(s).length ? 'yes' : undefined);
 
 {useful.length > 0 && (
   <>
-    <div class:list={['tierbreak', usefulEmptied && 'tier-nopaper']} role="presentation"></div>
-    <div class:list={['soft', 'soft--tiny', usefulEmptied && 'tier-nopaper']}>
+    <div class:list={['tierbreak', emptied(useful)]} role="presentation"></div>
+    <div class:list={['soft', 'soft--tiny', emptied(useful)]}>
       {useful.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
     </div>
   </>

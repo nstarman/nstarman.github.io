@@ -342,7 +342,8 @@ a.card:hover .name{color:var(--accent)}
 .card[data-per] .c-foot li.c-paperli{grid-column:span var(--pn, 2)}
 .card[data-paperlabel="icon"] .c-pword, .card:not([data-paperlabel="icon"]) .c-paperbtn .ico{display:none}
 .c-refs{grid-column:1 / -1; margin:0; padding-left:1.1em}
-.c-stamp, .c-year{font-family:var(--mono); font-size:.82em; letter-spacing:.04em; color:var(--ink-faint)}
+.c-stamp, .c-year{letter-spacing:.04em; color:var(--ink-faint)}
+.c-stamp{font-family:var(--mono); font-size:.82em}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
 .c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 .c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
@@ -866,15 +867,14 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 #sw-yes:checked ~ .h2row .pubfilter label[for="sw-yes"]{color:var(--ink)}
 .posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
 
-#sw-yes:checked ~ .lead:not([data-paper]),
+#sw-yes:checked ~ .lead:not(:has(> .card[data-paper])),
 #sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
 /* A package's anchor, #sw-<id>, which a card's title:…:site links to. */
 :is(.lead, .soft) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
-/* The dividers between tiers 1-3 stay. Hiding one took its margins with it —
-   the only thing separating those grids — so the filtered headline card ran
-   straight into the row beneath, and all three keep visible cards under either
-   stop anyway. A tier the filter empties completely is the other case: its
-   divider would separate nothing, so it goes with the grid. */
+/* The dividers between tiers stay. Hiding one took its margins with it — the
+   only thing separating those grids — so the filtered headline card ran
+   straight into the row beneath. A tier the filter empties completely is the
+   other case: its divider would separate nothing, so it goes with the grid. */
 #sw-yes:checked ~ .tier-nopaper,
 /* Merged PRs in other people's repos carry no paper of their own. */
 #sw-yes:checked ~ .contribs{display:none}

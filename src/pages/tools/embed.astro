@@ -10,21 +10,10 @@ import Place from '../../components/Place.astro';
 import TextLook from '../../components/TextLook.astro';
 import { items, relKey, splitTitle, venueLine, venueUrl } from '../../lib/data.js';
 import {
-  paperHref, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  paperHref, PAPER_TO, STEP_PX, FRAME_PX, LOOKS, DIALS, FIGURE_AT, FIGURE_SLOTS, FOOT_AT, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, BACKGROUNDS, SITE_PRESETS, BUILDER_DEFAULT, CARD_TYPES, FIXED_MIN, FIXED_MAX, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../../lib/cards.js';
 
 const pool = items.filter((i) => CARD_TYPES.includes(i.type));
-// The steps in px, as global.css has them, for the settings that can be typed
-// in px — the text and title sizes, padding (the top's; the sides are a
-// little wider), corners and buttons: their rows' stops are labelled with these, not the steps' names,
-// which say nothing about a size. With the range a typed size may take.
-const STEP_PX = {
-  textsize: { minor: 11.5, compact: 12.5, standard: 14, feature: 16, display: 18.4, min: 8, max: 40, what: 'The text size, in pixels' },
-  titlesize: { minor: 12.4, compact: 13.5, standard: 15.2, feature: 17.3, display: 19.9, min: 8, max: 60, what: 'The title size, in pixels' },
-  padding: { minor: 8, compact: 11, standard: 15, feature: 19, display: 24, min: 0, max: 64, what: 'The padding, in pixels, the same on every side' },
-  corners: { minor: 10, compact: 12, standard: 16, feature: 18, display: 22, min: 0, max: 64, what: 'The corner radius, in pixels' },
-  buttons: { minor: 21, compact: 23, standard: 26, feature: 30, display: 35, min: 12, max: 64, what: 'The link buttons, in pixels; the icon is half' },
-};
 const groups = [
   ['publication', 'Publications'],
   ['highlight', 'Syntheses'],
@@ -70,6 +59,7 @@ const data = {
   fixedMin: FIXED_MIN,
   fixedMax: FIXED_MAX,
   stepPx: STEP_PX,
+  framePx: FRAME_PX,
   fixedMinHeight: FIXED_MIN_HEIGHT,
   // The faces a card is set in, for Typst to draw its PDF with.
   fonts: fs.readdirSync('public/fonts/card').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/card/${f}`),
@@ -745,7 +735,7 @@ const data = {
   // an empty size comes to.
   const FACE_Q = { body: '.c-text :is(.c-sum, .c-det)', authors: '.c-by', venue: ':is(.c-venue, .c-byvenue)', position: '.c-place', year: ':is(.c-yr, .c-year)', context: '.c-context' };
 
-  const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
+  const { site, fonts, fixedMin, fixedMax, fixedMinHeight, stepPx: STEP_PX, framePx: FRAME_PX, presets, items } = JSON.parse(document.getElementById('eb-data').textContent);
   const form = document.getElementById('eb');
   const el = (id) => document.getElementById(id);
   // A whole number typed, held between lo and hi.
@@ -962,7 +952,7 @@ const data = {
     form.elements.titleweight.value = c.titleWeight ?? '';
     const framePx = /^[0-9]/.test(c.frame ?? '');
     // A step, as its px: the box has no steps of its own.
-    const frameStep = { minor: 3, compact: 4, standard: 5, feature: 8, display: 12 }[c.frame];
+    const frameStep = FRAME_PX[c.frame];
     setRadio('frame', framePx || frameStep ? null : c.frame ?? '');
     form.elements.framepx.value = framePx ? c.frame : frameStep ?? '';
     form.elements.bgap.value = c.buttonGap != null ? parseInt(c.buttonGap, 10) : '';

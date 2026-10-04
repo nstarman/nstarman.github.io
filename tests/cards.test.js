@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
   FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
@@ -639,5 +639,21 @@ describe('the Card Builder\'s snippets', () => {
     expect(snippet(s, { site: 'https://s', height: 100 })).toBe('[![A \\[b\\] "c"](x--size_fill_fit-text_none-light.png)](<https://e.org/a (b)>)');
     expect(snippet({ ...s, it: { title: 'a\\[b' } }, { site: '', height: 0 })).toBe('![a\\\\\\[b](x--size_fill_fit-text_none-light.png)');
     expect(snippet({ ...s, format: 'html', theme: 'light' }, { site: 'https://s', height: 100 })).toContain('alt="A [b] &quot;c&quot;"');
+  });
+});
+
+describe('the Card Builder\'s steps in px', () => {
+  // A length in global.css as px at the root's 16px: .72rem, calc(.72rem *
+  // 1.08), 10px.
+  const css = fs.readFileSync('src/styles/global.css', 'utf8');
+  const px = (v) => {
+    const m = /^calc\(([\d.]+)rem \* ([\d.]+)\)$/.exec(v);
+    return m ? +m[1] * +m[2] * 16 : v.endsWith('rem') ? parseFloat(v) * 16 : parseFloat(v);
+  };
+  const of = (attr, prop, step) => px(new RegExp(`\\.card\\[data-${attr}="${step}"\\]\\{[^}]*${prop}:([^;}]+)`).exec(css)[1].trim());
+  it('are the stylesheet\'s, to half a pixel', () => {
+    const PROP = { textsize: '--fs', titlesize: '--ts', padding: '--pad-t', corners: '--rad', buttons: '--ib' };
+    for (const [d, prop] of Object.entries(PROP)) for (const step of LOOKS) expect(Math.abs(STEP_PX[d][step] - of(d, prop, step)), `${d} ${step}`).toBeLessThanOrEqual(0.5);
+    for (const step of LOOKS) expect(Math.abs(FRAME_PX[step] - of('frame', '--frame', step)), `frame ${step}`).toBeLessThanOrEqual(0.5);
   });
 });
