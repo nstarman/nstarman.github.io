@@ -246,14 +246,8 @@ const mapFor = (s) => {
                   A list section is taken whole, so never says it. */}
               {o.style && s.items.length > 0 && (
                 <span class="fmtopt fmtopt--prefix" hidden>
-                  <span class="fmtlab">Prefix</span>
-                  <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="2"
-                        aria-label={`Whether the ${s.heading} heading says Select`} data-prefix-of={s.id}>
-                    <label title={`“Select ${s.heading}” while only some are ticked`}>
-                      <input type="radio" class="posradio" name={`prefix:${s.id}`} value="select" checked />Select</label>
-                    <label title={`“${s.heading}” however many are ticked`}>
-                      <input type="radio" class="posradio" name={`prefix:${s.id}`} value="none" />None</label>
-                  </span>
+                  <label class="bl" title={`“Select ${s.heading}” while only some are ticked`}>
+                    <input type="checkbox" name={`prefix:${s.id}`} data-prefix-of={s.id} checked /> “Select” prefix</label>
                 </span>
               )}
                 <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
