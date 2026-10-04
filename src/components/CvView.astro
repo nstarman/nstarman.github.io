@@ -44,6 +44,8 @@ const baseLines = (i) => detailLines(i).length;
 // adding one to config/presets.json cannot produce a nameless arrow.
 const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
+// The builder's item-spacing stops, as multiples of each section's own gap.
+const GAPS = [0.5, 1, 1.5, 2];
 
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
@@ -130,6 +132,16 @@ const mapFor = (s) => {
             detail
           </label>
         )}
+        {/* Beside `detail`, the other choices about how a section is printed
+            rather than what is in it. They open below the rule, so the heading
+            row stays one line. */}
+        {pick && (
+          <button type="button" class="fmtbtn posbtn posbtn--icon" aria-expanded="false"
+                  aria-controls={`fmt-${s.id}`}
+                  aria-label={`Formatting for ${s.heading}`} title="Formatting">
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
+          </button>
+        )}
         {s.page && !pick && (
           <a class="more seclink" href={s.page} aria-label={`All ${pageName(s.page)}`}
              title={`All ${pageName(s.page)}`}>
@@ -153,6 +165,30 @@ const mapFor = (s) => {
           </button>
         )}
       </Head>
+
+      {pick && (
+        <div class="fmtrow" id={`fmt-${s.id}`} hidden>
+          {/* Each group is one key of the template's `spacing`: the section's
+              id for its entries, and `<id>.legend` for the line of student
+              marks that opens Publications. */}
+          {[
+            ...(s.id === 'publications'
+              ? [{ key: `${s.id}.legend`, label: 'Legend spacing', words: `Space below the ${s.heading} legend` }]
+              : []),
+            { key: s.id, label: 'Item spacing', words: `Space between ${s.heading} entries` },
+          ].map((o) => (
+            <span class="fmtopt">
+              <span class="fmtlab">{o.label}</span>
+              <span class="fmtopts" role="group" aria-label={o.words} data-key={o.key}>
+                {GAPS.map((g) => (
+                  <button type="button" class="posbtn" data-gap={g}
+                          aria-pressed={g === 1 ? 'true' : 'false'}>{g}×</button>
+                ))}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {s.layout === 'list' ? (
         <ul class="plainlist">

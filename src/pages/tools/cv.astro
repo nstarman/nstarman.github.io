@@ -120,8 +120,8 @@ const builderData = {
     };
     const status = (msg) => { $('status').textContent = msg; };
 
-    /** A compiled PDF is only good for the selection, the detail and the style
-     *  it was compiled from. Anything that changes one of those retires it:
+    /** A compiled PDF is only good for the selection, the detail, the style
+     *  and the spacing it was compiled from. Anything that changes one of those retires it:
      *  otherwise Download hands over a file that no longer matches the page,
      *  and the preview goes on showing it. Silent when there is nothing
      *  compiled, which is why the init call below costs nothing. */
@@ -170,6 +170,15 @@ const builderData = {
     document.addEventListener('click', (e) => {
       const t = e.target.closest('button');
       if (!t) return;
+      if (t.classList.contains('fmtbtn')) {
+        const open = t.getAttribute('aria-expanded') !== 'true';
+        t.setAttribute('aria-expanded', String(open));
+        $(t.getAttribute('aria-controls')).hidden = !open;
+      }
+      if (t.dataset.gap !== undefined) {
+        setGap(t.closest('.fmtopts'), Number(t.dataset.gap));
+        retire('Spacing changed — compile again.');
+      }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
@@ -227,6 +236,23 @@ const builderData = {
       }
     });
 
+    // ── formatting ──────────────────────────────────────────────────────
+    // The pressed button is the state, so there is no second copy to drift.
+    const setGap = (group, k) => {
+      for (const b of group.querySelectorAll('[data-gap]')) {
+        b.setAttribute('aria-pressed', String(Number(b.dataset.gap) === k));
+      }
+    };
+    /** Spacing key → multiple, for the keys not at their default. */
+    const currentSpacing = () => {
+      const out = {};
+      for (const group of document.querySelectorAll('.fmtopts')) {
+        const k = Number(group.querySelector('[aria-pressed="true"]')?.dataset.gap ?? 1);
+        if (k !== 1) out[group.dataset.key] = k;
+      }
+      return out;
+    };
+
     // ── save & load ───────────────────────────────────────────────────────
     // A long selection is real work, and it is only ever one reload from gone.
 
@@ -244,7 +270,7 @@ const builderData = {
     const saveSelection = () => {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
       const doc = encode({ items: chosen, lines: currentLines(),
-                          style: $('style').value, site: SITE });
+                          style: $('style').value, spacing: currentSpacing(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -275,6 +301,10 @@ const builderData = {
       const wanted = sel.style ?? 'default';
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
+      // A value no button offers falls back to the default, as a style does.
+      for (const group of document.querySelectorAll('.fmtopts')) {
+        setGap(group, sel.spacing[group.dataset.key] ?? 1);
+      }
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle);
@@ -342,6 +372,7 @@ const builderData = {
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
+        model.spacing = currentSpacing();
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

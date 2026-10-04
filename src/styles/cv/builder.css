@@ -91,6 +91,18 @@
 }
 .subgrouplab:hover{color:var(--ink-2)}
 .subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
+/* Formatting: a button beside `detail` that opens a row under the rule. On
+   the right with `detail`; first of the cluster where there is no `detail`. */
+.fmtbtn{margin-left:auto; color:var(--ink-faint); border-color:var(--rule)}
+.subgrouplab + .fmtbtn{margin-left:-.5rem}
+.fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+.fmtrow{display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:.4rem 1.2rem; margin:.1rem 0 .6rem}
+.fmtopt{display:inline-flex; align-items:center; gap:.5rem}
+.fmtrow[hidden]{display:none}
+.fmtlab{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
+.fmtopts{display:inline-flex; gap:.15rem}
+.posbtn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+
 /* An unticked line stays readable but recedes — the same bargain the unticked
    entries make, so a selection reads as one picture. */
 .sub.is-off{opacity:.35}
