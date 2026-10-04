@@ -47,8 +47,8 @@
 #let usual = headings.keys().first()
 
 // How far apart a section's entries sit, as a multiple of its own spacing,
-// keyed by section id — and the gap under the publications' student legend,
-// keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
+// keyed by section id — and the gap under its heading, keyed `<id>.heading`,
+// and under the publications' student legend, keyed `publications.legend`. Only the browser builder sets it, as with `style`, so
 // the CLI PDFs and their page counts are untouched.
 #let spacing = cv.at("spacing", default: (:))
 
@@ -165,7 +165,7 @@
 // ── headings ──────────────────────────────────────────────────────────────
 // \titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 // \titlespacing{\section}{0pt}{10pt}{10pt}, \titlerule default 0.4pt.
-#let section(title, mark: none, variant: usual) = {
+#let section(title, mark: none, variant: usual, k: 1) = {
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
@@ -180,7 +180,7 @@
       #smallcaps(title)
     ])
   ]
-  v(if tight { 4pt } else { 7pt })
+  v(k * if tight { 4pt } else { 7pt })
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
@@ -349,6 +349,7 @@
       s.heading,
       mark: s.at("icon", default: none),
       variant: if choice in headings { choice } else { usual },
+      k: spacing.at(s.id + ".heading", default: 1),
     )
   } else {
     v(if tight { 8pt } else { 15pt })

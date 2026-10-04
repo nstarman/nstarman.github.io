@@ -197,15 +197,17 @@ const mapFor = (s) => {
             </span>
           </span>
           {/* Each group is one key of the template's `spacing`: the section's
-              id for its entries, and `<id>.legend` for the line of student
-              marks that opens Publications. */}
+              id for its entries, `<id>.heading` for the gap under its heading,
+              and `<id>.legend` for the line of student marks that opens
+              Publications. The heading's is hidden while the heading is. */}
           {[
+            { key: `${s.id}.heading`, label: 'Heading spacing', words: `Space below the ${s.heading} heading`, cls: 'fmtopt--headgap' },
             ...(s.id === 'publications'
               ? [{ key: `${s.id}.legend`, label: 'Legend spacing', words: `Space below the ${s.heading} legend` }]
               : []),
             { key: s.id, label: 'Item spacing', words: `Space between ${s.heading} entries` },
           ].map((o) => (
-            <span class="fmtopt">
+            <span class:list={['fmtopt', o.cls]}>
               <span class="fmtlab">{o.label}</span>
               <span class="fmtopts" role="group" aria-label={o.words} data-key={o.key}>
                 {GAPS.map((g) => (

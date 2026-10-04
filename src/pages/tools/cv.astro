@@ -269,6 +269,8 @@ const builderData = {
       for (const b of group.querySelectorAll('[data-heading]')) {
         b.setAttribute('aria-pressed', String(b.dataset.heading === v));
       }
+      // No heading, no gap under it to set.
+      group.closest('.fmtrow').querySelector('.fmtopt--headgap').hidden = v === 'none';
     };
     /** Section id → how its heading prints, for every section. */
     const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
