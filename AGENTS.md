@@ -129,6 +129,11 @@ its name, so nothing hard-codes which preset is the unabridged one.
 `kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended` · `accepted`
 `tier`: `major` · `minor`
 
+**`groupRoles`** on a `position` prints it with every other role at the same
+`institution` that sets it, as one row — "Coordinator, Strategic Planner & Core
+Developer, Astropy". Only roles that opt in are grouped; the CV builder can turn
+grouping off per section.
+
 **`tier`** exists because the CV separates *Grants & Fellowships* and *Awards*
 from *Small Grants* and *Travel Awards*. `type` × `tier` gives those four
 buckets, and `config/presets.json` maps each to a heading. A fellowship is

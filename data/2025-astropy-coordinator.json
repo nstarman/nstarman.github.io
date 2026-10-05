@@ -17,6 +17,7 @@
   ],
   "institution": "Astropy",
   "location": "Remote",
+  "groupRoles": true,
   "links": [
     {
       "rel": "homepage",
