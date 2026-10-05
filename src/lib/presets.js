@@ -105,6 +105,8 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
       // property of the section, so it is stated once in presets.json and both
       // renderers read it from there.
       layout: section.layout ?? 'timeline',
+      // Columns of a grid layout; a preset may ask for more than the usual 3.
+      columns: section.columns ?? 3,
       // Heading mark, drawn by the PDF only.
       icon: section.icon ?? null,
       // A section may keep its elaboration where the preset drops it. A talk

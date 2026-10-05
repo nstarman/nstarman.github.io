@@ -200,7 +200,8 @@
       },
       {
         "id": "software",
-        "limit": 7
+        "limit": 7,
+        "columns": 4
       },
       {
         "id": "talks-invited",
