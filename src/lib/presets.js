@@ -60,6 +60,7 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
         key,
         id: section.id,
         heading: section.heading,
+        short: section.short ?? null,
         groupBy: null,
         icon: section.icon ?? null,
         layout: 'list',
@@ -98,6 +99,7 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
         prefix[section.id] !== 'none' && picked.length < whole && !section.heading.startsWith('Select')
           ? `Select ${section.heading}`
           : section.heading,
+      short: section.short ?? null,
       groupBy: section.groupBy ?? null,
       // Software is a grid of names rather than a dated list; the layout is a
       // property of the section, so it is stated once in presets.json and both

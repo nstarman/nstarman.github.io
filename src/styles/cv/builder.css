@@ -147,7 +147,7 @@
 .sub.is-off{opacity:.35}
 
 /* Narrow screens: the contents strip sits between the heading and the lede. */
-@media (max-width:77.99rem){
+@media (max-width:62.99rem){
   .cvtoc ~ .lede{margin-top:.9rem}  /* ~, not +: the rail's script sits between them */
 }
 

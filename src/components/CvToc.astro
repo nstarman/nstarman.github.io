@@ -12,7 +12,9 @@ const { sections } = Astro.props;
 <nav class="cvtoc" aria-label="CV sections">
   <ol>
     {sections.map((s) => (
-      <li><a href={`#${s.id}`} data-sec={s.id}>{s.heading}</a></li>
+      <li><a href={`#${s.id}`} data-sec={s.id}>
+        {s.short ? <><span class="toc-full">{s.heading}</span><span class="toc-short">{s.short}</span></> : s.heading}
+      </a></li>
     ))}
   </ol>
 </nav>
