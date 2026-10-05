@@ -16,6 +16,9 @@
 .selgroup{display:inline-flex; align-items:center; gap:.6rem; margin-left:auto}
 .selgroup .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
   font-variant-numeric:tabular-nums}
+/* In the sticky header the count is the first thing to go when it runs short of
+   room; the bar is one fixed line, so anything that wraps is cut off. */
+@media (max-width:40rem){ .cvbar .selgroup .count{display:none} }
 .btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
   font-size:.75rem; padding:.35rem .8rem}
 
