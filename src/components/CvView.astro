@@ -210,7 +210,8 @@ const mapFor = (s) => {
         {s.items.map((item) => (
           <CvTimelineItem item={item} pick={pick} picked={isPicked(item.id)}
                           lines={detail(item)} baseCount={baseLines(item)}
-                          level={level} completeLines={completeLines} />
+                          level={level} completeLines={completeLines}
+                          recipientInline={cv.recipientInline || item.recipientInline} />
         ))}
       </div>
       )}

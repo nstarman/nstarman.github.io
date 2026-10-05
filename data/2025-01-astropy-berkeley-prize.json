@@ -13,6 +13,7 @@
   },
   "title": "AAS Lancelot M. Berkeley–New York Community Trust Prize",
   "recipient": "the Astropy Collaboration",
+  "recipientInline": true,
   "details": "Team award, as a core developer and Coordination Committee member of [Astropy](item:astropy).",
   "funder": "American Astronomical Society",
   "links": [

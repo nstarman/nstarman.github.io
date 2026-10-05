@@ -398,6 +398,11 @@
           "recipient": {
             "description": "Who received it, when that is not the CV's owner — a team award belongs on the CV but must not read as a personal one.",
             "type": "string"
+          },
+          "recipientInline": {
+            "description": "Print the recipient on the title line, after the links, instead of on a line of its own (PDF CV).",
+            "type": "boolean",
+            "default": false
           }
         }
       }

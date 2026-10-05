@@ -183,6 +183,7 @@
   },
   "2page": {
     "place": { "publications.legend": "title" },
+    "recipientInline": true,
     "spacing": { "publications.heading": { "value": 1.4, "unit": "x" } },
     "label": "2P",
     "detail": "summary",
@@ -222,6 +223,7 @@
   },
   "1page": {
     "place": { "publications.legend": "title" },
+    "recipientInline": true,
     "spacing": { "publications.heading": { "value": 1.4, "unit": "x" } },
     "label": "1P",
     "detail": "summary",

@@ -164,3 +164,6 @@
 .cvtoc li.is-lifted{opacity:.85; transform:scale(1.04); box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 18%, transparent);
   background:var(--ground); border-radius:4px; position:relative; z-index:1}
 .cvtoc li.is-lifted a{pointer-events:none}
+
+.inlineopt{display:inline-flex; align-items:center; gap:.35rem; margin-left:.6rem; font-style:normal; font-size:.8rem; line-height:1; color:var(--ink-mute); cursor:pointer}
+.inlinebox{accent-color:var(--accent); width:.95rem; height:.95rem; margin:0; cursor:pointer}

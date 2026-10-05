@@ -36,6 +36,7 @@ const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
+  recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
   spacing: Object.fromEntries(presetNames.map((n) => [n, preset(n).spacing ?? {}])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
   // Each preset's grid columns, by section id, where it sets them.
@@ -123,7 +124,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, spacing: SPACING, site: SITE, fonts: FONTS,
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -249,6 +250,11 @@ const builderData = {
         return;
       }
       if (t.classList?.contains('subbox')) { applyDetail(); return; }
+      if (t.classList?.contains('inlinebox')) {
+        t.closest('.recipient').classList.toggle('recipient--inline', t.checked);
+        retire('Recipient placement changed — compile again.');
+        return;
+      }
       if (t.classList?.contains('groupbox')) {
         const on = t.checked;
         t.closest('.pickgroup').querySelectorAll('.itembox').forEach((b) => (b.checked = on));
@@ -337,6 +343,11 @@ const builderData = {
         // Its grids' columns too, the usual 3 where it does not say.
         for (const g of columnGroups()) setColumns(g, PRESET_COLUMNS[t.dataset.preset]?.[g.dataset.columnsOf] ?? 3);
         for (const g of placeGroups()) setPlace(g, PLACE[t.dataset.preset]?.[g.dataset.placeOf]);
+        // The preset's say on recipients, else each entry's own.
+        for (const b of inlineBoxes()) {
+          b.checked = RECIPIENT_INLINE[t.dataset.preset] || b.dataset.default !== undefined;
+          b.closest('.recipient').classList.toggle('recipient--inline', b.checked);
+        }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
         applyDetail();
@@ -525,9 +536,12 @@ const builderData = {
       return lines;
     };
 
+    const inlineBoxes = () => [...document.querySelectorAll('.inlinebox')];
+    const currentInline = () => inlineBoxes().filter((b) => b.checked).map((b) => b.dataset.id);
+
     const saveSelection = () => {
       const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
-      const doc = encode({ items: chosen, lines: currentLines(),
+      const doc = encode({ items: chosen, lines: currentLines(), inline: currentInline(),
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(), site: SITE });
@@ -549,6 +563,10 @@ const builderData = {
       for (const b of boxes()) b.checked = sel.items.has(b.value);
       for (const b of subs()) {
         b.checked = sel.lines.get(b.dataset.id)?.has(Number(b.dataset.line)) ?? false;
+      }
+      for (const b of inlineBoxes()) {
+        b.checked = sel.inline.has(b.dataset.id);
+        b.closest('.recipient').classList.toggle('recipient--inline', b.checked);
       }
       applyDetail();
       recount();
@@ -652,6 +670,10 @@ const builderData = {
                               { prefix: currentPrefix(), order: currentOrder() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
+        const inline = new Set(currentInline());
+        for (const s of model.sections) {
+          for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
+        }
         model.style = $('style').value;
         model.spacing = currentSpacing();
         model.heading = currentHeadings();

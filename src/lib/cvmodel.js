@@ -150,6 +150,7 @@ export function cvModel(presetName, only, keepLine, opts) {
           keepLine ? keepLine(item.id, i) : s.detail === 'full'),
         trailing: trailing(item),
         recipient: item.recipient ?? null,
+        recipientInline: cv.recipientInline || (item.recipientInline ?? false),
         status: item.status && item.status !== 'published' ? item.status : null,
         // Drawn as glyphs rather than the words "code" and "docs", so they cost
         // a few points at the end of a line instead of a line of their own —
