@@ -99,7 +99,7 @@ label.eb-key--check{cursor:pointer}
 .eb-sub > .pilltoggle, .eb-sub > .eb-px, .eb-sub > .eb-titles{justify-self:start}
 .eb-check{flex:none; width:.85em; height:.85em; margin:0; accent-color:var(--accent); cursor:pointer}
 .eb-h{margin:1.6rem 0 .6rem}
-.eb-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem}
+.eb-head{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.4rem 1rem}
 .eb-head h3{margin:0}
 /* Save and Load sit close under the controls, over the preview they act on. */
 #eb-io-head{margin-top:.5rem}
