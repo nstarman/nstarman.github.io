@@ -137,27 +137,29 @@ function rowOf(item, cv, s, keepLine) {
 /**
  * A section's rows. Roles at one institution print under it when the section
  * `cluster`s by institution and the builder has not asked for them apart: one
- * row for the institution, spanning its roles' dates, then a row per role.
+ * row — the roles joined in the title, the dates spanning them, every role's
+ * lines beneath.
  */
 function itemsOf(s, cv, keepLine, separate) {
   const row = (item) => rowOf(item, cv, s, keepLine);
   if (s.cluster !== 'institution' || separate[s.id]) return s.items.map(row);
   return institutionGroups(s.items).flatMap((g) => {
     if (g.item) return [row(g.item)];
+    const rows = g.items.map(row);
     const [first] = g.items;
     const home = links(first).find((l) => l.rel === 'homepage');
-    return [
-      {
-        id: `group:${first.institution}`, group: true,
-        when: dateLabel({ date: groupDate(g.items) }, { month: true }),
-        title: first.institution, subject: [], byline: [], venue: null, summary: null,
-        lines: [], trailing: first.location ?? '', recipient: null, status: null,
-        links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
-                         icon: REL_ICON[relKey(home)] ?? 'link' }] : [],
-      },
-      ...g.items.map((item) => ({ ...row(item), member: true, subject: [], trailing: '',
-                                  links: [] })),
-    ];
+    const names = rows.map((r) => r.title);
+    return [{
+      ...rows[0],
+      id: `group:${first.institution}`,
+      when: dateLabel({ date: groupDate(g.items) }, { month: true }),
+      title: names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0],
+      subject: subject(first) ? [{ t: first.institution, b: false }] : [],
+      lines: rows.flatMap((r) => r.lines),
+      trailing: first.location ?? '',
+      links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
+                       icon: REL_ICON[relKey(home)] ?? 'link' }] : [],
+    }];
   });
 }
 

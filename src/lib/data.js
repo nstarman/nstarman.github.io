@@ -414,22 +414,21 @@ export const assistItem = (a) => ({
 /**
  * Positions at one institution, as a group. Appointments in the same
  * organization read as one place with several roles, so the CV can print the
- * organization once and the roles beneath it. A group sits where its newest
- * member does; an item that is alone stays a plain item. Returns
+ * organization once and the roles beneath it. A group sits where its earliest
+ * member does, as its dates start there; an item that is alone stays a plain item. Returns
  * `[{ items }]` for a group of two or more, `[{ item }]` otherwise.
  */
 export function institutionGroups(list) {
-  const out = [];
-  const seen = new Map();
+  const by = new Map();
   for (const item of list) {
-    const key = item.institution;
-    const hit = key && seen.get(key);
-    if (hit) { hit.items.push(item); continue; }
-    const entry = { item, items: [item] };
-    out.push(entry);
-    if (key) seen.set(key, entry);
+    const key = item.institution ?? item.id;
+    by.set(key, [...(by.get(key) ?? []), item]);
   }
-  return out.map((e) => (e.items.length > 1 ? { items: e.items } : { item: e.item }));
+  // Placed by its last member in the list, the earliest, where its span starts.
+  const last = (items) => list.indexOf(items.at(-1));
+  return [...by.values()]
+    .sort((a, b) => last(a) - last(b))
+    .map((items) => (items.length > 1 ? { items } : { item: items[0] }));
 }
 
 /** The span a group of dated items covers, as one item's `date`: earliest start,

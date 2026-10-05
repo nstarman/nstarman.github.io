@@ -39,8 +39,20 @@ describe('detail levels', () => {
   });
 
   it('lets the builder pick individual lines', () => {
-    const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0);
+    const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
+      // Roles merged into one row carry one line each, so keep them apart here.
+      { separate: { positions: true } });
     for (const i of all(onlyFirst)) expect(i.lines.length).toBeLessThanOrEqual(1);
+  });
+
+  it('merges roles at one institution into one row, unless kept apart', () => {
+    const rows = (opts) => all(cvModel('np', undefined, undefined, opts))
+      .filter((i) => i.subject.some((sp) => sp.t === 'Astropy'));
+    const [merged] = rows();
+    expect(rows()).toHaveLength(1);
+    expect(merged.title).toBe('Coordinator, Strategic Planner & Core Developer');
+    expect(rows({ separate: { positions: true } }).map((r) => r.title))
+      .toEqual(['Coordinator', 'Strategic Planner', 'Core Developer']);
   });
 
   it('prints `detailsComplete` in the complete CV and nowhere else', () => {

@@ -32,6 +32,13 @@ const posStops = (section) => positionStops(section.items).map((s2) => s2.n);
 // `picked` is the starting selection, so the server renders the right ticks
 // rather than the client unticking 155 boxes after paint.
 const { cv, pick = false, picked = null, level = 'full', completeLines = cv.includeAll } = Astro.props;
+// Roles at one institution as the one row the CV reads: the roles joined, the
+// dates spanning them.
+const merged = (list) => {
+  const names = list.map((i) => i.title);
+  return { ...list[0], title: names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0],
+           date: groupDate(list), details: undefined };
+};
 const isPicked = (id) => !picked || picked.has(id);
 // Elaboration is a list of lines, and in the builder each one is its own
 // choice — inclusion is a tick, not a level.
@@ -212,8 +219,10 @@ const mapFor = (s) => {
                           lines={detail(g.item)} baseCount={baseLines(g.item)}
                           level={level} completeLines={completeLines}
                           recipientInline={cv.recipientInline || g.item.recipientInline} />
-        ) : (
+        ) : pick ? (
           <>
+            {/* The builder keeps each role its own row to tick, under the
+                institution's. */}
             {/* The institution once, over the roles held there. */}
             <div class="tl tl--head">
               <span class="when">
@@ -238,6 +247,11 @@ const mapFor = (s) => {
                               recipientInline={cv.recipientInline || item.recipientInline} />
             ))}
           </>
+        ) : (
+          <CvTimelineItem item={merged(g.items)} pick={false}
+                          lines={g.items.flatMap(detail)} baseCount={g.items.reduce((n, i) => n + baseLines(i), 0)}
+                          level={level} completeLines={completeLines}
+                          recipientInline={cv.recipientInline} />
         ))}
       </div>
       )}
