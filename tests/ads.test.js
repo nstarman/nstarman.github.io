@@ -41,6 +41,9 @@ describe('fallback parsing', () => {
   it('cleans markup but keeps maths', () => {
     expect(cleanAbstract('<jats:title>Abstract</jats:title><jats:p>Mass $M_\\odot$ &amp; more</jats:p>')).toBe('Mass $M_\\odot$ & more');
   });
+  it('unescapes once', () => {
+    expect(cleanAbstract('a &amp;lt; b')).toBe('a &lt; b');
+  });
   it('reads arXiv and Crossref', () => {
     expect(arxivAbstract(`<summary>\n ${long}\n</summary>`)).toBe(long);
     expect(crossrefAbstract({ message: { abstract: `<jats:p>${long}</jats:p>` } })).toBe(long);

@@ -7,8 +7,9 @@ export function cleanAbstract(text) {
   return text
     .replace(/<jats:title>.*?<\/jats:title>/gis, ' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'")
+    .replace(/&amp;/g, '&') // last, so "&amp;lt;" becomes "&lt;" and is not unescaped twice
     .replace(/\s+/g, ' ')
     .normalize('NFC')
     .trim();
