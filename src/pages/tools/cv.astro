@@ -235,6 +235,13 @@ const builderData = {
       recount();
     });
 
+    // Taking focus can scroll a checkbox that sits under the sticky bars into
+    // view, which moves the page on a plain click. A mouse click needs no
+    // focus ring; the keyboard still reaches the box.
+    document.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.subgrouplab, .subbox')) e.preventDefault();
+    });
+
     document.addEventListener('click', (e) => {
       const t = e.target.closest('button');
       if (!t) return;
