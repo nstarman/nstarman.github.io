@@ -20,6 +20,9 @@
    fits, so does the other. */
 .cvmini{display:none}
 .cvminibtn{display:none}
+/* Revealed by minipick.js; the rule in the media query below would otherwise
+   beat `hidden`. */
+.cvminibtn[hidden]{display:none}
 
 @media (min-width:78rem){
   /* The button rides where a paper's source mark does, so it reads as part of
