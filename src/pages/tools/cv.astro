@@ -184,7 +184,7 @@ const builderData = {
       // The author-position slider rests on the stop whose cut is exactly what
       // is ticked — so "All" lights however everything came to be selected —
       // and on none when the selection matches no stop.
-      for (const bar of document.querySelectorAll('.pubfilter')) {
+      for (const bar of document.querySelectorAll('.possel .pubfilter')) {
         const items = [...bar.closest('.pickgroup').querySelectorAll('.itembox')];
         const btns = [...bar.querySelectorAll('button')];
         const at = btns.findIndex((b) => items.every((i) => i.checked === inCut(i, b.dataset.possel)));
