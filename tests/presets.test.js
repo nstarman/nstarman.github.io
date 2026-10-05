@@ -46,22 +46,15 @@ describe('resolve', () => {
       .find((s) => s.id === 'publications').limit);
   });
 
-  it('says "Select" when, and only when, a section is a selection', () => {
+  it('says "Select" only where asked, and only on a selection', () => {
     for (const name of presetNames) {
-      for (const s of resolve(name).sections) {
+      expect(resolve(name).sections.some((s) => s.heading.startsWith('Select '))).toBe(false);
+      const ids = Object.fromEntries(resolve(name).sections.map((s) => [s.id, 'select']));
+      for (const s of resolve(name, undefined, { prefix: ids }).sections) {
         // `dropped` counts everything left out, however it was left out.
         expect(s.heading.startsWith('Select ')).toBe(s.dropped > 0);
       }
     }
-  });
-
-  it('leaves "Select" off the headings of the sections asked', () => {
-    const heads = (opts) => Object.fromEntries(resolve('2page', undefined, opts).sections.map((s) => [s.id, s.heading]));
-    const was = heads();
-    const off = Object.keys(was).find((id) => was[id].startsWith('Select '));
-    const now = heads({ prefix: { [off]: 'none' } });
-    expect(now[off]).toBe(was[off].slice('Select '.length));
-    for (const id of Object.keys(was)) if (id !== off) expect(now[id]).toBe(was[id]);
   });
 
   it('counts what it leaves out', () => {
