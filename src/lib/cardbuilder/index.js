@@ -5,12 +5,8 @@
 //
 //   mountCardBuilder({ form, data })   wire the page's form; browser only
 //
-// and, with no DOM, the rules it is made of — all of them tested:
-//
-//   readSpec(f, state)       the controls → { slug, width, height, … }
-//   controlOps(name, ctx)    a name → the writes that set the controls to it
-//   fitName(name, item)      a name as it comes out for one item
-//   parseSettings / serializeSettings   the saved-settings JSON
+// The rules it is made of are pure and tested, imported from their own files:
+// model.js (readSpec, controlOps, fitName), settings.js, geometry.js, facts.js.
 //
 // Modules, each knowing only those above it:
 //   model.js      controls ⇄ name; pure
@@ -26,5 +22,3 @@
 // only writes names and reads them back, and never decides how a card looks.
 
 export { mountCardBuilder } from './builder.js';
-export { controlOps, fitName, readSpec } from './model.js';
-export { parseSettings, serializeSettings } from './settings.js';

@@ -100,7 +100,7 @@ export function attachPlus(frame, b) {
     // unit is; the white around it; the gap between the buttons; an empty
     // top's or bottom's height — so < and > step from there.
     const win = frame.contentWindow, show = (n, v) => { const i = form.elements[n]; if (i) i.placeholder = v == null || Number.isNaN(v) ? 'auto' : String(Math.round(v * 10) / 10); };
-    const title = card.querySelector('.c-name'), fig = card.querySelector('.c-fig'), img = fig?.querySelector('img'), btns = card.querySelector('.c-foot .btns--icon');
+    const title = card.querySelector('.c-name'), fig = card.querySelector('.c-fig'), img = fig?.querySelector('img');
     show('titlesizepx', title && win.getComputedStyle(title).display !== 'none' ? parseFloat(win.getComputedStyle(title).fontSize) : null);
     for (const p of FACES) {
       const e = [...card.querySelectorAll(FACE_Q[p])].find((x) => x.getClientRects().length);
