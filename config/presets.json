@@ -43,7 +43,8 @@
       }
     },
     "software": {
-      "heading": "Software",
+      "heading": "Software Development",
+      "short": "Software",
       "icon": "code",
       "match": {
         "type": "software"
