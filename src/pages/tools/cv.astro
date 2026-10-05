@@ -36,6 +36,7 @@ const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
+  spacing: Object.fromEntries(presetNames.map((n) => [n, preset(n).spacing ?? {}])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
   // Each preset's grid columns, by section id, where it sets them.
   columns: Object.fromEntries(presetNames.map((n) => [n,
@@ -122,7 +123,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, site: SITE, fonts: FONTS,
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, spacing: SPACING, site: SITE, fonts: FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -336,6 +337,7 @@ const builderData = {
         // Its grids' columns too, the usual 3 where it does not say.
         for (const g of columnGroups()) setColumns(g, PRESET_COLUMNS[t.dataset.preset]?.[g.dataset.columnsOf] ?? 3);
         for (const g of placeGroups()) setPlace(g, PLACE[t.dataset.preset]?.[g.dataset.placeOf]);
+        for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
         applyDetail();
         recount();
