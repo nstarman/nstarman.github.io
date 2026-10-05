@@ -266,6 +266,17 @@ compiler the CV builder uses) sets it again in the site's own faces,
 `public/fonts/card/`, its text selectable and its links live. The layout stays
 the CSS's alone, so a new axis needs nothing in either file.
 
+The page `src/pages/tools/card.astro` is markup and thin wiring; the builder is
+a module, `src/lib/cardbuilder/`, whose `index.js` lists its public API and
+what each file is for. `model.js` (the controls ⇄ a name), `geometry.js`,
+`settings.js` and `facts.js` are pure and tested in `tests/cardbuilder.test.js`;
+`overlay.js`, `preview.js`, `download.js` and `builder.js` are the browser side.
+Its styles are `src/styles/card-builder.css` (the page) and
+`card-builder-preview.css` (injected into the preview frame). Like the cards
+themselves the builder never decides how a card looks — it writes a name and
+`cardFace` reads it. A new control is a part in the name's grammar first, then
+its `controlOps` and `readSpec` lines in `model.js`, then its markup.
+
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.
 
