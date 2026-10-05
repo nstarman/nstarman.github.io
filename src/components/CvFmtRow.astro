@@ -109,17 +109,6 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       </span>
     </>
   ))}
-  {/* Roles at one institution: one row for it with the roles beneath, or
-      each role on its own row naming it. */}
-  {!all && s.cluster && (
-    <>
-      <span class="fmtsub">Roles</span>
-      <span class="fmtline">
-        <label class="fmtopt fmtcheck" title="Roles at one organization print under it, once">
-          <input type="checkbox" name={`group:${s.id}`} data-group-of={s.id} checked />Group by organization</label>
-      </span>
-    </>
-  )}
   {all && (
     <>
       <span class="fmtsub">Selecting</span>

@@ -212,11 +212,15 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 
 /* Roles at one institution sit under its row: the institution's own row names
    it once, so each role drops the name and its homepage mark, and is set in.
-   `.cvsec--sep` — the builder's "separate" — undoes that: no head row, and
-   every role says where it was held. */
+   `.tlgroup--sep` — the builder's "group" unticked — undoes that: the head row
+   goes quiet, keeping only its tick, and every role says where it was held.
+   The wrapper takes no box of its own, so the rows lay out as siblings. */
+.tlgroup{display:contents}
 .tl--member .inst,.tl--member .gutterlinks{display:none}
 .tl--member .what{padding-left:1.2rem}
-.cvsec--sep .tl--head{display:none}
-.cvsec--sep .tl--member .inst{display:inline}
-.cvsec--sep .tl--member .gutterlinks{display:revert}
-.cvsec--sep .tl--member .what{padding-left:0}
+.grouptog{margin-left:.6rem; font-size:.8rem; color:var(--ink-mute); white-space:nowrap}
+.tlgroup--sep .tl--head .when{visibility:hidden}
+.tlgroup--sep .tl--head strong{color:var(--ink-mute); font-weight:400}
+.tlgroup--sep .tl--member .inst{display:inline}
+.tlgroup--sep .tl--member .gutterlinks{display:revert}
+.tlgroup--sep .tl--member .what{padding-left:0}

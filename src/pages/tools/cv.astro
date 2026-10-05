@@ -235,7 +235,7 @@ const builderData = {
         return;
       }
       if (t.name?.startsWith('group:')) {
-        t.closest('.cvsec').classList.toggle('cvsec--sep', !t.checked);
+        t.closest('.tlgroup').classList.toggle('tlgroup--sep', !t.checked);
         retire('Grouping changed — compile again.');
         return;
       }
@@ -448,15 +448,17 @@ const builderData = {
     // Whether a part-ticked section's heading says "Select", by section id.
     const prefixGroups = () => [...document.querySelectorAll('[data-prefix-of]')];
     const setPrefix = (box, v) => { box.checked = v === 'select'; };
-    // Whether roles at one institution print under it, by section id.
+    // Whether each institution's roles print as one row.
     const groupBoxes = () => [...document.querySelectorAll('[data-group-of]')];
-    const setGroup = (box, separate) => {
-      box.checked = !separate;
-      box.closest('.cvsec').classList.toggle('cvsec--sep', separate);
+    const setGroup = (box, on) => {
+      box.checked = on;
+      box.closest('.tlgroup').classList.toggle('tlgroup--sep', !on);
     };
-    /** Section id → true, for the sections whose roles print as separate rows. */
-    const currentSeparate = () => Object.fromEntries(groupBoxes()
-      .filter((g) => !g.checked).map((g) => [g.dataset.groupOf, true]));
+    /** Institution → whether its roles are one row, where that is not what its
+     *  records say. */
+    const currentGroup = () => Object.fromEntries(groupBoxes()
+      .filter((g) => g.checked !== (g.dataset.default === 'true'))
+      .map((g) => [g.dataset.groupOf, g.checked]));
     /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
       .filter((g) => g.checked)
@@ -559,7 +561,7 @@ const builderData = {
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          separate: currentSeparate(), site: SITE });
+                          group: currentGroup(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -595,7 +597,7 @@ const builderData = {
       const haveStyle = [...menu.options].some((o) => o.value === wanted);
       menu.value = haveStyle ? wanted : 'default';
       for (const g of prefixGroups()) setPrefix(g, sel.prefix[g.dataset.prefixOf]);
-      for (const g of groupBoxes()) setGroup(g, Boolean(sel.separate[g.dataset.groupOf]));
+      for (const g of groupBoxes()) setGroup(g, sel.group[g.dataset.groupOf] ?? g.dataset.default === 'true');
       // Before the sync, which then turns any the style lacks into its usual.
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
@@ -683,7 +685,7 @@ const builderData = {
         // section set, then the tick-boxes narrow it.
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
-                              { prefix: currentPrefix(), order: currentOrder(), separate: currentSeparate() });
+                              { prefix: currentPrefix(), order: currentOrder(), group: currentGroup() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());
