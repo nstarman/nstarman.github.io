@@ -54,7 +54,13 @@ const cleanPlace = (raw) => cleanHeadings(raw);
 const cleanPrefix = (raw) => Object.fromEntries(
   Object.entries(cleanHeadings(raw)).filter(([, v]) => v === 'none'));
 
-export function encode({ items, lines, style, spacing, heading, place, prefix, site = {}, savedAt }) {
+/** Section ids, first to last. Names, as headings are: which sections exist is
+ *  the page's to say, and it appends any the file does not name. */
+const cleanOrder = (raw) => (Array.isArray(raw)
+  ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
+  : []);
+
+export function encode({ items, lines, style, spacing, heading, place, prefix, order, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -82,6 +88,8 @@ export function encode({ items, lines, style, spacing, heading, place, prefix, s
     place: cleanPlace(place),
     // The sections whose heading leaves off "Select". Absent, it says it.
     prefix: cleanPrefix(prefix),
+    // The order the sections print in. Absent means the preset's own.
+    order: cleanOrder(order),
   };
 }
 
@@ -93,7 +101,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, prefix, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, prefix, order, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -144,6 +152,7 @@ export function decode(text) {
     heading: cleanHeadings(raw.heading),
     place: cleanPlace(raw.place),
     prefix: cleanPrefix(raw.prefix),
+    order: cleanOrder(raw.order),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

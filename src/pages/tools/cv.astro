@@ -115,6 +115,7 @@ const builderData = {
     import { plural } from '../../lib/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
     import { readSpacing, writeSpacing } from '../../lib/cvspacing.js';
+    import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
     const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
@@ -242,6 +243,17 @@ const builderData = {
         const open = t.getAttribute('aria-expanded') !== 'true';
         t.setAttribute('aria-expanded', String(open));
         $(t.getAttribute('aria-controls')).hidden = !open;
+      }
+      if (t.dataset.move !== undefined) {
+        const head = t.closest('.cvsec').querySelector('.cvsection');
+        const at = head.getBoundingClientRect().top;
+        setOrder(move(currentOrder(), head.id, Number(t.dataset.move)));
+        // The section moved under the pointer; bring it back, so a second press
+        // moves it again rather than something else.
+        scrollBy(0, head.getBoundingClientRect().top - at);
+        retire('Order changed — compile again.');
+        // The button the press landed on may now be disabled, and focus with it.
+        if (t.disabled) t.closest('.cvsec').querySelector('.secmove button:not(:disabled)')?.focus();
       }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
@@ -401,6 +413,59 @@ const builderData = {
       }
     };
 
+    // ── section order ───────────────────────────────────────────────────
+    // The sections' own order in the page is the state, as the fields are for
+    // formatting. The contents list follows it, and so does the compile.
+    const sections = () => [...document.querySelectorAll('#tree .cvsec')];
+    const secId = (s) => s.querySelector('.cvsection').id;
+    const currentOrder = () => sections().map(secId);
+    const FIRST_ORDER = currentOrder();
+    const toc = document.querySelector('.cvtoc ol');
+    // The talks' wrapper and what rides in it besides the sections (the map and
+    // its data), taken once: they are not sections, so no later look can tell
+    // them from a section's neighbours.
+    const talks = document.querySelector('#tree .cvtalks');
+    const talksExtras = [...talks.children].filter((c) => !c.matches('.cvsec'));
+
+    /** Lay the page, the contents list and the move buttons out in `ids`'
+     *  order; a section the list does not name goes last, as the compile has it. */
+    const setOrder = (ids) => {
+      const rank = (id) => { const i = ids.indexOf(id); return i < 0 ? ids.length : i; };
+      const sorted = sections().sort((a, b) => rank(secId(a)) - rank(secId(b)));
+      const tree = $('tree');
+      // The conference map sticks through the run of talk sections, so it wraps
+      // the first run there is, wherever the moves have left it.
+      tree.append(...sorted);
+      const run = [];
+      for (const s of sorted) {
+        if (s.dataset.talks !== undefined) run.push(s);
+        else if (run.length) break;
+      }
+      if (run.length) { run[0].before(talks); talks.append(...run, ...talksExtras); }
+      sorted.forEach((s, i) => {
+        s.classList.toggle('cvsec--first', i === 0);
+        s.classList.toggle('cvsec--last', i === sorted.length - 1);
+        const [up, down] = s.querySelectorAll('.secmove button');
+        up.disabled = i === 0;
+        down.disabled = i === sorted.length - 1;
+      });
+      if (toc) {
+        const lis = new Map([...toc.children].map((li) => [li.querySelector('a').dataset.sec, li]));
+        toc.append(...sorted.map((s) => lis.get(secId(s))));
+      }
+    };
+    setOrder(currentOrder());
+
+    // Holding a contents entry picks it up; the page follows when it is let go.
+    if (toc) {
+      holdDrag(toc, {
+        onDrop: () => {
+          setOrder([...toc.children].map((li) => li.querySelector('a').dataset.sec));
+          retire('Order changed — compile again.');
+        },
+      });
+    }
+
     // ── save & load ───────────────────────────────────────────────────────
     // A long selection is real work, and it is only ever one reload from gone.
 
@@ -420,7 +485,7 @@ const builderData = {
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
-                          prefix: currentPrefix(), site: SITE });
+                          prefix: currentPrefix(), order: currentOrder(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -457,6 +522,7 @@ const builderData = {
       syncHeading();
       for (const g of placeGroups()) setPlace(g, sel.place[g.dataset.placeOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
+      setOrder(sel.order.length ? sel.order : FIRST_ORDER);
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -537,7 +603,7 @@ const builderData = {
         // section set, then the tick-boxes narrow it.
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
-                              { prefix: currentPrefix() });
+                              { prefix: currentPrefix(), order: currentOrder() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         model.style = $('style').value;
