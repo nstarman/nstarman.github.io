@@ -255,6 +255,12 @@ const builderData = {
         // The button the press landed on may now be disabled, and focus with it.
         if (t.disabled) t.closest('.cvsec').querySelector('.secmove button:not(:disabled)')?.focus();
       }
+      if (t.id === 'resetorder') {
+        setOrder(FIRST_ORDER);
+        retire('Order reset — compile again.');
+      }
+      // "Start from" starts from the preset's sections in their usual order too.
+      if (t.dataset.all !== undefined || t.dataset.preset) setOrder(FIRST_ORDER);
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
@@ -449,6 +455,8 @@ const builderData = {
         up.disabled = i === 0;
         down.disabled = i === sorted.length - 1;
       });
+      // Nothing to reset while it is as the page began.
+      $('resetorder').disabled = sorted.every((s, i) => secId(s) === FIRST_ORDER[i]);
       if (toc) {
         const lis = new Map([...toc.children].map((li) => [li.querySelector('a').dataset.sec, li]));
         toc.append(...sorted.map((s) => lis.get(secId(s))));
