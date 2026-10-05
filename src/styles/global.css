@@ -1010,6 +1010,8 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   background:none; border:0; border-radius:50%; cursor:pointer;
   color:var(--ink-faint); transition:color .15s, transform .35s ease;
 }
+/* Revealed by the script; `display:flex` above would otherwise beat `hidden`. */
+.themetoggle[hidden]{display:none}
 .themetoggle .ico{width:.875rem; height:.875rem; fill:currentColor; display:block}
 .themetoggle:hover{color:var(--accent)}
 :root[data-theme="dark"] .themetoggle{transform:rotate(180deg)}
