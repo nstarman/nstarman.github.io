@@ -63,7 +63,8 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
         <div class="h2row">
           <div class="ttlgroup">
             <h2>Publications</h2>
-            <details class="tagmenu">
+            {/* Hidden until the script runs: the filter is its only job. */}
+            <details class="tagmenu" hidden>
               <summary>Topics<span id="tagcount"></span></summary>
               <div class="tagpanel" role="group" aria-label="Filter by topic">
                 <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
@@ -137,6 +138,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
   // Topic filter. A paper shows if it carries any ticked topic; none ticked is
   // "All". Hidden with a class so it composes with the author-position CSS.
   const menu = document.querySelector('.tagmenu');
+  menu.hidden = false;
   const all = document.getElementById('tag-all');
   const boxes = [...document.querySelectorAll('.tagbox')];
   const apply = () => {
