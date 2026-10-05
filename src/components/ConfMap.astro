@@ -57,14 +57,14 @@ const offMap = unsettled.length + unplaced.length;
         a broken rule, and survives a look in the wrong browser. */}
     {[...pins].sort((a, b) => b.r - a.r).map((pin) => (
       <g class="cmap-pin" data-c={pins.indexOf(pin)} style={`--h:${pin.hue}; --r:${pin.r}px`}>
-        {/* <title> is the native tooltip and the accessible name at once. */}
-        <title>{pin.place} — {plural(pin.talks.length, 'talk')}</title>
         {/* `r` twice on purpose: the attribute is what a stylesheet-less render
             draws, --r is what the stylesheet scales for hover and small screens. */}
         {/* A link to the place's talks below, for a reader with no script to pick
             it with; out of the tab order, as the record's heading is the link
             for the keyboard. */}
         <a href={`#conf-${pins.indexOf(pin)}`} tabindex="-1">
+          {/* <title> is the native tooltip and the accessible name at once. */}
+          <title>{pin.place} — {plural(pin.talks.length, 'talk')}</title>
           <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)} r={pin.r} />
         </a>
       </g>

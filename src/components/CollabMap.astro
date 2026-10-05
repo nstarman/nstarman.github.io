@@ -59,13 +59,13 @@ const label = (pin) =>
 
     {pins.map((pin) => (
       <g class="cmap-pin" data-c={people.indexOf(pin.person)} style={`--h:${pin.person.hue}`}>
-        {/* <title> is the native tooltip and the accessible name at once. */}
-        <title>{pin.person.name} — {label(pin)}{pin.papers.length ? `; ${together(pin.papers)}` : ''}</title>
         {/* A link to the person's record below, for a reader with no script to
             pick them with; the script's click handler takes over where there is
             one. Out of the tab order: the record's own heading is the link for
             the keyboard. */}
         <a href={`#collab-${people.indexOf(pin.person)}`} tabindex="-1">
+          {/* <title> is the native tooltip and the accessible name at once. */}
+          <title>{pin.person.name} — {label(pin)}{pin.papers.length ? `; ${together(pin.papers)}` : ''}</title>
           <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)}
                   r={pin.papers.length ? 4.5 : 3} class={pin.papers.length ? 'is-shared' : ''} />
         </a>
