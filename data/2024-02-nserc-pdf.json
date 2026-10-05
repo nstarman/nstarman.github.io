@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "nserc-pdf",
-  "type": "award",
+  "type": "grant",
   "cvs": [],
   "date": {
     "start": "2024-02"

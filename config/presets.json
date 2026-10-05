@@ -27,7 +27,7 @@
       "page": "/publications/"
     },
     "awards-major": {
-      "heading": "Fellowships & Awards",
+      "heading": "Awards",
       "icon": "awards",
       "match": {
         "type": "award",
@@ -35,7 +35,7 @@
       }
     },
     "grants-major": {
-      "heading": "Major Grants",
+      "heading": "Grants & Fellowships",
       "icon": "grants",
       "match": {
         "type": "grant",
@@ -142,9 +142,9 @@
     "sections": [
       "education",
       "positions",
+      "grants-major",
       "awards-major",
       "publications",
-      "grants-major",
       "software",
       "talks-invited",
       "talks-contributed",
@@ -164,9 +164,9 @@
     "sections": [
       "education",
       "positions",
+      "grants-major",
       "awards-major",
       "publications",
-      "grants-major",
       "software",
       "talks-invited",
       "talks-contributed",
@@ -187,16 +187,16 @@
       "education",
       "positions",
       {
+        "id": "grants-major",
+        "limit": 6
+      },
+      {
         "id": "awards-major",
         "limit": 6
       },
       {
         "id": "publications",
         "limit": 10
-      },
-      {
-        "id": "grants-major",
-        "limit": 2
       },
       {
         "id": "software",
@@ -222,6 +222,10 @@
     "sections": [
       "education",
       "positions",
+      {
+        "id": "grants-major",
+        "limit": 4
+      },
       {
         "id": "awards-major",
         "limit": 4

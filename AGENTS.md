@@ -129,9 +129,10 @@ its name, so nothing hard-codes which preset is the unabridged one.
 `kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended` · `accepted`
 `tier`: `major` · `minor`
 
-**`tier`** exists because the CV separates *Major Fellowships & Awards* and
-*Major Grants* from *Small Grants* and *Travel Awards*. `type` × `tier` gives
-those four buckets, and `config/presets.json` maps each to a heading.
+**`tier`** exists because the CV separates *Grants & Fellowships* and *Awards*
+from *Small Grants* and *Travel Awards*. `type` × `tier` gives those four
+buckets, and `config/presets.json` maps each to a heading. A fellowship is
+funding, so it is a `grant`; an `award` is an honour or a prize.
 
 **`presentation`** covers everything that used to be split across "Invited
 Talks", "Selected Presentations" and "Conferences & Workshops" — `kind` carries
