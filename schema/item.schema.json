@@ -524,6 +524,17 @@
           },
           "role": {
             "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "description": "A place in the form `City, ST, Country`, `City, Country` or `Online`, as for a presentation."
+          },
+          "kind": {
+            "description": "How the engagement came about, e.g. a talk I was invited to give.",
+            "enum": [
+              "invited",
+              "contributed"
+            ]
           }
         }
       }
