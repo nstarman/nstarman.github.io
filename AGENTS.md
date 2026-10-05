@@ -116,7 +116,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
 | `software` | — | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
-| `position` | `institution` | `role`, `location` |
+| `position` | `institution` | `role`, `location`, `groupRoles` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder` |
 | `presentation` | `kind` | `event`, `location` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs` |
