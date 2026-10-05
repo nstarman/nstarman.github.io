@@ -107,12 +107,18 @@ const builderData = {
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
+    /** The "Start from" button whose selection is still exactly what is
+     *  ticked stays lit; any change to the selection puts it out. */
+    const unmarkStart = () => {
+      for (const b of document.querySelectorAll('[data-preset], [data-all="0"]')) b.removeAttribute('aria-pressed');
+    };
     const subs = () => [...document.querySelectorAll('.subbox')];
 
     /** An unticked line greys out in place, so the page keeps showing what it
      *  is about to compile rather than describing it. */
     const applyDetail = () => {
       retire('Selection changed — compile again.');
+      unmarkStart();
       for (const b of subs()) b.closest('.sub').classList.toggle('is-off', !b.checked);
       // a section's control reflects its lines rather than driving them
       for (const g of document.querySelectorAll('.pickgroup')) {
@@ -145,6 +151,7 @@ const builderData = {
 
     const recount = () => {
       retire('Selection changed — compile again.');
+      unmarkStart();
       const on = boxes().filter((b) => b.checked).length;
       $('count').textContent = `${on} / ${boxes().length}`;
       // a group box reflects its children rather than driving them
@@ -198,6 +205,7 @@ const builderData = {
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
+        if (t.dataset.all === '0') t.setAttribute('aria-pressed', 'true');
       }
       if (t.dataset.possel !== undefined) {
         // Scoped to the section the button sits in, so it can never reach
@@ -248,7 +256,7 @@ const builderData = {
         });
         applyDetail();
         recount();
-        status(`Selection set from ${t.textContent}.`);
+        t.setAttribute('aria-pressed', 'true');
       }
     });
 
