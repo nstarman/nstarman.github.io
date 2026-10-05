@@ -39,7 +39,7 @@ npm run build:all  # the site, then the four CV PDFs (needs typst)
 npm test           # everything below, in order; CI runs it on every pull request
 ```
 
-`npm test` is the whole gate, not a subset — `test:unit`, `test:schema`,
+`npm test` is the whole gate, not a subset — `test:unit` (which includes the schema checks),
 `test:bibtex`, a build, `test:a11y`, `test:links`. Each runs on its own too:
 
 ```bash
