@@ -40,5 +40,27 @@ export const linkChoices = (i) => {
 
 /** The facts the builder keeps of one item. */
 export const itemFacts = (i) => ({
-    title: i.title, href: embedHref(i), figure: hasFigure(i), pos: hasPosition(i), role: hasRole(i), paperTo: Object.fromEntries(PAPER_TO.map((t) => [t, !!paperHref(i, t)])), venue: hasVenue(i), vlink: hasVenue(i) && !!venueUrl(i), varxiv: hasVenue(i) && !venueLine(i), vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null, status: hasStatus(i) ? i.status : null, year: hasYear(i), tstatus: titleStatus(i), context: hasContext(i), split: !!splitTitle(i), byline: i.type === 'publication', text: !!(cardText(i).summary || cardText(i).details), links: linkChoices(i), link: ownLink(i) ? (toPublisher(i) ? 'publisher' : linkPlace(ownLink(i))) : null, site: siteHref(i) ? '/website/' : null, ads: adsHref(i) ? 'ADS' : null, journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null, linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
+  title: i.title,
+  href: embedHref(i),
+  figure: hasFigure(i),
+  pos: hasPosition(i),
+  role: hasRole(i),
+  paperTo: Object.fromEntries(PAPER_TO.map((t) => [t, !!paperHref(i, t)])),
+  venue: hasVenue(i),
+  vlink: hasVenue(i) && !!venueUrl(i),
+  varxiv: hasVenue(i) && !venueLine(i),
+  vshort: hasVenue(i) && venueLine(i, { short: true }) !== venueLine(i) ? venueLine(i, { short: true }) : null,
+  status: hasStatus(i) ? i.status : null,
+  year: hasYear(i),
+  tstatus: titleStatus(i),
+  context: hasContext(i),
+  split: !!splitTitle(i),
+  byline: i.type === 'publication',
+  text: !!(cardText(i).summary || cardText(i).details),
+  links: linkChoices(i),
+  link: ownLink(i) ? (toPublisher(i) ? 'publisher' : linkPlace(ownLink(i))) : null,
+  site: siteHref(i) ? '/website/' : null,
+  ads: adsHref(i) ? 'ADS' : null,
+  journal: journalHref(i) && !toPublisher(i) ? 'publisher' : null,
+  linkIs: ['ads', 'journal'].find((l) => ownLink(i)?.url && ownLink(i).url === (l === 'ads' ? adsHref(i) : journalHref(i))) ?? null,
 });

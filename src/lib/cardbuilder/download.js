@@ -5,11 +5,10 @@
 import { domToPng } from 'modern-screenshot';
 import { file, themes } from '../cardexport.js';
 
-/** @param {{ preview: HTMLElement, site: string, fonts: string[], say: (m: string) => void }} o
- *  preview holds the iframe; fonts are the faces Typst draws the PDF with;
- *  say shows a progress message. Returns { download(s) }, which saves one
- *  file per theme the builder card `s` needs, as `file(s, theme)` names it. */
-export function createExporter({ preview, site, fonts, say }) {
+/** Save one file per theme the builder card `s` needs, as `file(s, theme)`
+ *  names it. preview holds the iframe; fonts are the faces Typst draws the
+ *  PDF with; say shows a progress message. */
+export async function downloadCard({ preview, site, fonts, say }, s) {
   // The card in the preview, drawn in the theme asked for. The hitboxes are
   // lifted while it is drawn.
   async function drawn(theme, draw) {
@@ -52,15 +51,11 @@ export function createExporter({ preview, site, fonts, say }) {
     return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   }
 
-  return {
-    async download(s) {
-      for (const t of themes(s)) {
-        const a = document.createElement('a');
-        a.href = s.format === 'pdf' ? await pdf(t, s) : await png(t);
-        a.download = file(s, t);
-        a.click();
-        if (s.format === 'pdf') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      }
-    },
-  };
+  for (const t of themes(s)) {
+    const a = document.createElement('a');
+    a.href = s.format === 'pdf' ? await pdf(t, s) : await png(t);
+    a.download = file(s, t);
+    a.click();
+    if (s.format === 'pdf') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
 }

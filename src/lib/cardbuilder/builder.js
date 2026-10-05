@@ -21,7 +21,7 @@ import {
   smallBox, stackedIn as stackedInModel, stretch as stretchOf, typedPx,
 } from './model.js';
 import { parseSettings, serializeSettings } from './settings.js';
-import { createExporter } from './download.js';
+import { downloadCard } from './download.js';
 import { attachPreview } from './preview.js';
 
 /** Mount the builder on its form.
@@ -80,11 +80,7 @@ export function mountCardBuilder({ form, data }) {
   const spec = () => readSpec(snap(), state());
   const stackedIn = (a) => stackedInModel(snap(), state(), a);
   const canTuneRow = (r) => canTune(r.dataset.tune, snap(), state());
-  const boxHeightNow = () => boxHeight(snap(), limits);
-  const stretch = () => stretchOf(form.elements.hmode.value === 'px', form.elements.px.value, boxHeightNow());
-  const figWidthNow = () => figWidth(snap());
-  const namesNow = () => namesN(snap());
-  const typedPxNow = (d) => typedPx(snap(), d, STEP_PX);
+  const stretch = () => stretchOf(form.elements.hmode.value === 'px', form.elements.px.value, boxHeight(snap(), limits));
 
   // The role, status, my position, the year and the context, where the item
   // has them, and on a row of their own a toggle per link it carries. The figure and the venue are on the row
@@ -307,7 +303,7 @@ export function mountCardBuilder({ form, data }) {
     height = 0;
     preview.innerHTML = `<iframe src="${src}" title="${esc(s.it.title)} preview" width="${s.width ?? '100%'}" style="border:0; max-width:100%"></iframe>`;
     const frame = preview.querySelector('iframe');
-    frame.addEventListener('load', () => hits(frame));
+    frame.addEventListener('load', () => attachPreview(frame, b));
   }
 
   // The preview frame reports its card's height; the snippet takes it, so the
@@ -504,7 +500,7 @@ export function mountCardBuilder({ form, data }) {
       form.elements.rest.value = 'split'; // choosing full starts it split
     } else if (e.target.name === 'authorsn') {
       form.elements.authors.value = 'n'; // a number typed is that choice
-      e.target.value = namesNow(); // as clamped
+      e.target.value = namesN(snap()); // as clamped
     } else if (e.target.name === 'authors' && e.target.value === 'n') {
       if (form.elements.authorsn.value === '') form.elements.authorsn.value = 5;
     } else if (e.target.dataset?.trackflex) {
@@ -518,12 +514,12 @@ export function mountCardBuilder({ form, data }) {
     } else if (e.target.name === 'figp') {
       form.elements.figpx.value = '';
     } else if (e.target.name === 'figpx') {
-      if (e.target.value !== '') e.target.value = figWidthNow(); // as clamped
+      if (e.target.value !== '') e.target.value = figWidth(snap()); // as clamped
     } else if (sizeOf(e.target)) {
-      if (e.target.value !== '') e.target.value = typedPxNow(sizeOf(e.target)); // as clamped
+      if (e.target.value !== '') e.target.value = typedPx(snap(), sizeOf(e.target), STEP_PX); // as clamped
     } else if (e.target.name === 'pxp') {
       // A preset width keeps the box's shape where the height is set too.
-      const ratio = boxHeightNow() / (+form.elements.px.value || 320);
+      const ratio = boxHeight(snap(), limits) / (+form.elements.px.value || 320);
       form.elements.px.value = e.target.value;
       if (form.elements.hmode.value === 'px') form.elements.hpx.value = Math.round(e.target.value * ratio);
       widthOpen = false;
@@ -586,16 +582,15 @@ export function mountCardBuilder({ form, data }) {
 
   // The surface the preview's modules are given.
   const b = { form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton };
-  const hits = (frame) => attachPreview(frame, b);
   tuneAll.addEventListener('click', () => tune(tuneAll.textContent === 'hide all' ? [] : tuneRows.map((r) => r.dataset.tune)));
 
   // The PNG or PDF, drawn here from the preview when asked for.
-  const exporter = createExporter({ preview, site, fonts, say: (m) => (note.textContent = m) });
+  const exporter = { preview, site, fonts, say: (m) => (note.textContent = m) };
   download.addEventListener('click', async () => {
     const s = spec();
     download.disabled = true;
     try {
-      await exporter.download(s);
+      await downloadCard(exporter, s);
       render();
     } catch (err) {
       note.textContent = `Could not draw the ${s.format === 'pdf' ? 'PDF' : 'PNG'}: ${err.message}`;

@@ -52,9 +52,7 @@ describe('controls ⇄ name', () => {
   });
 
   it('drops what an item has not got: no figure, no byline, no text', () => {
-    const sw = pool.find((x) => x.type === 'software' && !x.highlight?.image);
-    if (!sw) return;
-    const it = itemFacts(sw);
+    const it = { links: [], paperTo: {}, figure: false, byline: false, text: false, venue: false, pos: false, year: false, role: false, context: false };
     const c = parseName(fitName('size:fill:fit-figure:left:top:auto-title:full:split-authors:full:plain-text:summary-extras:venue,position-buttons:all', it));
     expect(c.figure).toBe('none');
     expect(c.authors).toBe('none');
