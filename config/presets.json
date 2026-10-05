@@ -140,8 +140,8 @@
     "sections": [
       "education",
       "positions",
-      "publications",
       "awards-major",
+      "publications",
       "grants-major",
       "software",
       "talks-invited",
@@ -162,8 +162,8 @@
     "sections": [
       "education",
       "positions",
-      "publications",
       "awards-major",
+      "publications",
       "grants-major",
       "software",
       "talks-invited",
@@ -185,12 +185,12 @@
       "education",
       "positions",
       {
-        "id": "publications",
-        "limit": 10
-      },
-      {
         "id": "awards-major",
         "limit": 6
+      },
+      {
+        "id": "publications",
+        "limit": 10
       },
       {
         "id": "grants-major",
@@ -221,13 +221,13 @@
       "education",
       "positions",
       {
+        "id": "awards-major",
+        "limit": 4
+      },
+      {
         "id": "publications",
         "groupBy": null,
         "limit": 5
-      },
-      {
-        "id": "awards-major",
-        "limit": 4
       },
       {
         "id": "software",
