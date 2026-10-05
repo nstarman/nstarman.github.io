@@ -409,11 +409,11 @@ const builderData = {
       .filter(([, v]) => v && v !== 'below'));
     // Whether a part-ticked section's heading says "Select", by section id.
     const prefixGroups = () => [...document.querySelectorAll('[data-prefix-of]')];
-    const setPrefix = (box, v) => { box.checked = v !== 'none'; };
-    /** Section id → `none`, for the sections that leave "Select" off. */
+    const setPrefix = (box, v) => { box.checked = v === 'select'; };
+    /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
-      .filter((g) => !g.checked)
-      .map((g) => [g.dataset.prefixOf, 'none']));
+      .filter((g) => g.checked)
+      .map((g) => [g.dataset.prefixOf, 'select']));
     /** Section id → how its heading prints, for every section. */
     const currentHeadings = () => Object.fromEntries(headingGroups().map((g) => [
       g.dataset.headingOf, shownChoice(g) ?? usualHeading(),

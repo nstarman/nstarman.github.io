@@ -44,7 +44,7 @@ export function preset(name) {
  * @param {string} name          preset key, e.g. "2page"
  * @param {Set<string>} [only]   optional id allow-list, used by the builder's checkboxes
  * @param {{ prefix?: Record<string, string> }} [opts]
- *   section id → `none` to keep "Select " off that section's heading
+ *   section id → `select` to put "Select " on that section's heading when it is a selection
  */
 const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.length : i; };
 
@@ -91,12 +91,12 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
 
     return {
       id: section.id,
-      // "Select Publications" when it is a selection, "Publications" when it is
-      // the lot — decided from what actually resolved, not typed per preset,
-      // so a heading cannot go on claiming to be a selection after the CV
-      // grows to include everything.
+      // "Select Publications" when asked for and it is a selection, otherwise
+      // "Publications" — decided from what actually resolved, not typed per
+      // preset, so a heading cannot go on claiming to be a selection after the
+      // CV grows to include everything.
       heading:
-        prefix[section.id] !== 'none' && picked.length < whole && !section.heading.startsWith('Select')
+        prefix[section.id] === 'select' && picked.length < whole && !section.heading.startsWith('Select')
           ? `Select ${section.heading}`
           : section.heading,
       short: section.short ?? null,

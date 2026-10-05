@@ -89,10 +89,10 @@ describe('tolerating the merely odd', () => {
     expect(read({ somethingNew: { a: 1 } }).items.size).toBe(0);
   });
 
-  it('carries the sections without "Select" through a round trip', () => {
-    const doc = encode({ items: [], prefix: { publications: 'none', talks: 'select', x: 3 } });
-    expect(doc.prefix).toEqual({ publications: 'none' });
-    expect(decode(JSON.stringify(doc)).prefix).toEqual({ publications: 'none' });
+  it('carries the sections with "Select" through a round trip', () => {
+    const doc = encode({ items: [], prefix: { publications: 'select', talks: 'none', x: 3 } });
+    expect(doc.prefix).toEqual({ publications: 'select' });
+    expect(decode(JSON.stringify(doc)).prefix).toEqual({ publications: 'select' });
     expect(read({}).prefix).toEqual({});
   });
 

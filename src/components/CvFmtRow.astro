@@ -86,7 +86,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.style && !all && s.items.length > 0 && (
         <span class="fmtopt fmtopt--prefix" hidden>
           <label class="bl" title={`“Select ${s.heading}” while only some are ticked`}>
-            <input type="checkbox" name={`prefix:${s.id}`} data-prefix-of={s.id} checked /> “Select” prefix</label>
+            <input type="checkbox" name={`prefix:${s.id}`} data-prefix-of={s.id} /> “Select” prefix</label>
         </span>
       )}
         <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
@@ -102,7 +102,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       <span class="fmtsub">Selecting</span>
       <span class="fmtline">
         <label class="fmtopt fmtcheck">
-          <input type="checkbox" id="selprefix" checked />“Select” prefix</label>
+          <input type="checkbox" id="selprefix" />“Select” prefix</label>
       </span>
       <span class="fmtsub">Order</span>
       <span class="fmtline">

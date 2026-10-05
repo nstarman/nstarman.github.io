@@ -50,9 +50,9 @@ const cleanHeadings = (raw) => {
  *  places exist is the template's to say, and the builder falls back. */
 const cleanPlace = (raw) => cleanHeadings(raw);
 
-/** Section id → `none`, for the sections whose heading leaves off "Select". */
+/** Section id → `select`, for the sections whose heading says "Select". */
 const cleanPrefix = (raw) => Object.fromEntries(
-  Object.entries(cleanHeadings(raw)).filter(([, v]) => v === 'none'));
+  Object.entries(cleanHeadings(raw)).filter(([, v]) => v === 'select'));
 
 /** Section ids, first to last. Names, as headings are: which sections exist is
  *  the page's to say, and it appends any the file does not name. */
@@ -86,7 +86,7 @@ export function encode({ items, lines, style, spacing, heading, place, prefix, o
     heading: cleanHeadings(heading),
     // Where a part sits, for the parts not in their usual place.
     place: cleanPlace(place),
-    // The sections whose heading leaves off "Select". Absent, it says it.
+    // The sections whose heading says "Select". Absent, none does.
     prefix: cleanPrefix(prefix),
     // The order the sections print in. Absent means the preset's own.
     order: cleanOrder(order),
