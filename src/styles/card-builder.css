@@ -1,0 +1,138 @@
+/* The Card Builder page's controls, preview stage and snippet. Loaded by
+ tools/card.astro. The preview card itself is styled by card-builder-preview.css,
+ which is injected into the preview frame. */
+.eb{display:grid; grid-template-columns:minmax(0,1fr); gap:.8rem; margin-top:1.2rem}
+.eb-row{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0}
+/* The keys bold and in full ink, so a category reads apart from its
+   options, which are faint capitals. As wide as the longest in their
+   block — Authors above the preview, Background below — so the controls
+   line up close by. */
+/* The number box — its pill, < and > and unit — is NumBox's own. */
+.eb-key{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); min-width:7ch; padding:0; float:left}
+/* Which one, under the key: Area (Left). */
+.eb-key small{display:block; font-size:inherit; font-weight:400; color:var(--ink-mute)}
+.eb-dials .eb-key{min-width:10ch}
+/* Two keyed groups in one row: the second key sits inline, after a gap. */
+.eb-group{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0; min-width:0}
+.eb-row > .eb-group + .eb-group{margin-left:.8rem}
+/* The parts' pills, close: each is its own key. */
+.eb-row.eb-shows{gap:.4rem}
+.eb-row.eb-shows > .eb-group + .eb-group{margin-left:0}
+/* Extras, last, is a menu that drops down over the page: as wide as its
+   key, not the rest of the row, so it wraps only when that will not fit. */
+.eb-row.eb-shows > .eb-group:last-child{flex:0 1 auto}
+/* The last takes the rest of the row, so what opens in it — the width —
+   wraps inside it rather than pushing it to a line of its own. */
+.eb-row > .eb-group:last-child{flex:1 1 12rem}
+.eb .eb-key--inline{min-width:0}
+.eb-group[hidden]{display:none}
+.eb select:where(:not(.numbox-unit)){flex:1; min-width:0; font:inherit; font-size:.9rem}
+/* Sized to the choice it shows, not its longest option, so custom sits by its arrow. */
+.eb .eb-preset{flex:0 1 auto; field-sizing:content; max-width:11rem; padding:0; border:0; background:none; cursor:pointer;
+  font-family:var(--mono); font-size:.66rem; color:var(--ink-faint); text-overflow:ellipsis}
+.eb .eb-preset:hover, .eb .eb-preset:focus-visible{color:var(--ink)}
+/* A menu among the pills: their type, sized to what it shows; its key a
+   step apart from what comes before it. */
+.eb select.eb-menu{flex:0 0 auto; field-sizing:content; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+  padding:.2rem .5rem; border:1px solid var(--rule-strong); border-radius:999px; background:var(--surface); color:var(--ink); cursor:pointer}
+.eb .eb-inkey{margin-left:.8rem}
+.eb .pilltoggle{flex-wrap:wrap}
+.eb-sizes, .eb-rest{align-self:center; text-transform:uppercase}
+.eb-dials{margin-top:.8rem}
+.eb-tune-hint{margin:.5rem 0 0; font-size:.78rem; color:var(--ink-faint)}
+.eb-linkbtn{padding:0; border:0; background:none; font:inherit; color:var(--accent); cursor:pointer}
+.eb-linkbtn:hover{text-decoration:underline}
+.eb-titles{display:inline-flex; flex-wrap:wrap; align-items:center; gap:.25rem}
+.eb-pair[hidden], .eb-dials label[hidden], .eb-dials .pilltoggle[hidden]{display:none}
+/* A pill with a tick box, as an extra has it: a click anywhere on it
+   toggles it. */
+.eb-key--check{display:inline-flex; align-items:center; gap:.35em;
+  padding:.2rem .6rem; border:1px solid transparent; border-radius:2rem; line-height:1.4; transition:.15s}
+/* Ticked, it is pilled, as an extra is. */
+.eb-key--check:has(.eb-check:checked){color:var(--accent); border-color:var(--accent-line)}
+/* The first on its row lines its text up with the keys above and below. */
+.eb-group:first-child > .eb-key--check{margin-left:calc(-.6rem - 1px)}
+label.eb-key--check{cursor:pointer}
+.eb-keylabel{display:inline-flex; align-items:center; gap:.35em; cursor:pointer}
+.eb-keylabel:hover{color:var(--accent)}
+.eb-rest[hidden], .eb-row[hidden]{display:none}
+/* The width stop: a number to type, the width of its siblings. */
+.eb-px{display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:.4rem 1rem}
+.eb-px > label{display:inline-flex; align-items:baseline; gap:.15em}
+#eb-w-shown, #eb-h-shown{text-transform:none}
+.eb-dim{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint)}
+.eb-px > [hidden]{display:none}
+.eb-px[hidden], .eb-sizes[hidden], .eb-sizes [hidden]{display:none}
+/* Choose-one rows are bare pills; the extras, any number of which can be on,
+   show their tick box inside the pill, so the two kinds read apart. */
+:is(#eb-extras, #eb-links) label{display:inline-flex; align-items:center; gap:.45em}
+/* The Extras menu: its pill opens a list of tick boxes under it. */
+.eb-drop{position:relative}
+.eb-drop > summary{list-style:none; cursor:pointer}
+.eb-drop > summary::-webkit-details-marker{display:none}
+.eb-drop:has(.eb-check:checked) > summary{color:var(--accent); border-color:var(--accent-line)}
+.eb-drop-menu{position:absolute; top:calc(100% + .3rem); left:0; z-index:5; display:flex; flex-direction:column; gap:.35rem;
+  padding:.5rem .75rem; white-space:nowrap; background:var(--surface); border:1px solid var(--rule-strong); border-radius:.6rem;
+  box-shadow:0 .4rem 1.2rem color-mix(in srgb, var(--ink) 12%, transparent)}
+.eb-checks label{display:inline-flex; align-items:center; gap:.45em}
+/* Set apart from what is before them: my author position, from the
+   byline's lengths; its corner and the context's; and the swap. */
+/* Space: the tracks set wrap beside the key. */
+[data-tune="space"] .eb-sub{flex:1 1 0; min-width:0}
+.eb-tracks{display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; justify-self:start; align-items:center}
+.eb-track{display:inline-flex; align-items:center; gap:.4rem}
+.eb-track-x{padding:0 .2rem; border:0; background:none; color:var(--ink-faint); cursor:pointer; font:inherit}
+.eb-track-x:hover{color:var(--accent)}
+/* A button in the order line: its name between its < and >. */
+.eb .eb-orderpill{gap:.1em; padding:.15rem .3rem}
+.eb .eb-ordername{font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); padding:0 .2em}
+.eb .eb-orderpill .numbox-step:disabled{opacity:.3; cursor:default}
+.eb .eb-orderempty .eb-ordername{color:var(--ink-faint)}
+.eb .eb-orderadd{padding:.15rem .6rem; border:1px dashed var(--accent-line); border-radius:999px; background:none; color:var(--accent);
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer}
+.eb .eb-word{width:9ch; padding:0 .2em; border:0; border-bottom:1px solid var(--rule-strong); background:none; color:var(--ink); font-family:var(--mono); font-size:.8rem}
+.eb .eb-word:invalid{border-bottom-color:var(--accent)}
+.eb-place[hidden]{display:none}
+.eb-place{display:inline-flex; flex-wrap:wrap; align-items:center; gap:.35rem}
+.eb-pair{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .8rem; justify-self:start}
+.eb-sub{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.35rem .8rem}
+.eb-sub > .pilltoggle, .eb-sub > .eb-px, .eb-sub > .eb-titles{justify-self:start}
+.eb-check{flex:none; width:.85em; height:.85em; margin:0; accent-color:var(--accent); cursor:pointer}
+.eb-h{margin:1.6rem 0 .6rem}
+.eb-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem}
+.eb-head h3{margin:0}
+/* Save and Load sit close under the controls, over the preview they act on. */
+#eb-io-head{margin-top:.5rem}
+.eb-name{display:flex; align-items:baseline; gap:.6rem; margin:.5rem 0 0; font-size:.78rem; color:var(--ink-mute)}
+.eb-fold{flex:none; padding:0; border:0; background:none; cursor:pointer; font-family:var(--mono); font-size:.68rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint)}
+.eb-fold::after{content:" \25B8"}
+/* The name opens sideways, so the arrow does too: ▸ to show it, ◂ to fold it back. */
+.eb-fold[aria-expanded="true"]::after{content:" \25C2"}
+.eb-fold:hover{color:var(--ink)}
+
+.eb-name code{min-width:0; overflow-wrap:anywhere}
+/* Buttons, as the CV builder's Load and Save are, after a quiet label. */
+.eb-io{flex:none; margin-left:auto; display:flex; align-items:baseline; gap:.35rem}
+.eb-io .eb-io-key{margin-right:.15rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint)}
+/* Outlined, not filled: the cards are grey, and a grey stage would blur into them. */
+.eb-preview{padding:1rem; border-radius:12px; border:1px dashed var(--rule-strong); overflow-x:auto}
+/* The stage takes the theme the card is drawn in — the site's grounds,
+   from global.css — so a dark card sits on dark, whatever the page is. */
+.eb-preview[data-theme="dark"]{background:#0B0E14}
+.eb-preview[data-theme="light"]{background:#FFFFFF}
+/* The stage can be dragged taller, for room under the card; one that fills
+   its width can be dragged narrower or wider too, to see it reflow. */
+.eb-preview{resize:vertical; min-height:6rem}
+.eb-preview[data-w="fill"]{resize:both; min-width:8rem; max-width:100%}
+.eb-code{width:100%; font-family:var(--mono); font-size:.78rem; padding:.6rem; border-radius:8px;
+  border:1px solid var(--rule-strong); background:var(--surface); color:var(--ink); resize:vertical}
+/* Copy in the box's top-right corner, as code blocks have it, and the PNG
+   or PDF download under it; the text keeps clear of both. */
+.eb-codebox{position:relative}
+.eb-codebox .eb-code{display:block; padding-right:3rem}
+.eb-tools{position:absolute; top:.45rem; right:.45rem; display:flex; flex-direction:column; gap:.3rem}
+.eb-tools [hidden]{display:none}
+.eb-tools button{cursor:pointer}
+.eb-note{margin:.5rem 0 0; font-size:.82rem; color:var(--ink-mute)}
+.eb-note:empty{display:none}

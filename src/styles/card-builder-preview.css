@@ -1,0 +1,53 @@
+/* Injected into the Card Builder's preview frame: the outlines, grips, ⊕ buttons
+   and drop zones drawn over the live card. The outline rule's selector list is
+   filled in with every part a click tunes (HITS in cardbuilder/preview.js). */
+.eb-hits .card :is(.c-name, .c-fig, .c-foot, .c-stamp, .c-year, .c-context){cursor:grab}
+.eb-dragging{position:relative; z-index:8; opacity:.75; cursor:grabbing !important; pointer-events:none}
+.eb-drop{position:absolute; z-index:7; box-sizing:border-box; border:1.5px dashed var(--accent); border-radius:8px; pointer-events:none;
+  background:color-mix(in srgb, var(--accent) 5%, transparent)}
+.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 16%, transparent)}
+.eb-drop.eb-cell{z-index:8; border:1px dotted var(--accent); border-radius:4px; background:none;
+  display:flex; align-items:center; justify-content:center; font:10px/1.1 var(--mono); color:var(--accent); text-align:center}
+.eb-hits .card .c-foot li[data-rel]{cursor:grab}
+.eb-ghost{position:absolute; z-index:9; pointer-events:none; padding:2px 7px; border-radius:6px; background:var(--accent); color:var(--bg, #fff);
+  font:600 10px/1.4 var(--mono); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap}
+.eb-hits .card :is(.c-by-tight, .c-by-short, .c-by-full, .c-by-n, .c-byvenue, .c-venue *){cursor:grab}
+.eb-hits .card > :is(.c-by, .c-venue){cursor:move}
+.eb-hits .card .c-foot li[data-rel="empty"]{outline:1px dashed color-mix(in srgb, var(--accent) 60%, transparent); outline-offset:-1px; border-radius:calc(var(--ib) * .25)}
+.eb-drop-on-btn{outline:2px solid var(--accent) !important; outline-offset:2px; border-radius:6px}
+.eb-drop.eb-cell.eb-drop-on{border-style:solid; background:color-mix(in srgb, var(--accent) 28%, transparent)}
+.eb-hits .card, .eb-hits :is(__HIT_SELECTORS__){outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:1px; cursor:pointer}
+.eb-hits .card{outline-offset:-2px}
+.eb-hits .eb-hit-hover{outline:1.5px solid var(--accent) !important}
+.eb-hits .eb-hit-on{outline:2px solid var(--accent) !important}
+.eb-fig-grip{display:none}
+.eb-hits .c-fig{position:relative}
+/* The figure's corner sits over its side's edge: the corner resizes the
+   figure alone, the rest of the edge the side alone. */
+.eb-hits .eb-fig-grip{display:block; position:absolute; right:2px; bottom:2px; width:11px; height:11px; z-index:5;
+  border:2px solid var(--accent); border-radius:2px; background:var(--ground); cursor:nwse-resize; touch-action:none}
+.eb-hits .card{position:relative; isolation:isolate}
+/* The areas, behind what is in them: outlined, as the parts are. */
+.eb-area{display:none}
+.eb-hits .eb-area{display:block; position:absolute; z-index:-1}
+/* A side's inner edge, dragged to set its width. */
+:is(.eb-area-grip, .eb-split-grip){display:none}
+.eb-hits :is(.eb-area-grip, .eb-split-grip){display:block; position:absolute; z-index:4; width:7px; margin-left:-3.5px; cursor:ew-resize; touch-action:none}
+.eb-hits :is(.eb-area-grip, .eb-split-grip)::before{content:''; position:absolute; inset:0 3px; background:var(--accent); opacity:0; transition:opacity .15s}
+.eb-hits .card:hover :is(.eb-area-grip, .eb-split-grip)::before{opacity:.35}
+.eb-hits :is(.eb-area-grip, .eb-split-grip):hover::before, .eb-hits :is(.eb-area-grip, .eb-split-grip):active::before{opacity:1}
+.eb-plus{position:absolute; z-index:3; width:18px; height:18px; margin:-9px 0 0 -9px; padding:0; border-radius:50%;
+  border:1.5px solid var(--accent); background:var(--ground); color:var(--accent); font:600 14px/14px system-ui, sans-serif;
+  cursor:pointer; opacity:0; transition:opacity .15s}
+.eb-hits .card:hover .eb-plus{opacity:.9}
+.eb-plus:hover, .eb-plus:focus-visible{opacity:1 !important; background:var(--accent); color:var(--ground)}
+.eb-areabtn{position:absolute; z-index:6; width:18px; height:18px; margin:-9px 0 0 -9px; padding:0; border-radius:50%;
+  border:1.5px solid var(--stu-ug); background:var(--ground); color:var(--stu-ug); font:600 14px/14px system-ui, sans-serif;
+  cursor:pointer; opacity:0; transition:opacity .15s}
+.eb-hits .card:hover .eb-areabtn{opacity:.9}
+.eb-areabtn:hover, .eb-areabtn:focus-visible{opacity:1 !important; background:var(--stu-ug); color:var(--ground)}
+.eb-band{display:none}
+.eb-hits .eb-band{display:block; position:absolute; z-index:1; padding:0; border:0; cursor:pointer;
+  background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 25%, transparent) 0 3px, transparent 3px 7px)}
+.eb-hits .eb-band:hover, .eb-hits .eb-band:focus-visible{outline:1.5px solid var(--accent); outline-offset:-1.5px;
+  background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 40%, transparent) 0 3px, transparent 3px 7px)}
