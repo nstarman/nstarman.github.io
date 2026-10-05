@@ -1040,6 +1040,28 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
 .hl-nav .iconbtn{font-size:1.15rem; line-height:1; cursor:pointer}
 .hl-nav .iconbtn:disabled{opacity:.35; cursor:default; color:var(--ink-mute);
   background:var(--surface); border-color:var(--rule-strong)}
+/* The same buttons without JavaScript, where the browser can draw them: the
+   row's own scroll buttons, in the same place and the same look, disabled at
+   either end by the browser. The script's buttons are for the rest. */
+@supports selector(::scroll-button(inline-start)) {
+  .hl-nav{display:none}
+  /* One name per carousel: scoped to its wrapper, so each row's buttons find
+     their own row. */
+  .hl-wrap{anchor-scope:--hl}
+  .hl-wrap > .hl{anchor-name:--hl; margin-top:3rem}
+  .hl::scroll-button(inline-start), .hl::scroll-button(inline-end){
+    position:fixed; position-anchor:--hl; position-area:top span-left; justify-self:end;
+    box-sizing:border-box; width:1.9rem; height:1.9rem; margin:0 0 .5rem;
+    display:flex; align-items:center; justify-content:center;
+    font:inherit; font-size:1.15rem; line-height:1; cursor:pointer;
+    color:var(--ink-mute); border:1px solid var(--rule-strong); border-radius:.45rem;
+    background:var(--surface);
+  }
+  .hl::scroll-button(inline-start){content:"‹" / "Previous"; margin-right:2.25rem}
+  .hl::scroll-button(inline-end){content:"›" / "Next"}
+  .hl::scroll-button(inline-start):hover, .hl::scroll-button(inline-end):hover{color:var(--accent)}
+  .hl::scroll-button(inline-start):disabled, .hl::scroll-button(inline-end):disabled{opacity:.35; cursor:default}
+}
 /* Arrived at from an inline-card: say which card it meant. */
 .card:target{box-shadow:inset 0 0 0 1.5px var(--accent-line)}
 
