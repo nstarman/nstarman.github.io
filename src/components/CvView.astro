@@ -5,7 +5,7 @@ import { PRESET } from '../lib/cards.js';
 import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
-import { softwarePapers, positionStops } from '../lib/data.js';
+import { softwarePapers, positionStops, institutionGroups, groupDate, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
 import { detailLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
@@ -207,11 +207,37 @@ const mapFor = (s) => {
         </div>
       ) : (
       <div class="timeline">
-        {s.items.map((item) => (
-          <CvTimelineItem item={item} pick={pick} picked={isPicked(item.id)}
-                          lines={detail(item)} baseCount={baseLines(item)}
+        {(s.cluster === 'institution' ? institutionGroups(s.items) : s.items.map((item) => ({ item }))).map((g) => g.item ? (
+          <CvTimelineItem item={g.item} pick={pick} picked={isPicked(g.item.id)}
+                          lines={detail(g.item)} baseCount={baseLines(g.item)}
                           level={level} completeLines={completeLines}
-                          recipientInline={cv.recipientInline || item.recipientInline} />
+                          recipientInline={cv.recipientInline || g.item.recipientInline} />
+        ) : (
+          <>
+            {/* The institution once, over the roles held there. */}
+            <div class="tl tl--head">
+              <span class="when">
+                {dateLabel({ date: groupDate(g.items) })}
+                {links(g.items[0]).filter((l) => l.rel === 'homepage').map((l) => (
+                  <span class="gutterlinks">
+                    <a class="homelink" href={l.url} aria-label={`${g.items[0].institution} ${l.label ?? l.rel}`}
+                       title={l.label ?? l.rel}>
+                      <svg class="ico" aria-hidden="true" focusable="false">
+                        <use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} />
+                      </svg>
+                    </a>
+                  </span>
+                ))}
+              </span>
+              <span class="what"><strong>{g.items[0].institution}</strong></span>
+            </div>
+            {g.items.map((item) => (
+              <CvTimelineItem item={item} member pick={pick} picked={isPicked(item.id)}
+                              lines={detail(item)} baseCount={baseLines(item)}
+                              level={level} completeLines={completeLines}
+                              recipientInline={cv.recipientInline || item.recipientInline} />
+            ))}
+          </>
         ))}
       </div>
       )}

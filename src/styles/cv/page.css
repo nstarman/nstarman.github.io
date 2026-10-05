@@ -209,3 +209,14 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 /* The builder's slot holds a button, not lengths: no track, no thumb. */
 .cvtoggle:has(> button){background:none; padding:0}
 .cvtoggle:has(> button)::before{display:none}
+
+/* Roles at one institution sit under its row: the institution's own row names
+   it once, so each role drops the name and its homepage mark, and is set in.
+   `.cvsec--sep` — the builder's "separate" — undoes that: no head row, and
+   every role says where it was held. */
+.tl--member .inst,.tl--member .gutterlinks{display:none}
+.tl--member .what{padding-left:1.2rem}
+.cvsec--sep .tl--head{display:none}
+.cvsec--sep .tl--member .inst{display:inline}
+.cvsec--sep .tl--member .gutterlinks{display:revert}
+.cvsec--sep .tl--member .what{padding-left:0}

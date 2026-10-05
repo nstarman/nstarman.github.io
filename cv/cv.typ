@@ -237,6 +237,8 @@
 // Title and subject share a line — "**Institution**, Role" — which is what
 // keeps an entry to two lines rather than three.
 #let entrybody(it) = {
+  // A role listed under its institution's own row is set in from it.
+  if it.at("member", default: false) { h(1.2em) }
   strong(it.title)
   if it.subject.len() > 0 [, #bolded(it.subject)]
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
@@ -247,6 +249,7 @@
   }
   for l in it.lines {
     linebreak()
+    if it.at("member", default: false) { h(1.2em) }
     text(size: 10.1pt)[#linked(l)]
   }
 }

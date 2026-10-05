@@ -18,9 +18,12 @@ import Venue from './Venue.astro';
  * @prop level          the starting detail level; 'full' starts the lines ticked
  * @prop completeLines  whether the complete-only lines start ticked
  * @prop recipientInline whether the recipient starts on the title line (the preset's say, else the item's)
+ * @prop member         a role listed under its institution's own row, which
+ *                     names the institution — so this one sets it apart, to
+ *                     show only if the section is turned back to separate rows
  */
 const { item, pick = false, picked = true, lines = [], baseCount = lines.length,
-        level = 'full', completeLines = false,
+        level = 'full', completeLines = false, member = false,
         recipientInline = item.recipientInline } = Astro.props;
 
 // What rides in the left date gutter rather than under the text: an
@@ -31,7 +34,7 @@ const gutterLinks = links(item).filter(inGutter);
 const bodyLinks = links(item).filter((l) => !inGutter(l));
 const byline = item.type === 'publication' ? authors(item, 4) : null;
 ---
-<div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
+<div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${member ? ' tl--member' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
      id={`item-${item.id}`}>
   {pick && (
     <input type="checkbox" class="itembox" value={item.id}
@@ -60,7 +63,9 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
   </span>
   <span class="what">
     <strong>{item.title}</strong>
-    {item.institution && <>, {item.institution}</>}
+    {item.institution && (member
+      ? <span class="inst">, {item.institution}</span>
+      : <>, {item.institution}</>)}
     {item.event && <>, {item.event}</>}
     {item.type === 'publication' && (
       <> — <Byline shown={byline.shown} />{byline.etal && <>, et al</>}
