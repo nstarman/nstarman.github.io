@@ -36,6 +36,9 @@ const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
+  // Each preset's grid columns, by section id, where it sets them.
+  columns: Object.fromEntries(presetNames.map((n) => [n,
+    Object.fromEntries(preset(n).sections.filter((s) => s.columns).map((s) => [s.id, s.columns]))])),
   site,
   // Each PDF style's heading variants, its usual one first.
   headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
@@ -118,7 +121,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, site: SITE, fonts: FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -329,6 +332,8 @@ const builderData = {
         subs().forEach((b) => {
           b.checked = full && (b.dataset.complete === undefined || unabridged);
         });
+        // Its grids' columns too, the usual 3 where it does not say.
+        for (const g of columnGroups()) setColumns(g, PRESET_COLUMNS[t.dataset.preset]?.[g.dataset.columnsOf] ?? 3);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');

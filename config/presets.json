@@ -234,7 +234,8 @@
       },
       {
         "id": "software",
-        "limit": 6
+        "limit": 6,
+        "columns": 3
       }
     ]
   }
