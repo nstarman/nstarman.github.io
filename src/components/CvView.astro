@@ -117,11 +117,13 @@ const mapFor = (s) => {
             does not compete with the headings that have no such control. */}
         {selectable && s.id === 'publications' && posStops(s).length > 0 && (
           <span class="possel" role="group" aria-label="Select publications by author position">
-            <button type="button" class="posbtn" data-possel="none">None</button>
-            {posStops(s).map((n) => (
-              <button type="button" class="posbtn" data-possel={n}>{n}</button>
-            ))}
-            <button type="button" class="posbtn" data-possel="all">All</button>
+            <span class="poslabel" aria-hidden="true">author&nbsp;# ≤</span>
+            <span class="pubfilter" data-stops={posStops(s).length + 1}>
+              {posStops(s).map((n) => (
+                <button type="button" data-possel={n}>{n}</button>
+              ))}
+              <button type="button" data-possel="all">All</button>
+            </span>
           </span>
         )}
         {/* Software's version of the same idea. Two stops rather than five,

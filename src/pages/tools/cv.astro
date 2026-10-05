@@ -164,6 +164,10 @@ const builderData = {
       status(why);
     };
 
+    /** Whether the author-position cut `want` ("all" or a number) takes this entry. An
+     *  entry with no position — no author marked `me` — is only in "all". */
+    const inCut = (b, want) => want === 'all' || (Number.isFinite(Number(b.dataset.pos)) && Number(b.dataset.pos) <= Number(want));
+
     const recount = () => {
       retire('Selection changed — compile again.');
       unmarkStart();
@@ -178,6 +182,16 @@ const builderData = {
         head.indeterminate = n > 0 && n < kids.length;
       }
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
+      // The author-position slider rests on the stop whose cut is exactly what
+      // is ticked — so "All" lights however everything came to be selected —
+      // and on none when the selection matches no stop.
+      for (const bar of document.querySelectorAll('.possel .pubfilter')) {
+        const items = [...bar.closest('.pickgroup').querySelectorAll('.itembox')];
+        const btns = [...bar.querySelectorAll('button')];
+        const at = btns.findIndex((b) => items.every((i) => i.checked === inCut(i, b.dataset.possel)));
+        btns.forEach((b, k) => b.setAttribute('aria-pressed', String(k === at)));
+        if (at < 0) delete bar.dataset.at; else bar.dataset.at = at;
+      }
     };
 
     /** The settings row's choice, copied to every section's own. */
@@ -280,18 +294,12 @@ const builderData = {
         const want = t.dataset.possel;
         let on = 0;
         for (const b of group.querySelectorAll('.itembox')) {
-          const pos = Number(b.dataset.pos);
-          // An entry with no position — no author marked `me` — is not a paper
-          // this cut can speak about, so only "all" and "none" touch it.
-          const keep = want === 'all' ? true
-            : want === 'none' ? false
-            : Number.isFinite(pos) && pos <= Number(want);
+          const keep = inCut(b, want);
           b.checked = keep;
           if (keep) on += 1;
         }
         recount();
-        status(want === 'none' ? 'Publications cleared.'
-          : want === 'all' ? `All ${on} publications selected.`
+        status(want === 'all' ? `All ${on} publications selected.`
           : `${on} publications with author position ${want} or better.`);
       }
       if (t.dataset.papersel !== undefined) {
