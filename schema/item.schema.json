@@ -355,6 +355,10 @@
           },
           "location": {
             "type": "string"
+          },
+          "groupRoles": {
+            "type": "boolean",
+            "description": "Print this role together with the others at the same institution that set this too, as one row — \"Coordinator & Core Developer, Astropy\". Only roles that opt in are grouped."
           }
         }
       }

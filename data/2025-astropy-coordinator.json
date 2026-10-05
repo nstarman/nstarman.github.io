@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-coordinator",
+  "type": "position",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2025",
+    "end": "2028"
+  },
+  "title": "Coordinator",
+  "details": [
+    "Member, Coordination Committee (executive committee)."
+  ],
+  "institution": "Astropy",
+  "location": "Remote",
+  "groupRoles": true,
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.astropy.org"
+    }
+  ],
+  "refs": [
+    "astropy"
+  ]
+}

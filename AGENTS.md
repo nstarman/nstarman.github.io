@@ -116,7 +116,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
 | `software` | — | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
-| `position` | `institution` | `role`, `location` |
+| `position` | `institution` | `role`, `location`, `groupRoles` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder` |
 | `presentation` | `kind` | `event`, `location` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs` |
@@ -128,6 +128,11 @@ its name, so nothing hard-codes which preset is the unabridged one.
 `status`: `in-prep` · `submitted` · `accepted` · `published`
 `kind`: `invited` · `contributed` · `poster` · `seminar` · `organizer` · `attended` · `accepted`
 `tier`: `major` · `minor`
+
+**`groupRoles`** on a `position` prints it with every other role at the same
+`institution` that sets it, as one row — "Coordinator, Strategic Planner & Core
+Developer, Astropy". Only roles that opt in are grouped; the CV builder can turn
+grouping off per section.
 
 **`tier`** exists because the CV separates *Grants & Fellowships* and *Awards*
 from *Small Grants* and *Travel Awards*. `type` × `tier` gives those four

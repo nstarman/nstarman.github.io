@@ -12,6 +12,7 @@
       "heading": "Professional Appointments",
       "short": "Appointments",
       "icon": "positions",
+      "cluster": "institution",
       "match": {
         "type": "position"
       }

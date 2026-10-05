@@ -101,6 +101,9 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
           : section.heading,
       short: section.short ?? null,
       groupBy: section.groupBy ?? null,
+      // `institution`: roles at one organization print under it, once. The
+      // builder may turn it off per section.
+      cluster: section.cluster ?? null,
       // Software is a grid of names rather than a dated list; the layout is a
       // property of the section, so it is stated once in presets.json and both
       // renderers read it from there.

@@ -56,6 +56,11 @@ const cleanPrefix = (raw) => Object.fromEntries(
 
 /** Section ids, first to last. Names, as headings are: which sections exist is
  *  the page's to say, and it appends any the file does not name. */
+/** Section ids → true, for the sections whose same-institution roles print apart. */
+const cleanSeparate = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' ? raw : {})
+    .filter(([k, v]) => v === true && k.length <= 64));
+
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
   : []);
@@ -70,7 +75,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, separate, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -104,6 +109,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     order: cleanOrder(order),
     // Grids not at the usual 3 columns. Absent, it says it.
     columns: cleanColumns(columns),
+    // Sections whose roles at one institution print as separate rows.
+    separate: cleanSeparate(separate),
   };
 }
 
@@ -172,6 +179,7 @@ export function decode(text) {
     prefix: cleanPrefix(raw.prefix),
     order: cleanOrder(raw.order),
     columns: cleanColumns(raw.columns),
+    separate: cleanSeparate(raw.separate),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

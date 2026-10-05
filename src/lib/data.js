@@ -410,3 +410,33 @@ export const assistItem = (a) => ({
   ...a, id: `assist-${a.bibcode ?? a.arxiv}`, type: 'publication', status: 'published',
   date: { start: a.date }, venue: { journal: a.venue },
 });
+
+/**
+ * Positions at one institution that opt in with `groupRoles`, as a group.
+ * Appointments in the same organization read as one place with several roles, so the CV can print the
+ * organization once and the roles beneath it. A group sits where its earliest
+ * member does, as its dates start there; an item that is alone stays a plain item. Returns
+ * `[{ items }]` for a group of two or more, `[{ item }]` otherwise.
+ */
+export function institutionGroups(list) {
+  const by = new Map();
+  for (const item of list) {
+    // Only roles that opt in, with `groupRoles`, join the others at their institution.
+    const key = item.groupRoles && item.institution ? item.institution : item.id;
+    by.set(key, [...(by.get(key) ?? []), item]);
+  }
+  // Placed by its last member in the list, the earliest, where its span starts.
+  const last = (items) => list.indexOf(items.at(-1));
+  return [...by.values()]
+    .sort((a, b) => last(a) - last(b))
+    .map((items) => (items.length > 1 ? { items } : { item: items[0] }));
+}
+
+/** The span a group of dated items covers, as one item's `date`: earliest start,
+ *  and open-ended if any member is, else the latest end. */
+export function groupDate(items) {
+  const start = items.map((i) => i.date.start).sort()[0];
+  if (items.some((i) => i.date.present)) return { start, present: true };
+  const end = items.map((i) => i.date.end ?? i.date.start).sort().at(-1);
+  return { start, end };
+}
