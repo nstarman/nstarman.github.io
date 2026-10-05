@@ -129,6 +129,8 @@
 .cmap-note{margin:.4rem 0 0; font-size:.76rem; color:var(--ink-mute)}
 
 /* The map's person picker. */
+/* The picker and its label are revealed by mappick.js: without it they pick nothing. */
+.cmap-pick [hidden]{display:none}
 .cmap-pick{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin:.8rem 0 0}
 .cmap-pick label{
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;

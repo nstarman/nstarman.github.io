@@ -67,8 +67,8 @@ const offMap = unsettled.length + unplaced.length;
   </svg>
 
   <div class="cmap-pick">
-    <label for="conf-who">Show</label>
-    <select id="conf-who" class="cmap-who btn btn--sel">
+    <label for="conf-who" hidden>Show</label>
+    <select id="conf-who" class="cmap-who btn btn--sel" hidden>
       <option value="">Everywhere</option>
       {pins.map((p, i) => (
         <option value={String(i)}>{p.place} ({p.talks.length})</option>

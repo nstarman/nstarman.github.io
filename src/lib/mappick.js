@@ -15,6 +15,8 @@
 function wire(fig) {
   const pick = fig.querySelector('.cmap-who');
   if (!pick) return;
+  pick.hidden = false;
+  pick.labels[0].hidden = false;
   const all = (sel) => [...fig.querySelectorAll(sel)];
   const list = fig.querySelector('.cmap-list');
 

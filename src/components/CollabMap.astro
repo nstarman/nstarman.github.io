@@ -68,8 +68,8 @@ const label = (pin) =>
   </svg>
 
   <div class="cmap-pick">
-    <label for="cmap-who">Show</label>
-    <select id="cmap-who" class="cmap-who btn btn--sel">
+    <label for="cmap-who" hidden>Show</label>
+    <select id="cmap-who" class="cmap-who btn btn--sel" hidden>
       <option value="">Everyone</option>
       {people.map((p, i) => <option value={String(i)}>{lastFirst(p.name)}</option>)}
     </select>
