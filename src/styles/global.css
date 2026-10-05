@@ -151,6 +151,7 @@ h2{
 /* background-COLOR, not the shorthand: `background` resets background-image to
    none and background-position to 0 0, which wiped the style menu's arrow and
    — being transitioned — flew it to the corner on the way out. */
+.btn[aria-pressed="true"]{color:var(--accent); border-color:var(--accent-line); background-color:var(--accent-soft)}
 .btn:hover{color:var(--accent); border-color:var(--accent-line); background-color:var(--accent-soft); text-decoration:none}
 
 /* --- the landing page's papers: cards drawn as rows of a list, with a short
