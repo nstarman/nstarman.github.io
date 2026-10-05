@@ -83,7 +83,7 @@ const mapFor = (s) => {
     const Head = collapsed ? 'summary' : 'div';
     const selectable = pick && s.items.length > 0;
     return (
-    <Wrap class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
+    <Wrap data-talks={isTalks(s) ? '' : undefined} class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
       <Head class="cvsechead">
         {selectable && (
           <input type="checkbox" class="groupbox"
@@ -96,6 +96,19 @@ const mapFor = (s) => {
                  aria-label={`Include ${s.heading}`} />
         )}
         <h3 class="cvsection" id={s.id}>{s.heading}</h3>
+        {/* The builder's: where this section prints. */}
+        {pick && (
+          <span class="secmove" role="group" aria-label={`Move ${s.heading}`}>
+            <button type="button" class="posbtn posbtn--icon" data-move="-1"
+                    aria-label={`Move ${s.heading} up`} title="Move up">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-up" /></svg>
+            </button>
+            <button type="button" class="posbtn posbtn--icon" data-move="1"
+                    aria-label={`Move ${s.heading} down`} title="Move down">
+              <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-down" /></svg>
+            </button>
+          </span>
+        )}
         {collapsed && <span class="cvcount">{s.items.length}</span>}
         {/* Publications only, and only in the picker. The section checkbox is all
             or nothing; this is the same author-position cut the publications page

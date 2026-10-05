@@ -46,7 +46,9 @@ export function preset(name) {
  * @param {{ prefix?: Record<string, string> }} [opts]
  *   section id → `none` to keep "Select " off that section's heading
  */
-export function resolve(name, only, { prefix = {} } = {}) {
+const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.length : i; };
+
+export function resolve(name, only, { prefix = {}, order = [] } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -58,6 +60,7 @@ export function resolve(name, only, { prefix = {} } = {}) {
         key,
         id: section.id,
         heading: section.heading,
+        short: section.short ?? null,
         groupBy: null,
         icon: section.icon ?? null,
         layout: 'list',
@@ -96,6 +99,7 @@ export function resolve(name, only, { prefix = {} } = {}) {
         prefix[section.id] !== 'none' && picked.length < whole && !section.heading.startsWith('Select')
           ? `Select ${section.heading}`
           : section.heading,
+      short: section.short ?? null,
       groupBy: section.groupBy ?? null,
       // Software is a grid of names rather than a dated list; the layout is a
       // property of the section, so it is stated once in presets.json and both
@@ -125,7 +129,11 @@ export function resolve(name, only, { prefix = {} } = {}) {
     // comparing the name to "complete", so a renderer never hard-codes which
     // preset is the unabridged one.
     includeAll: Boolean(spec.includeAll),
-    sections: sections.filter((s) => s.items.length > 0 || s.entries?.length > 0),
+    // `order` is the builder's: section ids, first to last. Sections it does not
+    // name keep their place after those it does (the sort is stable).
+    sections: sections
+      .filter((s) => s.items.length > 0 || s.entries?.length > 0)
+      .sort((a, b) => rank(order, a.id) - rank(order, b.id)),
   };
 }
 

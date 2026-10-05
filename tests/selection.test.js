@@ -96,6 +96,13 @@ describe('tolerating the merely odd', () => {
     expect(read({}).prefix).toEqual({});
   });
 
+  it('carries the section order through a round trip', () => {
+    const doc = encode({ items: [], order: ['b', 'a', 'b', 3] });
+    expect(doc.order).toEqual(['b', 'a']);
+    expect(decode(JSON.stringify(doc)).order).toEqual(['b', 'a']);
+    expect(read({}).order).toEqual([]);
+  });
+
   it('carries the style through a round trip', () => {
     const doc = encode({ items: ['a'], lines: {}, style: 'plain' });
     expect(doc.style).toBe('plain');

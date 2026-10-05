@@ -12,7 +12,9 @@ const { sections } = Astro.props;
 <nav class="cvtoc" aria-label="CV sections">
   <ol>
     {sections.map((s) => (
-      <li><a href={`#${s.id}`} data-sec={s.id}>{s.heading}</a></li>
+      <li><a href={`#${s.id}`} data-sec={s.id}>
+        {s.short ? <><span class="toc-full">{s.heading}</span><span class="toc-short">{s.short}</span></> : s.heading}
+      </a></li>
     ))}
   </ol>
 </nav>
@@ -29,7 +31,8 @@ const { sections } = Astro.props;
   const gap = () => heads.length
     ? parseFloat(getComputedStyle(heads[0]).scrollMarginTop) || 96
     : 96;
-  const rects = () => heads.map((h) => ({ id: h.id, top: h.getBoundingClientRect().top }));
+  // Queried each time: the builder moves sections, and the rules read document order.
+  const rects = () => [...document.querySelectorAll('.cvsection')].map((h) => ({ id: h.id, top: h.getBoundingClientRect().top }));
 
   // Switching length should not throw you to the top of the document. We
   // remember where the heading you were reading sat in the viewport and put it

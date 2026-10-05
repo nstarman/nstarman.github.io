@@ -1,5 +1,5 @@
 {
-  "$comment": "CV presets. Each section is defined once in `$sections`: its heading, its icon, and how it selects items. A preset lists the sections it shows, in order, by id, and overrides only what it does differently there, e.g. `{ \"id\": \"publications\", \"limit\": 5 }`; `null` removes a key. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in.",
+  "$comment": "CV presets. Each section is defined once in `$sections`: its heading, its icon, and how it selects items. A preset lists the sections it shows, in order, by id, and overrides only what it does differently there, e.g. `{ \"id\": \"publications\", \"limit\": 5 }`; `null` removes a key. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section may give a `short` name, which the contents list uses where it is short of room. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in.",
   "$sections": {
     "education": {
       "heading": "Education",
@@ -10,6 +10,7 @@
     },
     "positions": {
       "heading": "Professional Appointments",
+      "short": "Appointments",
       "icon": "positions",
       "match": {
         "type": "position"
@@ -105,6 +106,7 @@
     },
     "service": {
       "heading": "Professional Service",
+      "short": "Service",
       "icon": "service",
       "match": {
         "type": "service"

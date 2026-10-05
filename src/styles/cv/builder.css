@@ -147,6 +147,20 @@
 .sub.is-off{opacity:.35}
 
 /* Narrow screens: the contents strip sits between the heading and the lede. */
-@media (max-width:77.99rem){
+@media (max-width:62.99rem){
   .cvtoc ~ .lede{margin-top:.9rem}  /* ~, not +: the rail's script sits between them */
 }
+
+/* The move buttons, a stack beside each section's heading: up over down, small
+   enough to leave the heading row its height. */
+.secmove{display:inline-flex; flex-direction:column; gap:1px; margin:0 .3rem 0 .1rem}
+.secmove .posbtn{padding:0 .35rem; line-height:1}
+.secmove .ico{width:.6rem; height:.6rem}
+.secmove .posbtn:disabled{opacity:.3; cursor:default; pointer-events:none}
+
+/* A contents entry held and being carried: lifted, with the list holding still
+   under the pointer rather than scrolling or selecting text. */
+.cvtoc ol.is-sorting{user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; cursor:grabbing}
+.cvtoc li.is-lifted{opacity:.85; transform:scale(1.04); box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 18%, transparent);
+  background:var(--ground); border-radius:4px; position:relative; z-index:1}
+.cvtoc li.is-lifted a{pointer-events:none}

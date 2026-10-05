@@ -1133,7 +1133,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
    sideways, that sticks under the site nav. --toc-h is its height, which every
    in-page jump adds to its scroll margin. */
 :root{--toc-h:0px}
-@media (max-width:77.99rem){
+@media (max-width:62.99rem){
   :root:has(.cvtoc){--toc-h:2.3rem}
   .cvtoc{
     display:block; position:sticky; top:calc(var(--nav-h) - 1px); z-index:8;
@@ -1177,10 +1177,19 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   .cvtoc a.is-current{border-color:var(--accent)}
   :root:has(.cvtoc) footer{padding-bottom:2.6rem}
 }
-@media (min-width:78rem){
+/* The rail takes the room the margin has, in three sizes: the full labels at
+   78rem, short ones at 69rem, and at 63rem the short ones in a narrower rail,
+   wrapping. (49rem of column + the rail + its gap, either side.) Below that it
+   is the strip. Names with a short form carry both in .toc-full / .toc-short. */
+.toc-short{display:none}
+@media (min-width:63rem) and (max-width:77.99rem){
+  .toc-full{display:none}
+  .toc-short{display:inline}
+}
+@media (min-width:63rem){
   .cvtoc{
     display:block; position:fixed; top:6.5rem;
-    right:calc(50% + 24.5rem + 2rem); width:12.5rem;
+    right:calc(50% + 24.5rem + .75rem); width:6rem;
     max-height:calc(100vh - 9rem); overflow-y:auto;
   }
   .cvtoc ol{list-style:none; margin:0; padding:0;
@@ -1204,6 +1213,8 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
     margin:0 .6rem .3rem auto; background:var(--ink-faint);
   }
 }
+@media (min-width:69rem){ .cvtoc{right:calc(50% + 24.5rem + 1rem); width:9rem} }
+@media (min-width:78rem){ .cvtoc{right:calc(50% + 24.5rem + 2rem); width:12.5rem} }
 /* /publications/ uses the rail for years; a jump must clear the sticky nav. */
 .entry--full{scroll-margin-top:calc(var(--nav-h) + var(--toc-h) + 0.75rem)}
 /* A figure on /research/ jumps to the paper's card here; leave room for the

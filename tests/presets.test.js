@@ -112,3 +112,17 @@ describe('shared sections', () => {
     expect(resolve('1page').sections.find((s) => s.id === 'publications').groupBy).toBeNull();
   });
 });
+
+describe('section order', () => {
+  const ids = (opts) => resolve('complete', undefined, opts).sections.map((s) => s.id);
+
+  it('puts the named sections first, in that order, and keeps the rest where they were', () => {
+    const was = ids();
+    const [a, b] = [was[3], was[1]];
+    expect(ids({ order: [a, b] })).toEqual([a, b, ...was.filter((id) => id !== a && id !== b)]);
+  });
+
+  it('ignores an id no section has', () => {
+    expect(ids({ order: ['nope'] })).toEqual(ids());
+  });
+});
