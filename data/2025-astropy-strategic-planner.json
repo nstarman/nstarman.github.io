@@ -1,0 +1,29 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "astropy-strategic-planner",
+  "type": "position",
+  "cvs": [
+    "np",
+    "2page",
+    "1page"
+  ],
+  "date": {
+    "start": "2025",
+    "end": "2026"
+  },
+  "title": "Strategic Planner",
+  "details": [
+    "Member, Strategic Planning and Organizing Committee."
+  ],
+  "institution": "Astropy",
+  "location": "Remote",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.astropy.org"
+    }
+  ],
+  "refs": [
+    "astropy"
+  ]
+}
