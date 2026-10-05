@@ -333,6 +333,14 @@ ADS URL derives from it, so **do not add a separate link for ADS**. Omit it
 until the paper is actually on ADS. `arxiv` is the bare number
 (`2606.21774`), with `primaryClass` like `astro-ph.GA`.
 
+Every six months (1 January and 1 July) `scripts/refresh-publications.mjs`,
+run by `.github/workflows/refresh-publications.yml`, asks ADS for each
+publication and opens a pull request for what is missing or changed: `abstract`,
+`bibcode` (a preprint's is replaced by the journal's), `doi` and `citations`.
+Where ADS has no abstract, arXiv and Crossref are tried. It never replaces an
+existing abstract, and needs the repository secret `ADS_API_TOKEN`; locally,
+`ADS_API_TOKEN=… node scripts/refresh-publications.mjs`.
+
 ### `links` — a closed vocabulary
 
 `rel` must be one of:

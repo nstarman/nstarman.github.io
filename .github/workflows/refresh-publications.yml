@@ -1,0 +1,60 @@
+name: Refresh publications
+
+# Brings each publication's abstract, bibcode, DOI and citation count up to date
+# from NASA ADS (arXiv and Crossref stand in where ADS has no abstract), and
+# opens a pull request when anything moved. It never pushes to the default
+# branch. Needs the repository secret ADS_API_TOKEN, an ADS API token.
+
+on:
+  schedule:
+    # 06:00 UTC on 1 January and 1 July; run it by hand (Actions > Run workflow)
+    # to pick up a new paper sooner.
+    - cron: "0 6 1 1,7 *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-publications
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ADS_API_TOKEN: ${{ secrets.ADS_API_TOKEN }}
+      BRANCH: chore/refresh-publications
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Refresh
+        run: node scripts/refresh-publications.mjs | tee changed.txt
+
+      - name: Verify the data still validates and the site builds
+        run: |
+          npm run test:schema
+          npm run test:bibtex
+          npm run build
+
+      - name: Open a pull request if anything moved
+        run: |
+          files=$(git status --porcelain -- data | cut -c4-)
+          if [ -z "$files" ]; then
+            echo "Every publication is current." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          body=$'Updated by `scripts/refresh-publications.mjs`, run every six months, or by hand, by `.github/workflows/refresh-publications.yml`. Only missing or changed fields are written:\n\n'
+          body+=$(grep '^  [a-z0-9]' changed.txt | grep ': ' | sed 's/^ */- /')
+
+          # shellcheck disable=SC2086 # one path per word
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the publications" "$body" $files
