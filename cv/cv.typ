@@ -242,7 +242,7 @@
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
   if it.links.len() > 0 [ #trail(it.links)]
   if it.recipient != none {
-    linebreak()
+    if it.recipientInline { [, ] } else { linebreak() }
     text(size: 10.1pt)[#emph[to #it.recipient]]
   }
   for l in it.lines {

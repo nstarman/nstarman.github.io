@@ -84,7 +84,9 @@
    exempting it put /cv/1page/, whose last section is the collapsed Software,
    straight back to being unable to scroll its final heading to the top. */
 
-.tl .recipient{color:var(--ink-mute); font-style:italic}
+.tl .recipient{color:var(--ink-mute); font-style:italic; display:block}
+.tl .recipient--inline{display:inline}
+.tl .recipient--inline .recipient__text::before{content:"\00a0— "}
 
 /* An unpublished paper's year is the year it was submitted, not the year of
    record — italic says the date is provisional the way the pill says the

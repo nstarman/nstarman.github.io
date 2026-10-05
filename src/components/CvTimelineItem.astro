@@ -17,9 +17,11 @@ import Venue from './Venue.astro';
  * @prop baseCount      lines from this index on are complete-only (appended last)
  * @prop level          the starting detail level; 'full' starts the lines ticked
  * @prop completeLines  whether the complete-only lines start ticked
+ * @prop recipientInline whether the recipient starts on the title line (the preset's say, else the item's)
  */
 const { item, pick = false, picked = true, lines = [], baseCount = lines.length,
-        level = 'full', completeLines = false } = Astro.props;
+        level = 'full', completeLines = false,
+        recipientInline = item.recipientInline } = Astro.props;
 
 // What rides in the left date gutter rather than under the text: an
 // institution's homepage anywhere, and a talk's whole trail — a presentation's
@@ -72,7 +74,18 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     )}
     {item.declined && item.type === 'award' && <> (declined)</>}
     {item.kind === 'accepted' && <> (accepted, not attended)</>}
-    {item.recipient && <span class="recipient"> — To {item.recipient}</span>}
+    {item.recipient && (
+      <span class={`recipient${recipientInline ? ' recipient--inline' : ''}`}>
+        <span class="recipient__text">To {item.recipient}</span>
+        {pick && (
+          <label class="inlineopt" title="Print on the title line">
+            <input type="checkbox" class="inlinebox" data-id={item.id}
+                   checked={!!recipientInline} data-default={item.recipientInline ? '' : undefined}
+                   aria-label={`Put the recipient of ${item.title} on the title line`} /> same line
+          </label>
+        )}
+      </span>
+    )}
     {/* Last on the line, after the venue. The CV page does not group by
         status the way the PDF does, so without it a submitted paper is
         indistinguishable from a published one — but it qualifies the

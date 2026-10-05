@@ -70,7 +70,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, style, spacing, heading, place, prefix, order, columns, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -85,6 +85,8 @@ export function encode({ items, lines, style, spacing, heading, place, prefix, o
     site: { commit: site.commit ?? null, short: site.short ?? null, dirty: !!site.dirty },
     items: [...new Set(items ?? [])].filter((s) => typeof s === 'string'),
     lines: clean,
+    // Entries whose recipient prints on the title line. Absent, none does.
+    inline: [...new Set(inline ?? [])].filter((s) => typeof s === 'string'),
     // Which pre-built style to compile in. Absent means the default, which is
     // also what every selection saved before styles existed means.
     style: typeof style === 'string' ? style : null,
@@ -151,6 +153,9 @@ export function decode(text) {
     }
   }
 
+  const inline = new Set(Array.isArray(raw.inline)
+    ? raw.inline.filter((s) => typeof s === 'string').slice(0, MAX_ITEMS) : []);
+
   const site = raw.site && typeof raw.site === 'object' && !Array.isArray(raw.site) ? raw.site : {};
   // A name, not a promise that this build has it: a file may have been saved by
   // a build with styles this one does not. The caller decides what to do about
@@ -159,6 +164,7 @@ export function decode(text) {
   return {
     items,
     lines,
+    inline,
     style,
     spacing: cleanSpacing(raw.spacing),
     heading: cleanHeadings(raw.heading),
