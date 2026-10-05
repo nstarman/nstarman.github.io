@@ -100,7 +100,7 @@
    the contents strip, rather than staying behind at the top of the page. */
 .fmtrow--all.is-docked{position:fixed; z-index:8; margin:0 auto; left:0; right:0;
   top:calc(var(--nav-h) + var(--cvbar-h) + var(--toc-h));
-  width:min(calc(100% - 2rem), 60rem); box-shadow:0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent)}
+  width:min(calc(100% - 2rem), calc(var(--wide) - 3rem)); box-shadow:0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent)}
 .fmtcheck{font-family:var(--mono); font-size:.66rem; cursor:pointer}
 .fmtcheck input{accent-color:var(--accent); margin:0}
 .fmtbtn{margin-left:auto; color:var(--ink-faint); border-color:var(--rule)}
