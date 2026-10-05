@@ -106,6 +106,7 @@ export function wireMiniMap(id = 'cv-collab-map', { jump = false } = {}) {
     }
   };
   for (const btn of btns) {
+    btn.hidden = false;
     btn.addEventListener('click', () => { opener = btn; setOpen(aside.hidden); });
   }
 

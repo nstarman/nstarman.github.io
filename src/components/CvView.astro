@@ -175,9 +175,10 @@ const mapFor = (s) => {
             bylines, and each talk heading, for the places in the run of talk
             sections they share. The button is rendered here because it
             belongs to this row; what it does is in lib/minipick.js, with the map
-            it opens and with the panel's own copy of it. */}
+            it opens and with the panel's own copy of it. The button is `hidden` until
+            that script runs: the map is no use without it. */}
         {mapFor(s) && (
-          <button type="button" class="cvminibtn" aria-expanded="false"
+          <button type="button" class="cvminibtn" aria-expanded="false" hidden
                   aria-controls={mapFor(s).id}
                   aria-label={`Show ${mapFor(s).words}`}
                   title={`Show ${mapFor(s).words}`}>
