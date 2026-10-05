@@ -91,7 +91,6 @@ const builderData = {
                   aria-label="Settings for every section" title="Settings for every section">
             <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
           </button>
-
         </div>
 
         <CvFmtRow s={{ id: 'all', heading: 'every section', layout: 'entries' }} all />
@@ -482,6 +481,9 @@ const builderData = {
       const place = () => {
         const on = bar.classList.contains('is-on');
         if (on === (go.parentNode === slot)) return;
+        // The settings panel follows its button: a row in the page, and in the
+        // bar — which has one line of room — a dropdown under it.
+        $('fmt-all').classList.toggle('is-docked', on);
         if (on) { slot.insertBefore(go, spacer); selSlot.append(sel); }
         else {
           home.parentNode.insertBefore(go, home);
