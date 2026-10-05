@@ -15,6 +15,8 @@
 function wire(fig) {
   const pick = fig.querySelector('.cmap-who');
   if (!pick) return;
+  pick.hidden = false;
+  pick.labels[0].hidden = false;
   const all = (sel) => [...fig.querySelectorAll(sel)];
   const list = fig.querySelector('.cmap-list');
 
@@ -86,6 +88,9 @@ function wire(fig) {
   fig.addEventListener('click', (e) => {
     const owner = e.target.closest?.('.cmap-pin, .cmap-trail');
     if (!owner) return;
+    // The pin is a link to the record, for a reader with no script; here the
+    // click picks it instead, and the page should not jump.
+    e.preventDefault();
     unmark();
     pick.value = pick.value === owner.dataset.c ? '' : owner.dataset.c;
     show(pick.value);
