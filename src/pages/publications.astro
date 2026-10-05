@@ -35,6 +35,18 @@ const counts = {};
 for (const p of all) for (const t of p.tags ?? []) counts[t] = (counts[t] ?? 0) + 1;
 // Years for the left rail, newest first like the list itself.
 const years = [...new Set(all.map(year))].filter(Boolean);
+
+// The topic filter without JavaScript: a paper or assist is hidden when some
+// topic is ticked and none of the ticked ones is its own. One rule per distinct
+// tag set, each naming the boxes that would keep it. Same rule as `apply()` in
+// the script below, which adds what CSS cannot: the count, "All", the Assists
+// heading and the year rail.
+const tagSets = new Set([...all.map((p) => p.tags ?? []), ...assists.map((a) => a.tags ?? [])].map((t) => t.join(' ')));
+const topicCss = [...tagSets].map((set) => {
+  const keep = set.split(' ').filter(Boolean).map((t) => `.tagbox[value="${t}"]:checked`).join(',');
+  const target = set ? `[data-tags="${set}"]` : ':not([data-tags])';
+  return `.wrap:has(.tagbox:checked)${keep ? `:not(:has(${keep}))` : ''} :is(.entry--full, .assist)${target}{display:none}`;
+}).join('\n');
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
 
 ---
@@ -66,7 +78,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
             <details class="tagmenu">
               <summary>Topics<span id="tagcount"></span></summary>
               <div class="tagpanel" role="group" aria-label="Filter by topic">
-                <label><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
+                <label hidden><input type="checkbox" id="tag-all" checked /> All <small>{all.length}</small></label>
                 {tags.map((t) => (
                   <label><input type="checkbox" class="tagbox" value={t} /> {label(t)} <small>{counts[t]}</small></label>
                 ))}
@@ -131,6 +143,8 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
   </main>
 </Base>
 
+<style is:global set:html={topicCss}></style>
+
 <script>
   import { currentSection } from '../lib/scrollspy.js';
 
@@ -139,6 +153,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
   const menu = document.querySelector('.tagmenu');
   const all = document.getElementById('tag-all');
   const boxes = [...document.querySelectorAll('.tagbox')];
+  all.parentElement.hidden = false;
   const apply = () => {
     const on = boxes.filter((b) => b.checked).map((b) => b.value);
     all.checked = !on.length;

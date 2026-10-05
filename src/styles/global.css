@@ -1070,6 +1070,7 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   box-shadow:0 6px 20px rgb(0 0 0 / .12); font-size:.85rem;
 }
 .tagpanel label{display:flex; align-items:center; gap:.45rem; padding:.15rem 0; cursor:pointer}
+.tagpanel label[hidden]{display:none}
 .tagpanel small{margin-left:auto; color:var(--ink-faint); font-family:var(--mono)}
 .entry--full.tagoff,.assist.tagoff{display:none}
 /* Assists: papers that thank him, under his own, set apart by a rule. */
