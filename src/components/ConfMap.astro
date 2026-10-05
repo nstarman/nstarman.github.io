@@ -61,7 +61,12 @@ const offMap = unsettled.length + unplaced.length;
         <title>{pin.place} — {plural(pin.talks.length, 'talk')}</title>
         {/* `r` twice on purpose: the attribute is what a stylesheet-less render
             draws, --r is what the stylesheet scales for hover and small screens. */}
-        <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)} r={pin.r} />
+        {/* A link to the place's talks below, for a reader with no script to pick
+            it with; out of the tab order, as the record's heading is the link
+            for the keyboard. */}
+        <a href={`#conf-${pins.indexOf(pin)}`} tabindex="-1">
+          <circle cx={pin.x.toFixed(2)} cy={pin.y.toFixed(2)} r={pin.r} />
+        </a>
       </g>
     ))}
   </svg>
@@ -84,8 +89,8 @@ const offMap = unsettled.length + unplaced.length;
 
   <ol class="cmap-list">
     {pins.map((p, i) => (
-      <li data-c={i} style={`--h:${p.hue}`}>
-        <h3>{p.place} <span class="cmap-count">{plural(p.talks.length, 'talk')}</span></h3>
+      <li id={`conf-${i}`} data-c={i} style={`--h:${p.hue}`}>
+        <h3><a href={`#conf-${i}`}>{p.place}</a> <span class="cmap-count">{plural(p.talks.length, 'talk')}</span></h3>
         <ol hidden>
           {p.talks.map((t) => (
             <li>
