@@ -32,10 +32,9 @@
    hovered — or something inside it takes focus, which is what keeps it
    reachable by keyboard: pointer-events go with the opacity, so an invisible
    button is never clickable, but tabbing to it reveals it. */
-/* Left, following the heading — not pushed to the right-hand cluster, which is
-   where `detail` lives. The gap is the heading row's own, so it clears the
-   title rather than sitting against it. */
-.possel{display:inline-flex; align-items:center; gap:.15rem;
+/* Right, in the cluster beside `detail`: the selector pushes the cluster over
+   and `detail` follows it at the heading row's own gap. */
+.possel{display:inline-flex; align-items:center; gap:.15rem; margin-left:auto;
   opacity:0; pointer-events:none; transition:opacity .15s ease}
 .cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
 @media (prefers-reduced-motion:reduce){ .possel{transition:none} }
@@ -93,6 +92,7 @@
   font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
   color:var(--ink-faint);
 }
+.possel ~ .subgrouplab{margin-left:0}
 .subgrouplab:hover{color:var(--ink-2)}
 .subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
 /* Formatting: a button beside `detail` that opens a row under the rule. On
