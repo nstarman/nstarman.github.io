@@ -1,13 +1,11 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "cosmology-overview-at-cwru-origins-talk",
-  "type": "presentation",
+  "type": "outreach",
   "cvs": [],
   "date": {
     "start": "2017"
   },
   "title": "Cosmology Overview at CWRU Origins (Talk)",
-  "kind": "invited",
-  "location": "Cleveland, OH, USA",
   "details": "The Universe: A Brief History"
 }
