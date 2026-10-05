@@ -918,14 +918,22 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .pubfilter[data-stops="5"]{--stops:5}
 .pubfilter[data-stops="6"]{--stops:6}
 
-.pubfilter label{
+.pubfilter :is(label,button){
   /* The grid makes the columns equal; the label only has to fill its own. */
   text-align:center; min-width:2.2rem; padding:.12rem .45rem; white-space:nowrap;
   font-family:var(--mono); font-size:.7rem; letter-spacing:.02em;
   color:var(--ink-mute); cursor:pointer; border-radius:999px;
   transition:color .18s ease;
 }
-.pubfilter label:hover{color:var(--ink)}
+.pubfilter button{background:none; border:0}
+.pubfilter :is(label,button):hover{color:var(--ink)}
+/* The CV builder's version: buttons, with the thumb at `data-at` once a cut is made. */
+.pubfilter:not([data-at])::before{opacity:0}
+.pubfilter[data-at="1"]::before{transform:translateX(100%)}
+.pubfilter[data-at="2"]::before{transform:translateX(200%)}
+.pubfilter[data-at="3"]::before{transform:translateX(300%)}
+.pubfilter[data-at="4"]::before{transform:translateX(400%)}
+.pubfilter button[aria-pressed="true"]{color:var(--ink)}
 /* An icon stop. Centred in its segment and given the line-height of the text
    stops beside it, so the two segments are the same height and the thumb does
    not have to grow to cover one of them. */
