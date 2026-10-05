@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
 import CvToc from '../../components/CvToc.astro';
+import CvFmtRow from '../../components/CvFmtRow.astro';
 import '../../styles/cv/builder.css';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
@@ -81,10 +82,18 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
-          <button class="btn btn--go" type="button" id="build">Compile PDF</button>
+          <button class="btn btn--go" type="button" id="build"
+                  title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
-          <span class="status" id="status">The compiler is ~10 MB and loads on first use.</span>
+          <span class="status" id="status"></span>
+          {/* Settings for every section at once; each is still its own below. */}
+          <button class="fmtbtn posbtn posbtn--icon" type="button" aria-expanded="false" aria-controls="fmt-all"
+                  aria-label="Settings for every section" title="Settings for every section">
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
+          </button>
         </div>
+
+        <CvFmtRow s={{ id: 'all', heading: 'every section', layout: 'entries' }} all />
 
         <iframe id="preview" title="CV preview" hidden></iframe>
 
@@ -170,8 +179,35 @@ const builderData = {
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
     };
 
+    /** The settings row's choice, copied to every section's own. */
+    const applyGlobal = (t) => {
+      if (t.id === 'selprefix') {
+        for (const g of prefixGroups()) g.checked = t.checked;
+        return;
+      }
+      if (t.name?.startsWith('heading:')) {
+        for (const g of headingGroups()) setHeading(g, t.value);
+        syncHeading();
+        return;
+      }
+      const box = t.closest('.numbox');
+      if (!box) return;
+      const want = readSpacing(box);
+      // Heading gaps and entry gaps; the legend's is its own.
+      const heading = keyOf(box) === 'all.heading';
+      for (const f of spacingFields()) {
+        const k = keyOf(f);
+        if (heading ? k.endsWith('.heading') : !k.includes('.')) writeSpacing(f, want);
+      }
+    };
+
     document.addEventListener('change', (e) => {
       const t = e.target;
+      if (t.closest?.('.fmtrow--all')) {
+        applyGlobal(t);
+        retire('Settings changed — compile again.');
+        return;
+      }
       if (t.name?.startsWith('heading:')) {
         setHeading(t.closest('[data-heading-of]'), t.value);
         retire('Heading changed — compile again.');
@@ -184,7 +220,7 @@ const builderData = {
         return;
       }
       // A spacing field has settled its own value by now (it listens first).
-      if (t.closest?.('.fmtrow .numbox')) { retire('Spacing changed — compile again.'); return; }
+      if (t.closest?.(`${SECTION_ROW} .numbox`)) { retire('Spacing changed — compile again.'); return; }
       if (t.classList?.contains('subgroup')) {
         t.closest('.pickgroup').querySelectorAll('.subbox')
           .forEach((b) => (b.checked = t.checked));
@@ -265,11 +301,29 @@ const builderData = {
       }
     });
 
+    // Docked under the sticky header, the settings for every section are a
+    // pop-over: a click anywhere else, or Escape, puts it away. Inline at the
+    // top of the page it is a row like the sections', and stays until closed.
+    const closeGlobal = () => {
+      const btn = document.querySelector('.fmtbtn[aria-controls="fmt-all"]');
+      if (btn?.getAttribute('aria-expanded') !== 'true') return;
+      if (!$('fmt-all').classList.contains('is-docked')) return;
+      btn.setAttribute('aria-expanded', 'false');
+      $('fmt-all').hidden = true;
+    };
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#fmt-all, .fmtbtn[aria-controls="fmt-all"]')) closeGlobal();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeGlobal(); });
+
     // ── formatting ──────────────────────────────────────────────────────
     // The fields are the state, so there is no second copy to drift.
     // Each box's input is named for its spacing key; empty, it is the gap's
     // own size and is left out.
-    const spacingFields = () => [...document.querySelectorAll('.fmtrow .numbox')];
+    // The settings button's row sets every section's at once and holds no
+    // state of its own, so it is left out of everything read back.
+    const SECTION_ROW = '.fmtrow:not(.fmtrow--all)';
+    const spacingFields = () => [...document.querySelectorAll(`${SECTION_ROW} .numbox`)];
     const keyOf = (box) => box.querySelector('input').name;
     /** Spacing key → `{value, unit}`, for the boxes with a value. */
     const currentSpacing = () => {
@@ -283,6 +337,7 @@ const builderData = {
 
     // A heading choice per section, each a slider of radios.
     const headingGroups = () => [...document.querySelectorAll('[data-heading-of]')];
+    const globalHeading = () => document.querySelector('[data-heading-all]');
     const usualHeading = () => HEADINGS[$('style').value]?.[0] ?? 'none';
     const shownChoice = (g) => g.querySelector('label:not([hidden]) > :checked')?.value;
     const setHeading = (group, v) => {
@@ -337,7 +392,7 @@ const builderData = {
      *  count of stops follows. */
     const syncHeading = () => {
       const style = $('style').value;
-      for (const g of headingGroups()) {
+      for (const g of [...headingGroups(), globalHeading()]) {
         const stops = [...g.querySelectorAll('label[data-styles]')];
         for (const l of stops) l.hidden = !l.dataset.styles.split(' ').includes(style);
         for (const l of stops.filter((l) => l.hidden)) g.append(l);
@@ -449,6 +504,9 @@ const builderData = {
       const place = () => {
         const on = bar.classList.contains('is-on');
         if (on === (go.parentNode === slot)) return;
+        // The settings panel follows its button: a row in the page, and in the
+        // bar — which has one line of room — a dropdown under it.
+        $('fmt-all').classList.toggle('is-docked', on);
         if (on) { slot.insertBefore(go, spacer); selSlot.append(sel); }
         else {
           home.parentNode.insertBefore(go, home);

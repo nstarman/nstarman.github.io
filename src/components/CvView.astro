@@ -13,10 +13,7 @@ import Inline from './Inline.astro';
 import CvToc from './CvToc.astro';
 import CvTimelineItem from './CvTimelineItem.astro';
 import Card from './Card.astro';
-import NumBox from './NumBox.astro';
-import { spacingUnits } from '../lib/cvspacing.js';
-import CV_STYLES from '../../cv/lib/styles.json';
-import CV_GAPS from '../../cv/lib/gaps.json';
+import CvFmtRow from './CvFmtRow.astro';
 
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
@@ -48,29 +45,6 @@ const baseLines = (i) => detailLines(i).length;
 // adding one to config/presets.json cannot produce a nameless arrow.
 const PAGE_ICON = { '/publications/': 'paper', '/software/': 'code' };
 const pageName = (page) => page.replaceAll('/', '');
-// The kind of gap between a section's entries, as cv/lib/gaps.json names it —
-// the same choice cv.typ makes by layout. Its size, at the builder's normal
-// density, lets a field convert between a multiple and points.
-const entryGap = (s) => (['list', 'grid', 'publications'].includes(s.layout) ? s.layout : 'entries');
-const gapBase = (name) => CV_GAPS[name].normal;
-// How each section's heading prints: none, or one of the heading variants
-// the PDF styles draw, as cv/lib/styles.json lists them — the style's first,
-// its usual heading, to start. Each is a stop of a slider, shown as a sample
-// letter drawn as the manifest says (underlined, or plain), named in words
-// for its title; each names the styles that draw it, so the builder shows
-// only the current style's. The first style is the menu's first, and so the
-// one showing.
-const FIRST_STYLE = Object.keys(CV_STYLES)[0];
-const FIRST_USUAL = Object.keys(CV_STYLES[FIRST_STYLE].headings)[0];
-const HEADS = [];
-for (const [name, st] of Object.entries(CV_STYLES)) {
-  for (const [v, look] of Object.entries(st.headings)) {
-    let h = HEADS.find((x) => x.v === v);
-    if (!h) HEADS.push((h = { v, ...look, styles: [] }));
-    h.styles.push(name);
-  }
-}
-
 // Consecutive talk sections — Invited Talks, Presentations, Conferences — as
 // one run, so the conference map can span them. Every other section is a run
 // of one.
@@ -190,76 +164,7 @@ const mapFor = (s) => {
         )}
       </Head>
 
-      {pick && (
-        <div class="fmtrow" id={`fmt-${s.id}`} hidden>
-          {/* One line per thing formatted — its heading, the student legend
-              that opens Publications, its entries — the subject in bold,
-              then its options. Each spacing is one key of the template's
-              `spacing`: `<id>.heading`, `<id>.legend`, and the section's id
-              for its entries; the legend's place is `<id>.legend` of its
-              `place`. An option hides where it would do nothing: the
-              heading's spacing and the legend's Title place with no heading, the
-              legend's spacing with the legend up on the heading's line. */}
-          {[
-            { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
-            ...(s.id === 'publications'
-              ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
-              : []),
-            { sub: 'Items', key: s.id, gap: entryGap(s), words: `Space between ${s.heading} entries` },
-          ].map((o) => (
-            <>
-              <span class="fmtsub">{o.sub}</span>
-              {/* The subject's options, from the left, straight after it. */}
-              <span class="fmtline">
-              {o.place && (
-                <span class="fmtopt fmtopt--place">
-                  <span class="fmtlab">Place</span>
-                  <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="3"
-                        aria-label={`Where the ${s.heading} legend sits`} data-place-of={o.key}>
-                    <label title="On its own line, below the heading">
-                      <input type="radio" class="posradio" name={`place:${o.key}`} value="below" checked />Below</label>
-                    <label title="On its own line, below the heading, at its right">
-                      <input type="radio" class="posradio" name={`place:${o.key}`} value="right" />Right</label>
-                    <label title="On the heading's line, at its right">
-                      <input type="radio" class="posradio" name={`place:${o.key}`} value="title" />Title</label>
-                  </span>
-                </span>
-              )}
-              {o.place ? null : o.style ? (
-                  <span class="fmtopt">
-                    <span class="fmtlab">Style</span>
-                    <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup"
-                          aria-label={`How the ${s.heading} heading prints`} data-heading-of={s.id}
-                          data-stops={1 + HEADS.filter((h) => h.styles.includes(FIRST_STYLE)).length}>
-                      {HEADS.map((h) => (
-                        <label title={h.label} data-styles={h.styles.join(' ')} hidden={!h.styles.includes(FIRST_STYLE)}>
-                          <input type="radio" class="posradio" name={`heading:${s.id}`} value={h.v} aria-label={h.label}
-                                 checked={h.v === FIRST_USUAL} />
-                          <span class:list={['headsample', { 'headsample--under': h.underline }]} aria-hidden="true">X</span></label>
-                      ))}
-                      <label title="No heading">
-                        <input type="radio" class="posradio" name={`heading:${s.id}`} value="none" />None</label>
-                    </span>
-                  </span>
-                ) : null}
-              {/* "Select Publications" when only some are ticked — or not.
-                  A list section is taken whole, so never says it. */}
-              {o.style && s.items.length > 0 && (
-                <span class="fmtopt fmtopt--prefix" hidden>
-                  <label class="bl" title={`“Select ${s.heading}” while only some are ticked`}>
-                    <input type="checkbox" name={`prefix:${s.id}`} data-prefix-of={s.id} checked /> “Select” prefix</label>
-                </span>
-              )}
-                <span class:list={['fmtopt', { 'fmtopt--headgap': o.style, 'fmtopt--legendgap': o.place }]}>
-                  <span class="fmtlab">Spacing</span>
-                  <NumBox name={o.key} label={o.words} units={spacingUnits(gapBase(o.gap))}
-                          unitName={`${o.key}.unit`} unitLabel={`${o.words}, in`} compact />
-                </span>
-              </span>
-            </>
-          ))}
-        </div>
-      )}
+      {pick && <CvFmtRow s={s} />}
 
       {s.layout === 'list' ? (
         <ul class="plainlist">

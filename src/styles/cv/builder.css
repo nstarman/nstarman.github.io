@@ -16,6 +16,9 @@
 .selgroup{display:inline-flex; align-items:center; gap:.6rem; margin-left:auto}
 .selgroup .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
   font-variant-numeric:tabular-nums}
+/* In the sticky header the count is the first thing to go when it runs short of
+   room; the bar is one fixed line, so anything that wraps is cut off. */
+@media (max-width:40rem){ .cvbar .selgroup .count{display:none} }
 .btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
   font-size:.75rem; padding:.35rem .8rem}
 
@@ -32,7 +35,7 @@
 /* Left, following the heading — not pushed to the right-hand cluster, which is
    where `detail` lives. The gap is the heading row's own, so it clears the
    title rather than sitting against it. */
-.possel{display:inline-flex; gap:.15rem;
+.possel{display:inline-flex; align-items:center; gap:.15rem;
   opacity:0; pointer-events:none; transition:opacity .15s ease}
 .cvsechead:hover .possel, .cvsechead:focus-within .possel{opacity:1; pointer-events:auto}
 @media (prefers-reduced-motion:reduce){ .possel{transition:none} }
@@ -94,6 +97,15 @@
 .subgroup{accent-color:var(--accent); margin:0; cursor:pointer}
 /* Formatting: a button beside `detail` that opens a row under the rule. On
    the right with `detail`; first of the cluster where there is no `detail`. */
+/* In the builder bar, at the right of the compile row. */
+.builderbar .fmtbtn{margin-left:auto}
+/* With the controls in the sticky header the panel drops from under it, below
+   the contents strip, rather than staying behind at the top of the page. */
+.fmtrow--all.is-docked{position:fixed; z-index:8; margin:0 auto; left:0; right:0;
+  top:calc(var(--nav-h) + var(--cvbar-h) + var(--toc-h));
+  width:min(calc(100% - 2rem), calc(var(--wide) - 3rem)); box-shadow:0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent)}
+.fmtcheck{font-family:var(--mono); font-size:.66rem; cursor:pointer}
+.fmtcheck input{accent-color:var(--accent); margin:0}
 .fmtbtn{margin-left:auto; color:var(--ink-faint); border-color:var(--rule)}
 .subgrouplab + .fmtbtn{margin-left:-.5rem}
 .fmtbtn[aria-expanded="true"]{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
