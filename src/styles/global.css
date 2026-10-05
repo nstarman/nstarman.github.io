@@ -61,7 +61,7 @@ nav ul a:hover{color:var(--accent); text-decoration:none}
    (below) no longer fits every word. */
 .navico{display:none; width:.875rem; height:.875rem; fill:currentColor}
 @media (max-width:36rem){
-  nav ul a:has(.navico){display:flex; align-items:center}
+  nav ul a:has(.navico){display:flex; align-items:center; min-height:24px}
   .navico{display:block}
   a:has(> .navico) .navtext{position:absolute; width:1px; height:1px; margin:-1px;
     overflow:hidden; clip-path:inset(50%); white-space:nowrap}
@@ -359,6 +359,9 @@ a.card:hover .name{color:var(--accent)}
 .c-context{font-family:var(--ff-context, var(--mono)); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); font-style:var(--fst-context, normal); letter-spacing:.06em;
   text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .c-context:hover{color:var(--accent); text-decoration:none}
+/* A 13px-high line of small type: widen the hit area, not the line. */
+.c-context{position:relative}
+.c-context::after{content:""; position:absolute; inset:-6px -4px}
 
 /* Layout: one grid for every card, every area always there. A part that is
    off is hidden, and its track is 0; the areas are fixed and the parts move
@@ -753,6 +756,9 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
   background:var(--surface); transition:.15s;
 }
 .iconbtn .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
+/* WCAG 2.2 target size (2.5.8): the denser card and CV presets size these in rem,
+   which came out at 21–23px. */
+.iconbtn{min-width:24px; min-height:24px}
 .iconyear{font-size:.72rem; line-height:1; font-variant-numeric:tabular-nums}
 /* Dense contexts — CV rows — take a smaller mark. */
 .tl .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
@@ -817,7 +823,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* A publication's highlight and its proceedings sit just under it. */
 .entry--full .body > .card{margin-top:.6rem}
 .absmore summary{
-  cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none;
+  cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none; min-height:24px;
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ink-mute);
 }
