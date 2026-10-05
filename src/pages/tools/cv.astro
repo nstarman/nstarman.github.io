@@ -36,6 +36,9 @@ const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   unabridged: Object.fromEntries(presetNames.map((n) => [n, Boolean(preset(n).includeAll)])),
+  // Each preset's grid columns, by section id, where it sets them.
+  columns: Object.fromEntries(presetNames.map((n) => [n,
+    Object.fromEntries(preset(n).sections.filter((s) => s.columns).map((s) => [s.id, s.columns]))])),
   site,
   // Each PDF style's heading variants, its usual one first.
   headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
@@ -118,7 +121,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, site: SITE, fonts: FONTS,
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, site: SITE, fonts: FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -229,6 +232,7 @@ const builderData = {
         return;
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
+      if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
         retire('Placement changed — compile again.');
@@ -328,6 +332,8 @@ const builderData = {
         subs().forEach((b) => {
           b.checked = full && (b.dataset.complete === undefined || unabridged);
         });
+        // Its grids' columns too, the usual 3 where it does not say.
+        for (const g of columnGroups()) setColumns(g, PRESET_COLUMNS[t.dataset.preset]?.[g.dataset.columnsOf] ?? 3);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -407,6 +413,17 @@ const builderData = {
     const currentPlace = () => Object.fromEntries(placeGroups()
       .map((g) => [g.dataset.placeOf, g.querySelector(':checked')?.value])
       .filter(([, v]) => v && v !== 'below'));
+    // A grid's column count, by section id.
+    const columnGroups = () => [...document.querySelectorAll('[data-columns-of]')];
+    const setColumns = (group, n) => {
+      const radios = [...group.querySelectorAll('input')];
+      const want = radios.some((r) => r.value === String(n)) ? String(n) : '3';
+      for (const r of radios) r.checked = r.value === want;
+    };
+    /** Section id → columns, for the grids not at the usual 3. */
+    const currentColumns = () => Object.fromEntries(columnGroups()
+      .map((g) => [g.dataset.columnsOf, Number(g.querySelector(':checked')?.value)])
+      .filter(([, n]) => n && n !== 3));
     // Whether a part-ticked section's heading says "Select", by section id.
     const prefixGroups = () => [...document.querySelectorAll('[data-prefix-of]')];
     const setPrefix = (box, v) => { box.checked = v === 'select'; };
@@ -508,7 +525,7 @@ const builderData = {
       const doc = encode({ items: chosen, lines: currentLines(),
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
-                          prefix: currentPrefix(), order: currentOrder(), site: SITE });
+                          prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -544,6 +561,7 @@ const builderData = {
       for (const g of headingGroups()) setHeading(g, sel.heading[g.dataset.headingOf] ?? usualHeading());
       syncHeading();
       for (const g of placeGroups()) setPlace(g, sel.place[g.dataset.placeOf]);
+      for (const g of columnGroups()) setColumns(g, sel.columns[g.dataset.columnsOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
       setOrder(sel.order.length ? sel.order : FIRST_ORDER);
       // A gap the file does not set, or sets out of bounds, is the default.
@@ -633,6 +651,8 @@ const builderData = {
         model.spacing = currentSpacing();
         model.heading = currentHeadings();
         model.place = currentPlace();
+        const cols = currentColumns();
+        for (const s of model.sections) s.columns = cols[s.id] ?? s.columns;
         const pdf = await compilePdf(model, FONTS, status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

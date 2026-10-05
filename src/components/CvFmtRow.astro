@@ -44,7 +44,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
     ...(s.id === 'publications'
       ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
       : []),
-    { sub: 'Items', key: s.id, gap: entryGap(s), words: `Space between ${s.heading} entries` },
+    { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries` },
   ].map((o) => (
     <>
       <span class="fmtsub">{o.sub}</span>
@@ -81,6 +81,18 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
             </span>
           </span>
         ) : null}
+      {/* A grid's columns, a slider of stops as Place is; 3 is the usual. */}
+      {o.columns && (
+        <span class="fmtopt">
+          <span class="fmtlab">Columns</span>
+          <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="4"
+                aria-label={`Columns in the ${s.heading} grid`} data-columns-of={s.id}>
+            {[2, 3, 4, 5].map((n) => (
+              <label><input type="radio" class="posradio" name={`columns:${s.id}`} value={String(n)} checked={n === 3} />{n}</label>
+            ))}
+          </span>
+        </span>
+      )}
       {/* "Select Publications" when only some are ticked — or not.
           A list section is taken whole, so never says it. */}
       {o.style && !all && s.items.length > 0 && (

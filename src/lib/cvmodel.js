@@ -117,6 +117,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       heading: s.heading,
       icon: s.icon,
       layout: s.layout,
+      columns: s.columns,
       detail: s.detail,
       dropped: s.dropped,
       // Which subsections to draw, and in what order. `groupBy` has been sitting

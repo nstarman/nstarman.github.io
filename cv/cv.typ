@@ -347,10 +347,10 @@
 // Software only. The packages have no dates worth a gutter and no
 // published-vs-other split to draw — the papers behind them are already in
 // Publications — so they read better as a dense list of names.
-#let softgrid(items, gutter) = {
+#let softgrid(items, gutter, columns) = {
   set par(justify: false)
   grid(
-    columns: (1fr, 1fr, 1fr),
+    columns: (1fr,) * columns,
     column-gutter: 12pt,
     row-gutter: gutter,
     ..items.map(it => block(breakable: false)[
@@ -404,7 +404,7 @@
   if "layout" in s and s.layout == "list" {
     plainlist(s.entries, gap(s.id, "list"))
   } else if "layout" in s and s.layout == "grid" {
-    softgrid(s.items, gap(s.id, "grid"))
+    softgrid(s.items, gap(s.id, "grid"), s.at("columns", default: 3))
   } else if "layout" in s and s.layout == "publications" {
     publications(s, legend: if keyup { none } else if keyplace == "right" { right } else { left })
   } else {
