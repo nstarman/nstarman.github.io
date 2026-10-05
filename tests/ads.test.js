@@ -28,6 +28,10 @@ describe('changes', () => {
     expect(changes({ bibcode: journal.bibcode }, { bibcode: '2022arXiv220100001S' })).toEqual({});
   });
 
+  it('ignores the arXiv-issued DOI', () => {
+    expect(changes({}, { doi: ['10.48550/arXiv.2605.04138'] })).toEqual({});
+  });
+
   it('drops a stub abstract and an invalid DOI, and updates the count', () => {
     expect(changes({ citations: 1 }, { abstract: 'Too short.', doi: ['not-a-doi'], citation_count: 2 })).toEqual({ citations: 2 });
   });

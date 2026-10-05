@@ -45,7 +45,7 @@ export function changes(item, doc) {
   if (b && b !== item.bibcode && (!item.bibcode || (isPreprintBibcode(item.bibcode) && !isPreprintBibcode(b)))) {
     out.bibcode = b;
   }
-  const doi = doc.doi?.[0];
+  const doi = doc.doi?.find((d) => !d.startsWith("10.48550/")); // arXiv's own DOI is not the paper's
   if (!item.doi && doi && /^10\.\d{4,9}\/\S+$/.test(doi)) out.doi = doi;
   const n = doc.citation_count;
   if (Number.isInteger(n) && n >= 0 && n !== item.citations) out.citations = n;

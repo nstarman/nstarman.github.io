@@ -338,7 +338,7 @@ run by `.github/workflows/refresh-publications.yml`, asks ADS for each
 publication and opens a pull request for what is missing or changed: `abstract`,
 `bibcode` (a preprint's is replaced by the journal's), `doi` and `citations`.
 Where ADS has no abstract, arXiv and Crossref are tried. It never replaces an
-existing abstract, and needs the repository secret `ADS_API_TOKEN`; locally,
+existing abstract, and needs the repository secret `ADS_TOKEN`; locally,
 `ADS_API_TOKEN=… node scripts/refresh-publications.mjs`.
 
 ### `links` — a closed vocabulary
