@@ -2,7 +2,9 @@
   "$schema": "../schema/item.schema.json",
   "id": "origins-science-scholars-lecture-series",
   "type": "outreach",
-  "cvs": [],
+  "cvs": [
+    "np"
+  ],
   "date": {
     "start": "2021-10"
   },
