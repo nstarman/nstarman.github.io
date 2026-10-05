@@ -6,7 +6,7 @@ import { formatName, parseName } from '../cardname.js';
 export const THEMES = ['auto', 'light', 'dark'];
 export const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf'];
 
-/** The JSON text to save for a builder card s ({ slug, theme, format }). */
+/** The JSON text to save for the builder card s ({ slug, theme, format }). */
 export const serializeSettings = (s) => `${JSON.stringify({ name: s.slug, theme: s.theme, format: s.format }, null, 2)}\n`;
 
 /** Saved settings text → { name, theme, format }, the name checked by reading

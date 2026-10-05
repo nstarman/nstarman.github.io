@@ -8,7 +8,7 @@ import { file, themes } from '../cardexport.js';
 /** @param {{ preview: HTMLElement, site: string, fonts: string[], say: (m: string) => void }} o
  *  preview holds the iframe; fonts are the faces Typst draws the PDF with;
  *  say shows a progress message. Returns { download(s) }, which saves one
- *  file per theme the builder card s needs, as `file(s, theme)` names it. */
+ *  file per theme the builder card `s` needs, as `file(s, theme)` names it. */
 export function createExporter({ preview, site, fonts, say }) {
   // The card in the preview, drawn in the theme asked for. The hitboxes are
   // lifted while it is drawn.
