@@ -72,7 +72,7 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     )}
     {item.declined && item.type === 'award' && <> (declined)</>}
     {item.kind === 'accepted' && <> (accepted, not attended)</>}
-    {item.recipient && <span class="recipient"> — to {item.recipient}</span>}
+    {item.recipient && <span class="recipient"> — To {item.recipient}</span>}
     {/* Last on the line, after the venue. The CV page does not group by
         status the way the PDF does, so without it a submitted paper is
         indistinguishable from a published one — but it qualifies the
