@@ -7,7 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
-import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupDate } from './data.js';
+import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate } from './data.js';
 import { spans, detailLines } from './inline.js';
 
 /**
@@ -135,15 +135,17 @@ function rowOf(item, cv, s, keepLine) {
 }
 
 /**
- * A section's rows. Roles at one institution print under it when the section
- * `cluster`s by institution and the builder has not asked for them apart: one
+ * A section's rows. Roles at one institution that are grouped — by their
+ * `groupRoles`, or as the builder chose — when the section `cluster`s by
+ * institution print as one
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, separate) {
+function itemsOf(s, cv, keepLine, group) {
   const row = (item) => rowOf(item, cv, s, keepLine);
-  if (s.cluster !== 'institution' || separate[s.id]) return s.items.map(row);
-  return institutionGroups(s.items).flatMap((g) => {
+  if (s.cluster !== 'institution') return s.items.map(row);
+  const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
+  return institutionGroups(s.items, grouped).flatMap((g) => {
     if (g.item) return [row(g.item)];
     const rows = g.items.map(row);
     const [first] = g.items;
@@ -171,13 +173,13 @@ function itemsOf(s, cv, keepLine, separate) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, separate?: Record<string, boolean> }} [opts]
- *   passed to resolve(); `separate` names the sections whose same-institution
- *   roles print as separate rows rather than under one heading
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean> }} [opts]
+ *   passed to resolve(); `group` is the builder's choice, by institution, of
+ *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
   const cv = resolve(presetName, only, opts);
-  const separate = opts?.separate ?? {};
+  const group = opts?.group ?? {};
 
   return {
     preset: cv.name,
@@ -204,7 +206,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, separate),
+      items: itemsOf(s, cv, keepLine, group),
     })),
   };
 }

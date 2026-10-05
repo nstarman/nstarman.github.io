@@ -41,7 +41,7 @@ describe('detail levels', () => {
   it('lets the builder pick individual lines', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
       // Roles merged into one row carry one line each, so keep them apart here.
-      { separate: { positions: true } });
+      { group: { Astropy: false } });
     for (const i of all(onlyFirst)) expect(i.lines.length).toBeLessThanOrEqual(1);
   });
 
@@ -51,8 +51,15 @@ describe('detail levels', () => {
     const [merged] = rows();
     expect(rows()).toHaveLength(1);
     expect(merged.title).toBe('Coordinator, Strategic Planner & Core Developer');
-    expect(rows({ separate: { positions: true } }).map((r) => r.title))
+    expect(rows({ group: { Astropy: false } }).map((r) => r.title))
       .toEqual(['Coordinator', 'Strategic Planner', 'Core Developer']);
+  });
+
+  it('lets the builder group any institution, not only those that opt in', () => {
+    const id = 'group:Case Western Reserve University';
+    const ids = (opts) => all(cvModel('complete', undefined, undefined, opts)).map((i) => i.id);
+    expect(ids()).not.toContain(id);
+    expect(ids({ group: { 'Case Western Reserve University': true } })).toContain(id);
   });
 
   it('prints `detailsComplete` in the complete CV and nowhere else', () => {

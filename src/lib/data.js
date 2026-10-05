@@ -411,25 +411,30 @@ export const assistItem = (a) => ({
   date: { start: a.date }, venue: { journal: a.venue },
 });
 
+/** Whether roles at one institution group by default: when every one opts in
+ *  with `groupRoles`. The CV builder may choose otherwise, per institution. */
+export const groupedByDefault = (items) => items.every((i) => i.groupRoles);
+
 /**
- * Positions at one institution that opt in with `groupRoles`, as a group.
- * Appointments in the same organization read as one place with several roles, so the CV can print the
- * organization once and the roles beneath it. A group sits where its earliest
- * member does, as its dates start there; an item that is alone stays a plain item. Returns
- * `[{ items }]` for a group of two or more, `[{ item }]` otherwise.
+ * Positions at one institution, grouped where `grouped(items)` says so — by
+ * default where every role opts in with `groupRoles`. Appointments in the same
+ * organization then read as one place with several roles. A group sits where
+ * its earliest member does, as its dates start there; every other item stays
+ * where it is. Returns `[{ items }]` for a group, `[{ item }]` otherwise.
  */
-export function institutionGroups(list) {
-  const by = new Map();
+export function institutionGroups(list, grouped = groupedByDefault) {
+  const at = new Map();
   for (const item of list) {
-    // Only roles that opt in, with `groupRoles`, join the others at their institution.
-    const key = item.groupRoles && item.institution ? item.institution : item.id;
-    by.set(key, [...(by.get(key) ?? []), item]);
+    if (item.institution) at.set(item.institution, [...(at.get(item.institution) ?? []), item]);
   }
-  // Placed by its last member in the list, the earliest, where its span starts.
-  const last = (items) => list.indexOf(items.at(-1));
-  return [...by.values()]
-    .sort((a, b) => last(a) - last(b))
-    .map((items) => (items.length > 1 ? { items } : { item: items[0] }));
+  const groups = new Map([...at].filter(([, items]) => items.length > 1 && grouped(items)));
+  const out = [];
+  for (const item of list) {
+    const items = groups.get(item.institution);
+    if (!items) out.push({ item });
+    else if (item === items.at(-1)) out.push({ items });
+  }
+  return out;
 }
 
 /** The span a group of dated items covers, as one item's `date`: earliest start,
