@@ -131,6 +131,8 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
     // comparing the name to "complete", so a renderer never hard-codes which
     // preset is the unabridged one.
     includeAll: Boolean(spec.includeAll),
+    // Where a part sits by default, keyed `<id>.<part>` as the builder's `place`.
+    place: spec.place ?? {},
     // `order` is the builder's: section ids, first to last. Sections it does not
     // name keep their place after those it does (the sort is stable).
     sections: sections

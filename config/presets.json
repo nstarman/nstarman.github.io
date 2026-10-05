@@ -181,6 +181,7 @@
     ]
   },
   "2page": {
+    "place": { "publications.legend": "title" },
     "label": "2P",
     "detail": "summary",
     "sections": [
@@ -218,6 +219,7 @@
     ]
   },
   "1page": {
+    "place": { "publications.legend": "title" },
     "label": "1P",
     "detail": "summary",
     "sections": [

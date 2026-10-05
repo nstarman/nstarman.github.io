@@ -111,6 +111,7 @@ export function cvModel(presetName, only, keepLine, opts) {
     preset: cv.name,
     label: cv.label,
     detail: cv.detail,
+    place: cv.place,
     person,
     sections: cv.sections.map((s) => ({
       id: s.id,
