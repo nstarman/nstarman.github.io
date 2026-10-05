@@ -152,6 +152,12 @@ describe('tolerating the merely odd', () => {
     expect(read({}).place).toEqual({});
   });
 
+  it('carries the columns of a grid through a round trip, leaving out the usual 3', () => {
+    const doc = encode({ items: [], columns: { software: 4, x: 3, y: 9 } });
+    expect(decode(JSON.stringify(doc)).columns).toEqual({ software: 4 });
+    expect(read({}).columns).toEqual({});
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });
