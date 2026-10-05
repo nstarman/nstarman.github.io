@@ -200,7 +200,7 @@
       },
       {
         "id": "software",
-        "limit": 5
+        "limit": 8
       },
       {
         "id": "talks-invited",
@@ -233,7 +233,7 @@
       },
       {
         "id": "software",
-        "limit": 5
+        "limit": 6
       }
     ]
   }
