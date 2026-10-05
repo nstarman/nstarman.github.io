@@ -64,7 +64,8 @@
 #let gap(key, name) = {
   let base = GAPS.at(name).at(if tight { "tight" } else { "normal" }) * 1pt
   let s = spacing.at(key, default: none)
-  if s == none { base } else if s.unit == "pt" { s.value * 1pt } else { s.value * base }
+  // The long CVs set their publications 1.5× apart unless told otherwise.
+  if s == none { if name == "publications" and cv.preset in ("np", "complete") { 1.5 * base } else { base } } else if s.unit == "pt" { s.value * 1pt } else { s.value * base }
 }
 
 // How each section's heading prints, keyed by section id: `none`, hidden, or
