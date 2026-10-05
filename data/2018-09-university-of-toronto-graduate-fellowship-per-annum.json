@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "university-of-toronto-graduate-fellowship-per-annum",
-  "type": "award",
+  "type": "grant",
   "cvs": [
     "np",
     "2page",

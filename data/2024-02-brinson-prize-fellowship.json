@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "brinson-prize-fellowship",
-  "type": "award",
+  "type": "grant",
   "cvs": [
     "np",
     "2page",

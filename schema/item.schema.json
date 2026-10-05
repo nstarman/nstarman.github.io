@@ -379,7 +379,7 @@
         ],
         "properties": {
           "tier": {
-            "description": "Your CV separates Major Fellowships & Awards and Major Grants from Small Grants and Travel Awards. type x tier gives those four buckets; presets.json maps each to a heading.",
+            "description": "Your CV separates Grants & Fellowships (type grant) and Awards (type award) from Small Grants and Travel Awards. type x tier gives those four buckets; presets.json maps each to a heading.",
             "enum": [
               "major",
               "minor"
