@@ -293,6 +293,21 @@ const builderData = {
       }
     });
 
+    // Docked under the sticky header, the settings for every section are a
+    // pop-over: a click anywhere else, or Escape, puts it away. Inline at the
+    // top of the page it is a row like the sections', and stays until closed.
+    const closeGlobal = () => {
+      const btn = document.querySelector('.fmtbtn[aria-controls="fmt-all"]');
+      if (btn?.getAttribute('aria-expanded') !== 'true') return;
+      if (!$('fmt-all').classList.contains('is-docked')) return;
+      btn.setAttribute('aria-expanded', 'false');
+      $('fmt-all').hidden = true;
+    };
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#fmt-all, .fmtbtn[aria-controls="fmt-all"]')) closeGlobal();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeGlobal(); });
+
     // ── formatting ──────────────────────────────────────────────────────
     // The fields are the state, so there is no second copy to drift.
     // Each box's input is named for its spacing key; empty, it is the gap's
