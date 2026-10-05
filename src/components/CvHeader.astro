@@ -19,11 +19,9 @@ const onBuilder = current === 'builder';
       : <span class="spacer"></span>}
     <span class="more">
       {onBuilder
-        /* The builder has no lengths to jump to; the slot offers Save
-           Selection instead. */
-        ? <span class="cvtoggle cvtoggle--main">
-            <button class="btn" type="button" id="savebar" tabindex="-1">Save Selection</button>
-          </span>
+        /* The builder has no lengths to jump to; the slot is where the
+           selection count and Save Selection move to (see tools/cv). */
+        ? <span id="selslot"></span>
         : <span class="cvtoggle cvtoggle--main" style={vars}>
             {presetNames.map((n) => (
               <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>

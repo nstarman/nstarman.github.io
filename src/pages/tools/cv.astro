@@ -64,7 +64,12 @@ const builderData = {
           <button class="btn" type="button" id="load">Load</button>
           <input type="file" id="loadfile" accept="application/json,.json"
                  hidden aria-hidden="true" tabindex="-1" />
-          <span class="count" id="count">{picked.size} / {total}</span>
+          {/* The count and Save Selection are one element: it sits here, and
+              moves into the condensed bar while that is showing. */}
+          <span class="selgroup" id="selgroup">
+            <span class="count" id="count">{picked.size} / {total}</span>
+            <button class="btn" type="button" id="savebar">Save Selection</button>
+          </span>
         </div>
 
         <div class="builderbar builderbar--go">
@@ -407,8 +412,6 @@ const builderData = {
       }
     };
 
-    // Save lives in the condensed bar, which is where the controls are once you
-    // are actually working through the list.
     document.addEventListener('click', (e) => {
       if (e.target.closest('#savebar')) saveSelection();
       if (e.target.closest('#load')) $('loadfile').click();
@@ -429,11 +432,21 @@ const builderData = {
       const slot = bar.querySelector('.wrap');
       const home = document.createComment('compile controls');
       go.parentNode.insertBefore(home, go);
+      // The selection count and Save Selection travel the same way, to the
+      // bar's right end, and back to the end of the Start-from row.
+      const sel = $('selgroup');
+      const selSlot = $('selslot');
+      const selHome = document.createComment('selection');
+      sel.parentNode.insertBefore(selHome, sel);
       const place = () => {
         const on = bar.classList.contains('is-on');
         if (on === (go.parentNode === slot)) return;
-        if (on) slot.insertBefore(go, spacer);
-        else home.parentNode.insertBefore(go, home);
+        if (on) { slot.insertBefore(go, spacer); selSlot.append(sel); }
+        else {
+          home.parentNode.insertBefore(go, home);
+          selHome.parentNode.insertBefore(sel, selHome);
+          sel.querySelector('button').tabIndex = 0;
+        }
         if (spacer) spacer.hidden = on;
       };
       place();

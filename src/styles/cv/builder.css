@@ -13,7 +13,8 @@
 /* A label is bold and in full ink, as the Card Builder's are, so it reads
    apart from the buttons it labels. */
 .builderbar .bl{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); margin-right:.2rem}
-.builderbar .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); margin-left:auto;
+.selgroup{display:inline-flex; align-items:center; gap:.6rem; margin-left:auto}
+.selgroup .count{font-family:var(--mono); font-size:.7rem; color:var(--ink-faint);
   font-variant-numeric:tabular-nums}
 .btn--go{background:var(--ink); color:var(--ground); border-color:var(--ink);
   font-size:.75rem; padding:.35rem .8rem}
