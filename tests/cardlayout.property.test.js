@@ -76,7 +76,8 @@ describe('whatever the data', () => {
       const { model, L } = draw(c);
       // A line does not say whether a space was where it broke: the words, with the spaces left out.
       const join = (lines) => lines.join('').replace(/\s/g, '');
-      const body = texts(model).filter((o) => o.font === 'IBM Plex Sans' && Math.abs(o.size - L.fs) < 1e-9).map((o) => o.s);
+      // (a button's label is as small as the text can be, but is a link.)
+      const body = texts(model).filter((o) => o.font === 'IBM Plex Sans' && !o.href && Math.abs(o.size - L.fs) < 1e-9).map((o) => o.s);
       expect(join(body)).toBe(c.input.text.replace(/\s/g, ''));
       if (c.input.tier === 'lead' && c.input.role) {
         const role = texts(model).filter((o) => o.font === 'IBM Plex Mono' && o.weight === 400).map((o) => o.s);
