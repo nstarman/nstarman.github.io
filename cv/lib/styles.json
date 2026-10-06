@@ -15,6 +15,7 @@
   },
   "adrn": {
     "label": "adrn",
+    "fonts": ["Lato-Lig.ttf", "Lato-LigIta.ttf", "Lato-Reg.ttf", "Lato-Bol.ttf"],
     "headings": {
       "rule": { "label": "Underlined", "underline": true },
       "title": { "label": "Title" }

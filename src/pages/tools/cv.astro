@@ -30,8 +30,10 @@ const site = buildInfo();
 // What the client script needs from the build, as one data island: each
 // preset's members, its detail level, whether it prints the complete-only
 // lines (only the complete CV does), and the faces to compile with. Those are
-// whatever public/fonts/ holds — the folder scripts/build-cv-pdfs.sh compiles
+// whatever public/fonts/ holds, less a style's own faces — the folder scripts/build-cv-pdfs.sh compiles
 // with too — so a face added there needs no list updating here.
+// Faces only one style sets, so the others do not download them.
+const styleOwned = new Set(Object.values(CV_STYLES).flatMap((st) => st.fonts ?? []));
 const builderData = {
   membership,
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
@@ -45,7 +47,9 @@ const builderData = {
   site,
   // Each PDF style's heading variants, its usual one first.
   headings: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, Object.keys(st.headings)])),
-  fonts: fs.readdirSync('public/fonts').filter((f) => /\.(otf|ttf)$/.test(f)).sort().map((f) => `/fonts/${f}`),
+  fonts: fs.readdirSync('public/fonts').filter((f) => /\.(otf|ttf)$/.test(f) && !styleOwned.has(f)).sort().map((f) => `/fonts/${f}`),
+  // A style's own faces, fetched only when that style is compiled.
+  styleFonts: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, (st.fonts ?? []).map((f) => `/fonts/${f}`)])),
 };
 ---
 <Base title="CV Builder — Nathaniel Starkman">
@@ -126,7 +130,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS,
+    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -700,7 +704,7 @@ const builderData = {
         model.place = currentPlace();
         const cols = currentColumns();
         for (const s of model.sections) s.columns = cols[s.id] ?? s.columns;
-        const pdf = await compilePdf(model, FONTS, status);
+        const pdf = await compilePdf(model, [...FONTS, ...(STYLE_FONTS[model.style] ?? [])], status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
 
