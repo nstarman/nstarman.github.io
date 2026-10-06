@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, nearStep, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, chromeSize, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -243,26 +243,30 @@ describe('what it draws is what the site holds', () => {
 const buttonsOf = (m) => m.ops.filter((o) => o.k === 'box' && o.href);
 
 describe('a line’s box', () => {
-  // Where Chrome's content area for IBM Plex steps up, found by sampling Chrome
-  // [the size at the new height, that height, the height 0.03px below]: tested
-  // off the exact step, which Chrome puts within 0.003px of where the metrics do.
-  const STEPS_SEEN = [[9.13, 12, 11], [9.3, 13, 12], [10.28, 14, 13], [11.25, 15, 14], [12.23, 16, 15], [12.76, 17, 16], [13.21, 18, 17], [14.18, 19, 18], [15.16, 20, 19], [16.13, 21, 20], [16.4, 22, 21], [17.11, 23, 22], [18.09, 24, 23], [20.04, 27, 25], [22.96, 30, 29]];
-  it('is as tall as Chrome’s: the ascent and the descent each rounded', () => {
+  // Where Chrome's content area for IBM Plex steps up, found by bisecting Chrome:
+  // [the size at the new height, that height, the height a hundredth below].
+  const STEPS_SEEN = [[9.1, 12, 11], [9.27, 13, 12], [10.25, 14, 13], [11.22, 15, 14], [12.2, 16, 15], [12.73, 17, 16], [13.18, 18, 17], [14.15, 19, 18], [15.13, 20, 19], [16.1, 21, 20], [16.37, 22, 21], [17.08, 23, 22], [18.06, 24, 23], [19.03, 25, 24], [20.01, 27, 25], [22.93, 30, 29]];
+  it('is as tall as Chrome’s: the ascent and the descent each rounded, at Chrome’s size', () => {
     for (const [size, up, down] of STEPS_SEEN) {
       expect(lineBox(0, 40, size).h, `${size}`).toBe(up);
-      expect(lineBox(0, 40, size - 0.06).h, `${size} - 0.06`).toBe(down);
+      expect(lineBox(0, 40, size - 0.01).h, `${size} - 0.01`).toBe(down);
     }
+    // The card of 412px has its text at 16.0992px, which is 16.09: not a step.
+    expect(lineBox(0, 24, 7.2 + 0.0216 * 412).h).toBe(20);
+  });
+
+  it('takes a size down to a hundredth, in a float: 18.05 is a hair under, so 18.04', () => {
+    expect(chromeSize(10.656)).toBe(10.65);
+    expect(chromeSize(16.0992)).toBe(16.09);
+    expect(chromeSize(15.84)).toBe(15.84);
+    expect(chromeSize(11.52)).toBe(11.52);
+    expect(chromeSize(18.05)).toBe(18.04);
+    expect(chromeSize(18.06)).toBe(18.06);
   });
 
   it('puts the box in the line with the half-leading floored', () => {
     expect(lineBox(100, 24, 16).y).toBe(102);
     expect(lineBox(100, 23.328, 17.28).y).toBe(100);
-  });
-
-  it('knows a size too near a step to call', () => {
-    expect(nearStep(16.0992)).toBe(true); // 16.5017: the one the fuzz found Chrome a pixel short on
-    expect(nearStep(16)).toBe(false);
-    expect(nearStep(15.84)).toBe(false);
   });
 });
 

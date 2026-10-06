@@ -49,9 +49,9 @@ export const STEPS = {
   titlesize: { minor: 0.72 * 1.08, compact: 0.78 * 1.08, standard: 0.88 * 1.08, feature: 1.08, display: 1.15 * 1.08 },
 };
 
-// Chrome's metrics for IBM Plex, as the font's hhea table has them, per em.
-const ASCENT = 1.025;
-const DESCENT = 0.275;
+// Chrome's metrics for IBM Plex, as the font's hhea table has them, in thousandths of an em.
+const ASCENT_UNITS = 1025;
+const DESCENT_UNITS = 275;
 
 const SUPPORTED = { figure: 'none', foot: 'center', authors: 'none', links: 'all', background: 'normal', height: 'fit', rest: 'whole', title: 'full', perRow: 'fit' };
 
@@ -127,20 +127,23 @@ const symbol = (id) => {
   return { viewBox: m[1], body: m[2].replace(/<(\w+)([^>]*?)\s*\/>/g, '<$1$2></$1>') };
 };
 
+/** The font size Chrome shapes and measures with: the computed size, in a
+ *  float, taken down to a hundredth of a px — 10.656px is 10.65px, and 18.05px,
+ *  a hair under in a float, is 18.04px. Found by measuring Chrome: a line is
+ *  that size's width, and its content area that size's ascent and descent,
+ *  each rounded. */
+export const chromeSize = (size) => Math.floor(Math.fround(Math.fround(size) * 100)) / 100;
+
 /** A line of text a browser lays out in a box of height `lh`: its content area
- *  is the font's rounded ascent and descent, and the half-leading above it is
- *  floored. Returns the rect the text sits in. */
+ *  is the font's ascent and descent, each rounded — a half down, as Chrome has
+ *  it — and the half-leading above it is floored. Returns the rect the text
+ *  sits in. In integers (hundredths of a px, thousandths of an em), so a half is exact. */
 export function lineBox(top, lh, size) {
-  const h = Math.round(ASCENT * size) + Math.round(DESCENT * size);
+  const hundredths = Math.round(chromeSize(size) * 100);
+  const down = (n) => Math.ceil((n - 50000) / 100000);
+  const h = down(ASCENT_UNITS * hundredths) + down(DESCENT_UNITS * hundredths);
   return { y: top + Math.floor((lh - h) / 2), h };
 }
-
-/** Whether a font size is within a hair of one where the rounded ascent or
- *  descent steps. Chrome's step there is not quite where the metrics put it —
- *  within about 0.003px of size, in a way that has no one rule — so a card
- *  whose text is that close can be a pixel off, and the differential fuzz
- *  (tests/cardlayout.differential.test.js) leaves such widths out. */
-export const nearStep = (size, hair = 0.006) => [ASCENT, DESCENT].some((m) => Math.abs((m * size) % 1 - 0.5) < hair);
 
 /**
  * @param {ReturnType<typeof softwareInput>} input
@@ -148,7 +151,9 @@ export const nearStep = (size, hair = 0.006) => [ASCENT, DESCENT].some((m) => Ma
  *   measure: the advance width of text in a face, letter-spacing included
  * @returns the model src/lib/cardsvg.js writes: { title, w, h, r, ops }
  */
-export function softwareModel(input, { slug, theme, measure }) {
+export function softwareModel(input, { slug, theme, measure: advance }) {
+  // A line is measured at the size Chrome measures it at.
+  const measure = (text, f) => advance(text, { ...f, size: chromeSize(f.size) });
   const card = read(slug);
   const L = lengths(card);
   const t = theme === 'dark' ? 1 : 0;

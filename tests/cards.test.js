@@ -712,4 +712,3 @@ describe('the stars button', () => {
     for (const i of software.filter((x) => linkKeys(x).includes('stars'))) expect(counts[i.repo], i.id).toBeGreaterThanOrEqual(STARS_MIN);
   });
 });
-});
