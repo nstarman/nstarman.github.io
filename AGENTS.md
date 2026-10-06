@@ -289,6 +289,20 @@ themselves the builder never decides how a card looks — it writes a name and
 `cardFace` reads it. A new control is a part in the name's grammar first, then
 its `controlOps` and `readSpec` lines in `model.js`, then its markup.
 
+**Software cards as images, without a browser.** `/cards/<id>-<light|dark>.svg` (and
+`/cards/index.json`, which lists them) are the lead and headline packages' cards, for the profile
+README, drawn at build by a static endpoint (`src/pages/cards/`) in plain node. `src/lib/cardlayout.js`
+lays one out — a second implementation of the CSS, for the `softwareLead` and `softwareHeadline`
+presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files
+(`src/lib/textmeasure.js`) and handing the same model `cardpdf.js` measures to `cardsvg.js`. It throws
+on any name that asks for more than it draws. `tests/cardlayout.test.js` keeps it in step: its
+colours, steps and formulas are read from `global.css`; it must reproduce what the browser measured
+for every such card (`tests/fixtures/software-cards.json`); and that measurement is stamped with a hash of the
+card's CSS and `Card.astro` (`scripts/lib/cardsync.mjs`). **When that hash test fails, the card's CSS
+has changed:** run `node scripts/record-card-layouts.mjs` (needs `npm i --no-save playwright` and a
+dev server) to measure again, read the fixture's diff as the change in layout, and fix `cardlayout.js`
+until the rest pass. A new look for those presets is a change to `cardlayout.js` first.
+
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.
 

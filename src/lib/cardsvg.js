@@ -23,7 +23,7 @@ export const stack = (font) => (/mono/i.test(font) ? MONO : /serif/i.test(font) 
 function paint(attr, c) {
   if (!c) return `${attr}="none"`;
   const a = c.length === 9 ? parseInt(c.slice(7), 16) / 255 : 1;
-  return `${attr}="${c.slice(0, 7)}"${a < 1 ? ` ${attr}-opacity="${n(a)}"` : ''}`;
+  return `${attr}="${c.slice(0, 7)}"${a < 1 ? ` ${attr}-opacity="${+a.toFixed(3)}"` : ''}`;
 }
 
 /** A rectangle with each corner its own radius [tl, tr, br, bl], as a path. */

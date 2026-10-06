@@ -25,6 +25,19 @@ export const SITE_PRESETS = [
 ];
 export const PRESET = Object.fromEntries(SITE_PRESETS.map((p) => [p.key, p.slug]));
 
+/** The software tiers that are drawn as cards of their own, and the preset
+ *  the site gives each — the one thing both the site and the README's images
+ *  (src/pages/cards/) read, so they cannot disagree about which package gets
+ *  which card. */
+export const TIER_PRESET = { lead: 'softwareLead', headline: 'softwareHeadline' };
+
+/** The width, in px, the software cards are drawn at for the README's images:
+ *  src/pages/cards/. */
+export const CARD_SVG_WIDTH = 400;
+
+/** A preset's name at a set width in px, in place of filling its column. */
+export const atWidth = (slug, width) => slug.replace(/^size:fill:/, `size:${width}:`);
+
 /** The steps in px, as global.css has them — a test holds the two to half
  *  a pixel — for the settings that can be typed in px: the text and title
  *  sizes, padding (the top's; the sides are a little wider), corners and

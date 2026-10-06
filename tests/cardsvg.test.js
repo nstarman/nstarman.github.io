@@ -43,7 +43,7 @@ describe('modelToSvg', () => {
   });
 
   it('draws a colour and its opacity apart, and a stroke only where there is one', () => {
-    expect(svg).toContain('fill="#8a93a1" fill-opacity="0.7"');
+    expect(svg).toContain('fill="#8a93a1" fill-opacity="0.702"');
     expect(svg).not.toMatch(/#[0-9a-f]{8}/);
     expect(svg.match(/stroke-width/g)).toHaveLength(1);
   });
