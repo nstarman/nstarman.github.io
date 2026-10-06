@@ -574,7 +574,7 @@ a.card:hover .name{color:var(--accent)}
 .card:not([data-status]) .c-status,
 .card:not([data-titlestatus]) .c-tstatus,
 .card:not([data-context]) .c-context,
-.card:not([data-pos]) :is(.c-place, .c-sep, .c-stu),
+.card:not([data-pos]) :is(.c-place, .c-sep, .c-stu, .c-stusep),
 .card:not([data-role]) .c-role,
 .card[data-text="summary"] .c-det,
 .card[data-text="details"] .c-sum,

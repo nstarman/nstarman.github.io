@@ -183,7 +183,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
               if (x.cell) return (
                 <li class="c-cell" data-rel={x.cell} {...li}>
                   {x.cell === 'year' && <span class="c-year">{year(item)}</span>}
-                  {x.cell === 'position' && <span class="c-stamp">{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-sep"> | </span></>}<span class="c-place">{place}</span></span>}
+                  {x.cell === 'position' && <span class="c-stamp">{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-stusep"> | </span></>}<span class="c-place">{place}</span></span>}
                   {x.cell === 'context' && context({})}
                 </li>
               );
@@ -191,7 +191,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
             })}
           </ul>
         );
-        if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place ? <>{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-sep"> | </span></>}<span class="c-py"><span class="c-place">{place}</span><span class="c-sep"> | </span><span class="c-yr">{year(item)}</span></span></> : null}{!place && <span class="c-yr">{year(item)}</span>}</span>;
+        if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place ? <>{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-stusep"> | </span></>}<span class="c-py"><span class="c-place">{place}</span><span class="c-sep"> | </span><span class="c-yr">{year(item)}</span></span></> : null}{!place && <span class="c-yr">{year(item)}</span>}</span>;
         if (k === 'year') return !isSoftware && <span class="c-year" {...cross}>{year(item)}</span>;
         return topic && context(cross);
       };
