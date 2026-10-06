@@ -16,7 +16,9 @@
 .eb-group{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:0; padding:0; border:0; min-width:0}
 .eb-row > .eb-group + .eb-group{margin-left:.8rem}
 /* The parts' pills, close: each is its own key. */
-.eb-row.eb-shows{gap:.4rem}
+/* Centred, not baseline: a fieldset holding only its legend has no baseline
+   of its own, so it would sit off the spans and the menu beside it. */
+.eb-row.eb-shows{gap:.4rem; align-items:center}
 .eb-row.eb-shows > .eb-group + .eb-group{margin-left:0}
 /* Extras, last, is a menu that drops down over the page: as wide as its
    key, not the rest of the row, so it wraps only when that will not fit. */
