@@ -7,7 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
-import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate } from './data.js';
+import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
 import { spans, detailLines } from './inline.js';
 
 /**
@@ -150,12 +150,11 @@ function itemsOf(s, cv, keepLine, group) {
     const rows = g.items.map(row);
     const [first] = g.items;
     const home = links(first).find((l) => l.rel === 'homepage');
-    const names = rows.map((r) => r.title);
     return [{
       ...rows[0],
       id: `group:${first.institution}`,
       when: dateLabel({ date: groupDate(g.items) }, { month: true }),
-      title: names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0],
+      title: groupTitle(g.items),
       subject: subject(first) ? [{ t: first.institution, b: false }] : [],
       lines: rows.flatMap((r) => r.lines),
       trailing: first.location ?? '',

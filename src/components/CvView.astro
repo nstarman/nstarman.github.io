@@ -5,7 +5,7 @@ import { PRESET } from '../lib/cards.js';
 import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
-import { softwarePapers, positionStops, institutionGroups, groupedByDefault, groupDate, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
+import { softwarePapers, positionStops, institutionGroups, groupedByDefault, groupDate, groupTitle, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
 import { detailLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
@@ -35,8 +35,7 @@ const { cv, pick = false, picked = null, level = 'full', completeLines = cv.incl
 // Roles at one institution as the one row the CV reads: the roles joined, the
 // dates spanning them.
 const merged = (list) => {
-  const names = list.map((i) => i.title);
-  return { ...list[0], title: names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0],
+  return { ...list[0], title: groupTitle(list),
            date: groupDate(list), details: undefined };
 };
 const isPicked = (id) => !picked || picked.has(id);

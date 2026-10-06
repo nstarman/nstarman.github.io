@@ -437,6 +437,14 @@ export function institutionGroups(list, grouped = groupedByDefault) {
   return out;
 }
 
+/** A group's roles joined as one title — "Coordinator (2025 – 2028) & Core
+ *  Developer" — a role's own dates given where they differ from the group's. */
+export function groupTitle(items) {
+  const span = dateLabel({ date: groupDate(items) });
+  const names = items.map((i) => (dateLabel(i) === span ? i.title : `${i.title} (${dateLabel(i)})`));
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0];
+}
+
 /** The span a group of dated items covers, as one item's `date`: earliest start,
  *  and open-ended if any member is, else the latest end. */
 export function groupDate(items) {
