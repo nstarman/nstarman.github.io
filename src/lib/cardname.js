@@ -457,7 +457,7 @@ export function parseName(name) {
       // as often as asked; or all, or none, alone.
       const ks = kv[1] === 'all' || kv[1] === 'none' ? [] : kv[1].split(',');
       for (let j = 0; j < ks.length; j += 1) {
-        if (!one(ks[j], ['paper', 'preprint', 'doi', 'repo', 'code', 'docs', 'data', 'slides', 'event', 'homepage', 'ads', 'empty', 'paperbutton', 'year', 'position', 'context'])) throw new Error('"' + name + '": no such button, ' + ks[j]);
+        if (!one(ks[j], ['paper', 'preprint', 'doi', 'repo', 'code', 'docs', 'stars', 'data', 'slides', 'event', 'homepage', 'ads', 'empty', 'paperbutton', 'year', 'position', 'context'])) throw new Error('"' + name + '": no such button, ' + ks[j]);
         if (ks[j] !== 'empty' && ks.indexOf(ks[j]) !== j) throw new Error('"' + name + '": ' + ks[j] + ' is given twice');
       }
       // The keys; then so many to a row, or fit; then the area and the place

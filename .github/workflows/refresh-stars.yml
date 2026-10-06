@@ -1,0 +1,52 @@
+name: Refresh stars
+
+# A software card's stars button reads config/stars.json, which is a snapshot of
+# each repository's GitHub star count. This takes a new one once a month and
+# opens a pull request, so a number on the site is reviewed like any other
+# change. It never pushes to the default branch.
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"  # 06:00 UTC on the 1st
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-stars
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-stars
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Collect
+        run: node scripts/collect-stars.mjs
+
+      - name: Verify the site still builds
+        run: |
+          npm run test:schema
+          npm run build
+
+      - name: Open a pull request if a count moved
+        run: |
+          if git diff --quiet -- config/stars.json; then
+            echo "No star counts moved." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          body=$'Counts from `scripts/collect-stars.mjs`, run monthly by `.github/workflows/refresh-stars.yml`.'
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the star counts" "$body" config/stars.json

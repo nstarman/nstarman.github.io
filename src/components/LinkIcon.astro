@@ -8,6 +8,6 @@ const { link: l, ...attrs } = Astro.props;
 <li data-rel={relKey(l)} {...attrs}>
   <a class="iconbtn" href={l.url} aria-label={l.label ?? l.rel} title={l.label ?? l.rel}>
     <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} /></svg>
-    {l.year && <span class="iconyear" aria-hidden="true">{l.year}</span>}
+    {(l.year ?? l.count) && <span class="iconyear" aria-hidden="true">{l.year ?? l.count}</span>}
   </a>
 </li>

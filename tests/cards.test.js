@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardText, hasStatus, paperHref,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, cardText, hasStatus, paperHref,
   FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
@@ -669,5 +669,37 @@ describe('the Card Builder\'s steps in px', () => {
     const PROP = { textsize: '--fs', titlesize: '--ts', padding: '--pad-t', corners: '--rad', buttons: '--ib' };
     for (const [d, prop] of Object.entries(PROP)) for (const step of LOOKS) expect(Math.abs(STEP_PX[d][step] - of(d, prop, step)), `${d} ${step}`).toBeLessThanOrEqual(0.5);
     for (const step of LOOKS) expect(Math.abs(FRAME_PX[step] - of('frame', '--frame', step)), `frame ${step}`).toBeLessThanOrEqual(0.5);
+  });
+});
+
+describe('the stars button', () => {
+  const counts = JSON.parse(fs.readFileSync('config/stars.json', 'utf8')).stars;
+  const software = items.filter((i) => i.type === 'software' && i.repo);
+
+  it('reads the count as a short label', () => {
+    expect(starLabel(0)).toBe('0');
+    expect(starLabel(657)).toBe('657');
+    expect(starLabel(1234)).toBe('1.2k');
+  });
+
+  it('has a count for every package, so no card is without its button', () => {
+    for (const i of software) expect(counts[i.repo], `${i.id}: run node scripts/collect-stars.mjs`).toBeGreaterThanOrEqual(0);
+    expect(Object.keys(counts).sort()).toEqual([...new Set(software.map((i) => i.repo))].sort());
+  });
+
+  it('can be named among a card’s buttons, placed or left out, like any other', () => {
+    const base = 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none';
+    for (const keys of ['stars', 'code,stars', 'stars,code,docs', 'all']) expect(() => parseName(`${base}-buttons:${keys}:fit`), keys).not.toThrow();
+    // Every key a card can offer is one a name can ask for.
+    for (const i of software) for (const k of linkKeys(i)) expect(() => parseName(`${base}-buttons:${k}`), `${i.id} ${k}`).not.toThrow();
+  });
+
+  it('is the last link of a package, to its stargazers, and of nothing else', () => {
+    for (const i of software) {
+      const star = cardLinks(i).at(-1);
+      expect(star, i.id).toMatchObject({ rel: 'stars', url: `https://github.com/${i.repo}/stargazers`, count: starLabel(counts[i.repo]) });
+      expect(linkKeys(i)).toContain('stars');
+    }
+    for (const i of items.filter((x) => x.type !== 'software' && CARD_TYPES.includes(x.type))) expect(linkKeys(i)).not.toContain('stars');
   });
 });
