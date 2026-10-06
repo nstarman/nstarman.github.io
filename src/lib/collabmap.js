@@ -10,7 +10,7 @@
 // lives in worldmap.js, shared with the conference map.
 
 import collaborators from '/config/collaborators.json';
-import places from '/config/places.json';
+import { locate } from './places.js';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
 import { byType, venueUrl, links, assists, primaryLink } from './data.js';
@@ -83,7 +83,7 @@ export function collaboratorMap() {
 
   for (const person of collaborators.people) {
     const posts = person.affiliations
-      .filter((a) => a.start && a.organization && places.places[a.organization])
+      .filter((a) => a.start && a.organization && locate(a.organization))
       // Newest first: what someone is doing now is the more useful fact, and it
       // is the order every other dated list on this site uses. The trajectory
       // is a line through the same points either way.
@@ -92,7 +92,7 @@ export function collaboratorMap() {
 
     const mine = papers.get(person.orcid) ?? [];
     const pins = posts.map((post) => {
-      const { lat, lon } = places.places[post.organization];
+      const { lat, lon } = locate(post.organization);
       const [x, y] = toXY(lon, lat);
       return {
         organization: post.organization,

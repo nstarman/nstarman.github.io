@@ -315,7 +315,9 @@ node scripts/geocode-places.mjs --check   # exit 1 if anything is unplaced
 ```
 
 Coordinates live in `config/places.json` so the site and CI never call a
-geocoder. The script skips anything not in the format above, and checks the
+geocoder. A name that is the same campus as another — "University of Chicago" and
+"The University of Chicago" — is written `{ "sameAs": "<other name>" }`, not a
+second copy of the coordinates; `tests/places.test.js` fails on a repeat. The script skips anything not in the format above, and checks the
 `matched` string it wrote — Nominatim answers "Durham, UK" with the county, not
 the city. Correct a wrong pin by hand; the script never overwrites one.
 
