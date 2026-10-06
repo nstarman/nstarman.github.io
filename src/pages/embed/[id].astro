@@ -129,6 +129,7 @@ const apply = `(function (facts) {
       if (g.per) { l.dataset.gper = ''; l.style.setProperty('--per', g.per); }
       if (g.skip) l.style.setProperty('--skip', g.skip);
     }
+    l.dataset.g = n;
     l.dataset.gh = g.h;
     l.dataset.gv = g.v;
     return l;

@@ -138,3 +138,9 @@ label.eb-key--check{cursor:pointer}
 .eb-tools button{cursor:pointer}
 .eb-note{margin:.5rem 0 0; font-size:.82rem; color:var(--ink-mute)}
 .eb-note:empty{display:none}
+
+/* The other groups of buttons: one line each, under the first's row. */
+.eb .eb-group{grid-column:1 / -1; padding-bottom:.5rem; border-bottom:1px dashed var(--rule)}
+.eb .eb-group:last-child{border-bottom:0; padding-bottom:0}
+.eb .eb-gto{width:2.4rem; padding:0 .1rem; font-size:.8em}
+#eb-groups-row .eb-note{margin-top:.2rem}

@@ -713,7 +713,7 @@ export function cardFace(spec, f) {
     var short = per && h === 'right' ? run % per : 0;
     if (short) { var c = 0; last.forEach(function (x) { if (c === run - short) skip = x; c += room(x); }); }
     if (skip) skip.skip = true;
-    return { seq: sq, shown: shown, per: per, skip: skip ? per - short : null, area: area, side: gs, h: h, v: n === 0 ? (side ? spec.footEnd || 'top' : 'bottom') : gs ? g.v || 'top' : 'bottom', on: sq.some(function (x) { return x.kept; }) };
+    return { n: n, seq: sq, shown: shown, per: per, skip: skip ? per - short : null, area: area, side: gs, h: h, v: n === 0 ? (side ? spec.footEnd || 'top' : 'bottom') : gs ? g.v || 'top' : 'bottom', on: sq.some(function (x) { return x.kept; }) };
   });
   var seq = groups[0].seq, shown = groups[0].shown, per = groups[0].per, skip = groups[0].skip, railAt = groups[0].h;
   // The buttons are in their slot where any is kept; a list with none is

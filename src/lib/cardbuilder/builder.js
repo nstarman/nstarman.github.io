@@ -12,13 +12,13 @@
 //   trackBetween, trackName, showTracks   the tracks' names, and their row
 //   st                    { lastAreas }, the venue's area last beside the authors'
 //   tune(keys), render()  bring up a part's settings; redraw from the controls
-//   setRadio, sideKind, showGap, stackedIn, moveButton   control helpers
+//   setRadio, sideKind, showGap, stackedIn, moveButton, moveKey   control helpers
 
 import { DIALS, FACES, SPACE_TRACKS, parseName, placeOf } from '../cardname.js';
 import { query, snippet, esc, themes } from '../cardexport.js';
 import {
   A2V, CELL, SMALL, V2A, boxHeight, canTune, clampInt, controlOps, defaultsOf, figWidth, fitName, hiddenKeys, namesN, presetWidths, readSpec, shapeHeight, shownKeys,
-  smallBox, stackedIn as stackedInModel, stretch as stretchOf, typedPx,
+  smallBox, stackedIn as stackedInModel, stretch as stretchOf, typedPx, claimed, regroup, otherArea, newGroup, GROUP_AREAS, FIRST_ONLY,
 } from './model.js';
 import { parseSettings, serializeSettings } from './settings.js';
 import { downloadCard } from './download.js';
@@ -103,19 +103,27 @@ export function mountCardBuilder({ form, data }) {
   // A part among the buttons shows where its extra is ticked; the paper
   // button where its pill is.
   const extraOn = (x) => [...form.querySelectorAll('[name=extra]')].some((b) => b.value === x && b.checked);
-  const shownOrder = () => shownKeys(btnOrder, snap());
-  const hiddenOrder = () => hiddenKeys(btnOrder, snap());
+  // The first group's: a key another group has is shown there, not here.
+  const shownOrder = () => shownKeys(btnOrder, snap()).filter((k) => k === 'empty' || !claimed(groups).has(k));
+  const hiddenOrder = () => btnOrder.filter((k) => !shownOrder().includes(k));
   // The order line: each shown button, with < and > to move it past the one
   // shown before or after it — an empty one with a ✕ to take it away — and
   // + empty to add a button's room with nothing in it, at the end.
+  const buttonNames = (it) => ({ ...Object.fromEntries(it.links.map(([k, name]) => [k, name])), empty: 'empty', paperbutton: 'paper button', year: 'year', position: 'position', context: 'context' });
+  // A menu to move a button to another group — the first, another, or a new
+  // one. The paper button and the parts among the buttons stay in the first.
+  const groupName = (n) => (n === 0 ? 'the buttons' : `group ${n + 1}`);
+  const groupMenu = (k, from, name) => FIRST_ONLY.includes(k) ? '' : `<select class="eb-menu eb-gto" data-gto aria-label="Move ${esc(name)} to another group" title="Move to another group"><option value="" selected>→</option>`
+    + [0, ...groups.map((_, i) => i + 1)].filter((n) => n !== from).map((n) => `<option value="${n}">${groupName(n)}</option>`).join('')
+    + '<option value="new">new group</option></select>';
   function showOrder() {
-    const it = items[form.elements.card.value], names = { ...Object.fromEntries(it.links.map(([k, name]) => [k, name])), empty: 'empty', paperbutton: 'paper button', year: 'year', position: 'position', context: 'context' };
+    const it = items[form.elements.card.value], names = buttonNames(it);
     const keys = shownOrder();
     el('eb-order').innerHTML = keys.map((k, i) => `<span class="numbox-pill eb-orderpill${k === 'empty' ? ' eb-orderempty' : ''}" data-i="${i}">`
       + `<button type="button" class="numbox-step" data-move="-1" ${i ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
       + `<span class="eb-ordername">${esc(names[k])}</span>`
       + `<button type="button" class="numbox-step" data-move="1" ${i < keys.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button>`
-      + (k === 'empty' ? `<button type="button" class="numbox-step" data-drop aria-label="Take this empty button away" title="Take away">✕</button>` : '') + '</span>').join('')
+      + (k === 'empty' ? `<button type="button" class="numbox-step" data-drop aria-label="Take this empty button away" title="Take away">✕</button>` : groupMenu(k, 0, names[k])) + '</span>').join('')
       + '<button type="button" class="eb-orderadd" data-add aria-label="Add an empty button at the end" title="A button\'s room with nothing in it">+ empty</button>';
     el('eb-order').hidden = el('eb-order-key').hidden = !it.links.length && !keys.length;
   }
@@ -128,6 +136,94 @@ export function mountCardBuilder({ form, data }) {
     shown.splice(to, 0, ...shown.splice(from, 1));
     setShown(shown);
   }
+
+  // ---- the other groups of buttons ----
+  // The first group is the Buttons row above; each other has a line here: its
+  // buttons in order, each with a menu to send it to another group, and its
+  // area, place and rows. A button is dragged between them in the preview.
+  const gset = (g, patch) => { for (const k of Object.keys(patch)) if (patch[k] === undefined) delete g[k]; Object.assign(g, patch); };
+  /** A button moved: m is regroup's, and the key stays ticked — shown wherever it is. */
+  function moveKey(m) {
+    const res = regroup({ main: shownOrder(), groups, mainArea: form.elements.foot.value }, m);
+    if (!res.moved) return;
+    groups = res.groups;
+    btnOrder = [...res.main, ...btnOrder.filter((k) => k !== 'empty' && !res.main.includes(k))];
+    const tick = form.querySelector(`[name=link][value="${CSS.escape(m.key)}"]`);
+    if (tick) tick.checked = true;
+    showOrder();
+    showGroups();
+    tune(['foot', 'groups']);
+    render();
+  }
+  // The same for a menu's choice: another group, or a new one at the area away from the buttons.
+  const sendTo = (key, from, index, v) => moveKey({ key, from: { group: from, index }, to: v === 'new' ? { area: groupAreaFor(otherArea(form.elements.foot.value)) } : { group: +v } });
+  // A new group goes to an area no group is in, the other side first.
+  const groupAreaFor = (want) => [want, 'right', 'left', 'bottom', 'center'].find((a) => a !== form.elements.foot.value && !groups.some((g) => g.area === a)) ?? want;
+  function showGroups() {
+    const it = items[form.elements.card.value], names = buttonNames(it);
+    const AREA = { left: 'LHS', center: 'center', right: 'RHS', bottom: 'bottom', top: 'top strip' };
+    const side = (a) => a === 'left' || a === 'right';
+    const opt = (v, text, now) => `<option value="${v}"${String(now) === String(v) ? ' selected' : ''}>${text}</option>`;
+    el('eb-groups').innerHTML = groups.map((g, i) => {
+      const n = i + 1;
+      const chips = g.links.map((k, j) => `<span class="numbox-pill eb-orderpill${k === 'empty' ? ' eb-orderempty' : ''}" data-j="${j}">`
+        + `<button type="button" class="numbox-step" data-gmove="-1" ${j ? '' : 'disabled'} aria-label="Move ${esc(names[k])} earlier" title="Earlier">&lt;</button>`
+        + `<span class="eb-ordername">${esc(names[k])}</span>`
+        + `<button type="button" class="numbox-step" data-gmove="1" ${j < g.links.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(names[k])} later" title="Later">&gt;</button>`
+        + (k === 'empty' ? '<button type="button" class="numbox-step" data-gdrop aria-label="Take this empty button away" title="Take away">✕</button>' : groupMenu(k, n, names[k])) + '</span>').join('');
+      const h = g.h ?? (side(g.area) ? g.area : 'left');
+      return `<span class="eb-sub eb-group" data-n="${n}"><span class="eb-dim">${groupName(n)}</span><span class="eb-px">${chips}<button type="button" class="eb-orderadd" data-gadd aria-label="Add an empty button to ${groupName(n)}" title="A button's room with nothing in it">+ empty</button></span>`
+        + `<span class="eb-dim">area</span><span class="eb-px"><select class="eb-menu" data-gset="area" aria-label="The area ${groupName(n)} sits in">${GROUP_AREAS.map((a) => opt(a, AREA[a], g.area)).join('')}</select>`
+        + (side(g.area) ? `<span class="eb-dim eb-inkey">up and down</span><select class="eb-menu" data-gset="v" aria-label="${groupName(n)} up and down">${['top', 'center', 'bottom'].map((v) => opt(v, v, g.v ?? 'top')).join('')}</select>` : '')
+        + `<span class="eb-dim eb-inkey">across</span><select class="eb-menu" data-gset="h" aria-label="${groupName(n)} across">${['left', 'center', 'right'].map((v) => opt(v, v, h)).join('')}</select></span>`
+        + `<span class="eb-dim">per row</span><span class="eb-px"><select class="eb-menu" data-gset="perRow" aria-label="${groupName(n)} buttons to a row">${opt('', 'square', g.perRow ?? '')}${opt('fit', 'fit', g.perRow ?? '')}${Array.from({ length: 12 }, (_, x) => opt(x + 1, x + 1, g.perRow ?? '')).join('')}</select>`
+        + `<button type="button" class="eb-orderadd" data-gdel aria-label="Put ${groupName(n)}'s buttons back in the first group" title="Back to the first group">✕ group</button></span></span>`;
+    }).join('');
+  }
+  el('eb-groups').addEventListener('change', (e) => {
+    e.stopPropagation();
+    const grp = e.target.closest('.eb-group'), n = grp ? +grp.dataset.n : null;
+    if (e.target.dataset.gto != null) {
+      const pill = e.target.closest('[data-j]'), key = groups[n - 1].links[+pill.dataset.j];
+      return sendTo(key, n, +pill.dataset.j, e.target.value);
+    }
+    const g = groups[n - 1], what = e.target.dataset.gset;
+    if (!g || !what) return;
+    const v = e.target.value;
+    if (what === 'area') gset(g, { area: v, v: v === 'left' || v === 'right' ? 'top' : undefined, h: undefined });
+    else if (what === 'v') gset(g, { v: v === 'top' ? 'top' : v });
+    else if (what === 'h') gset(g, { h: v === (g.area === 'left' || g.area === 'right' ? g.area : 'left') ? undefined : v });
+    else if (what === 'perRow') gset(g, { perRow: v === '' ? undefined : v === 'fit' ? 'fit' : +v });
+    showGroups();
+    render();
+  });
+  el('eb-groups').addEventListener('click', (e) => {
+    const bt = e.target.closest('button');
+    if (!bt) return;
+    const grp = bt.closest('.eb-group'), n = +grp.dataset.n, g = groups[n - 1], j = +bt.closest('[data-j]')?.dataset.j;
+    if (bt.dataset.gadd != null) g.links.push('empty');
+    else if (bt.dataset.gdrop != null) { g.links.splice(j, 1); if (!g.links.some((k) => k !== 'empty')) return dropGroup(n); }
+    else if (bt.dataset.gmove) { const to = j + +bt.dataset.gmove; if (to >= 0 && to < g.links.length) g.links.splice(to, 0, ...g.links.splice(j, 1)); }
+    else if (bt.dataset.gdel != null) return dropGroup(n);
+    showGroups();
+    render();
+  });
+  /** A group taken away: its buttons back at the end of the first group. */
+  function dropGroup(n) {
+    const g = groups[n - 1];
+    btnOrder = [...shownOrder(), ...g.links.filter((k) => k !== 'empty'), ...btnOrder.filter((k) => !shownOrder().includes(k) && !g.links.includes(k))];
+    groups = groups.filter((_, i) => i !== n - 1);
+    showOrder();
+    showGroups();
+    render();
+  }
+  // A button in the first group's order line, sent to another group.
+  el('eb-order').addEventListener('change', (e) => {
+    if (e.target.dataset.gto == null) return;
+    e.stopPropagation();
+    const i = +e.target.closest('[data-i]').dataset.i;
+    sendTo(shownOrder()[i], 0, i, e.target.value);
+  });
 
   // A part's place set back to where it sits in its area left out — with the
   // buttons, at the end away from them; in a strip, at its left. The bottom
@@ -213,6 +309,7 @@ export function mountCardBuilder({ form, data }) {
     el('eb-vname').hidden = el('eb-vname-key').hidden = !s.it.vshort;
     el('eb-vlink').hidden = el('eb-vlink-key').hidden = !s.it.vlink;
     showOrder();
+    showGroups();
     // The paper button belongs to a paper; its word to a word label; and of
     // where it may link, only where this one can.
     form.elements.paperword.hidden = form.elements.paperlabel.value === 'icon';
@@ -479,6 +576,10 @@ export function mountCardBuilder({ form, data }) {
       btnOrder = btnOrder.filter((x) => x !== CELL[k]);
       if (e.target.value === 'list') btnOrder = [CELL[k], ...btnOrder];
       resetPlace(k);
+    } else if (e.target.name === 'link' && !e.target.checked) {
+      // Hidden, a button is hidden wherever it is: out of the group that had it.
+      for (const g of groups) g.links = g.links.filter((k) => k !== e.target.value);
+      groups = groups.filter((g) => g.links.some((k) => k !== 'empty'));
     } else if (e.target.name === 'paperbtn') {
       if (e.target.checked) tune(['paper']); else el('eb-paper-row').hidden = true; // ticked, its settings come up; unticked, they go
     } else if (e.target.name === 'venueline') {
@@ -585,7 +686,7 @@ export function mountCardBuilder({ form, data }) {
   }
 
   // The surface the preview's modules are given.
-  const b = { limits, form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton };
+  const b = { limits, form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton, moveKey, groupsOf: () => groups };
   tuneAll.addEventListener('click', () => tune(tuneAll.textContent === 'hide all' ? [] : tuneRows.map((r) => r.dataset.tune)));
 
   // The PNG, PDF or SVG, drawn here from the preview when asked for.

@@ -166,7 +166,7 @@ export const placed = (f, k) => {
  *  offered beside it, whatever they hold, so the row is the same each time. */
 export function canTune(t, f, st) {
   const { it, areasOn } = st;
-  return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'paper' && !f.get('paperbtn')) || (t === 'venue' && !(it.venue && extraOn(f, 'venue'))) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extraOn(f, 'position'))) || (t === 'year' && !(it.year && extraOn(f, 'year'))) || (t === 'context' && !(it.context && extraOn(f, 'context')))
+  return !((t === 'authors' && !it.byline) || (t === 'text' && !it.text) || (t === 'paper' && !f.get('paperbtn')) || (t === 'groups' && st.allLinks.length < 2 && !st.groups?.length) || (t === 'venue' && !(it.venue && extraOn(f, 'venue'))) || (t === 'figure' && !it.figure) || (t === 'position' && !(it.pos && extraOn(f, 'position'))) || (t === 'year' && !(it.year && extraOn(f, 'year'))) || (t === 'context' && !(it.context && extraOn(f, 'context')))
     || (t === 'area-left' && !(sideHas(f, st, 'left') || areasOn.has('left'))) || (t === 'area-right' && !(sideHas(f, st, 'right') || areasOn.has('right')))
     || (t === 'area-top' && !(f.get('titleat') === 'top' || areasOn.has('top'))) || (t === 'area-bottom' && !(f.get('foot') === 'bottom' || areasOn.has('bottom'))));
 }
@@ -201,6 +201,46 @@ export const ownKeys = (it) => it.links.filter((l) => !l[3]).map(([k]) => k);
  *  builder has controls for the first group; another is carried as the name
  *  has it, until it has controls of its own. */
 export const mainLinks = (links, groups) => (Array.isArray(links) && groups?.length ? links.filter((k) => !groups.some((g) => Array.isArray(g.links) && g.links.includes(k) && k !== 'empty')) : links);
+
+/** The keys another group has: shown there, so ticked, but not in the first. */
+export const claimed = (groups) => new Set((groups ?? []).flatMap((g) => (Array.isArray(g.links) ? g.links.filter((k) => k !== 'empty') : [])));
+
+/** What only the first group has: the paper button and the parts among the buttons. */
+export const FIRST_ONLY = ['paperbutton', 'year', 'position', 'context'];
+
+/** The areas another group may be in, and where a new one goes: the other side,
+ *  or the bottom for buttons under the words. */
+export const GROUP_AREAS = ['left', 'center', 'right', 'bottom', 'top'];
+export const otherArea = (mainArea) => ({ left: 'right', right: 'left', center: 'bottom', bottom: 'right' }[mainArea] ?? 'right');
+
+/** A new group in an area, its place there the area's own. */
+export const newGroup = (area, links) => ({ links, area, ...(area === 'left' || area === 'right' ? { v: 'top' } : {}) });
+
+/**
+ * A button moved: out of one group, into another — at a place in it, or into
+ * the group that has an area, or a new one — or just moved along in its own.
+ * Pure: the first group's shown keys in order (main), the other groups (each
+ * { links, area, v?, h?, perRow? }) and the first's area. Returns them anew;
+ * unchanged where the move is not allowed — the paper button and the parts
+ * among the buttons stay in the first group — and a group left with no button
+ * is gone, its empty rooms with it.
+ * @param {{ main: string[], groups: object[], mainArea: string }} s
+ * @param {{ key: string, from: { group: number, index: number }, to: { group: number, index?: number } | { area: string } }} m
+ */
+export function regroup({ main, groups, mainArea }, { key, from, to }) {
+  const lists = [main.slice(), ...groups.map((g) => g.links.slice())];
+  // The group it goes to: the first, another — or none yet, for a new one in an area.
+  const there = to.area != null ? groups.findIndex((g) => g.area === to.area) : -1;
+  const into = to.area != null ? (to.area === mainArea ? 0 : there >= 0 ? there + 1 : -1) : to.group;
+  if (FIRST_ONLY.includes(key) && into !== 0) return { main, groups, moved: false };
+  if (lists[from.group]?.[from.index] !== key) return { main, groups, moved: false };
+  lists[from.group].splice(from.index, 1);
+  const next = groups.map((g, i) => ({ ...g, links: lists[i + 1] }));
+  if (into === 0) lists[0].splice(to.index ?? lists[0].length, 0, key);
+  else if (into < 0) next.push(newGroup(to.area, [key]));
+  else next[into - 1].links.splice(to.index ?? next[into - 1].links.length, 0, key);
+  return { main: lists[0], groups: next.filter((g) => g.links.some((k) => k !== 'empty')), moved: true };
+}
 
 // ---- name → controls ----
 
@@ -310,13 +350,17 @@ export function controlOps(c, { it, stepPx, framePx }) {
   ops.push(['checks', 'extra', c.extras]);
   // `all` is the keys a card shows of its own accord; the optional ones are ticked only where named.
   const keys = it.links.map(([k]) => k), own = ownKeys(it);
-  ops.push(['checks', 'link', c.links === 'all' ? own : c.links]);
+  // Another group that is all is the keys no other list has, so it is a list too.
+  const listedElsewhere = new Set([...(c.links === 'all' ? [] : c.links), ...(c.groups ?? []).flatMap((g) => (g.links === 'all' ? [] : g.links))]);
+  const groups = (c.groups ?? []).map((g) => (g.links === 'all' ? { ...g, links: own.filter((k) => !listedElsewhere.has(k)) } : g));
+  const others = [...claimed(groups)].filter((k) => keys.includes(k));
+  ops.push(['checks', 'link', [...(c.links === 'all' ? own : c.links), ...others.filter((k) => !(c.links === 'all' ? own : c.links).includes(k))]]);
   const listed = c.links === 'all' ? own : c.links.filter((k) => ['empty', 'paperbutton', ...Object.values(CELL)].includes(k) || keys.includes(k));
-  const btnOrder = [...(listed.includes('paperbutton') ? [] : ['paperbutton']), ...listed, ...keys.filter((k) => !listed.includes(k))];
+  const btnOrder = [...(listed.includes('paperbutton') ? [] : ['paperbutton']), ...listed, ...others.filter((k) => !listed.includes(k)), ...keys.filter((k) => !listed.includes(k) && !others.includes(k))];
   // A part the name lists among the buttons has its area there.
   for (const [k] of SMALL) if (listed.includes(CELL[k])) radio(`${k}at`, 'list');
   const venue = venueArea(c);
-  return { ops, state: { areasOn, space: { ...(c.space ?? {}) }, btnOrder, groups: c.groups ?? [], lastAreas: venue !== 'authors' ? venue : undefined } };
+  return { ops, state: { areasOn, space: { ...(c.space ?? {}) }, btnOrder, groups, lastAreas: venue !== 'authors' ? venue : undefined } };
 }
 
 /** A preset as it comes out for this item: the extras it has not got drop,

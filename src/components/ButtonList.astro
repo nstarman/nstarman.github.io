@@ -8,7 +8,7 @@ import LinkIcon from './LinkIcon.astro';
 
 const { group: g, links, where = {} } = Astro.props;
 ---
-<ul class="btns btns--icon" {...where} data-xg="" data-gh={g.h} data-gv={g.v} data-gper={g.per ? '' : undefined}
+<ul class="btns btns--icon" {...where} data-xg="" data-g={g.n} data-gh={g.h} data-gv={g.v} data-gper={g.per ? '' : undefined}
     style={[g.per && `--per:${g.per}`, g.skip && `--skip:${g.skip}`].filter(Boolean).join(';') || undefined}>
   {g.seq.map((x) => {
     const li = { 'data-off': x.kept ? undefined : '', 'data-skip': x.skip ? '' : undefined };

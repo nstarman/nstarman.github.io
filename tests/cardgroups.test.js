@@ -7,7 +7,8 @@ import { parseName, formatName, cardFace, placeOf } from '../src/lib/cardname.js
 import { cardFacts, CARD_TYPES } from '../src/lib/cards.js';
 import { items } from '../src/lib/data.js';
 import { itemFacts } from '../src/lib/cardbuilder/facts.js';
-import { controlOps, readSpec, fitName, mainLinks } from '../src/lib/cardbuilder/model.js';
+import { controlOps, readSpec, fitName, mainLinks, claimed, regroup, otherArea, newGroup, FIRST_ONLY } from '../src/lib/cardbuilder/model.js';
+import { FRAME_PX, STEP_PX } from '../src/lib/cards.js';
 
 const B = 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none';
 const group = (n) => parseName(`${B}-${n}`);
@@ -168,5 +169,93 @@ describe('the Card Builder carries a card’s other groups', () => {
     const fit = fitName(slug, { ...it0, links: it0.links.filter(([k]) => k !== 'stars') });
     expect(fit).not.toContain('buttons:stars');
     expect(fitName(slug, it0)).toContain('buttons:stars:right');
+  });
+});
+
+describe('a button moved between groups (the Card Builder’s drag and menus)', () => {
+  const state = (main, groups, mainArea = 'center') => ({ main, groups, mainArea });
+  const keys = (r) => [r.main, r.groups.map((g) => g.links)];
+
+  it('moves along in its own group, the first or another', () => {
+    expect(keys(regroup(state(['code', 'docs', 'stars'], []), { key: 'code', from: { group: 0, index: 0 }, to: { group: 0, index: 2 } }))).toEqual([['docs', 'stars', 'code'], []]);
+    const r = regroup(state(['code'], [{ links: ['docs', 'stars'], area: 'right' }]), { key: 'docs', from: { group: 1, index: 0 }, to: { group: 1, index: 1 } });
+    expect(keys(r)).toEqual([['code'], [['stars', 'docs']]]);
+  });
+
+  it('moves out of the first group into another, at a place in it', () => {
+    const r = regroup(state(['code', 'docs', 'stars'], [{ links: ['data'], area: 'right' }]), { key: 'stars', from: { group: 0, index: 2 }, to: { group: 1, index: 0 } });
+    expect(keys(r)).toEqual([['code', 'docs'], [['stars', 'data']]]);
+    expect(r.moved).toBe(true);
+  });
+
+  it('moves out of another group, into the first or a third', () => {
+    const groups = [{ links: ['stars'], area: 'right' }, { links: ['data'], area: 'bottom' }];
+    expect(keys(regroup(state(['code'], groups), { key: 'stars', from: { group: 1, index: 0 }, to: { group: 0, index: 0 } }))).toEqual([['stars', 'code'], [['data']]]);
+    expect(keys(regroup(state(['code'], groups), { key: 'stars', from: { group: 1, index: 0 }, to: { group: 2 } }))).toEqual([['code'], [['data', 'stars']]]);
+  });
+
+  it('makes a new group of a button dropped on an area, and puts it in the group already there', () => {
+    const r = regroup(state(['code', 'docs'], []), { key: 'docs', from: { group: 0, index: 1 }, to: { area: 'right' } });
+    expect(r.groups).toEqual([{ links: ['docs'], area: 'right', v: 'top' }]);
+    expect(regroup(state(['code'], []), { key: 'code', from: { group: 0, index: 0 }, to: { area: 'top' } }).groups).toEqual([{ links: ['code'], area: 'top' }]);
+    const more = regroup(state(['code', 'docs'], [{ links: ['stars'], area: 'right', v: 'top' }]), { key: 'docs', from: { group: 0, index: 1 }, to: { area: 'right' } });
+    expect(keys(more)).toEqual([['code'], [['stars', 'docs']]]);
+    // An area that is the buttons' own is the first group.
+    expect(keys(regroup(state(['code'], [{ links: ['stars'], area: 'left' }], 'center'), { key: 'stars', from: { group: 1, index: 0 }, to: { area: 'center' } }))).toEqual([['code', 'stars'], []]);
+  });
+
+  it('leaves no group empty, its rooms gone with it', () => {
+    const r = regroup(state(['code'], [{ links: ['empty', 'stars', 'empty'], area: 'right' }]), { key: 'stars', from: { group: 1, index: 1 }, to: { group: 0, index: 1 } });
+    expect(keys(r)).toEqual([['code', 'stars'], []]);
+  });
+
+  it('keeps the paper button and the parts among the buttons in the first group', () => {
+    for (const key of FIRST_ONLY) {
+      const r = regroup(state(['code', key], []), { key, from: { group: 0, index: 1 }, to: { area: 'right' } });
+      expect(r.moved, key).toBe(false);
+      expect(r.main, key).toEqual(['code', key]);
+    }
+    // It may move along in the first group.
+    expect(regroup(state(['code', 'paperbutton'], []), { key: 'paperbutton', from: { group: 0, index: 1 }, to: { group: 0, index: 0 } }).main).toEqual(['paperbutton', 'code']);
+  });
+
+  it('refuses a move that is not of the button there, and does not change what it was given', () => {
+    const groups = [{ links: ['stars'], area: 'right' }];
+    const before = JSON.stringify(groups);
+    expect(regroup(state(['code'], groups), { key: 'docs', from: { group: 0, index: 0 }, to: { group: 1 } }).moved).toBe(false);
+    regroup(state(['code'], groups), { key: 'code', from: { group: 0, index: 0 }, to: { group: 1, index: 0 } });
+    expect(JSON.stringify(groups)).toBe(before);
+  });
+
+  it('puts a new group in the other side first', () => {
+    expect([otherArea('left'), otherArea('right'), otherArea('center'), otherArea('bottom')]).toEqual(['right', 'left', 'bottom', 'right']);
+    expect(newGroup('left', ['stars'])).toEqual({ links: ['stars'], area: 'left', v: 'top' });
+    expect(newGroup('bottom', ['stars'])).toEqual({ links: ['stars'], area: 'bottom' });
+    expect([...claimed([{ links: ['stars', 'empty'] }, { links: ['data'] }])].sort()).toEqual(['data', 'stars']);
+  });
+
+  it('makes names a card reads back the same, whatever the moves', () => {
+    const base = parseName(`${B}-buttons:all`);
+    const it0 = itemFacts(unxt);
+    let st = state(['paper', 'code', 'docs', 'stars'], []);
+    st = { ...st, mainArea: 'center' };
+    for (const m of [
+      { key: 'stars', from: { group: 0, index: 3 }, to: { area: 'right' } },
+      { key: 'docs', from: { group: 0, index: 2 }, to: { area: 'right' } },
+      { key: 'code', from: { group: 0, index: 1 }, to: { area: 'bottom' } },
+    ]) st = { ...regroup(st, m), mainArea: 'center' };
+    const name = formatName({ ...base, links: st.main, groups: st.groups });
+    const spec = parseName(name);
+    expect(spec.groups.map((g) => g.links)).toEqual([['stars', 'docs'], ['code']]);
+    expect(spec.links).toEqual(['paper']);
+    expect(it0.links.length).toBeGreaterThan(2);
+  });
+
+  it('is carried by the controls of a name: an all group becomes its keys, every key ticked', () => {
+    const it0 = itemFacts(unxt);
+    const slug = `${B}-buttons:code-buttons:all:right`.replace('size:fill', 'size:320');
+    const { ops, state: st } = controlOps(parseName(slug), { it: it0, stepPx: STEP_PX, framePx: FRAME_PX });
+    expect(st.groups[0].links).toEqual(['paper', 'docs', 'stars']);
+    expect(ops.find((o) => o[0] === 'checks' && o[1] === 'link')[2].sort()).toEqual(['code', 'docs', 'paper', 'stars']);
   });
 });

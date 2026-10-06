@@ -165,7 +165,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
       // name lists among them, each in its place. (Another group is a
       // ButtonList: links and rooms only.)
       const buttons = (g, where) => (
-        <ul class="btns btns--icon" {...where} data-gh={g.h} data-gv={g.v}>
+        <ul class="btns btns--icon" {...where} data-g={g.n} data-gh={g.h} data-gv={g.v}>
           {g.seq.map((x) => {
             const li = { 'data-off': x.kept ? undefined : '', 'data-skip': x.skip ? '' : undefined };
             if (x.paper) return (

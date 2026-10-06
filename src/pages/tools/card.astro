@@ -591,6 +591,16 @@ const data = {
             </span>
           </fieldset>
 
+          {/* The other groups of buttons: each its own buttons, area, place and
+              rows. The buttons above are the first group; a button is sent to
+              another group from its menu here or there, or dragged to one in
+              the preview — out of a group, or to a new one in an area. */}
+          <fieldset class="eb-row" id="eb-groups-row" data-tune="groups" hidden>
+            <legend class="eb-key">Groups</legend>
+            <span class="eb-sub" id="eb-groups"></span>
+            <span class="eb-note">The Buttons row above is the first group. Send a button to another group from its → menu, or drag it in the preview, out of its group and onto another, or an area, to make one.</span>
+          </fieldset>
+
           {/* The paper button, a part of its own, where its pill above is
               ticked: its label, a word or the paper glyph; and where it links
               — the article, else arXiv, or one of them. Ticking the pill, or
