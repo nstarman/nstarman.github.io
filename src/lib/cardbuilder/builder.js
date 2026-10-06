@@ -288,12 +288,13 @@ export function mountCardBuilder({ form, data }) {
     code.value = snippet(s, { site, height });
     const image = s.format !== 'iframe';
     const n = themes(s).length;
-    const kind = s.format === 'pdf' ? 'PDF' : 'PNG';
+    const kind = { pdf: 'PDF', svg: 'SVG' }[s.format] ?? 'PNG';
     download.hidden = !image;
     download.title = `Download ${kind}`;
     download.setAttribute('aria-label', download.title);
     note.textContent = !image ? ''
       : s.format === 'pdf' ? `Download the PDF${n > 1 ? 's, light and dark,' : ','} drawn by Typst: the text selectable and the links live.`
+      : s.format === 'svg' ? `Download the SVG${n > 1 ? 's, light and dark,' : ','} text and links intact. The links are live where the file is opened or embedded inline — a browser never runs one inside an <img>, on GitHub or anywhere.`
       : `Download the PNG${n > 1 ? 's' : ''} and keep ${n > 1 ? 'them' : 'it'} beside the page; the snippet names ${n > 1 ? 'them' : 'it'}.`
         + (s.format === 'markdown' && s.theme === 'auto' ? ' Markdown cannot follow the reader’s theme, so this is the light one.' : '');
     // The preview loads from this site, not from `site`, so a preview deploy
@@ -585,7 +586,7 @@ export function mountCardBuilder({ form, data }) {
   const b = { limits, form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton };
   tuneAll.addEventListener('click', () => tune(tuneAll.textContent === 'hide all' ? [] : tuneRows.map((r) => r.dataset.tune)));
 
-  // The PNG or PDF, drawn here from the preview when asked for.
+  // The PNG, PDF or SVG, drawn here from the preview when asked for.
   const exporter = { preview, site, fonts, say: (m) => (note.textContent = m) };
   download.addEventListener('click', async () => {
     const s = spec();
@@ -594,7 +595,7 @@ export function mountCardBuilder({ form, data }) {
       await downloadCard(exporter, s);
       render();
     } catch (err) {
-      note.textContent = `Could not draw the ${s.format === 'pdf' ? 'PDF' : 'PNG'}: ${err.message}`;
+      note.textContent = `Could not draw the ${{ pdf: 'PDF', svg: 'SVG' }[s.format] ?? 'PNG'}: ${err.message}`;
     } finally {
       download.disabled = false;
     }

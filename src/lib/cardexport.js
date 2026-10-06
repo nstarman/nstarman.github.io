@@ -14,12 +14,14 @@ const hash = (str) => {
   return h.toString(36);
 };
 
+const EXT = { pdf: 'pdf', svg: 'svg' };
+
 /** An image's file name: the item, the name — a colon, not safe in a file
  *  name on macOS or Windows, as _ — and the theme. A name that would run the
  *  file past what a disk takes is a hash of itself. */
 export const file = (s, t) => {
   const n = s.slug.replaceAll(':', '_');
-  return `${s.id}--${n.length > 160 ? hash(s.slug) : n}-${t}.${s.format === 'pdf' ? 'pdf' : 'png'}`;
+  return `${s.id}--${n.length > 160 ? hash(s.slug) : n}-${t}.${EXT[s.format] ?? 'png'}`;
 };
 
 /** The images a format needs: both themes when following the reader, except

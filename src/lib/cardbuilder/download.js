@@ -1,4 +1,4 @@
-// The Card Builder's PNG and PDF: the card in the preview frame, drawn in the
+// The Card Builder's PNG, PDF and SVG: the card in the preview frame, drawn in the
 // browser in the theme asked for — nothing is rendered at build time. The
 // frame is this site's own page, so its document is ours to read.
 
@@ -51,11 +51,31 @@ export async function downloadCard({ preview, site, fonts, say }, s) {
     return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   }
 
+  // The card as an SVG: measured the same way, then written by cardsvg.js. Its
+  // figures go in as data: URIs, so the file stands alone.
+  async function svg(theme, s) {
+    const { model, images } = await drawn(theme, async (card) => (await import('../cardpdf.js')).measureCard(card, { title: s.it.title, site }));
+    const uris = {};
+    for (const [path, url] of images) {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`no figure at ${url}`);
+      const blob = await r.blob();
+      uris[path] = await new Promise((done, fail) => {
+        const f = new FileReader();
+        f.onload = () => done(f.result);
+        f.onerror = () => fail(f.error);
+        f.readAsDataURL(blob);
+      });
+    }
+    const { modelToSvg } = await import('../cardsvg.js');
+    return URL.createObjectURL(new Blob([modelToSvg(model, uris)], { type: 'image/svg+xml' }));
+  }
+
   for (const t of themes(s)) {
     const a = document.createElement('a');
-    a.href = s.format === 'pdf' ? await pdf(t, s) : await png(t);
+    a.href = s.format === 'pdf' ? await pdf(t, s) : s.format === 'svg' ? await svg(t, s) : await png(t);
     a.download = file(s, t);
     a.click();
-    if (s.format === 'pdf') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    if (s.format === 'pdf' || s.format === 'svg') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 }

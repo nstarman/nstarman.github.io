@@ -100,15 +100,15 @@ export function measureCard(card, { title, site }) {
       const r = range.getClientRects()[0];
       if (!r) continue;
       const line = lines.at(-1);
-      if (line && Math.abs(r.top - line.r.top) < r.height / 2) line.s += n.data[i];
-      else if (n.data[i].trim()) lines.push({ r, s: n.data[i] });
+      if (line && Math.abs(r.top - line.r.top) < r.height / 2) { line.s += n.data[i]; line.right = Math.max(line.right, r.right); }
+      else if (n.data[i].trim()) lines.push({ r, s: n.data[i], right: r.right });
     }
     const up = s.textTransform === 'uppercase';
-    for (const { r, s: raw } of lines) {
+    for (const { r, s: raw, right } of lines) {
       if (r.bottom > clip.bottom + 1 || r.top < clip.top - 1) continue;
       const str = raw.replace(/\s+/g, ' ').trimEnd();
       ops.push({
-        k: 'text', ...xy(r), s: up ? str.toUpperCase() : str, font: s.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
+        k: 'text', ...xy(r), w: right - r.left, s: up ? str.toUpperCase() : str, font: s.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
         weight: +s.fontWeight, size: parseFloat(s.fontSize), color: hex(s.color), ls: s.letterSpacing === 'normal' ? 0 : parseFloat(s.letterSpacing), href: href(e), clamp: clamped(e),
       });
     }

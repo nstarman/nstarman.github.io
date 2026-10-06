@@ -1,7 +1,7 @@
 ---
 // /tools/card/ — pick an item, then its card: one of the website's presets or
 // any size, layout, title, text, extras, links and look. The preview is the live embed; the
-// snippet is an iframe, HTML or Markdown for an image, or the PNG or PDF
+// snippet is an iframe, HTML or Markdown for an image, or the PNG, PDF or SVG
 // itself, drawn here in the browser from the preview — nothing is pre-rendered.
 import fs from 'node:fs';
 import Base from '../../layouts/Base.astro';
@@ -47,7 +47,7 @@ const data = {
       <div class="wrap">
         <div class="h2row"><h2>Card Builder</h2></div>
         <p class="lede">Any card on this site, for another page: as an <code>&lt;iframe&gt;</code> that stays
-          current, as a PNG for places that strip iframes, such as a GitHub README, or as a PDF. Every card has a
+          current, as a PNG for places that strip iframes, such as a GitHub README, as a PDF, or as an SVG with its links live. Every card has a
           name — size, layout, what it shows, then its look — and the website’s own are the presets. Every item is
           listed in <a href="/embed/index.json">/embed/index.json</a>.</p>
         <noscript><p class="lede"><strong>This tool needs JavaScript.</strong> Without it, a card is still at{' '}
@@ -668,6 +668,7 @@ const data = {
             <label title="The PNG, for Markdown"><input type="radio" class="posradio" name="format" value="markdown" />Markdown</label>
             <label title="The PNGs themselves"><input type="radio" class="posradio" name="format" value="png" />PNG</label>
             <label title="The card as a PDF, drawn by Typst: its text selectable and its links live"><input type="radio" class="posradio" name="format" value="pdf" />PDF</label>
+            <label title="The card as an SVG: its text selectable and its links live where the file is opened or embedded inline"><input type="radio" class="posradio" name="format" value="svg" />SVG</label>
           </span>
         </div>
         <div class="eb-codebox">
@@ -676,7 +677,7 @@ const data = {
             <button type="button" class="iconbtn" id="eb-copy" aria-label="Copy snippet" title="Copy snippet">
               <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-copy" /></svg>
             </button>
-            {/* The PNGs and PDFs are drawn here, from the preview, when asked for. */}
+            {/* The PNGs, PDFs and SVGs are drawn here, from the preview, when asked for. */}
             <button type="button" class="iconbtn" id="eb-download" hidden aria-label="Download PNG" title="Download PNG">
               <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-download" /></svg>
             </button>

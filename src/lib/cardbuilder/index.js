@@ -15,7 +15,7 @@
 //   dom.js        small DOM helpers
 //   overlay.js    ⊕ buttons, bands, area outlines and grips drawn on the preview
 //   preview.js    outlines, click-to-tune and the drag gestures on the preview
-//   download.js   the PNG and PDF, drawn from the preview
+//   download.js   the PNG, PDF and SVG, drawn from the preview
 //   builder.js    the controller that joins them to the form
 //
 // What a name makes of an item is cardname.js's `cardFace` alone; the builder
