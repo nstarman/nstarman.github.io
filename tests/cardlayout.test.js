@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { REM, STEPS, TOKENS, lengths, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -81,6 +81,7 @@ describe('the numbers are the stylesheet’s', () => {
     has(/\.iconyear\{font-size:\.72rem; line-height:1/, 'a button’s label: .72rem');
     has(/\.iconbtn:has\(\.iconyear\)[^{]*\{\s*width:auto; padding:0 \.4rem; gap:\.25rem/, 'a labelled button: .4rem of padding, .25rem to the mark');
     has(/\.iconbtn\{[^}]*border:1px solid var\(--rule-strong\)/, 'a button: a 1px border');
+    has(/\.iconbtn\{min-width:24px; min-height:24px\}/, `a button: no smaller than ${BUTTON_MIN}px`);
     has(/background:color-mix\(in srgb, var\(--ink\) 2\.5%, transparent\)/, 'the card: 2.5% ink');
   });
 
@@ -104,32 +105,42 @@ describe('the browser’s own measurement of each card', () => {
   it('is of the names the site asks for, read the way the page reads them', () => {
     for (const c of fixture.cards) {
       const item = items.find((i) => i.id === c.id);
-      expect(c.slug, c.id).toBe(atWidth(PRESET_OF[TIER_PRESET[item.tier]], CARD_SVG_WIDTH));
-      const face = cardFace(parseName(c.slug), cardFacts(item, true));
-      expect({ data: face.data, style: face.style }, c.id).toEqual(c.face);
+      for (const k of c.cases) {
+        expect(k.slug, `${c.id} ${k.width}`).toBe(atWidth(PRESET_OF[TIER_PRESET[item.tier]], k.width));
+        const face = cardFace(parseName(k.slug), cardFacts(item, true));
+        expect({ data: face.data, style: face.style }, `${c.id} ${k.width}`).toEqual(k.face);
+      }
     }
   });
 
+  it('is at several widths, narrow enough to wrap the buttons, and in both themes at the README’s', () => {
+    expect([...new Set(fixture.cards.flatMap((c) => c.cases.map((k) => k.width)))].sort((a, b) => a - b)).toEqual([200, 280, 400, 640]);
+    expect(fixture.cards.flatMap((c) => c.cases).filter((k) => k.width === CARD_SVG_WIDTH).map((k) => k.theme).sort()).toEqual(THEMES.flatMap((t) => fixture.cards.map(() => t)).sort());
+    // A card whose buttons run onto a second row is among them, or the wrapping is untested.
+    const rows = (m) => new Set(m.ops.filter((o) => o.k === 'box' && o.href).map((o) => Math.round(o.y))).size;
+    expect(fixture.cards.some((c) => c.cases.some((k) => rows(k.model) > 1))).toBe(true);
+  });
+
   for (const c of fixture.cards) {
-    for (const theme of THEMES) {
-      it(`${c.id}, ${theme}: every box, icon and line of text where the browser put it`, () => {
-        const got = softwareModel(c.input, { slug: c.slug, theme, measure });
-        const want = c.models[theme];
+    for (const k of c.cases) {
+      it(`${c.id}, ${k.width}px, ${k.theme}: every box, icon and line of text where the browser put it`, () => {
+        const got = softwareModel(c.input, { slug: k.slug, theme: k.theme, measure });
+        const want = k.model;
         expect(got.w).toBe(want.w);
         expect(got.h).toBeCloseTo(want.h, 0);
         expect(got.r).toEqual(want.r.map((r) => expect.closeTo(r, 1)));
         expect(got.ops.map((o) => o.k)).toEqual(want.ops.map((o) => o.k));
         got.ops.forEach((o, i) => {
           const w = want.ops[i];
-          const at = `${c.id} ${theme} op ${i} ${o.k}${o.s ? ` ${JSON.stringify(o.s)}` : ''}`;
+          const at = `${c.id} ${k.width} ${k.theme} op ${i} ${o.k}${o.s ? ` ${JSON.stringify(o.s)}` : ''}`;
           // A line is as wide as the font says: a hair off where the browser kerns a pair differently.
-          for (const [k, tol] of [['x', 0.15], ['y', 0.15], ['w', o.k === 'text' ? 1.5 : 0.15], ['h', 0.15]]) {
-            expect(Math.abs(o[k] - w[k]), `${at}: ${k} ${o[k]} for ${w[k]}`).toBeLessThanOrEqual(tol);
+          for (const [key, tol] of [['x', 0.15], ['y', 0.15], ['w', o.k === 'text' ? 1.5 : 0.15], ['h', 0.15]]) {
+            expect(Math.abs(o[key] - w[key]), `${at}: ${key} ${o[key]} for ${w[key]}`).toBeLessThanOrEqual(tol);
           }
-          for (const k of ['s', 'font', 'weight', 'color', 'fill', 'stroke', 'sw', 'href', 'svg', 'fit']) expect(o[k], `${at}: ${k}`).toEqual(w[k]);
+          for (const key of ['s', 'font', 'weight', 'color', 'fill', 'stroke', 'sw', 'href', 'svg', 'fit']) expect(o[key], `${at}: ${key}`).toEqual(w[key]);
           expect(o.ls ?? 0, `${at}: ls`).toBeCloseTo(w.ls ?? 0, 3);
           expect(o.size ?? 0, `${at}: size`).toBeCloseTo(w.size ?? 0, 2);
-          if (w.r) expect(o.r.map((r) => Math.round(r * 10)), `${at}: r`).toEqual(w.r.map((r) => Math.round(r * 10)));
+          if (w.r) o.r.forEach((r, n) => expect(Math.abs(r - w.r[n]), `${at}: r ${r} for ${w.r[n]}`).toBeLessThanOrEqual(0.1));
         });
       });
     }

@@ -301,7 +301,8 @@ for every such card (`tests/fixtures/software-cards.json`); and that measurement
 card's CSS and `Card.astro` (`scripts/lib/cardsync.mjs`). **When that hash test fails, the card's CSS
 has changed:** run `node scripts/record-card-layouts.mjs` (needs `npm i --no-save playwright` and a
 dev server) to measure again, read the fixture's diff as the change in layout, and fix `cardlayout.js`
-until the rest pass. A new look for those presets is a change to `cardlayout.js` first.
+until the rest pass. The recording is at several widths (200 to 640 px), so wrapping and a second row of buttons are measured, not reasoned about.
+`tests/cardlayout.property.test.js` (fast-check) holds what must be true of any card it draws — nothing dropped, nothing past the padding, buttons never overlapping — over generated widths, texts and buttons; `FC_RUNS=1000` tries more, and a failure prints a seed to replay (`FC_SEED`, `FC_PATH`). A new look for those presets is a change to `cardlayout.js` first.
 
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.

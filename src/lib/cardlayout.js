@@ -24,6 +24,10 @@ import sprite from '../components/IconSprite.astro?raw';
 import { ownLink, cardLinks, cardText, parseName } from './cards.js';
 import { REL_ICON, relKey } from './data.js';
 
+/** A button is never smaller than this: .iconbtn has min-width and min-height
+ *  24px, the WCAG target size, which a narrow card's formula would go under. */
+export const BUTTON_MIN = 24;
+
 /** The root font size the browser has at 1280 px wide and over, the one the
  *  site is drawn at where the viewport has not scaled it. */
 export const REM = 16;
@@ -91,16 +95,26 @@ export const softwareInput = (item) => ({
 });
 
 /** A card's text as lines no wider than `width`, broken as a browser does:
- *  after a space or a hyphen between letters, and either side of a dash. */
-export function wrap(text, width, widthOf) {
+ *  after a space or a hyphen between letters, and either side of a dash. With
+ *  `anywhere` (overflow-wrap:anywhere, as a title has it) a word wider than a
+ *  line is broken wherever it fills it, rather than left to run over. */
+export function wrap(text, width, widthOf, { anywhere = false } = {}) {
   const words = text.match(/[^\s-—]*-(?=[A-Za-z])|[^\s—]+-?|—|\s+/g) ?? [];
   const lines = [];
   let line = '';
+  const put = (w) => {
+    if (!anywhere || widthOf(w) <= width) { line = w; return; }
+    // Too wide for a line of its own: as many characters as fit, then the rest.
+    let cur = '';
+    for (const ch of Array.from(w)) {
+      if (cur && widthOf(cur + ch) > width) { lines.push(cur); cur = ch; } else cur += ch;
+    }
+    line = cur;
+  };
   for (const w of words) {
     if (/^\s+$/.test(w)) { line += line ? ' ' : ''; continue; }
     const trial = line + w;
-    if (!line || widthOf(trial.trimEnd()) <= width) line = trial;
-    else { lines.push(line.trimEnd()); line = w; }
+    if (!line || widthOf(trial.trimEnd()) <= width) { if (line) line = trial; else put(w); } else { lines.push(line.trimEnd()); put(w); }
   }
   if (line) lines.push(line.trimEnd());
   return lines;
@@ -145,9 +159,12 @@ export function softwareModel(input, { slug, theme, measure }) {
   let y = padT;
   const name = { font: 'IBM Plex Mono', weight: 500, size: L.ts, ls: 0, color: c.ink, href: input.href };
   const nameLH = 1.35 * L.ts;
-  const nr = line(y, nameLH, L.ts);
-  text(padX, nr.y, nr.h, input.title, measure(input.title, name), name);
-  y += nameLH;
+  // A title is broken anywhere where it is wider than the card (overflow-wrap:anywhere).
+  for (const s of wrap(input.title, cw, widthOf(name), { anywhere: true })) {
+    const nr = line(y, nameLH, L.ts);
+    text(padX, nr.y, nr.h, s, measure(s, name), name);
+    y += nameLH;
+  }
 
   // Then the words, a block of their own: the role, where the card has one,
   // above the text.
@@ -175,6 +192,8 @@ export function softwareModel(input, { slug, theme, measure }) {
   // The buttons, under the words, as many to a row as fit.
   y += 0.35 * L.fs + 0.3 * L.fs;
   const gap = 0.3 * L.fs;
+  // The button's box: its size, or the least a button is — its corners still a quarter of its size.
+  const ib = Math.max(L.ib, BUTTON_MIN);
   const small = { font: 'IBM Plex Sans', weight: 400, size: 0.72 * REM, ls: 0, color: c.mute };
   let x = padX;
   let rowTop = y;
@@ -182,22 +201,22 @@ export function softwareModel(input, { slug, theme, measure }) {
     const label = l.year ?? l.count;
     const lw = label ? measure(label, small) : 0;
     // A button with a label is its padding, the mark, a gap and the label, in a border.
-    const w = label ? 2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2 : L.ib;
-    if (x > padX && x + w > padX + cw + 1e-6) { x = padX; rowTop += L.ib + gap; }
+    const w = label ? Math.max(2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2, ib) : ib;
+    if (x > padX && x + w > padX + cw + 1e-6) { x = padX; rowTop += ib + gap; }
     const icon = symbol(REL_ICON[l.key] ?? 'link');
-    ops.push({ k: 'box', x: x + 0.5, y: rowTop + 0.5, w: w - 1, h: L.ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });
+    ops.push({ k: 'box', x: x + 0.5, y: rowTop + 0.5, w: w - 1, h: ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });
     const ix = x + (label ? 1 + 0.4 * REM : (w - L.ii) / 2);
     ops.push({
-      k: 'svg', x: ix, y: rowTop + (L.ib - L.ii) / 2, w: L.ii, h: L.ii, href: href(l.url),
+      k: 'svg', x: ix, y: rowTop + (ib - L.ii) / 2, w: L.ii, h: L.ii, href: href(l.url),
       svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.viewBox}" fill="${c.mute.slice(0, 7)}" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">${icon.body}</svg>`,
     });
     if (label) {
-      const r = line(rowTop + L.ib / 2 - small.size / 2, small.size, small.size);
+      const r = line(rowTop + ib / 2 - small.size / 2, small.size, small.size);
       text(ix + L.ii + 0.25 * REM, r.y, r.h, label, lw, { ...small, href: l.url });
     }
     x += w + gap;
   }
-  const H = rowTop + L.ib + padB;
+  const H = rowTop + ib + padB;
 
   const radii = Array(4).fill(L.rad);
   // The page's ground, then the card's tint of ink over it.
