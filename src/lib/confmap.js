@@ -11,7 +11,7 @@
 // Geometry is resolved here rather than in the component, so the page renders
 // plain numbers and the maths is testable without a DOM.
 
-import places from '/config/places.json';
+import { locate } from './places.js';
 import { map, toXY, spread, hueFor } from './worldmap.js';
 import { byType, dateLabel, links } from './data.js';
 
@@ -32,7 +32,7 @@ export const ONLINE = 'Online';
 export const ONLINE_AT = { lat: -70, lon: 0 };
 
 /** Where a location string is on Earth, or nothing if it is not settled. */
-const coords = (loc) => (loc === ONLINE ? ONLINE_AT : places.places[loc]);
+const coords = (loc) => (loc === ONLINE ? ONLINE_AT : locate(loc));
 
 /** How the CV's `kind` reads in a sentence about one talk. */
 const KIND = {

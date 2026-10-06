@@ -1,5 +1,5 @@
 {
-  "$comment": "Coordinates for every place the site pins — collaborator institutions and presentation locations alike — resolved once with scripts/geocode-places.mjs and committed so the site and CI never call a geocoder. `matched` is what the geocoder thought it found — check it before trusting a pin. Safe to correct by hand: the script only fills in what is missing.",
+  "$comment": "Coordinates for every place the site pins — collaborator institutions and presentation locations alike — resolved once with scripts/geocode-places.mjs and committed so the site and CI never call a geocoder. `matched` is what the geocoder thought it found — check it before trusting a pin. Safe to correct by hand: the script only fills in what is missing. A name that is the same campus as another is `{ \"sameAs\": \"<other name>\" }` rather than a second copy of the coordinates; read places through src/lib/places.js. Keep one entry per campus: tests/places.test.js fails on two entries with the same coordinates.",
   "source": "https://nominatim.openstreetmap.org (ODbL)",
   "places": {
     "A Coruña, Spain": {
@@ -38,9 +38,7 @@
       "matched": "California Institute of Technology, Moore Walk, Pasadena Council District 7, Pasadena, Los Angeles County, California, 91125, United States"
     },
     "Caltech": {
-      "lat": 34.137,
-      "lon": -118.1253,
-      "matched": "California Institute of Technology, Broad Walk, Pasadena Council District 7, Pasadena, Los Angeles County, California, 91106, United States"
+      "sameAs": "California Institute of Technology"
     },
     "Caltech/JPL": {
       "lat": 34.2015,
@@ -58,9 +56,7 @@
       "matched": "hand-placed: MaRS Centre, 661 University Ave, Toronto"
     },
     "Canadian Institute for Theoretical Astrophysics": {
-      "lat": 43.66,
-      "lon": -79.3971,
-      "matched": "hand-placed: 60 St George St, University of Toronto"
+      "sameAs": "University of Toronto"
     },
     "Cardiff University": {
       "lat": 51.5067,
@@ -73,9 +69,7 @@
       "matched": "hand-placed: 1530 P St NW, Washington DC — Nominatim has no entry"
     },
     "Carnegie Observatories": {
-      "lat": 34.1563,
-      "lon": -118.1334,
-      "matched": "The Carnegie Observatories, Earlham Street, Bungalow Heaven, Pasadena Council District 5, Pasadena, Los Angeles County, California, 91188, United States"
+      "sameAs": "Observatories of the Carnegie Institution of Washington"
     },
     "Case Western Reserve University": {
       "lat": 41.5014,
@@ -88,9 +82,7 @@
       "matched": "60 Garden Street, Cambridge, MA, USA (placed by hand)"
     },
     "Center for Computational Astrophysics": {
-      "lat": 40.7397,
-      "lon": -73.9903,
-      "matched": "hand-placed: part of the Flatiron Institute, 162 Fifth Ave, New York"
+      "sameAs": "Flatiron Institute"
     },
     "Centre de Recherche Astrophysique de Lyon": {
       "lat": 45.6936,
@@ -103,9 +95,7 @@
       "matched": "Centro de Estudios de Física del Cosmos de Aragón, VF-TE-02, Arcos de las Salinas, Gúdar-Javalambre, Teruel, Aragón, España"
     },
     "CESR": {
-      "lat": 43.5626,
-      "lon": 1.4759,
-      "matched": "Toulouse, France (placed by hand) — same place as Institut de Recherche en Astrophysique et Planétologie, its successor"
+      "sameAs": "Institut de Recherche en Astrophysique et Planétologie"
     },
     "Chengdu Experimental Foreign Languages School": {
       "lat": 30.6587,
@@ -213,9 +203,7 @@
       "matched": "Jesi, Ancona, Marche, 60035, Italia"
     },
     "Københavns Universitet": {
-      "lat": 55.6802,
-      "lon": 12.5723,
-      "matched": "Københavns Universitet, Copenhagen (geocoded) — same place as University of Copenhagen"
+      "sameAs": "University of Copenhagen"
     },
     "Laboratoire d'Astrophysique de Marseille": {
       "lat": 43.3436,
@@ -398,9 +386,7 @@
       "matched": "City of Rochester, Monroe County, New York, United States"
     },
     "Ruprecht Karls Universität Heidelberg": {
-      "lat": 49.4186,
-      "lon": 8.6692,
-      "matched": "Universität Heidelberg, Handschuhsheimer Landstraße, Handschuhsheim, Heidelberg, Baden-Württemberg, 69121, Deutschland"
+      "sameAs": "Ruprecht-Karls-Universität Heidelberg"
     },
     "Ruprecht-Karls-Universität Heidelberg": {
       "lat": 49.4186,
@@ -408,9 +394,7 @@
       "matched": "Universität Heidelberg, Handschuhsheimer Landstraße, Handschuhsheim, Heidelberg, Baden-Württemberg, 69121, Deutschland"
     },
     "Rutgers The State University of New Jersey": {
-      "lat": 40.4969,
-      "lon": -74.449,
-      "matched": "Rutgers University, New Brunswick, NJ (geocoded)"
+      "sameAs": "Rutgers University"
     },
     "Rutgers University": {
       "lat": 40.5204,
@@ -433,14 +417,10 @@
       "matched": "Seattle, King County, Washington, United States"
     },
     "Simons Foundation": {
-      "lat": 40.7392,
-      "lon": -73.9909,
-      "matched": "hand-placed: 160 Fifth Ave, New York — Nominatim has no entry"
+      "sameAs": "Flatiron Institute"
     },
     "Smithsonian Astrophysical Observatory": {
-      "lat": 42.3814,
-      "lon": -71.1281,
-      "matched": "60 Garden Street, Cambridge, MA, USA (placed by hand) — same place as Center for Astrophysics Harvard & Smithsonian"
+      "sameAs": "Center for Astrophysics Harvard & Smithsonian"
     },
     "Smithsonian Institution": {
       "lat": 38.8888,
@@ -528,9 +508,7 @@
       "matched": "Orto Botanico dell'Università degli Studi di Cagliari, Stampaxi/Stampace, Casteddu/Cagliari, Sardigna/Sardegna, Italia"
     },
     "Università di Bologna": {
-      "lat": 44.4983,
-      "lon": 11.3545,
-      "matched": "Università di Bologna, Via dei Bibiena, Ghetto ebraico, Irnerio, Santo Stefano, Bologna, Emilia-Romagna, 40126, Italia"
+      "sameAs": "University of Bologna"
     },
     "Universität Bern": {
       "lat": 46.951,
@@ -593,9 +571,7 @@
       "matched": "University of Cambridge, 82-88, Hills Road, Petersfield, Cambridge, Cambridgeshire, Cambridgeshire and Peterborough, England, CB2 1NF, United Kingdom"
     },
     "University of Chicago": {
-      "lat": 41.7881,
-      "lon": -87.6048,
-      "matched": "University of Chicago, 5841, South Maryland Avenue, Hyde Park, Chicago, Hyde Park Township, Cook County, Illinois, 60637, United States"
+      "sameAs": "The University of Chicago"
     },
     "University of Colorado": {
       "lat": 40.0076,
@@ -708,9 +684,7 @@
       "matched": "Université Paris Cité – Campus Saint-Germain-des-Prés, 45, Rue des Saints-Pères, Quartier Saint-Thomas-d'Aquin, Paris 7e Arrondissement, Paris, Île-de-France, France métropolitaine, 75006, France"
     },
     "Universtity of Wisconsin": {
-      "lat": 43.0766,
-      "lon": -89.4125,
-      "matched": "hand-placed: University of Wisconsin-Madison. The name is misspelt on the ORCID record it came from, and is kept as written so the collector still matches it."
+      "sameAs": "University of Wisconsin Madison"
     },
     "Valencia, Spain": {
       "lat": 39.4697,

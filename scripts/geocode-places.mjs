@@ -3,7 +3,8 @@
 //
 // Both live in one file because they are the same kind of fact — somewhere on
 // Earth the site draws a dot for — and one committed answer per place means the
-// two maps cannot disagree about where Cambridge is.
+// two maps cannot disagree about where Cambridge is. A name that is the same
+// campus as another is `{ sameAs }` it, so each coordinate is written once.
 //
 // Issue #22: geocoding at build time would make CI depend on a third-party
 // API, which this repo avoids everywhere else. So this is run by hand and the
@@ -94,7 +95,10 @@ fs.writeFileSync(OUT, `${JSON.stringify({
     + 'presentation locations alike — resolved once with scripts/geocode-places.mjs and '
     + 'committed so the site and CI never call a geocoder. `matched` is what the geocoder '
     + 'thought it found — check it before trusting a pin. Safe to correct by hand: the '
-    + 'script only fills in what is missing.',
+    + 'script only fills in what is missing. '
+    + 'A name that is the same campus as another is `{ "sameAs": "<other name>" }` rather than a '
+    + 'second copy of the coordinates; read places through src/lib/places.js. Keep one entry per '
+    + 'campus: tests/places.test.js fails on two entries with the same coordinates.',
   source: 'https://nominatim.openstreetmap.org (ODbL)',
   places: Object.fromEntries(Object.entries(places).sort(([a], [b]) => a.localeCompare(b))),
 }, null, 2)}\n`);
