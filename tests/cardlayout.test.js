@@ -18,7 +18,7 @@ import { BUTTON_MIN, REM, FEATURE, TOKENS, lengths, lineBox, lineHeight, chromeS
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
-import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, atWidth, parseName, cardFace, cardFacts, cardLinks, linkKeys, LOOKS } from '../src/lib/cards.js';
+import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth, parseName, cardFace, cardFacts, cardLinks, linkKeys, LOOKS } from '../src/lib/cards.js';
 import { items } from '../src/lib/data.js';
 import { syncKey, cardRules } from '../scripts/lib/cardsync.mjs';
 
@@ -96,8 +96,8 @@ describe('the browser’s own measurement of each card', () => {
   });
 
   it('is at several widths, narrow enough to wrap the buttons, and in both themes at the README’s', () => {
-    expect([...new Set(fixture.cards.flatMap((c) => c.cases.map((k) => k.width)))].sort((a, b) => a - b)).toEqual([200, 280, 400, 640]);
-    expect(fixture.cards.flatMap((c) => c.cases).filter((k) => k.width === CARD_SVG_WIDTH).map((k) => k.theme).sort()).toEqual(THEMES.flatMap((t) => fixture.cards.map(() => t)).sort());
+    expect([...new Set(fixture.cards.flatMap((c) => c.cases.map((k) => k.width)))].sort((a, b) => a - b)).toEqual([200, 280, 400, 640, CARD_WIDE]);
+    expect(fixture.cards.flatMap((c) => c.cases).filter((k) => [CARD_SVG_WIDTH, CARD_WIDE].includes(k.width)).map((k) => k.theme).sort()).toEqual(THEMES.flatMap((t) => fixture.cards.flatMap(() => [t, t])).sort());
     // A card whose buttons run onto a second row is among them, or the wrapping is untested.
     const rows = (m) => new Set(m.ops.filter((o) => o.k === 'box' && o.href).map((o) => Math.round(o.y))).size;
     expect(fixture.cards.some((c) => c.cases.some((k) => rows(k.model) > 1))).toBe(true);
@@ -162,11 +162,12 @@ describe('what it draws is what the site holds', () => {
     expect(Object.keys(TIER_PRESET).sort()).toEqual(['headline', 'lead']);
   });
 
-  for (const { input, slug } of softwareCards) {
+  for (const card of softwareCards) {
+    const { input, slug, width } = card;
     for (const theme of THEMES) {
       it(`${input.id}, ${theme}: its title, its words, its links in the card’s order, its stars — and a valid SVG`, async () => {
         const record = items.find((i) => i.id === input.id);
-        const model = softwareModel(input, { slug, theme, measure });
+        const model = softwareModel(input, { slug, theme, measure, minHeight: card.height });
         const links = model.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.href);
         expect(links).toEqual(cardLinks(record).map((l) => new URL(l.url).href));
         const texts = model.ops.filter((o) => o.k === 'text');
@@ -179,13 +180,13 @@ describe('what it draws is what the site holds', () => {
           expect(input.links.some((l) => l.key === 'stars')).toBe(false);
         }
         // Every word of the text, in order, none dropped or added.
-        const body = texts.filter((o) => o.font === 'IBM Plex Sans' && o.size === lengths({ dials: parseName(slug).dials, width: 400 }).fs).map((o) => o.s).reduce((a, b) => (a.endsWith('-') ? a + b : `${a} ${b}`));
+        const body = texts.filter((o) => o.font === 'IBM Plex Sans' && o.size === lengths({ dials: parseName(slug).dials, width }).fs).map((o) => o.s).reduce((a, b) => (a.endsWith('-') ? a + b : `${a} ${b}`));
         expect(body).toBe(input.text.replace(/\s+/g, ' '));
         if (record.tier === 'lead') expect(texts.filter((o) => o.color === `${TOKENS.accent[THEMES.indexOf(theme)].toLowerCase()}ff`).map((o) => o.s).join(' ')).toBe(record.role.toUpperCase());
 
-        const svg = drawCard(input, slug, theme);
+        const svg = drawCard(card, theme);
         const meta = await sharp(Buffer.from(svg)).metadata();
-        expect([meta.format, meta.width]).toEqual(['svg', 400]);
+        expect([meta.format, meta.width, meta.height]).toEqual(['svg', width, Math.round(card.height)]);
         expect(svg).toBe(modelToSvg(model));
         expect(svg.match(/<a href=/g)?.length).toBeGreaterThanOrEqual(links.length);
         for (const url of links) expect(svg).toContain(`<a href="${url.replace(/&/g, '&amp;')}">`);
@@ -195,12 +196,12 @@ describe('what it draws is what the site holds', () => {
   }
 
   it('every card fits its box: nothing runs past the card’s padding, nothing is left over', () => {
-    for (const { input, slug } of softwareCards) {
+    for (const { input, slug, width } of softwareCards) {
       const m = softwareModel(input, { slug, theme: 'light', measure });
-      const { pad } = lengths({ dials: parseName(slug).dials, width: CARD_SVG_WIDTH });
+      const { pad } = lengths({ dials: parseName(slug).dials, width });
       for (const o of m.ops.slice(2)) {
         expect(o.x, input.id).toBeGreaterThanOrEqual(pad[1] - 0.01);
-        expect(o.x + o.w, input.id).toBeLessThanOrEqual(CARD_SVG_WIDTH - pad[1] + 1.5);
+        expect(o.x + o.w, input.id).toBeLessThanOrEqual(width - pad[1] + 1.5);
         expect(o.y + o.h, input.id).toBeLessThanOrEqual(m.h - pad[2] + 0.01);
       }
     }
@@ -215,6 +216,35 @@ describe('what it draws is what the site holds', () => {
     expect(full.h - bare.h).toBeCloseTo(0.65 * fs + Math.max(ib, BUTTON_MIN), 6);
     const last = Math.max(...bare.ops.filter((o) => o.k === 'text').map((o) => o.y + o.h));
     expect(bare.h).toBeGreaterThanOrEqual(last + pad[2]);
+  });
+
+  it('lays the cards out in rows: the lead alone, as wide as two, the others two to a row, each row one height', () => {
+    const rows = Object.values(Object.groupBy(softwareCards, (c) => c.row));
+    expect(rows.map((r) => r.map((c) => c.input.tier))).toEqual([['lead'], ...Array.from({ length: Math.ceil((softwareCards.length - 1) / 2) }, (_, i) => (i * 2 + 2 <= softwareCards.length - 1 ? ['headline', 'headline'] : ['headline']))]);
+    for (const row of rows) {
+      expect(new Set(row.map((c) => c.height)).size).toBe(1);
+      for (const c of row) {
+        expect(c.width).toBe(c.input.tier === 'lead' ? CARD_WIDE : CARD_SVG_WIDTH);
+        expect(c.height).toBeGreaterThanOrEqual(softwareModel(c.input, { slug: c.slug, theme: 'light', measure }).h - 1e-9);
+      }
+    }
+    expect(CARD_WIDE).toBe(2 * CARD_SVG_WIDTH + 8);
+    // As the Software page orders them: the lead, then the headliners by name.
+    expect(softwareCards.slice(1).map((c) => c.input.id)).toEqual(softwareCards.slice(1).map((c) => c.input.id).sort());
+  });
+
+  it('is as tall as its row, its buttons at the foot', () => {
+    const { input, slug } = softwareCards.find((c) => c.input.id === 'unxt');
+    const was = softwareModel(input, { slug, theme: 'light', measure });
+    const taller = softwareModel(input, { slug, theme: 'light', measure, minHeight: was.h + 30 });
+    expect(taller.h).toBeCloseTo(was.h + 30, 6);
+    const first = was.ops.findIndex((o) => o.k === 'box' && o.href); // the first button: the words are above it
+    taller.ops.forEach((o, i) => {
+      if (i < 2) expect(o.h).toBeCloseTo(was.ops[i].h + 30, 6);
+      else expect(o.y - was.ops[i].y, `op ${i}`).toBeCloseTo(i >= first ? 30 : 0, 6);
+    });
+    // Never shorter than itself.
+    expect(softwareModel(input, { slug, theme: 'light', measure, minHeight: 10 }).h).toBe(was.h);
   });
 
   it('files are named /cards/<id>-<theme>.svg', () => {

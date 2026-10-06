@@ -151,11 +151,11 @@ export function metrics(size) {
 
 /**
  * @param {ReturnType<typeof softwareInput>} input
- * @param {{ slug: string, theme: 'light'|'dark', measure: (text: string, f: { font: string, weight: number, size: number, ls: number }) => number }} o
+ * @param {{ slug: string, theme: 'light'|'dark', minHeight?: number, measure: (text: string, f: { font: string, weight: number, size: number, ls: number }) => number }} o
  *   measure: the advance width of text in a face, letter-spacing included
  * @returns the model src/lib/cardsvg.js writes: { title, w, h, r, ops }
  */
-export function softwareModel(input, { slug, theme, measure: advance }) {
+export function softwareModel(input, { slug, theme, measure: advance, minHeight = 0 }) {
   // A line is measured at the size Chrome measures it at.
   const measure = (text, f) => advance(text, { ...f, size: chromeSize(f.size) });
   const card = read(slug);
@@ -224,6 +224,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   const small = { font: 'IBM Plex Sans', weight: 400, size: 0.72 * REM, ls: 0, color: c.mute };
   let x = padX;
   let rowTop = y;
+  const buttonsFrom = ops.length;
   for (const l of input.links) {
     const label = l.year ?? l.count;
     const lw = label ? measure(label, small) : 0;
@@ -243,7 +244,10 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
     }
     x += w + gap;
   }
-  const H = (has ? rowTop + itemH : y) + padB;
+  // A card in a row with taller ones is as tall as they are, its buttons at the foot, as in the site's grid.
+  const natural = (has ? rowTop + itemH : y) + padB, extra = Math.max(0, minHeight - natural);
+  for (const o of ops.slice(buttonsFrom)) o.y += extra;
+  const H = natural + extra;
 
   const radii = Array(4).fill(L.rad);
   // The page's ground, then the card's tint of ink over it.

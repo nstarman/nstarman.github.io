@@ -27,12 +27,12 @@ await page.goto(`${site}/software/`); // somewhere that can import the site's mo
 // Widths either side of the README's, so wrapping, a second row of buttons and
 // the formulas of a card of set width are measured, not only reasoned about.
 // Light at each; dark too at the README's own.
-const WIDTHS = [200, 280, 400, 640];
-const README = 400;
+const WIDTHS = [200, 280, 400, 640, 808];
+const README = [400, 808]; // a card's width in the README: the lead's spans two columns (CARD_WIDE)
 for (const { id } of tiers) {
   const rec = { id, cases: [] };
   for (const width of WIDTHS) {
-    for (const theme of width === README ? ['light', 'dark'] : ['light']) {
+    for (const theme of README.includes(width) ? ['light', 'dark'] : ['light']) {
       // The name goes in the query, as the README's images ask for it; the page
       // applies it before the first paint.
       const slug = await page.evaluate(async ({ id, width }) => {

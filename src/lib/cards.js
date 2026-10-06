@@ -35,6 +35,10 @@ export const TIER_PRESET = { lead: 'softwareLead', headline: 'softwareHeadline' 
  *  src/pages/cards/. */
 export const CARD_SVG_WIDTH = 400;
 
+/** The lead package's card, as wide as a row of two of the others and the gap
+ *  between them — so it spans the README's two columns. */
+export const CARD_WIDE = 2 * CARD_SVG_WIDTH + 8;
+
 /** A preset's name at a set width in px, in place of filling its column. */
 export const atWidth = (slug, width) => slug.replace(/^size:fill:/, `size:${width}:`);
 
