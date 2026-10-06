@@ -1,0 +1,109 @@
+name: Card layout fuzz
+
+# The browser-free software cards (src/lib/cardlayout.js, which draws the
+# README's images) are held to Chrome's own layout of the real card CSS by
+# tests/cardlayout.test.js — at a few widths, from a recording. This asks Chrome
+# about cards nobody recorded: tests/cardlayout.differential.test.js has
+# fast-check generate a width, a title, text, a role and a subset of a
+# package's buttons, lays each out in Chrome on the real embed page and with
+# cardlayout.js, and compares them. A difference is shrunk to the smallest card
+# that shows it, with a seed to replay it.
+#
+# Slow and needs a browser, so it is not part of CI: it runs weekly, by hand
+# (Actions > Run workflow, with a number of cards and optionally a seed to
+# replay), and when a pull request is given the fuzz-cards label — the label is
+# taken off again when the run ends, so adding it again runs it again.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"   # 05:00 UTC on Mondays
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "How many cards to try"
+        default: "500"
+      seed:
+        description: "A seed to replay a failure (from its report); empty for a new one"
+        default: ""
+      path:
+        description: "The failure's path, with the seed, to replay it directly"
+        default: ""
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write   # to take the label off
+
+concurrency:
+  group: card-layout-fuzz-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz:
+    name: fuzz
+    # On a pull request, only the one label.
+    if: github.event_name != 'pull_request' || github.event.label.name == 'fuzz-cards'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      FUZZ_SITE: http://localhost:4321
+      FC_RUNS: ${{ inputs.runs || (github.event_name == 'schedule' && '1000') || '300' }}
+      FC_SEED: ${{ inputs.seed }}
+      FC_PATH: ${{ inputs.path }}
+      FUZZ_OUT: fuzz-report
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Install the browser the cards are laid out in
+        run: npx playwright install --with-deps chromium
+
+      # The test imports the site's own modules into the page, so it needs the
+      # dev server, not a build.
+      - name: Start the site
+        run: |
+          nohup npx astro dev --port 4321 > dev.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf "$FUZZ_SITE/software/" > /dev/null && exit 0
+            sleep 2
+          done
+          cat dev.log
+          echo "The site did not start." >&2
+          exit 1
+
+      - name: Compare the cards with Chrome's
+        run: CARD_FUZZ=1 npx vitest run tests/cardlayout.differential.test.js
+
+      - name: Report a difference
+        if: failure()
+        run: |
+          {
+            echo "### Card layout differs from Chrome's"
+            echo
+            echo "Seed and path are in the report: replay with the workflow's \`seed\` and \`path\` inputs, or"
+            echo '`CARD_FUZZ=1 FC_SEED=… FC_PATH=… npx vitest run tests/cardlayout.differential.test.js`.'
+            echo
+            echo '```'
+            cat fuzz-report/counterexample.txt 2>/dev/null || echo "(no report written: see the log)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: fuzz-report
+          path: |
+            fuzz-report
+            dev.log
+          retention-days: 30
+
+      # Taken off whatever the result, so that adding it again runs it again.
+      - name: Take the label off
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --remove-label fuzz-cards
