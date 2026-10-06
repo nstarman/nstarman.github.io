@@ -102,7 +102,7 @@ describe('whatever the data', () => {
       for (const o of texts(model).filter((x) => x.font !== 'IBM Plex Sans' || x.size === L.fs)) {
         // A title is broken anywhere, so it always fits; a word of the text or the role that cannot be broken may not.
         if (o.weight === 500) expect(o.w, `title line "${o.s}"`).toBeLessThanOrEqual(cw + 1e-6);
-        else if (o.w > cw + 1e-6) expect(/[\s—]|-(?=[A-Za-z])/.test(o.s), `"${o.s}" is ${o.w} in ${cw}`).toBe(false);
+        else if (o.w > cw + 1e-6) expect(/[\s—]|[-–…?](?=.)/.test(o.s), `"${o.s}" is ${o.w} in ${cw}`).toBe(false);
       }
     }));
   });
@@ -179,7 +179,7 @@ describe('wrapping', () => {
       for (const l of wrap(text, width, widthOf)) {
         expect(l.length).toBeGreaterThan(0);
         expect(l).toBe(l.trim());
-        if (widthOf(l) > width + 1e-9) expect(/[\s—]|-(?=[A-Za-z])/.test(l), l).toBe(false);
+        if (widthOf(l) > width + 1e-9) expect(/[\s—]|[-–…?](?=.)/.test(l), l).toBe(false);
       }
     }));
   });

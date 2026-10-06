@@ -295,6 +295,10 @@ describe('the pieces', () => {
     expect(wrap('Unit-aware quantities', 100, w)).toEqual(['Unit-aware', 'quantities']);
     expect(wrap('Unit-aware quantities', 55, w)).toEqual(['Unit-', 'aware', 'quantities']);
     expect(wrap('resolution — the layer', 130, w)).toEqual(['resolution —', 'the layer']);
+    // Each mark Chrome breaks after, tried in a narrow box in Chrome: and not after the rest.
+    for (const [text, lines] of [['aaaaaa-99', ['aaaaaa-', '99']], ['2020-2021', ['2020-', '2021']], ['aaaaaa–bb', ['aaaaaa–', 'bb']], ['aaaaaa…bb', ['aaaaaa…', 'bb']], ['aaaaaa?bb', ['aaaaaa?', 'bb']], ['aaaaaa—bb', ['aaaaaa—', 'bb']], ['aaaaaa/bb', ['aaaaaa/bb']], ['aaaaaa!bb', ['aaaaaa!bb']], ['aaaaaa.bb', ['aaaaaa.bb']]]) {
+      expect(wrap(text, 70, w), text).toEqual(lines);
+    }
     expect(wrap('', 100, w)).toEqual([]);
     expect(wrap('onlyoneverylongword', 50, w)).toEqual(['onlyoneverylongword']);
   });

@@ -80,12 +80,13 @@ export const softwareInput = (item) => ({
   links: cardLinks(item).map((l) => ({ key: relKey(l), url: l.url, label: l.label ?? null, year: l.year ?? null, count: l.count ?? null })),
 });
 
-/** A card's text as lines no wider than `width`, broken as a browser does:
- *  after a space or a hyphen between letters, and either side of a dash. With
+/** A card's text as lines no wider than `width`, broken as Chrome does: after
+ *  a space, a hyphen, an en dash, an ellipsis or a question mark, and either
+ *  side of an em dash (found by trying each mark in a narrow box). With
  *  `anywhere` (overflow-wrap:anywhere, as a title has it) a word wider than a
  *  line is broken wherever it fills it, rather than left to run over. */
 export function wrap(text, width, widthOf, { anywhere = false } = {}) {
-  const words = text.match(/[^\s-—]*-(?=[A-Za-z])|[^\s—]+-?|—|\s+/g) ?? [];
+  const words = text.match(/[^\s—\-–…?]*[-–…?]|[^\s—\-–…?]+|—|\s+/g) ?? [];
   const lines = [];
   let line = '';
   const put = (w) => {
