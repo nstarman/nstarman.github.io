@@ -215,7 +215,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
     const label = l.year ?? l.count;
     const lw = label ? measure(label, small) : 0;
     // A button with a label is its padding, the mark, a gap and the label, in a border.
-    const w = label ? Math.max(2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2, ib) : ib;
+    const w = label ? Math.max(2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2, BUTTON_MIN) : ib;
     if (x > padX && x + w > padX + cw + 1e-6) { x = padX; rowTop += ib + gap; }
     const icon = symbol(REL_ICON[l.key] ?? 'link');
     ops.push({ k: 'box', x: x + 0.5, y: rowTop + 0.5, w: w - 1, h: ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });

@@ -242,6 +242,20 @@ describe('what it draws is what the site holds', () => {
 
 const buttonsOf = (m) => m.ops.filter((o) => o.k === 'box' && o.href);
 
+describe('a button with a label', () => {
+  it('is as wide as what is in it, at least a button’s least — not as wide as a button of its size, which a short label does not fill', () => {
+    const { input, slug } = softwareCards.find((c) => c.item.id === 'unxt');
+    const stars = { key: 'stars', url: 'https://example.test/', label: null, year: null, count: '0' };
+    const wide = 844; // the buttons' size is 49.78px there, and an icon with a one-digit label is 49.49px
+    const m = softwareModel({ ...input, links: [stars] }, { slug: slug.replace(/^size:\d+:/, `size:${wide}:`), theme: 'light', measure });
+    const box = m.ops.find((o) => o.k === 'box' && o.href);
+    const { ii, ib } = lengths({ dials: parseName(slug).dials, width: wide });
+    const label = m.ops.find((o) => o.k === 'text' && o.s === '0');
+    expect(box.w + 1).toBeCloseTo(2 * 0.4 * REM + ii + 0.25 * REM + label.w + 2, 6);
+    expect(box.w + 1).toBeLessThan(ib);
+  });
+});
+
 describe('a line’s box', () => {
   // Where Chrome's content area for IBM Plex steps up, found by bisecting Chrome:
   // [the size at the new height, that height, the height a hundredth below].
