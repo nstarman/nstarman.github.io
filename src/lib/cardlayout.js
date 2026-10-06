@@ -21,7 +21,7 @@
 // the browser put them rather than near them.
 
 import sprite from '../components/IconSprite.astro?raw';
-import { ownLink, cardLinks, cardText, parseName } from './cards.js';
+import { ownLink, cardLinks, cardText, parseName, SITE_PRESETS, TIER_PRESET } from './cards.js';
 import { REL_ICON, relKey } from './data.js';
 
 /** A button is never smaller than this: .iconbtn has min-width and min-height
@@ -39,56 +39,38 @@ export const TOKENS = {
   mute: ['#5A6472', '#8B96A8'], ruleStrong: ['#CFD6E0', '#313B4B'], accent: ['#2A5DA8', '#84AEEC'],
 };
 
-/** The look's steps, as global.css has them, in rem unless noted. A test reads
- *  the stylesheet and holds this to it. */
-export const STEPS = {
-  textsize: { minor: 0.72, compact: 0.78, standard: 0.88, feature: 1, display: 1.15 },
-  padding: { minor: [0.5, 0.6, 0.55], compact: [0.7, 0.8, 0.75], standard: [0.95, 1.05, 1], feature: [1.2, 1.35, 1.25], display: [1.5, 1.7, 1.55] },
-  corners: { minor: 10, compact: 12, standard: 16, feature: 18, display: 22 }, // px
-  buttons: { minor: [1.3, 0.68], compact: [1.45, 0.75], standard: [1.6, 0.8], feature: [1.9, 0.94], display: [2.2, 1.08] },
-  titlesize: { minor: 0.72 * 1.08, compact: 0.78 * 1.08, standard: 0.88 * 1.08, feature: 1.08, display: 1.15 * 1.08 },
-};
+/** The look the lead preset names, look:feature, as global.css has it, in rem
+ *  unless noted — a test reads the stylesheet and holds this to it. The
+ *  headline preset names none: it has the formulas of a card of set width. */
+export const FEATURE = { fs: 1, pad: [1.2, 1.35, 1.25], rad: 18, buttons: [1.9, 0.94] }; // rad in px
 
 // Chrome's metrics for IBM Plex, as the font's hhea table has them, in thousandths of an em.
 const ASCENT_UNITS = 1025;
 const DESCENT_UNITS = 275;
 
-const SUPPORTED = { figure: 'none', foot: 'center', authors: 'none', links: 'all', background: 'normal', height: 'fit', rest: 'whole', title: 'full', perRow: 'fit' };
+const TIER_SLUGS = new Set(Object.values(TIER_PRESET).map((k) => SITE_PRESETS.find((p) => p.key === k).slug));
 
-/** What a name must be, for this to draw it; anything else throws. Returns
- *  the look's dials, the width, and what the card shows. */
+/** The card a name asks for, which must be a tier's preset at a set width —
+ *  the only cards this draws; any other throws. */
 function read(slug) {
   const spec = parseName(slug);
-  for (const [k, v] of Object.entries(SUPPORTED)) if (spec[k] !== v) throw new Error(`cardlayout cannot draw ${k}:${spec[k]} (only ${v}), in ${slug}`);
-  if (typeof spec.width !== 'number') throw new Error(`cardlayout needs a set width, in ${slug}`);
-  if (spec.titleLink !== 'link') throw new Error(`cardlayout draws the title as a link, in ${slug}`);
-  if (!['details', 'summary'].includes(spec.text)) throw new Error(`cardlayout draws details or summary, in ${slug}`);
-  if (spec.extras.some((e) => e !== 'role')) throw new Error(`cardlayout draws only the role extra, in ${slug}`);
-  for (const k of Object.keys(spec.dials)) if (!(k in STEPS)) throw new Error(`cardlayout cannot draw look:${k}, in ${slug}`);
-  // A name that is anything else — a part moved, a space, an area — leaves a
-  // key the checks above do not name.
-  const known = new Set([...Object.keys(SUPPORTED), 'dials', 'width', 'titleLink', 'titleAt', 'text', 'extras']);
-  for (const k of Object.keys(spec)) if (!known.has(k)) throw new Error(`cardlayout does not know ${k}, in ${slug}`);
-  return { dials: spec.dials, width: spec.width, text: spec.text, role: spec.extras.includes('role') };
+  if (typeof spec.width !== 'number' || !TIER_SLUGS.has(slug.replace(/^size:\d+:/, 'size:fill:'))) throw new Error(`cardlayout draws only the software tier presets at a set width, not ${slug}`);
+  return { dials: spec.dials, width: spec.width, role: spec.extras.includes('role') };
 }
 
-/** The lengths a card takes from its look: a step where it names one, and the
- *  formulas of a card of set width where it does not. */
 /** A length as Chrome lays it out: down to 1/64 of a px. */
 export const layoutUnit = (x) => Math.floor(x * 64 + 1e-9) / 64;
 
+/** The lengths a card takes from its look: FEATURE where it names one, and the
+ *  formulas of a card of set width where it does not. */
 export function lengths({ dials, width }) {
-  const u = width / 1; // the card is not both set in width and height, so its stretch is 1
-  const px = { fs: 7.2 + 0.0216 * u, pad: [0.06 * u - 4, 0.064 * u - 3.2, 0.06 * u - 4], rad: 2.5 + 0.0375 * u, ib: 11.8 + 0.045 * u, ii: 6.9 + 0.02 * u };
-  const fs = dials.textsize ? STEPS.textsize[dials.textsize] * REM : px.fs;
-  const pad = dials.padding ? STEPS.padding[dials.padding].map((r) => r * REM) : px.pad;
-  const [ib, ii] = dials.buttons ? STEPS.buttons[dials.buttons].map((r) => r * REM) : [px.ib, px.ii];
+  const u = width; // the card is not both set in width and height, so its stretch is 1
+  const feature = dials.textsize === 'feature';
+  const fs = feature ? FEATURE.fs * REM : 7.2 + 0.0216 * u;
+  const pad = feature ? FEATURE.pad.map((r) => r * REM) : [0.06 * u - 4, 0.064 * u - 3.2, 0.06 * u - 4];
+  const [ib, ii] = feature ? FEATURE.buttons.map((r) => r * REM) : [11.8 + 0.045 * u, 6.9 + 0.02 * u];
   // Lengths are laid out in 1/64 of a px, down: a card of 316px has its padding at 17.015625.
-  return {
-    fs, pad: pad.map(layoutUnit), ib: layoutUnit(ib), ii: layoutUnit(ii),
-    rad: dials.corners ? STEPS.corners[dials.corners] : px.rad,
-    ts: dials.titlesize ? STEPS.titlesize[dials.titlesize] * REM : 1.08 * fs,
-  };
+  return { fs, pad: pad.map(layoutUnit), ib: layoutUnit(ib), ii: layoutUnit(ii), rad: feature ? FEATURE.rad : 2.5 + 0.0375 * u, ts: 1.08 * fs };
 }
 
 /** The input a card takes from an item: everything the card shows, so a card
@@ -192,7 +174,6 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   // Then the words, a block of their own: the role, where the card has one,
   // above the text.
   y += 0.35 * L.fs;
-  let first = true;
   if (card.role && input.role) {
     const rs = 0.78 * L.fs;
     const o = { font: 'IBM Plex Mono', weight: 400, size: rs, ls: 0.09 * rs, color: c.accent };
@@ -202,10 +183,9 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
       text(padX, r.y, r.h, s, measure(s, o), o);
       y += lh;
     }
-    first = false;
+    y += 0.15 * L.fs;
   }
   const body = { font: 'IBM Plex Sans', weight: 400, size: L.fs, ls: 0, color: c.mute };
-  if (!first) y += 0.15 * L.fs;
   for (const s of wrap(input.text, cw, widthOf(body))) {
     const r = lineBox(y, 1.5 * L.fs, L.fs);
     text(padX, r.y, r.h, s, measure(s, body), body);

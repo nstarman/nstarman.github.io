@@ -5,9 +5,9 @@ import { softwareCards, cardFile } from '../../lib/softwarecards.js';
 
 export function GET({ site }) {
   const abs = (p) => new URL(p, site).href;
-  const body = softwareCards.map(({ item }) => ({
-    id: item.id, tier: item.tier, href: item.href,
-    light: abs(cardFile(item.id, 'light')), dark: abs(cardFile(item.id, 'dark')),
+  const body = softwareCards.map(({ input }) => ({
+    id: input.id, tier: input.tier, href: input.href,
+    light: abs(cardFile(input.id, 'light')), dark: abs(cardFile(input.id, 'dark')),
   }));
   return new Response(`${JSON.stringify({ cards: body }, null, 2)}\n`, { headers: { 'content-type': 'application/json' } });
 }

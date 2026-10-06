@@ -59,6 +59,11 @@ for (const { id } of tiers) {
 }
 await browser.close();
 out.syncKey = syncKey();
+// Small: each icon's markup once, by number, and one case to a line — the models
+// are long, and what a change to the card does shows as the lines that moved.
+const svgs = [];
+for (const c of out.cards) for (const k of c.cases) for (const o of k.model.ops) if (o.svg) o.svg = svgs.indexOf(o.svg) >= 0 ? svgs.indexOf(o.svg) : svgs.push(o.svg) - 1;
+const cards = out.cards.map((c) => `{"id":${JSON.stringify(c.id)},"input":${JSON.stringify(c.input)},"cases":[\n${c.cases.map((k) => JSON.stringify(k)).join(',\n')}\n]}`);
 fs.mkdirSync('tests/fixtures', { recursive: true });
-fs.writeFileSync('tests/fixtures/software-cards.json', `${JSON.stringify(out, null, 1)}\n`);
+fs.writeFileSync('tests/fixtures/software-cards.json', `{"syncKey":"${out.syncKey}","svgs":${JSON.stringify(svgs)},\n"cards":[\n${cards.join(',\n')}\n]}\n`);
 console.log(`recorded ${out.cards.length} cards`);

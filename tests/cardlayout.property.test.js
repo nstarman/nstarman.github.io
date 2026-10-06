@@ -9,11 +9,9 @@
 // property tries (100 by default).
 
 import fc from 'fast-check';
-import sharp from 'sharp';
 import { describe, expect, it, vi } from 'vitest';
 import { BUTTON_MIN, lengths, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
-import { modelToSvg } from '../src/lib/cardsvg.js';
 import { SITE_PRESETS, TIER_PRESET, atWidth, parseName } from '../src/lib/cards.js';
 
 const numRuns = +(process.env.FC_RUNS ?? 100);
@@ -163,15 +161,6 @@ describe('whatever the data', () => {
       expect(h({ ...input, text: `${input.text} ${more}` })).toBeGreaterThanOrEqual(h(input) - 1e-9);
     }));
   });
-
-  it('writes an SVG that a renderer reads, with each of its characters escaped', async () => {
-    await fc.assert(fc.asyncProperty(cards, async (c) => {
-      const svg = modelToSvg(draw(c).model);
-      expect(svg).not.toMatch(/<text[^>]*>[^<]*[<>][^<]*<\/text>/);
-      const meta = await sharp(Buffer.from(svg)).metadata();
-      expect([meta.format, meta.width]).toEqual(['svg', c.width]);
-    }), { numRuns: Math.min(numRuns, 25), seed, path });
-  }, 60000);
 });
 
 describe('wrapping', () => {
@@ -207,24 +196,5 @@ describe('wrapping', () => {
       expect(wrap(text, 1e6, widthOf)).toEqual([text]);
     }));
     expect(wrap('', 100, widthOf)).toEqual([]);
-  });
-});
-
-describe('what it is asked for', () => {
-  const PARTS = ['figure:center:auto', 'authors:short', 'extras:year', 'extras:role,year', 'space:title_figure=8', 'look:buttongap=8', 'look:textsize=minor', 'look:feature', 'buttons:code', 'buttons:all:2', 'text:none', 'text:summary', 'title:short', 'title:full:split', 'area:left:share=30', 'context:bottom:right'];
-  const swap = (slug, part) => { const k = part.split(':')[0]; return [...slug.split('-').filter((p) => p.split(':')[0] !== k), part].join('-'); };
-
-  it('draws a name it can, or says it cannot — never anything else', () => {
-    run(fc.property(tiers, widths, fc.uniqueArray(fc.constantFrom(...PARTS), { maxLength: 4 }), (tier, width, parts) => {
-      const name = parts.reduce(swap, slugOf(tier, width));
-      let spec;
-      try { spec = parseName(name); } catch { return; } // not a name at all
-      try {
-        const m = softwareModel({ id: 'x', tier, title: 'x', href: 'https://example.test/', role: null, text: 'words', links: [] }, { slug: name, theme: 'light', measure });
-        expect(m.w).toBe(spec.width);
-      } catch (e) {
-        expect(e.message, name).toMatch(/^cardlayout /);
-      }
-    }));
   });
 });

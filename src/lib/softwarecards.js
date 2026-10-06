@@ -13,11 +13,7 @@ export const THEMES = ['light', 'dark'];
 /** Each lead and headline package, with the name of its card. */
 export const softwareCards = items
   .filter((i) => i.type === 'software' && i.tier in TIER_PRESET)
-  .map((item) => ({
-    item: { id: item.id, tier: item.tier, href: softwareInput(item).href },
-    input: softwareInput(item),
-    slug: atWidth(SITE_PRESETS.find((p) => p.key === TIER_PRESET[item.tier]).slug, CARD_SVG_WIDTH),
-  }));
+  .map((item) => ({ input: softwareInput(item), slug: atWidth(SITE_PRESETS.find((p) => p.key === TIER_PRESET[item.tier]).slug, CARD_SVG_WIDTH) }));
 
 export const cardFile = (id, theme) => `/cards/${id}-${theme}.svg`;
 

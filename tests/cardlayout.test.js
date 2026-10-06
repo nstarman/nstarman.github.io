@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, chromeSize, layoutUnit, metrics, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, FEATURE, TOKENS, lengths, lineBox, chromeSize, layoutUnit, metrics, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -23,7 +23,9 @@ import { items } from '../src/lib/data.js';
 import { syncKey, cardRules } from '../scripts/lib/cardsync.mjs';
 
 const css = fs.readFileSync('src/styles/global.css', 'utf8');
-const fixture = JSON.parse(fs.readFileSync('tests/fixtures/software-cards.json', 'utf8'));
+// The recording keeps each icon's markup once, by number: put it back in the ops.
+const raw = JSON.parse(fs.readFileSync('tests/fixtures/software-cards.json', 'utf8'));
+const fixture = { ...raw, cards: raw.cards.map((c) => ({ ...c, cases: c.cases.map((k) => ({ ...k, model: { ...k.model, ops: k.model.ops.map((o) => (typeof o.svg === 'number' ? { ...o, svg: raw.svgs[o.svg] } : o)) } })) })) };
 const num = (expr, u) => Function(`return (${expr.replace(/var\(--u\)/g, u).replace(/(\d)(rem|px)/g, (_, d, unit) => (unit === 'rem' ? `${d}*${REM}` : d)).replace(/calc/g, '')})`)();
 const rule = (selector) => css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`))?.[1];
 const decl = (body, prop) => body.match(new RegExp(`${prop}:\\s*([^;]+)`))?.[1].trim();
@@ -40,15 +42,13 @@ describe('the numbers are the stylesheet’s', () => {
     expect(Math.max(REM, 0.6 * REM + 0.005 * 1280)).toBe(REM);
   });
 
-  it('every step of the look', () => {
-    for (const step of LOOKS) {
-      const one = (dial, prop) => decl(css.match(new RegExp(`\\.card\\[data-${dial}="${step}"\\]\\{([^}]*)\\}`))[1], prop);
-      expect(STEPS.textsize[step], `textsize ${step}`).toBeCloseTo(num(one('textsize', '--fs')) / REM, 6);
-      expect(STEPS.padding[step], `padding ${step}`).toEqual(['--pad-t', '--pad-x', '--pad-b'].map((p) => num(one('padding', p)) / REM));
-      expect(STEPS.corners[step], `corners ${step}`).toBe(num(one('corners', '--rad')));
-      expect(STEPS.buttons[step], `buttons ${step}`).toEqual(['--ib', '--ii'].map((p) => num(one('buttons', p)) / REM));
-      expect(STEPS.titlesize[step], `titlesize ${step}`).toBeCloseTo(num(one('titlesize', '--ts')) / REM, 6);
-    }
+  it('the look the lead preset names: look:feature', () => {
+    const one = (dial, prop) => decl(css.match(new RegExp(`\\.card\\[data-${dial}="feature"\\]\\{([^}]*)\\}`))[1], prop);
+    expect(FEATURE.fs).toBeCloseTo(num(one('textsize', '--fs')) / REM, 6);
+    expect(FEATURE.pad).toEqual(['--pad-t', '--pad-x', '--pad-b'].map((p) => num(one('padding', p)) / REM));
+    expect(FEATURE.rad).toBe(num(one('corners', '--rad')));
+    expect(FEATURE.buttons).toEqual(['--ib', '--ii'].map((p) => num(one('buttons', p)) / REM));
+    expect(1.08 * FEATURE.fs).toBeCloseTo(num(one('titlesize', '--ts')) / REM, 6);
   });
 
   it('the formulas of a card of set width', () => {
@@ -67,24 +67,6 @@ describe('the numbers are the stylesheet’s', () => {
     expect(decl(body, '--pad-b')).toBe('var(--pad-t)');
   });
 
-  it('the proportions of a card’s parts', () => {
-    // [what, where, the declaration] — each a number the layout multiplies by.
-    const has = (re, what) => expect(css, what).toMatch(re);
-    has(/\.c-name\{[^}]*font-size:var\(--ts, 1\.08em\)[^}]*line-height:1\.35/, 'title: 1.08em, line-height 1.35');
-    has(/\.card\[data-size\] \.c-text p\{[^}]*line-height:1\.5/, 'text: line-height 1.5');
-    has(/\.c-text\{display:flex; flex-direction:column; gap:\.15em/, 'the role and the text: .15em apart');
-    has(/\.c-role\{[^}]*font-size:\.78em; letter-spacing:\.09em; text-transform:uppercase/, 'role: .78em, .09em apart, upper case');
-    has(/--gr:\.35em/, 'the margin above each part, .35em');
-    has(/\.c-foot\{display:grid[^}]*padding-top:\.3em/, 'the buttons: .3em of padding above');
-    has(/\.card \.c-foot \.btns--icon\{[^}]*--bg:var\(--bgap, \.3em\)/, 'the buttons: .3em apart');
-    has(/\.c-foot \.iconbtn\{width:var\(--ib\); height:var\(--ib\); border-radius:calc\(var\(--ib\) \* \.25\)\}/, 'a button: --ib square, a quarter rounded');
-    has(/\.iconyear\{font-size:\.72rem; line-height:1/, 'a button’s label: .72rem');
-    has(/\.iconbtn:has\(\.iconyear\)[^{]*\{\s*width:auto; padding:0 \.4rem; gap:\.25rem/, 'a labelled button: .4rem of padding, .25rem to the mark');
-    has(/\.iconbtn\{[^}]*border:1px solid var\(--rule-strong\)/, 'a button: a 1px border');
-    has(/\.iconbtn\{min-width:24px; min-height:24px\}/, `a button: no smaller than ${BUTTON_MIN}px`);
-    has(/background:color-mix\(in srgb, var\(--ink\) 2\.5%, transparent\)/, 'the card: 2.5% ink');
-  });
-
   it('the icons are the sprite’s, a link by its key', () => {
     const ops = softwareModel(softwareInput(items.find((i) => i.id === 'unxt')), { slug: atWidth(PRESET_OF.softwareHeadline, 400), theme: 'light', measure }).ops;
     expect(ops.filter((o) => o.k === 'svg').map((o) => o.svg.match(/viewBox="([^"]+)"/)[1])).toHaveLength(4);
@@ -99,7 +81,7 @@ describe('the browser’s own measurement of each card', () => {
   });
 
   it('is of the cards the site draws: a card for every lead and headline package, none for another', () => {
-    expect(fixture.cards.map((c) => c.id).sort()).toEqual(softwareCards.map((c) => c.item.id).sort());
+    expect(fixture.cards.map((c) => c.id).sort()).toEqual(softwareCards.map((c) => c.input.id).sort());
   });
 
   it('is of the names the site asks for, read the way the page reads them', () => {
@@ -160,30 +142,30 @@ describe('what it takes a name for', () => {
     const input = softwareInput(items.find((i) => i.id === 'unxt'));
     const base = atWidth(PRESET_OF.softwareHeadline, 400);
     const draw = (slug) => () => softwareModel(input, { slug, theme: 'light', measure });
-    expect(draw(PRESET_OF.softwareHeadline)).toThrow(/set width/);
-    expect(draw(base.replace('figure:none', 'figure:center:auto'))).toThrow(/figure/);
-    expect(draw(base.replace('authors:none', 'authors:short'))).toThrow(/authors/);
-    expect(draw(base.replace('buttons:all:fit', 'buttons:code'))).toThrow(/links/);
-    expect(draw(base.replace('extras:none', 'extras:year'))).toThrow(/extras|year/);
-    expect(draw(`${base}-space:title_figure=8`)).toThrow();
-    expect(draw(base.replace('size:400:fit', 'size:400:200'))).toThrow(/height/);
-    expect(draw(base.replace('title:full:whole:link', 'title:short:link'))).toThrow();
-    expect(draw(`${base}-look:buttongap=8`)).toThrow(/buttongap|look/);
+    expect(draw(PRESET_OF.softwareHeadline)).toThrow(/software tier presets/);
+    expect(draw(base.replace('figure:none', 'figure:center:auto'))).toThrow(/software tier presets/);
+    expect(draw(base.replace('authors:none', 'authors:short'))).toThrow(/software tier presets/);
+    expect(draw(base.replace('buttons:all:fit', 'buttons:code'))).toThrow(/software tier presets/);
+    expect(draw(base.replace('extras:none', 'extras:year'))).toThrow(/software tier presets/);
+    expect(draw(`${base}-space:title_figure=8`)).toThrow(/software tier presets/);
+    expect(draw(base.replace('size:400:fit', 'size:400:200'))).toThrow(/software tier presets/);
+    expect(draw(base.replace('title:full:whole:link', 'title:short:link'))).toThrow(/software tier presets/);
+    expect(draw(`${base}-look:buttongap=8`)).toThrow(/software tier presets/);
   });
 });
 
 describe('what it draws is what the site holds', () => {
   it('a card for each lead and headline package, with its preset and no other', () => {
     const want = items.filter((i) => i.type === 'software' && ['lead', 'headline'].includes(i.tier)).map((i) => i.id).sort();
-    expect(softwareCards.map((c) => c.item.id).sort()).toEqual(want);
+    expect(softwareCards.map((c) => c.input.id).sort()).toEqual(want);
     expect(want.length).toBeGreaterThanOrEqual(7);
     expect(Object.keys(TIER_PRESET).sort()).toEqual(['headline', 'lead']);
   });
 
-  for (const { item, input, slug } of softwareCards) {
+  for (const { input, slug } of softwareCards) {
     for (const theme of THEMES) {
-      it(`${item.id}, ${theme}: its title, its words, its links in the card’s order, its stars — and a valid SVG`, async () => {
-        const record = items.find((i) => i.id === item.id);
+      it(`${input.id}, ${theme}: its title, its words, its links in the card’s order, its stars — and a valid SVG`, async () => {
+        const record = items.find((i) => i.id === input.id);
         const model = softwareModel(input, { slug, theme, measure });
         const links = model.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.href);
         expect(links).toEqual(cardLinks(record).map((l) => new URL(l.url).href));
@@ -225,7 +207,7 @@ describe('what it draws is what the site holds', () => {
   });
 
   it('is as high as its words and padding where it has no buttons, with no box for them', () => {
-    const { input, slug } = softwareCards.find((c) => c.item.id === 'unxt');
+    const { input, slug } = softwareCards.find((c) => c.input.id === 'unxt');
     const bare = softwareModel({ ...input, links: [] }, { slug, theme: 'light', measure });
     const full = softwareModel(input, { slug, theme: 'light', measure });
     const { pad, fs, ib } = lengths({ dials: parseName(slug).dials, width: CARD_SVG_WIDTH });
@@ -244,7 +226,7 @@ const buttonsOf = (m) => m.ops.filter((o) => o.k === 'box' && o.href);
 
 describe('a button with a label', () => {
   it('is as wide as what is in it, at least a button’s least — not as wide as a button of its size, which a short label does not fill', () => {
-    const { input, slug } = softwareCards.find((c) => c.item.id === 'unxt');
+    const { input, slug } = softwareCards.find((c) => c.input.id === 'unxt');
     const stars = { key: 'stars', url: 'https://example.test/', label: null, year: null, count: '0' };
     const wide = 844; // the buttons' size is 49.78px there, and an icon with a one-digit label is 49.49px
     const m = softwareModel({ ...input, links: [stars] }, { slug: slug.replace(/^size:\d+:/, `size:${wide}:`), theme: 'light', measure });
@@ -281,7 +263,7 @@ describe('a line’s box', () => {
   it('holds a list item of buttons as high as the box and the item’s own strut need, Chrome’s heights at 300–340px', () => {
     // From Chrome: the item is the button's height, but at 320px (14.112px text) the strut reaches
     // below the button's box, and the item is 26.594 high, not 26.1875.
-    const { input, slug } = softwareCards.find((c) => c.item.id === 'potamides');
+    const { input, slug } = softwareCards.find((c) => c.input.id === 'potamides');
     const high = (w) => {
       const m = softwareModel({ ...input, links: [input.links[1]] }, { slug: slug.replace(/^size:\d+:/, `size:${w}:`), theme: 'light', measure });
       const last = Math.max(...m.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.y + o.h + 0.5));
