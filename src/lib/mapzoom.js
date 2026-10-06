@@ -20,6 +20,10 @@ export function viewFor(W, H, z, cx, cy) {
   };
 }
 
+/** Is the point inside the view? */
+export const inView = (view, x, y) =>
+  x >= view.x && x <= view.x + view.w && y >= view.y && y <= view.y + view.h;
+
 /** Zoom to `z`, holding the point under the cursor (fractions fx, fy of the
  *  view) where it is: the centre of a button zoom is (.5, .5). */
 export function zoomAbout(W, H, view, z, fx = 0.5, fy = 0.5) {
@@ -38,6 +42,16 @@ function wire(fig) {
   let view = { x: 0, y: 0, w: W, h: H };
   const zoomOf = () => W / view.w;
 
+  // Where each person's pins are, so a trail can be dropped when none of them is
+  // on screen: a line running across the view from somewhere else says nothing.
+  const pinsOf = new Map();
+  for (const c of stage.querySelectorAll('.cmap-pin')) {
+    const dot = c.querySelector('circle');
+    if (!pinsOf.has(c.dataset.c)) pinsOf.set(c.dataset.c, []);
+    pinsOf.get(c.dataset.c).push([Number(dot.getAttribute('cx')), Number(dot.getAttribute('cy'))]);
+  }
+  const trails = [...stage.querySelectorAll('.cmap-trail')];
+
   const apply = () => {
     svg.setAttribute('viewBox', `${view.x.toFixed(2)} ${view.y.toFixed(2)} ${view.w.toFixed(2)} ${view.h.toFixed(2)}`);
     const z = zoomOf();
@@ -45,6 +59,9 @@ function wire(fig) {
     // the stylesheet scales them back: it multiplies every size by --k.
     svg.style.setProperty('--k', String(1 / z));
     stage.dataset.zoom = z > 1 ? String(z) : '';
+    for (const t of trails) {
+      t.toggleAttribute('data-offview', z > 1 && !pinsOf.get(t.dataset.c)?.some(([x, y]) => inView(view, x, y)));
+    }
     bar.querySelector('[data-zoom="in"]').disabled = z >= MAX_ZOOM;
     bar.querySelector('[data-zoom="out"]').disabled = z <= 1;
     bar.querySelector('[data-zoom="reset"]').disabled = z <= 1;

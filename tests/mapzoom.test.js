@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_ZOOM, viewFor, zoomAbout } from '../src/lib/mapzoom.js';
+import { MAX_ZOOM, inView, viewFor, zoomAbout } from '../src/lib/mapzoom.js';
 
 const W = 1000;
 const H = 500;
@@ -27,5 +27,13 @@ describe('map zoom', () => {
   it('clamps the zoom between the whole map and MAX_ZOOM', () => {
     expect(zoomAbout(W, H, whole, 0.2)).toEqual(whole);
     expect(zoomAbout(W, H, whole, 1e6).w).toBe(W / MAX_ZOOM);
+  });
+
+  it('knows which points are on screen, edges included', () => {
+    const v = { x: 100, y: 50, w: 250, h: 125 };
+    expect(inView(v, 100, 50)).toBe(true);
+    expect(inView(v, 350, 175)).toBe(true);
+    expect(inView(v, 99, 100)).toBe(false);
+    expect(inView(v, 200, 176)).toBe(false);
   });
 });

@@ -179,6 +179,7 @@
 .cmap-zoom button:disabled{color:var(--ink-faint); cursor:default; opacity:.55}
 /* Once there is somewhere to pan to, a drag pans: the page must not scroll under
    a finger doing it. */
+.cmap-trail[data-offview]{display:none}
 .cmap-stage[data-zoom] svg{cursor:grab; touch-action:none}
 
 /* A pin is pressable, so it should look it. */
