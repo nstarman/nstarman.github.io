@@ -69,7 +69,8 @@
     },
     {
       "family": "Donath",
-      "given": "Axel"
+      "given": "Axel",
+      "orcid": "0000-0003-4568-7005"
     },
     {
       "family": "Tollerud",
@@ -96,7 +97,8 @@
     },
     {
       "family": "Tocknell",
-      "given": "James"
+      "given": "James",
+      "orcid": "0000-0001-6637-6922"
     },
     {
       "family": "Jamieson",
@@ -117,7 +119,8 @@
     },
     {
       "family": "Bachetti",
-      "given": "Matteo"
+      "given": "Matteo",
+      "orcid": "0000-0002-4576-9337"
     },
     {
       "family": "Günther",
@@ -157,7 +160,8 @@
     },
     {
       "family": "Boquien",
-      "given": "Médéric"
+      "given": "Médéric",
+      "orcid": "0000-0003-0946-6176"
     },
     {
       "family": "Burke",
@@ -327,7 +331,8 @@
     },
     {
       "family": "Kerzendorf",
-      "given": "Wolfgang E."
+      "given": "Wolfgang E.",
+      "orcid": "0000-0002-0479-7235"
     },
     {
       "family": "Koch",
@@ -383,7 +388,8 @@
     },
     {
       "family": "Pascual",
-      "given": "Sergio"
+      "given": "Sergio",
+      "orcid": "0000-0002-9351-6051"
     },
     {
       "family": "Pascual-Granado",
@@ -523,7 +529,8 @@
     },
     {
       "family": "Tremblay",
-      "given": "Grant R."
+      "given": "Grant R.",
+      "orcid": "0000-0002-5445-5401"
     },
     {
       "family": "Val-Borro",
@@ -613,7 +620,7 @@
   "tags": [
     "software"
   ],
-  "internal": "Author list is complete: all 135 named authors, in the order Crossref gives for the DOI, with its 'Paper Authors' and 'Astropy Project Contributors' group headings dropped. The collaborator map is deliberately narrower: only the first ten plus every Astropy Active Voting Member on the paper (26 more, from config/astropy-voting-members.json, read 2026-08-25) may carry an ORCID - the people who run the project rather than the wider list who signed it. Of those 36, ORCIDs are recorded only where that ORCID record itself claims this DOI, which is 19. Everyone else is named without one, so does not reach the map; do not add ORCIDs to them. Two surname collisions were rejected on first initial: Daria Cara is not Mihai Cara, and Rohit R. Patil is not Aarya Patil.",
+  "internal": "Author list is complete: all 135 named authors, in the order Crossref gives for the DOI, with its 'Paper Authors' and 'Astropy Project Contributors' group headings dropped. The collaborator map is deliberately narrower: only the first 23 - the contribution-ordered block, after which the list is alphabetical - plus everyone who has ever held a role in the Astropy Project (coordinator, committee or role holder, lead or deputy, voting member active or emeritus; config/astropy-team-history.json, read from the history of astropy/astropy.org back to 2013, with config/astropy-voting-members.json) may carry an ORCID - the people who run or have run the project rather than the wider list who signed it. Of those, ORCIDs are recorded only where that ORCID record itself claims this DOI. Everyone else is named without one, so does not reach the map; do not add ORCIDs to them. Two surname collisions were rejected on first initial: Daria Cara is not Mihai Cara, and Rohit R. Patil is not Aarya Patil. Zé Vinícius, a past voting member, is José Vinícius de Miranda Cardoso; no ORCID claims this paper for him.",
   "details": "Co-wrote the Highlighted Feature Development, New and Planned Features, Precision, Accuracy & Reproducibility, and Performance sections.",
   "citekey": "Astropy+Price-Whelan+:2022:astropy-v5",
   "abstract": "The Astropy Project supports and fosters the development of open-source and openly-developed Python packages that provide commonly needed functionality to the astronomical community. A key element of the Astropy Project is the core package astropy, which serves as the foundation for more specialized projects and packages. In this article, we summarize key features in the core package as of the recent major release, version 5.0, and provide major updates for the Project. We then discuss supporting a broader ecosystem of interoperable packages, including connections with several astronomical observatories and missions. We also revisit the future outlook of the Astropy Project and the current status of Learn Astropy. We conclude by raising and discussing the current and future challenges facing the Project.",
