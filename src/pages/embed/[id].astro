@@ -116,35 +116,65 @@ const apply = `(function (facts) {
   }
   // The buttons in the name's order — as cardFace lists them, each kept or
   // not — each empty one a button's room, and each part listed among them
-  // moved into a row of its own there.
+  // moved into a row of its own there. One list for each group of buttons:
+  // the first is the card's own.
   var foot = card.querySelector('.c-foot'), ul = foot.querySelector('.btns--icon');
   var part = { stamp: foot.querySelector('.c-stamp'), year: foot.querySelector('.c-year'), context: foot.querySelector('.c-context') };
   var paperLi = ul.querySelector('.c-paperli'), lis = [].filter.call(ul.children, function (li) { return li !== paperLi; });
-  face.seq.forEach(function (x) {
-    var li;
-    if (x.paper) li = paperLi;
-    else if (x.link != null) li = lis[x.link];
-    else {
-      li = document.createElement('li');
-      li.dataset.rel = x.empty ? 'empty' : x.cell;
-      if (x.empty) li.setAttribute('aria-hidden', 'true');
-      else { li.className = 'c-cell'; li.appendChild(part[x.cell === 'position' ? 'stamp' : x.cell]); }
+  var uls = face.groups.map(function (g, n) {
+    var l = n === 0 ? ul : document.createElement('ul');
+    if (n > 0) {
+      l.className = 'btns btns--icon';
+      l.dataset.xg = '';
+      if (g.per) { l.dataset.gper = ''; l.style.setProperty('--per', g.per); }
+      if (g.skip) l.style.setProperty('--skip', g.skip);
     }
-    if (x.kept) delete li.dataset.off; else li.dataset.off = '';
-    if (x.skip) li.dataset.skip = ''; else delete li.dataset.skip;
-    ul.appendChild(li);
+    l.dataset.gh = g.h;
+    l.dataset.gv = g.v;
+    return l;
+  });
+  face.groups.forEach(function (g, n) {
+    g.seq.forEach(function (x) {
+      var li;
+      if (x.paper) li = paperLi;
+      else if (x.link != null) li = lis[x.link];
+      else {
+        li = document.createElement('li');
+        li.dataset.rel = x.empty ? 'empty' : x.cell;
+        if (x.empty) li.setAttribute('aria-hidden', 'true');
+        else { li.className = 'c-cell'; li.appendChild(part[x.cell === 'position' ? 'stamp' : x.cell]); }
+      }
+      if (x.kept) delete li.dataset.off; else li.dataset.off = '';
+      if (x.skip) li.dataset.skip = ''; else delete li.dataset.skip;
+      uls[n].appendChild(li);
+    });
+  });
+  // A box of its own for each area a group is in that the buttons are not.
+  var boxes = {};
+  face.feet.forEach(function (area) {
+    var box = document.createElement('div');
+    box.className = 'c-xfoot';
+    box.dataset.at = area;
+    ['start', 'center', 'end'].forEach(function (at) { var sl = document.createElement('div'); sl.className = 'c-slot'; sl.dataset.at = at; box.appendChild(sl); });
+    card.appendChild(box);
+    boxes[area] = box;
   });
   // The buttons, my position, the year and the context link, each in its
   // slot of the buttons' box, across it at its own place — or in a strip of
-  // the card's padding; hidden, after the slots.
+  // the card's padding; hidden, after the slots. Another group the same, in
+  // the buttons' box or its own.
+  var put = function (el, p, box) {
+    el.dataset.cross = p.cross;
+    delete el.dataset.strip; delete el.dataset.across;
+    if (p.strip) { el.dataset.strip = p.strip.area; el.dataset.across = p.strip.h; }
+    (p.slot ? box.querySelector('.c-slot[data-at="' + p.slot + '"]') : box).appendChild(el);
+  };
   [['buttons', ul], ['stamp', part.stamp], ['year', part.year], ['context', part.context]].forEach(function (p) {
     var k = p[0], el = p[1];
     if (!el || el.parentNode.tagName === 'LI') return;
-    el.dataset.cross = face.cross[k];
-    delete el.dataset.strip; delete el.dataset.across;
-    if (face.strip[k]) { el.dataset.strip = face.strip[k].area; el.dataset.across = face.strip[k].h; }
-    (face.slot[k] ? foot.querySelector('.c-slot[data-at="' + face.slot[k] + '"]') : foot).appendChild(el);
+    put(el, { cross: face.cross[k], strip: face.strip[k], slot: face.slot[k] }, foot);
   });
+  face.groups.forEach(function (g, n) { if (n > 0 && g.on) put(uls[n], g, g.foot ? boxes[g.foot] : foot); });
 })(${JSON.stringify(cardFacts(item, true))});`;
 ---
 <Embed title={item.title}>

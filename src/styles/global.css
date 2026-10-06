@@ -621,6 +621,68 @@ a.card:hover .name{color:var(--accent)}
 /* buttons:…,empty,… — a button's room with nothing in it. */
 .c-foot li[data-rel="empty"]{width:var(--ib); height:var(--ib)}
 
+/* ---------- Another group of buttons ----------
+   buttons:a,b:left-buttons:c:right — the buttons are groups, each key in one,
+   each with its own count to a row and its own place. A group in the buttons'
+   area sits in a slot of their box, or in a strip at the top, and their rules
+   reach it; one in another area has a box of its own, .c-xfoot, with the same
+   three slots, set below as the buttons' box is: a column in a side, a row
+   under the words or at the bottom. Every rule here is for a group or box the
+   name adds, so a card with one group is as it was. */
+.c-xfoot{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:end; gap:.4em; padding-top:.3em}
+.card .c-xfoot .btns--icon{flex-direction:row; margin:0; padding:0; --bg:var(--bgap, .3em); gap:var(--bg)}
+.c-xfoot .iconbtn{width:var(--ib); height:var(--ib); border-radius:calc(var(--ib) * .25)}
+.c-xfoot .iconbtn .ico{width:var(--ii); height:var(--ii)}
+.c-xfoot .btns--icon > li[data-skip]{grid-column-start:calc(var(--skip) + 1)}
+.c-xfoot .btns--icon > li[data-off]{display:none}
+.c-xfoot .btns--icon:not(:has(> li:not([data-off]))){display:none}
+.c-xfoot li[data-rel="empty"]{width:var(--ib); height:var(--ib)}
+/* A group's rows and its place across are its own, not the first group's. */
+.card[data-size] .btns--icon[data-xg]{display:flex; flex-wrap:wrap; grid-template-columns:none; justify-content:flex-start}
+.card[data-size] .btns--icon[data-xg][data-gh="center"]{justify-content:center}
+.card[data-size] .btns--icon[data-xg][data-gh="right"]{justify-content:flex-end}
+.card[data-size] .btns--icon[data-xg][data-gper]{display:grid; grid-template-columns:repeat(var(--per), auto); justify-content:start}
+.card:is([data-foot="left"], [data-foot="right"]) .btns--icon[data-xg][data-gv="bottom"],
+.c-xfoot:is([data-at="left"], [data-at="right"]) .btns--icon[data-xg][data-gv="bottom"]{flex-wrap:wrap-reverse}
+.card:is([data-foot="left"], [data-foot="right"]) .btns--icon[data-xg][data-gper][data-gv="bottom"],
+.c-xfoot:is([data-at="left"], [data-at="right"]) .btns--icon[data-xg][data-gper][data-gv="bottom"],
+.card:is([data-foot="left"], [data-foot="right"]) .btns--icon[data-xg][data-gper][data-gv="bottom"] > li,
+.c-xfoot:is([data-at="left"], [data-at="right"]) .btns--icon[data-xg][data-gper][data-gv="bottom"] > li{transform:scaleY(-1)}
+/* The box's area: a side's column, the center's row, the bottom's. */
+.card[data-size] > .c-xfoot{margin:var(--gr) 0 0}
+.card[data-size] > .c-xfoot[data-at="left"]{grid-area:var(--rL0) / 1 / var(--rL1) / 2}
+.card[data-size] > .c-xfoot[data-at="right"]{grid-area:var(--rR0) / 5 / var(--rR1) / 6}
+.card[data-size] > .c-xfoot[data-at="center"]{grid-area:12 / 3; align-self:end}
+.card[data-size] > .c-xfoot[data-at="bottom"]{grid-area:14 / 1 / 15 / 6; align-self:end}
+.card[data-size][data-xfeet~="bottom"]{--s14:minmax(var(--hB, auto), auto)}
+.card[data-size][data-xfeet~="bottom"][data-wins~="left-bottom"]{--rL1:15}
+.card[data-size][data-xfeet~="bottom"][data-wins~="right-bottom"]{--rR1:15}
+.card[data-size][data-xfeet~="bottom"][data-wins~="left-bottom"] > .c-xfoot[data-at="bottom"]{grid-column-start:3}
+.card[data-size][data-xfeet~="bottom"][data-wins~="right-bottom"] > .c-xfoot[data-at="bottom"]{grid-column-end:4}
+.card[data-size]:not([data-fig="left"])[data-xfeet~="left"] > .c-xfoot[data-at="left"]{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_left, 0px))}
+.card[data-size]:not([data-fig="right"])[data-xfeet~="right"] > .c-xfoot[data-at="right"]{margin-top:calc(var(--gr) - var(--tc) + var(--sp-top_right, 0px))}
+/* A side's column and its gaps, as a rail there has them. */
+.card[data-size]:is([data-xfeet~="left"], [data-xfeet~="right"]){--gc:1em; --gr:.15em}
+.card[data-size][data-xfeet~="left"]{--cL:var(--colL, auto); --dL:var(--gc)}
+.card[data-size][data-xfeet~="right"]{--cR:var(--colR, auto); --dR:var(--gc)}
+.card[data-size][data-fig="left"][data-xfeet~="left"]{--cL:var(--colL, minmax(var(--F), auto))}
+.card[data-size][data-fig="right"][data-xfeet~="right"]{--cR:var(--colR, minmax(var(--F), auto))}
+/* In a side: a column, its slots at the top, in the middle and at the bottom. */
+.c-xfoot:is([data-at="left"], [data-at="right"]){align-self:stretch; display:flex; flex-direction:column; gap:.4em; padding:0}
+.c-xfoot:is([data-at="left"], [data-at="right"]) > .c-slot{flex-direction:column; flex-wrap:nowrap; align-items:flex-start}
+.c-xfoot:is([data-at="left"], [data-at="right"]) > .c-slot[data-at="center"]{margin-block:auto}
+.c-xfoot:is([data-at="left"], [data-at="right"]) > .c-slot[data-at="end"]{margin-top:auto}
+.c-xfoot:is([data-at="left"], [data-at="right"]) > .c-slot[data-at="center"]:has(> *) ~ .c-slot[data-at="end"]{margin-top:0}
+/* A side's figure and its box stacked, the figure above. */
+.card[data-size][data-fig="left"][data-xfeet~="left"] > .c-fig,
+.card[data-size][data-fig="right"][data-xfeet~="right"] > .c-fig{grid-row-end:12}
+.card[data-size][data-fig="left"][data-xfeet~="left"] > .c-xfoot[data-at="left"],
+.card[data-size][data-fig="right"][data-xfeet~="right"] > .c-xfoot[data-at="right"]{grid-row-start:12}
+.card[data-size]:is([data-fig="left"][data-xfeet~="left"], [data-fig="right"][data-xfeet~="right"]):not([data-text="none"]) > .c-text,
+.card[data-size]:is([data-fig="left"][data-xfeet~="left"], [data-fig="right"][data-xfeet~="right"])[data-text="none"][data-venue]:is(:not([data-venueat]), :not([data-authors])) > .c-venue,
+.card[data-size]:is([data-fig="left"][data-xfeet~="left"], [data-fig="right"][data-xfeet~="right"])[data-text="none"]:is(:not([data-venue]), [data-venueat])[data-authors] > .c-by,
+.card[data-size]:is([data-fig="left"][data-xfeet~="left"], [data-fig="right"][data-xfeet~="right"])[data-text="none"]:not([data-venue]):not([data-authors]):not([data-titleat="top"]) > .c-name{grid-row-end:13}
+
 /* A row of choices as pills — the Card Builder's. Each choice is its own
    pill; the chosen one is outlined in the accent rather than filled, so
    nothing competes with the content for weight. A choice is a label round a

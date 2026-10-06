@@ -1,0 +1,17 @@
+---
+// A group of link buttons other than the card's first: its own list, with its
+// own count to a row and place, where the name sets it (buttons:…-buttons:…).
+// It holds links and empty rooms only — the paper button and the parts that
+// sit among the buttons are the first group's. `where` is its place: how it
+// sits across its slot, or in a strip of the card's padding.
+import LinkIcon from './LinkIcon.astro';
+
+const { group: g, links, where = {} } = Astro.props;
+---
+<ul class="btns btns--icon" {...where} data-xg="" data-gh={g.h} data-gv={g.v} data-gper={g.per ? '' : undefined}
+    style={[g.per && `--per:${g.per}`, g.skip && `--skip:${g.skip}`].filter(Boolean).join(';') || undefined}>
+  {g.seq.map((x) => {
+    const li = { 'data-off': x.kept ? undefined : '', 'data-skip': x.skip ? '' : undefined };
+    return x.empty ? <li data-rel="empty" aria-hidden="true" {...li}></li> : <LinkIcon link={links[x.link]} {...li} />;
+  })}
+</ul>
