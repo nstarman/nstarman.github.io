@@ -25,7 +25,7 @@ import { syncKey, cardRules } from '../scripts/lib/cardsync.mjs';
 const css = fs.readFileSync('src/styles/global.css', 'utf8');
 const fixture = JSON.parse(fs.readFileSync('tests/fixtures/software-cards.json', 'utf8'));
 const num = (expr, u) => Function(`return (${expr.replace(/var\(--u\)/g, u).replace(/(\d)(rem|px)/g, (_, d, unit) => (unit === 'rem' ? `${d}*${REM}` : d)).replace(/calc/g, '')})`)();
-const rule = (selector) => css.match(new RegExp(`${selector.replace(/[[\]().*+?"=]/g, '\\$&')}\\s*\\{([^}]*)\\}`))?.[1];
+const rule = (selector) => css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`))?.[1];
 const decl = (body, prop) => body.match(new RegExp(`${prop}:\\s*([^;]+)`))?.[1].trim();
 
 describe('the numbers are the stylesheet’s', () => {
@@ -42,14 +42,12 @@ describe('the numbers are the stylesheet’s', () => {
 
   it('every step of the look', () => {
     for (const step of LOOKS) {
-      const at = (dial, extra) => rule(`.card[data-${dial}="${step}"]`)?.concat(extra ?? '') ?? css.match(new RegExp(`\\.card\\[data-${dial}="${step}"\\]\\{([^}]*)\\}`))?.[1];
       const one = (dial, prop) => decl(css.match(new RegExp(`\\.card\\[data-${dial}="${step}"\\]\\{([^}]*)\\}`))[1], prop);
       expect(STEPS.textsize[step], `textsize ${step}`).toBeCloseTo(num(one('textsize', '--fs')) / REM, 6);
       expect(STEPS.padding[step], `padding ${step}`).toEqual(['--pad-t', '--pad-x', '--pad-b'].map((p) => num(one('padding', p)) / REM));
       expect(STEPS.corners[step], `corners ${step}`).toBe(num(one('corners', '--rad')));
       expect(STEPS.buttons[step], `buttons ${step}`).toEqual(['--ib', '--ii'].map((p) => num(one('buttons', p)) / REM));
       expect(STEPS.titlesize[step], `titlesize ${step}`).toBeCloseTo(num(one('titlesize', '--ts')) / REM, 6);
-      void at;
     }
   });
 
