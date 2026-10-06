@@ -332,6 +332,11 @@
       "lon": -74.6597,
       "matched": "Princeton, Mercer County, New Jersey, United States"
     },
+    "Reykjavik, Iceland": {
+      "lat": 64.146,
+      "lon": -21.9422,
+      "matched": "Reykjavíkurborg, Höfuðborgarsvæðið, Ísland"
+    },
     "Rice University": {
       "lat": 29.7168,
       "lon": -95.4048,
