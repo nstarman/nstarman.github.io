@@ -337,7 +337,10 @@ a.card:hover .name{color:var(--accent)}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
 .c-stu{cursor:help}
 .c-py{white-space:nowrap}
-.c-stamp:has(.c-stu){display:inline-flex; flex-wrap:wrap; justify-content:flex-end; column-gap:.5ch; text-align:right}
+/* "student-led‡ | 2nd | 2026" is too long to share a row with the buttons:
+   it takes a row of its own, under them, and never breaks. */
+.c-slot:has(.c-stu){grid-column:1 / -1; grid-row:2; justify-self:end}
+.c-stamp:has(.c-stu){white-space:nowrap}
 .c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 .c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 /* A strip: my position, the year or the context link in the top area, or
