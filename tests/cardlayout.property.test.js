@@ -120,7 +120,8 @@ describe('whatever the data', () => {
       }
       // The padding below the last button, exactly.
       const last = Math.max(...buttons(model).map((o) => o.y + o.h + 0.5), 0);
-      if (last) expect(model.h - last).toBeCloseTo(L.pad[2], 6);
+      // …and, below a button, what the list item's own strut needs there, which is at most a few px.
+      if (last) { expect(model.h - last).toBeGreaterThanOrEqual(L.pad[2] - 1e-6); expect(model.h - last).toBeLessThan(L.pad[2] + 8); }
     }));
   });
 

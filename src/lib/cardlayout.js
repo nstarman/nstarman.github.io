@@ -74,14 +74,18 @@ function read(slug) {
 
 /** The lengths a card takes from its look: a step where it names one, and the
  *  formulas of a card of set width where it does not. */
+/** A length as Chrome lays it out: down to 1/64 of a px. */
+export const layoutUnit = (x) => Math.floor(x * 64 + 1e-9) / 64;
+
 export function lengths({ dials, width }) {
   const u = width / 1; // the card is not both set in width and height, so its stretch is 1
   const px = { fs: 7.2 + 0.0216 * u, pad: [0.06 * u - 4, 0.064 * u - 3.2, 0.06 * u - 4], rad: 2.5 + 0.0375 * u, ib: 11.8 + 0.045 * u, ii: 6.9 + 0.02 * u };
   const fs = dials.textsize ? STEPS.textsize[dials.textsize] * REM : px.fs;
   const pad = dials.padding ? STEPS.padding[dials.padding].map((r) => r * REM) : px.pad;
   const [ib, ii] = dials.buttons ? STEPS.buttons[dials.buttons].map((r) => r * REM) : [px.ib, px.ii];
+  // Lengths are laid out in 1/64 of a px, down: a card of 316px has its padding at 17.015625.
   return {
-    fs, pad, ib, ii,
+    fs, pad: pad.map(layoutUnit), ib: layoutUnit(ib), ii: layoutUnit(ii),
     rad: dials.corners ? STEPS.corners[dials.corners] : px.rad,
     ts: dials.titlesize ? STEPS.titlesize[dials.titlesize] * REM : 1.08 * fs,
   };
@@ -139,10 +143,17 @@ export const chromeSize = (size) => Math.floor(Math.fround(Math.fround(size) * 1
  *  it — and the half-leading above it is floored. Returns the rect the text
  *  sits in. In integers (hundredths of a px, thousandths of an em), so a half is exact. */
 export function lineBox(top, lh, size) {
+  const { asc, desc } = metrics(size);
+  return { y: top + Math.floor((lh - (asc + desc)) / 2), h: asc + desc };
+}
+
+/** A font's ascent and descent in px, as Chrome rounds them for the size it
+ *  uses — each a half down, in integers (hundredths of a px, thousandths of an
+ *  em), so a half is exact. */
+export function metrics(size) {
   const hundredths = Math.round(chromeSize(size) * 100);
   const down = (n) => Math.ceil((n - 50000) / 100000);
-  const h = down(ASCENT_UNITS * hundredths) + down(DESCENT_UNITS * hundredths);
-  return { y: top + Math.floor((lh - h) / 2), h };
+  return { asc: down(ASCENT_UNITS * hundredths), desc: down(DESCENT_UNITS * hundredths) };
 }
 
 /**
@@ -211,6 +222,13 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   const room = cw - 2 * 0.4 * L.fs;
   // The button's box: its size, or the least a button is — its corners still a quarter of its size.
   const ib = Math.max(L.ib, BUTTON_MIN);
+  // A button sits in a list item as an inline box, on its baseline — its icon's bottom — so the
+  // item is as high as the box and the item's own strut (its font, at the body's line-height of
+  // 1.55) together need: above the baseline, the more of the two, and below it.
+  const strut = metrics(L.fs), lineH = layoutUnit(1.55 * L.fs);
+  const strutAbove = strut.asc + Math.floor((lineH - strut.asc - strut.desc) / 2);
+  const above = Math.max((ib + L.ii) / 2, strutAbove), below = Math.max((ib - L.ii) / 2, lineH - strutAbove);
+  const itemH = above + below, lift = above - (ib + L.ii) / 2;
   const small = { font: 'IBM Plex Sans', weight: 400, size: 0.72 * REM, ls: 0, color: c.mute };
   let x = padX;
   let rowTop = y;
@@ -219,21 +237,21 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
     const lw = label ? measure(label, small) : 0;
     // A button with a label is its padding, the mark, a gap and the label, in a border.
     const w = label ? Math.max(2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2, BUTTON_MIN) : ib;
-    if (x > padX && x + w > padX + room + 1e-6) { x = padX; rowTop += ib + gap; }
+    if (x > padX && x + w > padX + room + 1e-6) { x = padX; rowTop += itemH + gap; }
     const icon = symbol(REL_ICON[l.key] ?? 'link');
-    ops.push({ k: 'box', x: x + 0.5, y: rowTop + 0.5, w: w - 1, h: ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });
+    ops.push({ k: 'box', x: x + 0.5, y: rowTop + lift + 0.5, w: w - 1, h: ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });
     const ix = x + (label ? 1 + 0.4 * REM : (w - L.ii) / 2);
     ops.push({
-      k: 'svg', x: ix, y: rowTop + (ib - L.ii) / 2, w: L.ii, h: L.ii, href: href(l.url),
+      k: 'svg', x: ix, y: rowTop + lift + (ib - L.ii) / 2, w: L.ii, h: L.ii, href: href(l.url),
       svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.viewBox}" fill="${c.mute.slice(0, 7)}" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">${icon.body}</svg>`,
     });
     if (label) {
-      const r = lineBox(rowTop + ib / 2 - small.size / 2, small.size, small.size);
+      const r = lineBox(rowTop + lift + ib / 2 - small.size / 2, small.size, small.size);
       text(ix + L.ii + 0.25 * REM, r.y, r.h, label, lw, { ...small, href: l.url });
     }
     x += w + gap;
   }
-  const H = (has ? rowTop + ib : y) + padB;
+  const H = (has ? rowTop + itemH : y) + padB;
 
   const radii = Array(4).fill(L.rad);
   // The page's ground, then the card's tint of ink over it.

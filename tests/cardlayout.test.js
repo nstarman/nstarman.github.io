@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, chromeSize, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, chromeSize, layoutUnit, metrics, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -57,12 +57,12 @@ describe('the numbers are the stylesheet’s', () => {
     for (const width of [240, 320, 400, 640]) {
       const got = lengths({ dials: {}, width });
       expect(got.fs, width).toBeCloseTo(prop('--fs', width), 6);
-      expect(got.pad[0], width).toBeCloseTo(prop('--pad-t', width), 6);
-      expect(got.pad[1], width).toBeCloseTo(prop('--pad-x', width), 6);
-      expect(got.pad[2], width).toBeCloseTo(prop('--pad-t', width), 6); // --pad-b: var(--pad-t)
+      expect(got.pad[0], width).toBe(layoutUnit(prop('--pad-t', width)));
+      expect(got.pad[1], width).toBe(layoutUnit(prop('--pad-x', width)));
+      expect(got.pad[2], width).toBe(layoutUnit(prop('--pad-t', width))); // --pad-b: var(--pad-t)
       expect(got.rad, width).toBeCloseTo(prop('--rad', width), 6);
-      expect(got.ib, width).toBeCloseTo(prop('--ib', width), 6);
-      expect(got.ii, width).toBeCloseTo(prop('--ii', width), 6);
+      expect(got.ib, width).toBe(layoutUnit(prop('--ib', width)));
+      expect(got.ii, width).toBe(layoutUnit(prop('--ii', width)));
     }
     expect(decl(body, '--pad-b')).toBe('var(--pad-t)');
   });
@@ -276,6 +276,20 @@ describe('a line’s box', () => {
     expect(chromeSize(11.52)).toBe(11.52);
     expect(chromeSize(18.05)).toBe(18.04);
     expect(chromeSize(18.06)).toBe(18.06);
+  });
+
+  it('holds a list item of buttons as high as the box and the item’s own strut need, Chrome’s heights at 300–340px', () => {
+    // From Chrome: the item is the button's height, but at 320px (14.112px text) the strut reaches
+    // below the button's box, and the item is 26.594 high, not 26.1875.
+    const { input, slug } = softwareCards.find((c) => c.item.id === 'potamides');
+    const high = (w) => {
+      const m = softwareModel({ ...input, links: [input.links[1]] }, { slug: slug.replace(/^size:\d+:/, `size:${w}:`), theme: 'light', measure });
+      const last = Math.max(...m.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.y + o.h + 0.5));
+      return m.h - last - lengths({ dials: parseName(slug).dials, width: w }).pad[2];
+    };
+    expect(high(320)).toBeCloseTo(26.594 - 26.1875, 1);
+    expect(high(340)).toBeCloseTo(0, 6);
+    expect(high(400)).toBeCloseTo(0, 6);
   });
 
   it('puts the box in the line with the half-leading floored', () => {
