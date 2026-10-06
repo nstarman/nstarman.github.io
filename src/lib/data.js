@@ -17,6 +17,8 @@ import collaborators from '/config/collaborators.json';
 import acknowledgements from '/config/acknowledgements.json';
 // Each journal's short name, "ApJ" for "The Astrophysical Journal", by hand.
 import journals from '/config/journals.json';
+// Each package's GitHub stars; see scripts/collect-stars.mjs.
+import starCounts from '/config/stars.json';
 
 /**
  * Partial dates (YYYY, YYYY-MM, YYYY-MM-DD) compare correctly as strings, so a
@@ -340,7 +342,7 @@ export const relKey = (l) => (l.label === 'ADS' ? 'ads' : l.rel);
 // fallback everywhere.
 export const REL_ICON = {
   ads: 'ads', preprint: 'arxiv', paper: 'paper', doi: 'paper', repo: 'repo',
-  code: 'github', docs: 'docs', data: 'data', slides: 'slides',
+  code: 'github', stars: 'star', docs: 'docs', data: 'data', slides: 'slides',
   event: 'link', homepage: 'link',
 };
 

@@ -1,6 +1,7 @@
 // Which cards exist, and what the website uses. A card's name — its spec — is
 // src/lib/cardname.js; this adds what needs the database: the website's
 // presets, an item's default card, and its links and extras.
+import starCounts from '/config/stars.json';
 import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from './data.js';
 
 export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
@@ -64,10 +65,21 @@ export const hasStatus = (item) => !!titleStatus(item);
 /** Context links to the item's topic on /research/, so only a topic it shows. */
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
 
+/** The star count, as a button's label: 657 → "657", 1234 → "1.2k". */
+export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+
+/** A package's stars, as a link to who gave them — none where the count is
+ *  unknown, rather than a button that says 0. config/stars.json is refreshed
+ *  monthly, so the number is a month old at worst. */
+function starLink(item) {
+  const n = item.repo && starCounts.stars[item.repo];
+  return n == null ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
+}
+
 /** The links a card carries, in order: for software its papers lead, each
  *  with its year. */
 export function cardLinks(item) {
-  return item.type === 'software' ? [...softwarePapers(item), ...links(item)] : links(item);
+  return item.type === 'software' ? [...softwarePapers(item), ...links(item), ...starLink(item)] : links(item);
 }
 
 /** The link keys a card can be cut down to — `ads`, `preprint`, `code` … */

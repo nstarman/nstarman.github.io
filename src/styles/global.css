@@ -771,7 +771,8 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* Dense contexts — CV rows — take a smaller mark. */
 .tl .iconbtn{width:1.45rem; height:1.45rem; border-radius:.35rem}
 .tl .iconbtn .ico{width:.75rem; height:.75rem}
-/* A software package's paper carries its year beside the mark. */
+/* A software package's paper carries its year beside the mark, and its
+   repository the number of stars. */
 .iconbtn:has(.iconyear),.tl .iconbtn:has(.iconyear){
   width:auto; padding:0 .4rem; gap:.25rem}
 .iconbtn:hover,.iconbtn:focus-visible{
