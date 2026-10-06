@@ -15,7 +15,7 @@ export const SITE_PRESETS = [
   { key: 'proceeding', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/.
-  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,ads,doi,preprint,repo,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
+  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,year-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
   // Its figure is no link: on /publications/ that would be to itself.
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   { key: 'assist', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
