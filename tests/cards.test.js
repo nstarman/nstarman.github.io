@@ -711,4 +711,28 @@ describe('the stars button', () => {
     // Every package that has a button has at least that many.
     for (const i of software.filter((x) => linkKeys(x).includes('stars'))) expect(counts[i.repo], i.id).toBeGreaterThanOrEqual(STARS_MIN);
   });
+
+  it('is offered, flagged optional, where every link a card could show is asked for — and left out of `all`, shown where named', () => {
+    const few = software.filter((x) => counts[x.repo] < STARS_MIN);
+    const base = 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none';
+    for (const i of few) {
+      expect(linkKeys(i, true).at(-1), i.id).toBe('stars');
+      expect(cardLinks(i, true).at(-1)).toMatchObject({ rel: 'stars', optional: true, count: starLabel(counts[i.repo]) });
+      expect(cardFacts(i, true).optional, i.id).toEqual(['stars']);
+      expect(cardFacts(i).optional, i.id).toEqual([]);
+      // The card's own buttons: the stars are there to be shown, hidden.
+      const all = cardFace(parseName(`${base}-buttons:all`), cardFacts(i, true));
+      const star = all.seq.find((x) => cardFacts(i, true).keys[x.link] === 'stars');
+      expect(star, i.id).toMatchObject({ kept: false });
+      expect(all.seq.filter((x) => x.kept)).toHaveLength(all.seq.length - 1);
+      // Named, they show, in the place they are named.
+      const named = cardFace(parseName(`${base}-buttons:code,stars`), cardFacts(i, true));
+      expect(named.seq.filter((x) => x.kept).map((x) => cardFacts(i, true).keys[x.link])).toEqual(['code', 'stars']);
+    }
+    // A package with enough has it in its own, nothing optional.
+    for (const i of software.filter((x) => counts[x.repo] >= STARS_MIN)) {
+      expect(cardFacts(i, true).optional, i.id).toEqual([]);
+      expect(cardFace(parseName(`${base}-buttons:all`), cardFacts(i, true)).seq.every((x) => x.kept)).toBe(true);
+    }
+  });
 });

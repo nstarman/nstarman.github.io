@@ -8,7 +8,7 @@ import { items } from '../src/lib/data.js';
 import { itemFacts, linkPlace } from '../src/lib/cardbuilder/facts.js';
 import { between, cellGrid, named, partZones, sum, venueDrops } from '../src/lib/cardbuilder/geometry.js';
 import {
-  boxHeight, canTune, clampInt, controlOps, defaultsOf, figWidth, fitName, hiddenKeys, inBox, linksOf, namesN, presetWidths, readSpec, shapeHeight, shownKeys, sideHas, smallBox, stackedIn, stretch, typedPx, venueArea,
+  ownKeys, boxHeight, canTune, clampInt, controlOps, defaultsOf, figWidth, fitName, hiddenKeys, inBox, linksOf, namesN, presetWidths, readSpec, shapeHeight, shownKeys, sideHas, smallBox, stackedIn, stretch, typedPx, venueArea,
 } from '../src/lib/cardbuilder/model.js';
 import { parseSettings, serializeSettings } from '../src/lib/cardbuilder/settings.js';
 
@@ -35,7 +35,7 @@ function roundTrip(slug, i) {
   const it = itemFacts(i);
   const { ops, state } = controlOps(parseName(fitName(slug, it)), { it, stepPx: STEP_PX, framePx: FRAME_PX });
   const { f, figureOn } = formOf(i.id, it, ops);
-  return readSpec(f, { it, figureOn, ...state, allLinks: it.links.map(([k]) => k), limits }).slug;
+  return readSpec(f, { it, figureOn, ...state, allLinks: ownKeys(it), limits }).slug;
 }
 
 describe('controls ⇄ name', () => {
@@ -233,3 +233,32 @@ describe('what the page knows of each item', () => {
     expect(linkPlace({ rel: 'docs', url: 'https://example.org/' })).toBe('docs');
   });
 });
+
+describe('the stars of a package with few', () => {
+  const few = items.find((i) => i.id === 'coordinax');
+  const it0 = itemFacts(few);
+  const slug = (links) => `size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:${links}`;
+
+  it('are a pill of their own, last, flagged to be ticked — and not among the card’s own buttons', () => {
+    expect(it0.links.at(-1)[0]).toBe('stars');
+    expect(it0.links.at(-1)[3]).toBe(true);
+    expect(it0.links.slice(0, -1).every((l) => !l[3])).toBe(true);
+    expect(ownKeys(it0)).toEqual(it0.links.slice(0, -1).map(([k]) => k));
+  });
+
+  it('read back from the controls as the card’s own: all, and not the stars', () => {
+    expect(roundTrip(slug('all'), few)).toBe(slug('all'));
+  });
+
+  it('read back as named where the name lists them', () => {
+    expect(roundTrip(slug('code,docs,stars'), few)).toBe(slug('code,docs,stars'));
+    expect(roundTrip(slug('stars,code'), few)).toBe(slug('stars,code'));
+  });
+
+  it('tick as the controls have them: the card’s own, and the stars where named', () => {
+    const ticked = (name) => controlOps(parseName(slug(name)), { it: it0, stepPx: STEP_PX, framePx: FRAME_PX }).ops.find((o) => o[0] === 'checks' && o[1] === 'link')[2];
+    expect(ticked('all')).toEqual(ownKeys(it0));
+    expect(ticked('code,stars')).toEqual(['code', 'stars']);
+  });
+});
+

@@ -28,14 +28,15 @@ export const linkPlace = (l) => {
 const toPublisher = (i) => i.type === 'publication' && ['paper', 'doi'].includes(ownLink(i)?.rel) && !/adsabs|arxiv/.test(ownLink(i).url);
 export const linkChoices = (i) => {
   const byKey = new Map();
-  for (const l of cardLinks(i)) {
+  for (const l of cardLinks(i, true)) {
     const k = relKey(l);
-    const o = byKey.get(k) ?? { names: new Set(), titles: new Set() };
+    const o = byKey.get(k) ?? { names: new Set(), titles: new Set(), optional: !!l.optional };
     o.names.add(linkPlace(l));
     o.titles.add(l.label ?? l.rel);
     byKey.set(k, o);
   }
-  return [...byKey].map(([k, o]) => [k, [...o.names].join(' · '), [...o.titles].join(', ')]);
+  // Last, whether the card leaves it out of its own accord (a package's few stars): offered, not ticked.
+  return [...byKey].map(([k, o]) => [k, [...o.names].join(' · '), [...o.titles].join(', '), o.optional]);
 };
 
 /** The facts the builder keeps of one item. */

@@ -88,7 +88,7 @@ const { summary: sum, details: det } = cardText(item);
 // The paper button's links, each, for the embed page to choose from.
 const paperTo = { auto: paperHref(item), journal: paperHref(item, 'journal'), arxiv: paperHref(item, 'arxiv'), ads: paperHref(item, 'ads'), site: paperHref(item, 'site') };
 const paperWord = face.paper && face.paper.label !== 'icon' ? face.paper.label : 'paper';
-const linkList = cardLinks(item);
+const linkList = cardLinks(item, allCounts);
 const contextLabel = topic && `${topic[1]} research highlights`;
 ---
 <article class:list={['card', cls]} id={id} {...attrs} data-type={item.type} {...data} style={style}

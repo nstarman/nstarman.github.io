@@ -193,6 +193,10 @@ export function readSpec(f, st) {
   return { id: f.get('card'), it, slug, width, height, format: f.get('format'), theme: f.get('theme') };
 }
 
+/** The link keys an item's card shows of its own accord: all but the optional ones (a package's
+ *  stars, under STARS_MIN), which are in `it.links` last-flagged, to be named. */
+export const ownKeys = (it) => it.links.filter((l) => !l[3]).map(([k]) => k);
+
 /** The first group's keys, less any another group has: a key is in one. The
  *  builder has controls for the first group; another is carried as the name
  *  has it, until it has controls of its own. */
@@ -304,9 +308,10 @@ export function controlOps(c, { it, stepPx, framePx }) {
   set('background', c.background);
   set('text', c.text);
   ops.push(['checks', 'extra', c.extras]);
-  ops.push(['checks', 'link', c.links === 'all' ? null : c.links]); // null: every one
-  const keys = it.links.map(([k]) => k);
-  const listed = c.links === 'all' ? keys : c.links.filter((k) => ['empty', 'paperbutton', ...Object.values(CELL)].includes(k) || keys.includes(k));
+  // `all` is the keys a card shows of its own accord; the optional ones are ticked only where named.
+  const keys = it.links.map(([k]) => k), own = ownKeys(it);
+  ops.push(['checks', 'link', c.links === 'all' ? own : c.links]);
+  const listed = c.links === 'all' ? own : c.links.filter((k) => ['empty', 'paperbutton', ...Object.values(CELL)].includes(k) || keys.includes(k));
   const btnOrder = [...(listed.includes('paperbutton') ? [] : ['paperbutton']), ...listed, ...keys.filter((k) => !listed.includes(k))];
   // A part the name lists among the buttons has its area there.
   for (const [k] of SMALL) if (listed.includes(CELL[k])) radio(`${k}at`, 'list');
@@ -319,14 +324,14 @@ export function controlOps(c, { it, stepPx, framePx }) {
 export function fitName(name, it) {
   const c = parseName(name);
   // A list of buttons to keep, read against the links this item has.
-  const keys = it.links.map(([k]) => k);
+  const keys = it.links.map(([k]) => k), own = ownKeys(it);
   // The paper button where this item can have one; a part among the
   // buttons where it shows; and the paper button first, as left out.
   const paperButton = it.byline && Object.values(it.paperTo).some(Boolean) ? c.paperButton : undefined;
-  const listed = c.links === 'all' ? keys : c.links.filter((k) => k === 'empty' || keys.includes(k) || (k === 'paperbutton' && paperButton) || (Object.values(CELL).includes(k) && c.extras.includes(k) && has(it, k)));
+  const listed = c.links === 'all' ? own : c.links.filter((k) => k === 'empty' || keys.includes(k) || (k === 'paperbutton' && paperButton) || (Object.values(CELL).includes(k) && c.extras.includes(k) && has(it, k)));
   const kept = listed[0] === 'paperbutton' ? listed.slice(1) : listed;
   // Another group of buttons keeps the keys the item has, and goes if it has none.
   const groups = (c.groups ?? []).map((g) => (g.links === 'all' ? g : { ...g, links: g.links.filter((k) => k === 'empty' || keys.includes(k)) })).filter((g) => g.links === 'all' || g.links.some((k) => k !== 'empty'));
-  return formatName({ ...c, groups, paperButton, links: sameOrder(kept, keys) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
+  return formatName({ ...c, groups, paperButton, links: sameOrder(kept, own) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
     rest: c.rest ?? 'split', text: it.text ? c.text : 'none' });
 }

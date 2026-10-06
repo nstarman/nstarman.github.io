@@ -677,7 +677,8 @@ export function cardFace(spec, f) {
   var seqOf = function (g, n) {
     var seq = [];
     if (n === 0 && paperLi && !inList('paperbutton')) seq.push({ paper: true, kept: !!pb });
-    if (g.links === 'all') f.keys.forEach(function (k, i) { if (owner(k) === n) seq.push({ link: i, kept: true }); });
+    // An optional link is in an all, hidden: a name that lists it shows it.
+    if (g.links === 'all') f.keys.forEach(function (k, i) { if (owner(k) === n) seq.push({ link: i, kept: (f.optional || []).indexOf(k) < 0 }); });
     else {
       g.links.forEach(function (k) {
         if (k === 'empty') seq.push({ empty: true, kept: true });
