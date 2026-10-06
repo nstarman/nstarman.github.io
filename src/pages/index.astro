@@ -3,7 +3,7 @@ import { PRESET } from '../lib/cards.js';
 import Base from '../layouts/Base.astro';
 import Card from '../components/Card.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
-import { byType, featured, dateLabel } from '../lib/data.js';
+import { byType, featured, dateLabel, institutionGroups, groupDate } from '../lib/data.js';
 import { lines as longLines } from '../lib/inline.js';
 import Inline from '../components/Inline.astro';
 import portrait from '../../cv/assets/portrait.jpg';
@@ -16,6 +16,9 @@ const pubs = featured('publication').slice(0, 5);
 // so undergraduate summer positions stay on the CV where they belong.
 const background = [...byType('position'), ...byType('education')]
   .filter((i) => (i.cvs ?? []).includes('2page'));
+// Roles at one institution that opt in with `groupRoles` read as one place,
+// as on the CV — so the Astropy committees sit under Astropy.
+const rows = institutionGroups(background);
 
 ---
 <Base title="Nathaniel Starkman">
@@ -64,20 +67,42 @@ const background = [...byType('position'), ...byType('education')]
       <div class="wrap">
         <h2>Background</h2>
         <div class="timeline">
-          {background.map((item) => (
+          {rows.map((row) => row.items ? (
+            /* a group is its ongoing role, the others' details beneath it */
+            (() => {
+              const main = row.items.find((i) => i.date.present) ?? row.items[0];
+              return (
+                <div class="tl">
+                  <span class="when">{dateLabel({ date: groupDate(row.items) })}</span>
+                  <span class="what">
+                    <strong>{main.title}</strong>, {main.institution}
+                    {(() => {
+                      // The ongoing role's first line, the other roles', then the rest
+                      const own = longLines(main.details ?? [], '/cv/');
+                      const others = row.items.filter((i) => i !== main).flatMap((i) =>
+                        longLines(i.details ?? [], '/cv/').map((line, n) => ({ line, title: n === 0 ? i.title : null })));
+                      return [...own.slice(0, 1).map((line) => ({ line })), ...others, ...own.slice(1).map((line) => ({ line }))];
+                    })().map(({ line, title }) => (
+                      <span class="sub">{title && <>{title}: </>}<Inline spans={line} /></span>
+                    ))}
+                  </span>
+                </div>
+              );
+            })()
+          ) : (
             <div class="tl">
-              <span class="when">{dateLabel(item)}</span>
+              <span class="when">{dateLabel(row.item)}</span>
               <span class="what">
-                <strong>{item.title}</strong>{item.institution && <>, {item.institution}</>}
-                {item.details &&
+                <strong>{row.item.title}</strong>{row.item.institution && <>, {row.item.institution}</>}
+                {row.item.details &&
                   /* spans, like the CV — otherwise an array joins with no
                      separator and [text](url) prints as its own markup */
-                  longLines(item.details, '/cv/').map((line) => (
+                  longLines(row.item.details, '/cv/').map((line) => (
                     <span class="sub">
                       <Inline spans={line} />
                     </span>
                   ))}
-                {item.thesis && <span class="sub">Thesis: {item.thesis}</span>}
+                {row.item.thesis && <span class="sub">Thesis: {row.item.thesis}</span>}
               </span>
             </div>
           ))}
