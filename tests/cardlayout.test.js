@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { BUTTON_MIN, REM, FEATURE, TOKENS, lengths, lineBox, chromeSize, layoutUnit, metrics, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, FEATURE, TOKENS, lengths, lineBox, lineHeight, chromeSize, layoutUnit, metrics, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -274,15 +274,19 @@ describe('a line’s box', () => {
     expect(high(400)).toBeCloseTo(0, 6);
   });
 
-  it('puts a line a hair short of its content at its top, not a px above it', () => {
-    // 238px: the title is 13.3281px, its line 17.9929px, its content 18px. Chrome: 0, not -1.
-    const ts = 1.08 * (7.2 + 0.0216 * 238);
-    expect(metrics(ts).asc + metrics(ts).desc).toBe(18);
-    expect(lineBox(10, 1.35 * ts, ts).y).toBe(10);
-    expect(lineBox(10, 17, ts).y).toBe(9); // a line a whole px short is a px above
-    // 524px: the title is 19.999872px, its line 26.9998px, its content 25px: two px of leading, so one above.
-    const big = 1.08 * (7.2 + 0.0216 * 524);
-    expect(lineBox(10, 1.35 * big, big).y).toBe(11);
+  it('has Chrome’s line height: the multiplier by the size to the nearest 1/64, down to a 64th', () => {
+    expect(lineHeight(1.5, 7.2 + 0.0216 * 284)).toBe(19.984375); // 13.3344px: not 20.0016
+    expect(lineHeight(1.35, 1.08 * (7.2 + 0.0216 * 524))).toBe(27); // 19.999872px: not 26.9998
+    expect(lineHeight(1.5, 16)).toBe(24);
+    expect(lineHeight(1, 11.52)).toBe(11.515625);
+  });
+
+  it('puts a line a 64th short of its content at its top, and a line two px over with one above', () => {
+    const at = (w, k, tsOrFs, fsOnly) => { const size = fsOnly ? 7.2 + 0.0216 * w : 1.08 * (7.2 + 0.0216 * w); return lineBox(10, lineHeight(k, size), size).y; };
+    expect(at(238, 1.35)).toBe(10); // 17.984375 of 18: no half-leading, not -1
+    expect(at(524, 1.35)).toBe(11); // 27 of 25: one above
+    expect(at(284, 1.5, 0, true)).toBe(10); // 19.984375 of 18: none — the line was 2.0016 before the 64ths
+    expect(lineBox(10, 17, 1.08 * (7.2 + 0.0216 * 238)).y).toBe(9); // a whole px short is a px above
   });
 
   it('puts the box in the line with the half-leading floored', () => {

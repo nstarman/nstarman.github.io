@@ -130,11 +130,15 @@ export function lineBox(top, lh, size) {
   return { y: top + halfLeading(lh - asc - desc), h: asc + desc };
 }
 
-/** The space above a line's content, half what is left of its height: taken to
- *  the nearest 1/64 of a px, and then floored. A line a hair shorter than its
- *  content (17.9929px of 18) has none, not a px negative; a line a hair short of
- *  two px more (26.9998 of 25) has the whole px. */
-const halfLeading = (leading) => Math.floor(Math.round(leading * 64) / 64 / 2);
+/** The height of a line: its multiplier by the font size taken to the nearest
+ *  1/64 of a px, down to a 1/64 (found by sampling Chrome at 3000 sizes: 20.0016px
+ *  at 13.3344px of 1.5 is 19.984375, and 26.9998 at 19.999872px of 1.35 is 27). */
+export const lineHeight = (k, size) => Math.floor(k * (Math.round(size * 64) / 64) * 64) / 64;
+
+/** The space above a line's content, half what is left of its height — in 1/64
+ *  of a px, toward zero, as a LayoutUnit halves — floored. A line a 64th short of
+ *  its content has none, not a px negative. */
+const halfLeading = (leading) => Math.floor(Math.trunc((leading / 2) * 64) / 64);
 
 /** A font's ascent and descent in px, as Chrome rounds them for the size it
  *  uses — each a half down, in integers (hundredths of a px, thousandths of an
@@ -170,7 +174,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   // The title, a link to the package: the card's own top.
   let y = padT;
   const name = { font: 'IBM Plex Mono', weight: 500, size: L.ts, ls: 0, color: c.ink, href: input.href };
-  const nameLH = 1.35 * L.ts;
+  const nameLH = lineHeight(1.35, L.ts);
   // A title is broken anywhere where it is wider than the card (overflow-wrap:anywhere).
   for (const s of wrap(input.title, cw, widthOf(name), { anywhere: true })) {
     const nr = lineBox(y, nameLH, L.ts);
@@ -184,7 +188,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   if (card.role && input.role) {
     const rs = 0.78 * L.fs;
     const o = { font: 'IBM Plex Mono', weight: 400, size: rs, ls: 0.09 * rs, color: c.accent };
-    const lh = 1.5 * rs;
+    const lh = lineHeight(1.5, rs);
     for (const s of wrap(input.role.toUpperCase(), cw, widthOf(o))) {
       const r = lineBox(y, lh, rs);
       text(padX, r.y, r.h, s, measure(s, o), o);
@@ -193,10 +197,11 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
     y += 0.15 * L.fs;
   }
   const body = { font: 'IBM Plex Sans', weight: 400, size: L.fs, ls: 0, color: c.mute };
+  const bodyLH = lineHeight(1.5, L.fs);
   for (const s of wrap(input.text, cw, widthOf(body))) {
-    const r = lineBox(y, 1.5 * L.fs, L.fs);
+    const r = lineBox(y, bodyLH, L.fs);
     text(padX, r.y, r.h, s, measure(s, body), body);
-    y += 1.5 * L.fs;
+    y += bodyLH;
   }
 
   // The buttons, under the words, as many to a row as fit.
@@ -212,7 +217,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   // A button sits in a list item as an inline box, on its baseline — its icon's bottom — so the
   // item is as high as the box and the item's own strut (its font, at the body's line-height of
   // 1.55) together need: above the baseline, the more of the two, and below it.
-  const strut = metrics(L.fs), lineH = layoutUnit(1.55 * L.fs);
+  const strut = metrics(L.fs), lineH = lineHeight(1.55, L.fs);
   const strutAbove = strut.asc + halfLeading(lineH - strut.asc - strut.desc);
   const above = Math.max((ib + L.ii) / 2, strutAbove), below = Math.max((ib - L.ii) / 2, lineH - strutAbove);
   const itemH = above + below, lift = above - (ib + L.ii) / 2;
@@ -233,7 +238,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
       svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.viewBox}" fill="${c.mute.slice(0, 7)}" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">${icon.body}</svg>`,
     });
     if (label) {
-      const r = lineBox(rowTop + lift + ib / 2 - small.size / 2, small.size, small.size);
+      const r = lineBox(rowTop + lift + ib / 2 - small.size / 2, lineHeight(1, small.size), small.size);
       text(ix + L.ii + 0.25 * REM, r.y, r.h, label, lw, { ...small, href: l.url });
     }
     x += w + gap;
