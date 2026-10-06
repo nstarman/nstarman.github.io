@@ -56,6 +56,40 @@ export function attachGrip(frame, b) {
   });
 }
 
+/** A card of fixed width or height has a grip on its right or bottom edge:
+ *  dragging it sizes that dimension live, and on release writes the px box. */
+export function attachSize(frame, b) {
+  const { form, render, limits } = b;
+  const doc = frame.contentDocument, card = doc.querySelector('.card');
+  if (!card) return;
+  const { fixedMin, fixedMax, fixedMinHeight } = limits;
+  for (const [axis, mode, box, lo] of [['w', 'wmode', 'px', fixedMin], ['h', 'hmode', 'hpx', fixedMinHeight]]) {
+    if (form.elements[mode].value !== 'px') continue;
+    const g = doc.createElement('span');
+    g.className = 'eb-size-grip';
+    g.dataset.axis = axis;
+    g.title = `Drag to set the card’s ${axis === 'w' ? 'width' : 'height'}`;
+    card.append(g);
+    g.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      g.setPointerCapture(e.pointerId);
+      const r = card.getBoundingClientRect(), x0 = e.clientX, y0 = e.clientY;
+      let v = null;
+      const move = (ev) => {
+        v = clampInt(axis === 'w' ? r.width + ev.clientX - x0 : r.height + ev.clientY - y0, lo, fixedMax);
+        if (axis === 'w') frame.style.width = `${v}px`; else card.style.height = `${v}px`;
+      };
+      const up = () => {
+        if (v == null) return;
+        form.elements[box].value = v;
+        render();
+      };
+      drag(g, move, up);
+    });
+  }
+}
+
 /** In the preview, a ⊕ between each two slots that show — the first track
  *  between them, where parts left out leave several — to add space there,
  *  and a hatched band over each track that has some. */

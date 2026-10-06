@@ -582,7 +582,7 @@ export function mountCardBuilder({ form, data }) {
   }
 
   // The surface the preview's modules are given.
-  const b = { form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton };
+  const b = { limits, form, el, items, space, areasOn, st, trackBetween, trackName, showTracks, tune, render, setRadio, sideKind, showGap, stackedIn, moveButton };
   tuneAll.addEventListener('click', () => tune(tuneAll.textContent === 'hide all' ? [] : tuneRows.map((r) => r.dataset.tune)));
 
   // The PNG or PDF, drawn here from the preview when asked for.

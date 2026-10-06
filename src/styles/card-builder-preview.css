@@ -28,6 +28,12 @@
   border:2px solid var(--accent); border-radius:2px; background:var(--ground); cursor:nwse-resize; touch-action:none}
 .eb-hits .card{position:relative; isolation:isolate}
 /* The areas, behind what is in them: outlined, as the parts are. */
+.eb-size-grip{display:none}
+.eb-hits .eb-size-grip{display:block; position:absolute; z-index:7; touch-action:none; background:var(--accent); opacity:0; transition:opacity .15s}
+.eb-hits .card:hover .eb-size-grip{opacity:.35}
+.eb-hits .eb-size-grip:hover, .eb-hits .eb-size-grip:active{opacity:1}
+.eb-hits .eb-size-grip[data-axis=w]{top:0; bottom:0; right:0; width:6px; cursor:ew-resize}
+.eb-hits .eb-size-grip[data-axis=h]{left:0; right:0; bottom:0; height:6px; cursor:ns-resize}
 .eb-area{display:none}
 .eb-hits .eb-area{display:block; position:absolute; z-index:-1}
 /* A side's inner edge, dragged to set its width. */
