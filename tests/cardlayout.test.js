@@ -316,6 +316,16 @@ describe('the pieces', () => {
     expect(() => measure('x', { ...f, weight: 900 })).toThrow(/no face/);
   });
 
+  it('kerns the pairs Chrome does that HarfBuzz as built for JavaScript does not', () => {
+    const f = { font: 'IBM Plex Sans', weight: 400, size: 100, ls: 0 };
+    // Widths from Chrome at 100px: jT 78.20, jV and jW from the same scan.
+    expect(measure('jT', f)).toBeCloseTo(78.2, 1);
+    expect(measure('jV', f) - measure('j', f) - measure('V', f)).toBeLessThan(0);
+    expect(measure('j T', f)).toBeCloseTo(measure('j', f) + measure(' ', f) + measure('T', f), 6);
+    // Not in the mono face, which has no kerning.
+    expect(measure('jT', { ...f, font: 'IBM Plex Mono' })).toBeCloseTo(2 * 60, 0);
+  });
+
   it('keys the card’s CSS and not the rest of the stylesheet', () => {
     const rules = cardRules(css);
     expect(rules.length).toBeGreaterThan(50);
