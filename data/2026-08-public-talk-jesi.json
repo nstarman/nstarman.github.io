@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "public-talk-jesi",
+  "type": "outreach",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-08"
+  },
+  "title": "Public Talk in Jesi, Italy",
+  "organization": "Astrophysics and Space Science in Marche III",
+  "refs": [
+    "astrophysics-and-space-science-in-marche-iii-big-bang-big-st",
+    "marche-iii-big-bang-big-stars-big-computers-jesi"
+  ],
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://www.comune.jesi.an.it/w/following-the-stars"
+    }
+  ]
+}
