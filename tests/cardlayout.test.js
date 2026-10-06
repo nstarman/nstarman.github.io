@@ -274,6 +274,14 @@ describe('a line’s box', () => {
     expect(high(400)).toBeCloseTo(0, 6);
   });
 
+  it('puts a line a hair short of its content at its top, not a px above it', () => {
+    // 238px: the title is 13.3281px, its line 17.9929px, its content 18px. Chrome: 0, not -1.
+    const ts = 1.08 * (7.2 + 0.0216 * 238);
+    expect(metrics(ts).asc + metrics(ts).desc).toBe(18);
+    expect(lineBox(10, 1.35 * ts, ts).y).toBe(10);
+    expect(lineBox(10, 17, ts).y).toBe(9); // a line a whole px short is a px above
+  });
+
   it('puts the box in the line with the half-leading floored', () => {
     expect(lineBox(100, 24, 16).y).toBe(102);
     expect(lineBox(100, 23.328, 17.28).y).toBe(100);

@@ -126,8 +126,13 @@ export const chromeSize = (size) => Math.floor(Math.fround(Math.fround(size) * 1
  *  sits in. In integers (hundredths of a px, thousandths of an em), so a half is exact. */
 export function lineBox(top, lh, size) {
   const { asc, desc } = metrics(size);
-  return { y: top + Math.floor((lh - (asc + desc)) / 2), h: asc + desc };
+  return { y: top + halfLeading(lh - asc - desc), h: asc + desc };
 }
+
+/** The space above a line's content, half what is left of its height: taken to
+ *  1/64 of a px, toward zero, and then floored — so a line a hair shorter than
+ *  its content (a 17.9929px line of 18px content) has none, not a px negative. */
+const halfLeading = (leading) => Math.floor(Math.trunc(leading * 64) / 64 / 2);
 
 /** A font's ascent and descent in px, as Chrome rounds them for the size it
  *  uses — each a half down, in integers (hundredths of a px, thousandths of an
@@ -206,7 +211,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   // item is as high as the box and the item's own strut (its font, at the body's line-height of
   // 1.55) together need: above the baseline, the more of the two, and below it.
   const strut = metrics(L.fs), lineH = layoutUnit(1.55 * L.fs);
-  const strutAbove = strut.asc + Math.floor((lineH - strut.asc - strut.desc) / 2);
+  const strutAbove = strut.asc + halfLeading(lineH - strut.asc - strut.desc);
   const above = Math.max((ib + L.ii) / 2, strutAbove), below = Math.max((ib - L.ii) / 2, lineH - strutAbove);
   const itemH = above + below, lift = above - (ib + L.ii) / 2;
   const small = { font: 'IBM Plex Sans', weight: 400, size: 0.72 * REM, ls: 0, color: c.mute };
