@@ -50,7 +50,7 @@ describe('detail levels', () => {
       .filter((i) => i.subject.some((sp) => sp.t === 'Astropy'));
     const [merged] = rows();
     expect(rows()).toHaveLength(1);
-    expect(merged.title).toBe('Coordinator, Strategic Planner & Core Developer');
+    expect(merged.title).toBe('Coordinator (2025 – 2028), Strategic Planner (2025 – 2026) & Core Developer');
     expect(rows({ group: { Astropy: false } }).map((r) => r.title))
       .toEqual(['Coordinator', 'Strategic Planner', 'Core Developer']);
   });
