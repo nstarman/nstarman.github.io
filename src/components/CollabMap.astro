@@ -43,6 +43,7 @@ const label = (pin) =>
     <a class="cmap-proj" href="https://en.wikipedia.org/wiki/Equal_Earth_projection">Equal Earth projection</a>
   </figcaption>
 
+  <div class="cmap-stage">
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
        aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
                  + `on an Equal Earth projection. The same information is listed below.`}>
@@ -72,6 +73,13 @@ const label = (pin) =>
       </g>
     ))}
   </svg>
+  {/* Shown by mapzoom.js: with no script there is nothing for them to do. */}
+  <div class="cmap-zoom" role="group" aria-label="Zoom the map" hidden>
+    <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+    <button type="button" data-zoom="out" aria-label="Zoom out" disabled>−</button>
+    <button type="button" data-zoom="reset" aria-label="Show the whole world" disabled>⤢</button>
+  </div>
+  </div>
 
   <div class="cmap-pick">
     <label for="cmap-who" hidden>Show</label>
@@ -124,5 +132,7 @@ const label = (pin) =>
 
 <script>
   import { wireAll } from '../lib/mappick.js';
+  import { wireZoom } from '../lib/mapzoom.js';
   wireAll();
+  wireZoom();
 </script>
