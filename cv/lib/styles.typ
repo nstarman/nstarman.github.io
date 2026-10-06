@@ -9,8 +9,9 @@
 //             one every section takes in a CV of several, and the builder
 //             offers each for a section compiled on its own
 //
-// Everything else about the CV is the same in every style: the same type, the
-// same spacing, the same sections, from the same render model. That is why a
+// A style may also set a `look`: the type, the palette and a few sizes, where
+// it departs from LOOK below. Everything else about the CV is the same in every
+// style: the same sections, from the same render model. That is why a
 // style is an entry in the dictionary below rather than a second template —
 // two templates would be two things to keep in agreement, and the page-count
 // contracts hold in either style only because the layout is shared.
@@ -23,7 +24,7 @@
 // names no font, no glyph and no style, and asks `styled()` for whichever one
 // cv.json chose.
 
-#import "theme.typ": accent, ink
+#import "theme.typ": accent, ink, faint
 
 // ── the marks ─────────────────────────────────────────────────────────────
 // The same fonts the LaTeX CV uses — Font Awesome 5 Free Solid, its Brands
@@ -84,6 +85,38 @@
   title: body => body,
 )
 
+#let ADRN_ACCENT = rgb("#3086b4")
+
+// The adrn heading: the words are set in the section colour by cv.typ, over a
+// hairline in the same colour — \titlerule draws in whatever colour is current.
+#let ADRN_HEADINGS = (
+  rule: body => {
+    body
+    v(5pt)
+    line(length: 100%, stroke: 0.2pt + ADRN_ACCENT)
+  },
+  title: body => body,
+)
+
+// What a style sets beyond its marks and headings: the type, the palette, and
+// the few places the layout itself differs. Every key is optional; a style
+// states only where it departs from the default, which is what these are.
+#let LOOK = (
+  font: "New Computer Modern",
+  ink: ink,
+  accent: accent,
+  faint: faint,
+  numbers: "old-style", // Lato has no old-style figures
+  strong: 700, // adrn's "bold" is a Regular against a Light body
+  size: 11pt, // the body
+  sub: 10.1pt, // an entry's lines, a date, a number
+  headsize: 15.6pt,
+  headweight: 400,
+  headcolour: ink, // adrn's headings take the section colour
+  smallcaps: true,
+  adrn: false, // no portrait, no date gutter: see cv.typ
+)
+
 // ── the styles ────────────────────────────────────────────────────────────
 #let STYLES = (
   // What the pre-built PDFs are, and what the CLI always compiles.
@@ -117,6 +150,36 @@
   ),
 )
 
+#let STYLES = STYLES + (adrn: STYLES.default + (
+  headings: ADRN_HEADINGS,
+  glyph: (name, size: 1em, fill: ADRN_ACCENT) => icon(name, size: size, fill: fill),
+  solo: (name, word, size: 1em, fill: ADRN_ACCENT) => icon(name, size: size, fill: fill),
+  trail: (links, size: 1em, tint: ADRN_ACCENT) => links
+    .map(l => link(l.url, if l.at("year", default: none) != none {
+      [#icon(l.icon, size: size, fill: tint)#h(1.5pt)#text(size: size * 0.86, fill: tint, l.year)]
+    } else { icon(l.icon, size: size, fill: tint) }))
+    .join(h(3pt)),
+  // adrn/cv's apw-cv.cls, read rather than eyeballed: sections and links
+  // #3086b4, de-emphasis #666666, body Lato Light with Lato Regular as its
+  // "bold", Lato Bold 14pt headings. \scshape is in the class but Lato has no
+  // small caps, so what it renders is sentence case — copied, not what it asks.
+  look: (
+    font: "Lato",
+    ink: rgb("#000000"),
+    accent: ADRN_ACCENT,
+    faint: rgb("#666666"),
+    numbers: "lining",
+    strong: 400,
+    size: 12pt,
+    sub: 12pt,
+    headsize: 14pt,
+    headweight: 700,
+    headcolour: ADRN_ACCENT,
+    smallcaps: false,
+    adrn: true,
+  ),
+))
+
 // The builder's manifest says what each style offers; this says it is true.
 #let MANIFEST = json("styles.json")
 #assert.eq(STYLES.keys(), MANIFEST.keys(),
@@ -133,8 +196,10 @@
 /// has already answered this, and the two cannot drift apart.
 #let styled(name) = {
   let s = STYLES.at(name, default: STYLES.default)
+  let look = LOOK + s.at("look", default: (:))
   s + (
-    marked: (name, body, size: 1em, fill: accent) => {
+    look: look,
+    marked: (name, body, size: 1em, fill: look.accent) => {
       let g = (s.glyph)(name, size: size, fill: fill)
       if g == none { body } else { [#g #body] }
     },

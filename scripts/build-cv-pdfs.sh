@@ -18,7 +18,7 @@ command -v "$TYPST" >/dev/null || { echo "typst not found (set TYPST=/path/to/ty
 # a rule rather than a hope. A face the template names that public/fonts/ does
 # not hold is "unknown" to Typst, which only warns and substitutes — so that
 # warning fails the build below. The folder is the list: the in-browser builder
-# loads whatever .otf files it holds, and nothing names them twice.
+# loads whatever .otf and .ttf files it holds, and nothing names them twice.
 TYPST_ARGS=(--root . --font-path public/fonts --ignore-system-fonts)
 
 shopt -s nullglob

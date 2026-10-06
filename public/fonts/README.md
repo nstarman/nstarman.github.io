@@ -16,6 +16,14 @@ built PDF carries no other face.
 | `FontAwesome5Brands-Regular-400.otf` | GitHub, ORCID | as above |
 | `academicons.otf` | ADS, arXiv | SIL OFL 1.1 |
 | `card/IBMPlexSans-{Regular,Medium,SemiBold}.otf`, `card/IBMPlexMono-{Regular,Medium}.otf` | a card's PDF, from the Card Builder | SIL OFL 1.1, `card/LICENSE.txt` |
+| `Lato-{Lig,LigIta,Reg,Bol}.ttf` | the `adrn` CV style | SIL OFL 1.1 |
+
+Lato is there for the `adrn` style, which mimics [adrn/cv][adrn] — these are
+the same four faces that CV vendors, taken from it, so the style is set in the
+type it is copying rather than in a lookalike. It leans on the Light/Regular
+distinction rather than on a bold, hence four files for what looks like two.
+
+[adrn]: https://github.com/adrn/cv
 
 New Computer Modern is Latin Modern's successor, the face the LaTeX CV this
 replaces was set in. Font Awesome 5 and Academicons are the same two icon

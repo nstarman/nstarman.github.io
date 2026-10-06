@@ -28,7 +28,7 @@
 //
 //   typst compile --root . cv/cv.typ out.pdf
 
-#import "lib/theme.typ": ink, accent, faint, orcid, accentsoft, accentline, headerwash, tnum, lnum
+#import "lib/theme.typ": orcid, accentsoft, accentline, headerwash, tnum, lnum
 #import "lib/styles.typ": styled
 
 #let cv = json("cv.json")
@@ -43,7 +43,13 @@
 // mark is drawn beside words (`marked`), standing alone (`solo`), and in a run
 // of them (`trail`). Only the browser builder sets the key, so the CLI PDFs are
 // always the default and their page-count contracts are unaffected.
-#let (glyph, solo, trail, marked, headings) = styled(cv.at("style", default: "default"))
+#let (glyph, solo, trail, marked, headings, look) = styled(cv.at("style", default: "default"))
+// The palette and type the style sets; for the default these are theme.typ's.
+#let (ink, accent, faint) = (look.ink, look.accent, look.faint)
+// A style with no portrait and no date gutter — adrn. The three places where a
+// style differs in shape rather than value are the header, the entries, and the
+// page's own running head, and each reads this.
+#let flat = look.adrn
 // The heading every section takes in a CV of several: the style's first.
 #let usual = headings.keys().first()
 
@@ -82,15 +88,23 @@
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
-  paper: "a4",
-  margin: if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
+  paper: if flat { "us-letter" } else { "a4" },
+  margin: if flat { (x: 1in, top: 0.85in, bottom: 1in) }
+          else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
           else { (x: 1.05cm, top: 1.19cm, bottom: 1.78cm) },
+  // fancyhdr in the reference: name, title and page number in grey, from the
+  // second page on.
+  footer: if flat { align(center, text(fill: faint, size: 10.5pt)[Last updated: #datetime.today().display("[year]-[month]-[day]")]) },
+  header: if flat { context if counter(page).get().first() > 1 {
+    set text(fill: faint, size: 10.5pt)
+    grid(columns: (1fr, auto, 1fr), p.name, [Curriculum Vitae], align(right)[#counter(page).display()])
+  } },
 )
 // New Computer Modern is Typst's own, so CI and the browser both have it — and
 // it is Latin Modern's successor, the face the LaTeX CV was already set in.
 #set text(
-  font: "New Computer Modern",
-  size: 11pt,
+  font: look.font,
+  size: look.size,
   fill: ink,
   lang: "en",
   // A CV is mostly numbers set inside sentences — years, volumes, pages. Lining
@@ -98,8 +112,9 @@
   // interrupting the line. Old-style figures carry ascenders and descenders and
   // sit in the text the way lowercase does. Columns of digits want the opposite
   // treatment and get it back individually below; #tnum is the helper.
-  number-type: "old-style",
+  number-type: look.numbers,
 )
+#show strong: set text(weight: look.strong)
 
 #set par(
   justify: true,
@@ -152,7 +167,27 @@
 // same row, inset at the top and the bottom both. Measuring the name column and
 // distributing the contact lines over exactly that height makes the two agree
 // at both edges, and keeps agreeing if a title or an address line is added.
-#context {
+// adrn: a 20pt name, a grey dash and "Curriculum Vitae" in the section colour,
+// then the titles and the contact line indented a list's 2em beneath. No
+// portrait, no QR and no wash.
+#let adrnheader = {
+  set par(justify: false, leading: 0.65em)
+  text(size: 20pt)[#p.name #h(0.3em) #text(fill: rgb("#cccccc"))[—] #h(0.3em) #text(fill: accent, weight: 300)[Curriculum Vitae]]
+  v(0.8em)
+  pad(left: 2em, {
+    p.titles.map(strong).join(linebreak())
+    linebreak()
+    p.affiliationShort
+    v(0.2em)
+    link("mailto:" + p.email)[#marked("email", p.email)]
+    h(1.2em)
+    link(p.websiteUrl)[#marked("globe", p.website)]
+    linebreak()
+    profiles
+  })
+}
+
+#if flat { adrnheader } else { context {
   let h = measure(namecol).height
   // `outset`, not `inset`: the wash is drawn around the grid without taking
   // any space, so the header's geometry — and the page counts that depend on
@@ -179,7 +214,7 @@
 
     link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
   ))
-}
+} }
 // The header is a block of its own, so it needs more clearance than two
 // sections need from each other.
 #v(if tight { 3pt } else { 6pt })
@@ -193,19 +228,20 @@
   // Above is the gap between two sections, below only between a heading and
   // its own first entry, so they should not be equal: 9.2pt each way left a
   // heading sitting almost on the entry above it.
-  v(if tight { 8pt } else { 15pt })
+  v(if flat { 26pt } else if tight { 8pt } else { 15pt })
   // `none` twice over: no mark named for this section, or a style that draws
   // none. Both mean the heading is the words alone.
-  let g = if mark == none { none } else { glyph(mark, size: 0.95em, fill: ink) }
+  let g = if mark == none or flat { none } else { glyph(mark, size: 0.95em, fill: ink) }
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
-    #let words = text(size: 15.6pt)[
+    #let words = text(size: look.headsize, weight: look.headweight, fill: look.headcolour)[
       #if g != none [#g #h(2pt)]
-      #smallcaps(title)
+      #if look.smallcaps { smallcaps(title) } else { title }
     ]
     #(headings.at(variant))(if aside == none { words } else { words + h(1fr) + aside })
   ]
-  v(below)
+  // The reference leaves a full line under a heading's rule.
+  v(if flat { below + 8pt } else { below })
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
@@ -236,24 +272,40 @@
 // ── one entry ─────────────────────────────────────────────────────────────
 // Title and subject share a line — "**Institution**, Role" — which is what
 // keeps an entry to two lines rather than three.
-#let entrybody(it) = {
+#let entrybody(it, tail: none) = {
   strong(it.title)
   if it.subject.len() > 0 [, #bolded(it.subject)]
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
   if it.links.len() > 0 [ #trail(it.links)]
+  // Styles with no right-hand column hand the location in here, so it ends the
+  // entry's own line instead of trailing the last detail line.
+  if tail != none { tail }
   if it.recipient != none {
     if it.recipientInline { [, ] } else { linebreak() }
-    text(size: 10.1pt)[#emph[to #it.recipient]]
+    text(size: look.sub)[#emph[to #it.recipient]]
   }
   for l in it.lines {
     linebreak()
-    text(size: 10.1pt)[#linked(l)]
+    text(size: look.sub)[#linked(l)]
   }
 }
 
 // One grid for the whole section, so the date column finds a single width and
 // every entry lines up — the LaTeX CV gets this from one tabularx per section.
-#let entries(items, gutter) = {
+#let entriesflat(items, gutter) = {
+  for it in items {
+    // The date opens the line, the location ends it, and the whole sits in a
+    // list at \leftmargin=2em with \parskip a baseline apart.
+    block(inset: (left: 2em), below: gutter - 1pt, {
+      if it.when != none and str(it.when).len() > 0 [#it.when.replace(regex(" ?– ?"), "–"), ]
+      entrybody(it, tail: if it.trailing != none and str(it.trailing).len() > 0 {
+        text(fill: faint)[ — #it.trailing]
+      })
+    })
+  }
+}
+
+#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else {
   set par(justify: false)
   grid(
     columns: (auto, 1fr, auto),
@@ -262,9 +314,9 @@
     align: (left + top, left + top, right + top),
     ..items
       .map(it => (
-        tnum(text(size: 10.1pt)[#it.when]),
+        tnum(text(size: look.sub)[#it.when]),
         entrybody(it),
-        tnum(text(size: 10.1pt)[#it.trailing]),
+        tnum(text(size: look.sub)[#it.trailing]),
       ))
       .flatten(),
   )
@@ -279,13 +331,16 @@
 // margin as the dates do in every other section, and the rest align on the dot.
 #let publication(n, it, numwidth) = {
   grid(
-    columns: (numwidth, 1fr),
-    column-gutter: 7pt,
+    // adrn: the number is a small grey figure in the 2em the list indents by.
+    columns: (if flat { 2em } else { numwidth }, 1fr),
+    column-gutter: if flat { 0.5em } else { 7pt },
     align: (right + top, left + top),
-    tnum(text(size: 10.1pt)[#n.]),
+    if flat { text(size: 8.5pt, fill: faint)[#n] } else { tnum(text(size: look.sub)[#n.]) },
     {
       if it.byline.len() > 0 [#bolded(it.byline). ]
-      emph(it.title)
+      // adrn sets the title as the link to the paper, in the link colour.
+      let linkable = it.links.filter(l => l.icon in ("ads", "arxiv", "paper", "doi"))
+      if flat and linkable.len() > 0 { link(linkable.first().url, emph(it.title)) } else { emph(it.title) }
       if it.venue != none [. #it.venue]
       if it.status != none [ #statuspill(it.status)]
       // The article and preprint marks belong with the citation; the code and
@@ -330,7 +385,7 @@
   }
   let total = groups.map(g => section.items.filter(i => i.id in g.ids).len()).sum(default: 0)
   context {
-    let numwidth = measure(tnum(text(size: 10.1pt)[#total.])).width
+    let numwidth = measure(tnum(text(size: look.sub)[#total.])).width
     let n = total + 1
     for g in groups {
       let picked = section.items.filter(i => i.id in g.ids)
@@ -371,7 +426,7 @@
 // ── a bare list ───────────────────────────────────────────────────────────
 // Refereeing venues, review panels. No dates, so no date column.
 #let plainlist(entries, gutter) = {
-  set text(size: 10.1pt)
+  set text(size: look.sub)
   if cv.detail == "summary" {
     entries.map(linked).join([, ])
   } else {
