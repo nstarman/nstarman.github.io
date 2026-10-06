@@ -73,3 +73,19 @@ export function modelToSvg(model, images = {}) {
     + `<title>${esc(model.title)}</title>\n<defs>${defs.join('')}<clipPath id="card"><path d="${rrect(0, 0, model.w, model.h, model.r)}"/></clipPath></defs>\n`
     + `<g clip-path="url(#card)">\n${body.join('\n')}\n</g>\n</svg>\n`;
 }
+
+/** A face's family and weight from the name of its file: IBMPlexSans-Medium.otf →
+ *  IBM Plex Sans, 500. The faces public/fonts/card/ has, the ones the card names. */
+export function faceOf(file) {
+  const [, family, style] = file.match(/(IBMPlex(?:Sans|Mono))-(\w+)\.otf$/) ?? [];
+  if (!family) throw new Error(`no face for ${file}`);
+  return { family: family.replace(/(Plex)(Sans|Mono)/, '$1 $2').replace('IBMPlex', 'IBM Plex'), weight: { Regular: 400, Medium: 500, SemiBold: 600 }[style] };
+}
+
+/** An SVG with the faces in it, as @font-face rules with the font files as data:
+ *  URIs, so that it draws in the card's own faces where the page's cannot reach —
+ *  as an image, which is how it is made a PNG. faces: [{ file, uri }]. */
+export function withFonts(svg, faces) {
+  const css = faces.map(({ file, uri }) => { const f = faceOf(file); return `@font-face{font-family:'${f.family}';font-weight:${f.weight};src:url(${uri})}`; }).join('');
+  return svg.replace('</title>\n', `</title>\n<style>${css}</style>\n`);
+}

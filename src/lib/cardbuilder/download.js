@@ -1,8 +1,8 @@
-// The Card Builder's PNG, PDF and SVG: the card in the preview frame, drawn in the
-// browser in the theme asked for — nothing is rendered at build time. The
-// frame is this site's own page, so its document is ours to read.
+// The Card Builder's PNG, PDF and SVG: the card in the preview frame, measured in
+// the browser in the theme asked for — nothing is rendered at build time — and
+// then written as SVG, as a PDF by Typst, or, rasterized from the SVG, as a PNG.
+// The frame is this site's own page, so its document is ours to read.
 
-import { domToPng } from 'modern-screenshot';
 import { file, themes } from '../cardexport.js';
 
 /** Save one file per theme the builder card `s` needs, as `file(s, theme)`
@@ -33,8 +33,6 @@ export async function downloadCard({ preview, site, fonts, say }, s) {
       if (was) root.dataset.theme = was; else delete root.dataset.theme;
     }
   }
-  const png = (theme) => drawn(theme, (card) => domToPng(card, { scale: 2 }));
-
   // The same card as a PDF: measured where the browser laid it out, then set
   // again by Typst (src/lib/card.typ) in the same faces. The compiler, ~11 MB,
   // loads on the first one asked for.
@@ -51,31 +49,49 @@ export async function downloadCard({ preview, site, fonts, say }, s) {
     return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   }
 
-  // The card as an SVG: measured the same way, then written by cardsvg.js. Its
-  // figures go in as data: URIs, so the file stands alone.
-  async function svg(theme, s) {
+  const dataUri = async (url) => {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`no file at ${url}`);
+    const blob = await r.blob();
+    return new Promise((done, fail) => {
+      const f = new FileReader();
+      f.onload = () => done(f.result);
+      f.onerror = () => fail(f.error);
+      f.readAsDataURL(blob);
+    });
+  };
+
+  // The card as an SVG, written by cardsvg.js from the measurement the PDF
+  // takes. Its figures go in as data: URIs, so the file stands alone.
+  async function svgText(theme, s) {
     const { model, images } = await drawn(theme, async (card) => (await import('../cardpdf.js')).measureCard(card, { title: s.it.title, site }));
     const uris = {};
-    for (const [path, url] of images) {
-      const r = await fetch(url);
-      if (!r.ok) throw new Error(`no figure at ${url}`);
-      const blob = await r.blob();
-      uris[path] = await new Promise((done, fail) => {
-        const f = new FileReader();
-        f.onload = () => done(f.result);
-        f.onerror = () => fail(f.error);
-        f.readAsDataURL(blob);
-      });
-    }
+    for (const [path, url] of images) uris[path] = await dataUri(url);
     const { modelToSvg } = await import('../cardsvg.js');
-    return URL.createObjectURL(new Blob([modelToSvg(model, uris)], { type: 'image/svg+xml' }));
+    return { svg: modelToSvg(model, uris), w: model.w, h: model.h };
+  }
+  const svg = async (theme, s) => URL.createObjectURL(new Blob([(await svgText(theme, s)).svg], { type: 'image/svg+xml' }));
+
+  // The card as a PNG, rasterized from that SVG at twice its size. An SVG drawn as
+  // an image cannot reach the page's faces, so it carries the card's own.
+  async function png(theme, s) {
+    const { svg: text, w, h } = await svgText(theme, s);
+    const { withFonts } = await import('../cardsvg.js');
+    const faces = await Promise.all(fonts.map(async (f) => ({ file: f, uri: await dataUri(f) })));
+    const img = new Image();
+    img.src = URL.createObjectURL(new Blob([withFonts(text, faces)], { type: 'image/svg+xml' }));
+    await img.decode();
+    const canvas = Object.assign(document.createElement('canvas'), { width: Math.round(w * 2), height: Math.round(h * 2) });
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(img.src);
+    return URL.createObjectURL(await new Promise((done) => canvas.toBlob(done, 'image/png')));
   }
 
   for (const t of themes(s)) {
     const a = document.createElement('a');
-    a.href = s.format === 'pdf' ? await pdf(t, s) : s.format === 'svg' ? await svg(t, s) : await png(t);
+    a.href = s.format === 'pdf' ? await pdf(t, s) : s.format === 'svg' ? await svg(t, s) : await png(t, s);
     a.download = file(s, t);
     a.click();
-    if (s.format === 'pdf' || s.format === 'svg') setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 }
