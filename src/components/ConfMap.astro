@@ -37,6 +37,7 @@ const offMap = unsettled.length + unplaced.length;
     <a class="cmap-proj" href="https://en.wikipedia.org/wiki/Equal_Earth_projection">Equal Earth projection</a>
   </figcaption>
 
+  <div class="cmap-stage">
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
        aria-label={`World map: ${plural(conf.talks, 'talk')} given in `
                  + `${plural(pins.length, 'place')}, on an Equal Earth projection. `
@@ -70,6 +71,13 @@ const offMap = unsettled.length + unplaced.length;
       </g>
     ))}
   </svg>
+  {/* Shown by mapzoom.js: with no script there is nothing for them to do. */}
+  <div class="cmap-zoom" role="group" aria-label="Zoom the map" hidden>
+    <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+    <button type="button" data-zoom="out" aria-label="Zoom out" disabled>−</button>
+    <button type="button" data-zoom="reset" aria-label="Show the whole world" disabled>⤢</button>
+  </div>
+  </div>
 
   <div class="cmap-pick">
     <label for="conf-who" hidden>Show</label>
@@ -140,5 +148,7 @@ const offMap = unsettled.length + unplaced.length;
 
 <script>
   import { wireAll } from '../lib/mappick.js';
+  import { wireZoom } from '../lib/mapzoom.js';
   wireAll();
+  wireZoom();
 </script>

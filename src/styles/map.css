@@ -31,23 +31,23 @@
    referred to twice without repeating it. */
 .cmap-lakes{fill:color-mix(in srgb, var(--sea) 6%, var(--ground)); stroke:none}
 .cmap-trail{
-  fill:none; stroke:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h))); stroke-width:1.6;
-  stroke-dasharray:4 4; stroke-linecap:round; opacity:.75;
+  fill:none; stroke:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h))); stroke-width:calc(1.6px * var(--k,1));
+  stroke-dasharray:calc(4px * var(--k,1)) calc(4px * var(--k,1)); stroke-linecap:round; opacity:.75;
 }
 /* Radius lives here rather than in the markup so it can grow as the map
    shrinks: at phone width the whole 1000-unit map is ~330px, where a 4.5-unit
    pin is three pixels across and invisible. The `r` attribute stays in the SVG
    as the value a stylesheet-less render would use. */
 .cmap-pin circle{
-  r:3; fill:var(--ground); stroke:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h))); stroke-width:2;
+  r:calc(3px * var(--k,1)); fill:var(--ground); stroke:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h))); stroke-width:calc(2px * var(--k,1));
   transition:r .12s ease;
 }
-.cmap-pin circle.is-shared{r:4.5; fill:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h)))}
-.cmap-pin:hover circle, .cmap-pin:focus-visible circle{r:8}
+.cmap-pin circle.is-shared{r:calc(4.5px * var(--k,1)); fill:light-dark(oklch(.55 .16 var(--h)), oklch(.74 .15 var(--h)))}
+.cmap-pin:hover circle, .cmap-pin:focus-visible circle{r:calc(8px * var(--k,1))}
 @media (max-width:44rem){
-  .cmap-pin circle{r:6; stroke-width:3}
-  .cmap-pin circle.is-shared{r:8}
-  .cmap-trail{stroke-width:3; stroke-dasharray:7 7}
+  .cmap-pin circle{r:calc(6px * var(--k,1)); stroke-width:calc(3px * var(--k,1))}
+  .cmap-pin circle.is-shared{r:calc(8px * var(--k,1))}
+  .cmap-trail{stroke-width:calc(3px * var(--k,1)); stroke-dasharray:calc(7px * var(--k,1)) calc(7px * var(--k,1))}
 }
 @media (prefers-reduced-motion:reduce){ .cmap-pin circle{transition:none} }
 
@@ -82,7 +82,7 @@
    writing an inline opacity, so "has no inline opacity" is exactly "is the one
    being pointed at" — expressed here rather than as a second class to keep in
    step. */
-.cmap[data-hover] .cmap-pin:not([style*="opacity"]) circle{r:7}
+.cmap[data-hover] .cmap-pin:not([style*="opacity"]) circle{r:calc(7px * var(--k,1))}
 .cmap-pin, .cmap-trail, .cmap-list > li{transition:opacity .15s ease}
 .cmap-list > li{outline-offset:3px}
 @media (prefers-reduced-motion:reduce){
@@ -165,6 +165,23 @@
 .cmap-orcid .ico{width:.9375rem; height:.9375rem; fill:currentColor; display:block}
 .cmap-orcid:hover, .cmap-orcid:focus-visible{color:var(--accent)}
 
+/* ── Zoom ────────────────────────────────────────────────────────────────────
+   mapzoom.js moves the svg's viewBox and sets --k to 1/zoom, which every pin and
+   line above multiplies by so they stay the size they were. */
+.cmap-stage{position:relative}
+.cmap-zoom{position:absolute; top:.6rem; right:.6rem; display:flex; flex-direction:column; gap:.25rem}
+.cmap-zoom[hidden]{display:none}
+.cmap-zoom button{
+  width:1.9rem; height:1.9rem; padding:0; line-height:1; font:inherit; font-size:1.05rem;
+  color:var(--ink-2); background:var(--ground); border:1px solid var(--rule-strong); border-radius:.4rem; cursor:pointer;
+}
+.cmap-zoom button:hover:not(:disabled), .cmap-zoom button:focus-visible{color:var(--accent); border-color:currentColor}
+.cmap-zoom button:disabled{color:var(--ink-faint); cursor:default; opacity:.55}
+/* Once there is somewhere to pan to, a drag pans: the page must not scroll under
+   a finger doing it. */
+.cmap-trail[data-offview]{display:none}
+.cmap-stage[data-zoom] svg{cursor:grab; touch-action:none}
+
 /* A pin is pressable, so it should look it. */
 .cmap-pin, .cmap-trail{cursor:pointer}
 
@@ -178,16 +195,16 @@
    the `r` attribute in the markup is still what a stylesheet-less render uses.
    Part-transparent so overlapping cities read as overlapping rather than as one
    blob, which is what Cambridge and New York do at this scale. */
-.cmap--conf .cmap-pin circle{r:var(--r); fill:oklch(.55 .16 var(--h) / .72)}
+.cmap--conf .cmap-pin circle{r:calc(var(--r) * var(--k,1)); fill:oklch(.55 .16 var(--h) / .72)}
 .cmap--conf .cmap-pin:hover circle,
 .cmap--conf .cmap-pin:focus-visible circle,
 .cmap--conf[data-hover] .cmap-pin:not([style*="opacity"]) circle{
-  r:calc(var(--r) * 1.45); fill-opacity:1
+  r:calc(var(--r) * 1.45 * var(--k,1)); fill-opacity:1
 }
 @media (max-width:44rem){
   /* The phone rule above doubles a three-unit pin; the same generosity here,
      applied to a size that already varies. */
-  .cmap--conf .cmap-pin circle{r:calc(var(--r) * 1.7); stroke-width:3}
+  .cmap--conf .cmap-pin circle{r:calc(var(--r) * 1.7 * var(--k,1)); stroke-width:calc(3px * var(--k,1))}
 }
 
 /* Filled and unstroked, because a conference pin is: a 2px stroke on a circle
