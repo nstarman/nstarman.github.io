@@ -1,9 +1,10 @@
 // The card's SVG: written from a measured card, so a fixed model stands in
 // for the browser. sharp's renderer is the check that it is an SVG at all.
 
+import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { modelToSvg, rrect, stack } from '../src/lib/cardsvg.js';
+import { modelToSvg, rrect, stack, faceOf, withFonts } from '../src/lib/cardsvg.js';
 import { file, themes } from '../src/lib/cardexport.js';
 import { FORMATS } from '../src/lib/cardbuilder/settings.js';
 
@@ -76,5 +77,29 @@ describe('the pieces', () => {
     const s = { id: 'unxt', slug: 'size:fill:fit', format: 'svg', theme: 'auto' };
     expect(themes(s)).toEqual(['light', 'dark']);
     expect(file(s, 'dark')).toMatch(/-dark\.svg$/);
+  });
+});
+
+describe('the faces of a PNG', () => {
+  it('are named from their files: family and weight', () => {
+    expect(faceOf('/fonts/card/IBMPlexSans-Regular.otf')).toEqual({ family: 'IBM Plex Sans', weight: 400 });
+    expect(faceOf('/fonts/card/IBMPlexSans-Medium.otf')).toEqual({ family: 'IBM Plex Sans', weight: 500 });
+    expect(faceOf('/fonts/card/IBMPlexSans-SemiBold.otf')).toEqual({ family: 'IBM Plex Sans', weight: 600 });
+    expect(faceOf('/fonts/card/IBMPlexMono-Medium.otf')).toEqual({ family: 'IBM Plex Mono', weight: 500 });
+    expect(() => faceOf('/fonts/card/Other-Regular.otf')).toThrow(/no face/);
+  });
+
+  it('are every one the card names, and every one in public/fonts/card has a family and weight', () => {
+    for (const f of fs.readdirSync('public/fonts/card').filter((x) => x.endsWith('.otf'))) expect(() => faceOf(f), f).not.toThrow();
+    for (const o of model.ops.filter((x) => x.k === 'text')) expect(['IBM Plex Sans', 'IBM Plex Mono'], o.font).toContain(o.font);
+  });
+
+  it('go into the SVG as @font-face rules with data: URIs, still an SVG a renderer reads', async () => {
+    const withIt = withFonts(svg, [{ file: 'IBMPlexSans-Regular.otf', uri: 'data:font/otf;base64,AAAA' }, { file: 'IBMPlexMono-Medium.otf', uri: 'data:font/otf;base64,BBBB' }]);
+    expect(withIt).toContain("@font-face{font-family:'IBM Plex Sans';font-weight:400;src:url(data:font/otf;base64,AAAA)}");
+    expect(withIt).toContain("@font-face{font-family:'IBM Plex Mono';font-weight:500;src:url(data:font/otf;base64,BBBB)}");
+    expect(withIt.replace(/<style>[\s\S]*?<\/style>\n/, '')).toBe(svg);
+    const meta = await sharp(Buffer.from(withIt)).metadata();
+    expect([meta.format, meta.width, meta.height]).toEqual(['svg', 320, 120]);
   });
 });

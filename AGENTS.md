@@ -270,13 +270,17 @@ lists the items and presets; `/embed/resize.js` sizes card iframes to fit.
 Like an `id`, these URLs must not move once published.
 
 `/tools/card/` — under Tools, in the footer — is the point-and-click way in.
-It also draws the PNGs, in the browser, from the live preview: nothing is
-rendered at build time, so any combination can be had as an image. And as a
-PDF: `src/lib/cardpdf.js` measures the preview — every box, figure, icon and
-line of text where the CSS put it — and Typst (`src/lib/card.typ`, with the
-compiler the CV builder uses) sets it again in the site's own faces,
-`public/fonts/card/`, its text selectable and its links live. The layout stays
-the CSS's alone, so a new axis needs nothing in either file.
+It also draws the images, in the browser, from the live preview: nothing is
+rendered at build time, so any combination can be had as a file. One
+measurement, `src/lib/cardpdf.js` — every box, figure, icon and line of text where
+the CSS put it — feeds all three. As an SVG, `src/lib/cardsvg.js` writes it:
+vector text, the figures inside, each link an `<a>`. As a PNG, that SVG is
+rasterized on a canvas at twice its size, with the card's own faces
+(`public/fonts/card/`) put into it as data: URIs, since an SVG drawn as an image
+cannot reach the page's. As a PDF, Typst (`src/lib/card.typ`, with the compiler
+the CV builder uses) sets it again in the same faces, its text selectable and its
+links live. The layout stays the CSS's alone, so a new axis needs nothing in any
+of them.
 
 The page `src/pages/tools/card.astro` is markup and thin wiring; the builder is
 a module, `src/lib/cardbuilder/`, whose `index.js` lists its public API and
