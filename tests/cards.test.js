@@ -687,6 +687,13 @@ describe('the stars button', () => {
     expect(Object.keys(counts).sort()).toEqual([...new Set(software.map((i) => i.repo))].sort());
   });
 
+  it('can be named among a card’s buttons, placed or left out, like any other', () => {
+    const base = 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none';
+    for (const keys of ['stars', 'code,stars', 'stars,code,docs', 'all']) expect(() => parseName(`${base}-buttons:${keys}:fit`), keys).not.toThrow();
+    // Every key a card can offer is one a name can ask for.
+    for (const i of software) for (const k of linkKeys(i)) expect(() => parseName(`${base}-buttons:${k}`), `${i.id} ${k}`).not.toThrow();
+  });
+
   it('is the last link of a package, to its stargazers, and of nothing else', () => {
     for (const i of software) {
       const star = cardLinks(i).at(-1);
