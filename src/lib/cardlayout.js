@@ -130,10 +130,17 @@ const symbol = (id) => {
 /** A line of text a browser lays out in a box of height `lh`: its content area
  *  is the font's rounded ascent and descent, and the half-leading above it is
  *  floored. Returns the rect the text sits in. */
-function line(top, lh, size) {
+export function lineBox(top, lh, size) {
   const h = Math.round(ASCENT * size) + Math.round(DESCENT * size);
   return { y: top + Math.floor((lh - h) / 2), h };
 }
+
+/** Whether a font size is within a hair of one where the rounded ascent or
+ *  descent steps. Chrome's step there is not quite where the metrics put it —
+ *  within about 0.003px of size, in a way that has no one rule — so a card
+ *  whose text is that close can be a pixel off, and the differential fuzz
+ *  (tests/cardlayout.differential.test.js) leaves such widths out. */
+export const nearStep = (size, hair = 0.006) => [ASCENT, DESCENT].some((m) => Math.abs((m * size) % 1 - 0.5) < hair);
 
 /**
  * @param {ReturnType<typeof softwareInput>} input
@@ -161,7 +168,7 @@ export function softwareModel(input, { slug, theme, measure }) {
   const nameLH = 1.35 * L.ts;
   // A title is broken anywhere where it is wider than the card (overflow-wrap:anywhere).
   for (const s of wrap(input.title, cw, widthOf(name), { anywhere: true })) {
-    const nr = line(y, nameLH, L.ts);
+    const nr = lineBox(y, nameLH, L.ts);
     text(padX, nr.y, nr.h, s, measure(s, name), name);
     y += nameLH;
   }
@@ -175,7 +182,7 @@ export function softwareModel(input, { slug, theme, measure }) {
     const o = { font: 'IBM Plex Mono', weight: 400, size: rs, ls: 0.09 * rs, color: c.accent };
     const lh = 1.5 * rs;
     for (const s of wrap(input.role.toUpperCase(), cw, widthOf(o))) {
-      const r = line(y, lh, rs);
+      const r = lineBox(y, lh, rs);
       text(padX, r.y, r.h, s, measure(s, o), o);
       y += lh;
     }
@@ -184,7 +191,7 @@ export function softwareModel(input, { slug, theme, measure }) {
   const body = { font: 'IBM Plex Sans', weight: 400, size: L.fs, ls: 0, color: c.mute };
   if (!first) y += 0.15 * L.fs;
   for (const s of wrap(input.text, cw, widthOf(body))) {
-    const r = line(y, 1.5 * L.fs, L.fs);
+    const r = lineBox(y, 1.5 * L.fs, L.fs);
     text(padX, r.y, r.h, s, measure(s, body), body);
     y += 1.5 * L.fs;
   }
@@ -213,7 +220,7 @@ export function softwareModel(input, { slug, theme, measure }) {
       svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.viewBox}" fill="${c.mute.slice(0, 7)}" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">${icon.body}</svg>`,
     });
     if (label) {
-      const r = line(rowTop + ib / 2 - small.size / 2, small.size, small.size);
+      const r = lineBox(rowTop + ib / 2 - small.size / 2, small.size, small.size);
       text(ix + L.ii + 0.25 * REM, r.y, r.h, label, lw, { ...small, href: l.url });
     }
     x += w + gap;

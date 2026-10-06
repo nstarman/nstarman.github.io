@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
+import { BUTTON_MIN, REM, STEPS, TOKENS, lengths, lineBox, nearStep, softwareInput, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
@@ -241,6 +241,30 @@ describe('what it draws is what the site holds', () => {
 });
 
 const buttonsOf = (m) => m.ops.filter((o) => o.k === 'box' && o.href);
+
+describe('a line’s box', () => {
+  // Where Chrome's content area for IBM Plex steps up, found by sampling Chrome
+  // [the size at the new height, that height, the height 0.03px below]: tested
+  // off the exact step, which Chrome puts within 0.003px of where the metrics do.
+  const STEPS_SEEN = [[9.13, 12, 11], [9.3, 13, 12], [10.28, 14, 13], [11.25, 15, 14], [12.23, 16, 15], [12.76, 17, 16], [13.21, 18, 17], [14.18, 19, 18], [15.16, 20, 19], [16.13, 21, 20], [16.4, 22, 21], [17.11, 23, 22], [18.09, 24, 23], [20.04, 27, 25], [22.96, 30, 29]];
+  it('is as tall as Chrome’s: the ascent and the descent each rounded', () => {
+    for (const [size, up, down] of STEPS_SEEN) {
+      expect(lineBox(0, 40, size).h, `${size}`).toBe(up);
+      expect(lineBox(0, 40, size - 0.06).h, `${size} - 0.06`).toBe(down);
+    }
+  });
+
+  it('puts the box in the line with the half-leading floored', () => {
+    expect(lineBox(100, 24, 16).y).toBe(102);
+    expect(lineBox(100, 23.328, 17.28).y).toBe(100);
+  });
+
+  it('knows a size too near a step to call', () => {
+    expect(nearStep(16.0992)).toBe(true); // 16.5017: the one the fuzz found Chrome a pixel short on
+    expect(nearStep(16)).toBe(false);
+    expect(nearStep(15.84)).toBe(false);
+  });
+});
 
 describe('the pieces', () => {
   const w = (s) => s.length * 10;
