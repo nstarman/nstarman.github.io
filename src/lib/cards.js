@@ -25,6 +25,19 @@ export const SITE_PRESETS = [
 ];
 export const PRESET = Object.fromEntries(SITE_PRESETS.map((p) => [p.key, p.slug]));
 
+/** The software tiers that are drawn as cards of their own, and the preset
+ *  the site gives each — the one thing both the site and the README's images
+ *  (src/pages/cards/) read, so they cannot disagree about which package gets
+ *  which card. */
+export const TIER_PRESET = { lead: 'softwareLead', headline: 'softwareHeadline' };
+
+/** The width, in px, the software cards are drawn at for the README's images:
+ *  src/pages/cards/. */
+export const CARD_SVG_WIDTH = 400;
+
+/** A preset's name at a set width in px, in place of filling its column. */
+export const atWidth = (slug, width) => slug.replace(/^size:fill:/, `size:${width}:`);
+
 /** The steps in px, as global.css has them — a test holds the two to half
  *  a pixel — for the settings that can be typed in px: the text and title
  *  sizes, padding (the top's; the sides are a little wider), corners and
@@ -68,12 +81,16 @@ export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === ite
 /** The star count, as a button's label: 657 → "657", 1234 → "1.2k". */
 export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
 
+/** Below this many stars a button reads as a liability, not a credential, so
+ *  a package with fewer has none. */
+export const STARS_MIN = 40;
+
 /** A package's stars, as a link to who gave them — none where the count is
- *  unknown, rather than a button that says 0. config/stars.json is refreshed
- *  monthly, so the number is a month old at worst. */
+ *  unknown, rather than a button that says 0, or is under STARS_MIN.
+ *  config/stars.json is refreshed monthly, so the number is a month old at worst. */
 function starLink(item) {
   const n = item.repo && starCounts.stars[item.repo];
-  return n == null ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
+  return n == null || n < STARS_MIN ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
 }
 
 /** The links a card carries, in order: for software its papers lead, each

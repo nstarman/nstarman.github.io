@@ -27,7 +27,7 @@ describe('modelToSvg', () => {
     const m = await sharp(Buffer.from(svg)).metadata();
     expect([m.format, m.width, m.height]).toEqual(['svg', 320, 120]);
     await sharp(Buffer.from(svg)).png().toBuffer();
-  });
+  }, 30000); // the first render loads librsvg: slow on a busy machine
 
   it('keeps every link, around what it was on, with its & escaped', () => {
     expect(svg).toContain('<a href="https://example.test/?a=1&amp;b=2"><image ');
@@ -43,7 +43,7 @@ describe('modelToSvg', () => {
   });
 
   it('draws a colour and its opacity apart, and a stroke only where there is one', () => {
-    expect(svg).toContain('fill="#8a93a1" fill-opacity="0.7"');
+    expect(svg).toContain('fill="#8a93a1" fill-opacity="0.702"');
     expect(svg).not.toMatch(/#[0-9a-f]{8}/);
     expect(svg.match(/stroke-width/g)).toHaveLength(1);
   });

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, cardText, hasStatus, paperHref,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref,
   FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
@@ -694,12 +694,21 @@ describe('the stars button', () => {
     for (const i of software) for (const k of linkKeys(i)) expect(() => parseName(`${base}-buttons:${k}`), `${i.id} ${k}`).not.toThrow();
   });
 
-  it('is the last link of a package, to its stargazers, and of nothing else', () => {
-    for (const i of software) {
+  it('is the last link of a package with enough stars, to its stargazers, and of nothing else', () => {
+    for (const i of software.filter((x) => counts[x.repo] >= STARS_MIN)) {
       const star = cardLinks(i).at(-1);
       expect(star, i.id).toMatchObject({ rel: 'stars', url: `https://github.com/${i.repo}/stargazers`, count: starLabel(counts[i.repo]) });
       expect(linkKeys(i)).toContain('stars');
     }
     for (const i of items.filter((x) => x.type !== 'software' && CARD_TYPES.includes(x.type))) expect(linkKeys(i)).not.toContain('stars');
+  });
+
+  it('is not there for a package under STARS_MIN', () => {
+    expect(STARS_MIN).toBe(40);
+    const few = software.filter((x) => counts[x.repo] < STARS_MIN);
+    expect(few.length, 'a package under the threshold, to hold it to').toBeGreaterThan(0);
+    for (const i of few) expect(linkKeys(i), i.id).not.toContain('stars');
+    // Every package that has a button has at least that many.
+    for (const i of software.filter((x) => linkKeys(x).includes('stars'))) expect(counts[i.repo], i.id).toBeGreaterThanOrEqual(STARS_MIN);
   });
 });
