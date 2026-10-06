@@ -14,7 +14,10 @@
       "icon": "positions",
       "cluster": "institution",
       "match": {
-        "type": "position"
+        "type": "position",
+        "not": {
+          "tier": ["major", "minor"]
+        }
       }
     },
     "publications": {
@@ -39,7 +42,7 @@
       "heading": "Grants & Fellowships",
       "icon": "grants",
       "match": {
-        "type": "grant",
+        "type": ["grant", "position"],
         "tier": "major"
       }
     },

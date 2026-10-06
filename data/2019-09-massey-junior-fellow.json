@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "massey-junior-fellow",
-  "type": "grant",
+  "type": "position",
   "cvs": [
     "np"
   ],
@@ -11,6 +11,7 @@
   },
   "title": "Massey Junior Fellow",
   "details": "University of Toronto's graduate college for those showing exceptional promise and engagement within academia and the world beyond it.",
-  "tier": "major",
-  "funder": "Massey College"
+  "institution": "Massey College",
+  "role": "Junior Fellow",
+  "tier": "major"
 }

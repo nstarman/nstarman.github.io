@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "pacific-postdoc-program",
-  "type": "grant",
+  "type": "position",
   "cvs": [
     "np"
   ],
@@ -9,6 +9,8 @@
     "start": "2026-10"
   },
   "title": "Pacific Postdoc Program at the University of Washington",
+  "institution": "University of Washington",
+  "role": "Pacific Postdoc Program Fellow",
   "tier": "major",
   "details": "A one-month fellowship at the Dark Universe Science Center at the University of Washington in Seattle, funded by the Dark Universe Science Center and the Simons Institute.",
   "funder": "Dark Universe Science Center, University of Washington; Simons Institute",
