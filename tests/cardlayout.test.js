@@ -187,10 +187,15 @@ describe('what it draws is what the site holds', () => {
         const model = softwareModel(input, { slug, theme, measure });
         const links = model.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.href);
         expect(links).toEqual(cardLinks(record).map((l) => new URL(l.url).href));
-        expect(linkKeys(record).at(-1)).toBe('stars');
         const texts = model.ops.filter((o) => o.k === 'text');
         expect(texts[0]).toMatchObject({ s: record.title, href: input.href, font: 'IBM Plex Mono' });
-        expect(texts.some((o) => o.s === input.links.at(-1).count)).toBe(true);
+        // The stars last, as a count, where the package has enough; else no button.
+        if (linkKeys(record).includes('stars')) {
+          expect(linkKeys(record).at(-1)).toBe('stars');
+          expect(texts.some((o) => o.s === input.links.at(-1).count)).toBe(true);
+        } else {
+          expect(input.links.some((l) => l.key === 'stars')).toBe(false);
+        }
         // Every word of the text, in order, none dropped or added.
         const body = texts.filter((o) => o.font === 'IBM Plex Sans' && o.size === lengths({ dials: parseName(slug).dials, width: 400 }).fs).map((o) => o.s).reduce((a, b) => (a.endsWith('-') ? a + b : `${a} ${b}`));
         expect(body).toBe(input.text.replace(/\s+/g, ' '));

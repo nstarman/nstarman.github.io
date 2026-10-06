@@ -81,12 +81,16 @@ export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === ite
 /** The star count, as a button's label: 657 → "657", 1234 → "1.2k". */
 export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
 
+/** Below this many stars a button reads as a liability, not a credential, so
+ *  a package with fewer has none. */
+export const STARS_MIN = 40;
+
 /** A package's stars, as a link to who gave them — none where the count is
- *  unknown, rather than a button that says 0. config/stars.json is refreshed
- *  monthly, so the number is a month old at worst. */
+ *  unknown, rather than a button that says 0, or is under STARS_MIN.
+ *  config/stars.json is refreshed monthly, so the number is a month old at worst. */
 function starLink(item) {
   const n = item.repo && starCounts.stars[item.repo];
-  return n == null ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
+  return n == null || n < STARS_MIN ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
 }
 
 /** The links a card carries, in order: for software its papers lead, each
