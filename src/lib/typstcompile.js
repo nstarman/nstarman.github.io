@@ -15,16 +15,22 @@ const TEMPLATE = import.meta.glob(['/cv/**/*.typ', '/cv/lib/*.json'], { eager: t
 const ASSETS = import.meta.glob('/cv/assets/*', { eager: true, query: '?url', import: 'default' });
 
 let typst = null;
+// The faces `typst` was built with. A style that wants more — adrn's Lato —
+// rebuilds the compiler with the union, so no one downloads a face they do not use.
+let loaded = new Set();
 
 async function loadCompiler(fonts) {
   // Dynamic, so the ~11 MB of wasm never touches any other route.
-  const [{ $typst }, { preloadRemoteFonts }, wasm] = await Promise.all([
+  const [{ TypstSnippet }, { preloadRemoteFonts }, wasm] = await Promise.all([
     import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs'),
     import('@myriaddreamin/typst.ts'),
     // Gzipped by scripts/gzip-compiler.mjs: raw, it is over Cloudflare's
     // 25 MiB file limit.
     import('/src/generated/typst_ts_web_compiler_bg.wasm.gz?url'),
   ]);
+  // A fresh instance, not the shared $typst: its fonts are fixed when it is
+  // built, and a style's faces may arrive later than the first compile.
+  const $typst = new TypstSnippet();
   $typst.setCompilerInitOptions({
     getModule: () => fetchWasm(wasm.default),
     beforeBuild: [preloadRemoteFonts(fonts)],
@@ -86,9 +92,11 @@ export async function compileTypst(src, files, fonts, onStatus = () => {}) {
 }
 
 async function ready(fonts, onStatus) {
-  if (!typst) {
+  if (!typst || fonts.some((f) => !loaded.has(f))) {
     onStatus('Loading the Typst compiler…');
-    typst = await loadCompiler(fonts);
+    const all = [...new Set([...loaded, ...fonts])];
+    typst = await loadCompiler(all);
+    loaded = new Set(all);
   }
   onStatus('Compiling…');
 }
