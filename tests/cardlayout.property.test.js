@@ -141,7 +141,7 @@ describe('whatever the data', () => {
     run(fc.property(cards, (c) => {
       const { model, L } = draw(c);
       const bs = buttons(model).map((o) => ({ x0: o.x - 0.5, x1: o.x + o.w + 0.5, y0: o.y - 0.5, y1: o.y + o.h + 0.5 }));
-      const cw = c.width - 2 * L.pad[1];
+      const cw = c.width - 2 * L.pad[1] - 0.8 * L.fs; // the buttons' box's gaps
       for (let i = 1; i < bs.length; i += 1) {
         const a = bs[i - 1], b = bs[i];
         if (Math.abs(b.y0 - a.y0) < 0.01) expect(b.x0, 'same row, left to right').toBeGreaterThanOrEqual(a.x1 - 1e-6);

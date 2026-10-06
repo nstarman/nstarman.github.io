@@ -27,7 +27,7 @@ describe('modelToSvg', () => {
     const m = await sharp(Buffer.from(svg)).metadata();
     expect([m.format, m.width, m.height]).toEqual(['svg', 320, 120]);
     await sharp(Buffer.from(svg)).png().toBuffer();
-  });
+  }, 30000); // the first render loads librsvg: slow on a busy machine
 
   it('keeps every link, around what it was on, with its & escaped', () => {
     expect(svg).toContain('<a href="https://example.test/?a=1&amp;b=2"><image ');

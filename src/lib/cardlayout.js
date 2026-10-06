@@ -206,6 +206,9 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
   const has = input.links.length > 0;
   if (has) y += 0.35 * L.fs + 0.3 * L.fs;
   const gap = 0.3 * L.fs;
+  // The row they wrap in: the buttons' box is a grid of three columns with a .4em gap between, and the
+  // slots with nothing in them are no columns but their gaps stay — so the row is that much narrower.
+  const room = cw - 2 * 0.4 * L.fs;
   // The button's box: its size, or the least a button is — its corners still a quarter of its size.
   const ib = Math.max(L.ib, BUTTON_MIN);
   const small = { font: 'IBM Plex Sans', weight: 400, size: 0.72 * REM, ls: 0, color: c.mute };
@@ -216,7 +219,7 @@ export function softwareModel(input, { slug, theme, measure: advance }) {
     const lw = label ? measure(label, small) : 0;
     // A button with a label is its padding, the mark, a gap and the label, in a border.
     const w = label ? Math.max(2 * 0.4 * REM + L.ii + 0.25 * REM + lw + 2, BUTTON_MIN) : ib;
-    if (x > padX && x + w > padX + cw + 1e-6) { x = padX; rowTop += ib + gap; }
+    if (x > padX && x + w > padX + room + 1e-6) { x = padX; rowTop += ib + gap; }
     const icon = symbol(REL_ICON[l.key] ?? 'link');
     ops.push({ k: 'box', x: x + 0.5, y: rowTop + 0.5, w: w - 1, h: ib - 1, r: Array(4).fill(L.ib * 0.25), fill: c.surface, stroke: c.ruleStrong, sw: 1, href: href(l.url) });
     const ix = x + (label ? 1 + 0.4 * REM : (w - L.ii) / 2);
