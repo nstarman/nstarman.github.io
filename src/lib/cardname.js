@@ -84,7 +84,8 @@
 //            e.g. text:summary:center     default, left off), centered or right
 //   extras   none, or any of venue (where and when it appeared), status (a
 //            paper not yet out — submitted, accepted — as a pill on the
-//            venue line), position (my author position, "1st"), year (the
+//            venue line), position (my author position, "1st"), students
+//            (my students' positions, alone or beside mine, "student‡ 1st | 2nd"), year (the
 //            year), role (my role in a package),
 //            context (a link to its topic on /research/)
 //   venue    full · short           the venue line, where extras has it: the
@@ -228,7 +229,7 @@ export const FACES = ['body', 'authors', 'venue', 'position', 'year', 'context']
 /** The most names authors:<n> asks for. */
 export const AUTHORS_MAX = 20;
 export const TEXTS = ['none', 'summary', 'details'];
-export const EXTRAS = ['venue', 'status', 'position', 'year', 'role', 'context'];
+export const EXTRAS = ['venue', 'status', 'position', 'students', 'year', 'role', 'context'];
 export const BACKGROUNDS = ['none', 'light', 'normal', 'dark'];
 /** A set width or height is between these, in px. */
 export const FIXED_MIN = 120;
@@ -487,7 +488,7 @@ export function parseName(name) {
       spec.text = kv[1];
     } else if (key === 'extras') {
       const xs = kv[1] === 'none' ? [] : kv[1].split(',');
-      const all = ['venue', 'status', 'position', 'year', 'role', 'context'];
+      const all = ['venue', 'status', 'position', 'students', 'year', 'role', 'context'];
       for (let j = 0; j < xs.length; j += 1) if (!one(xs[j], all) || xs.indexOf(xs[j]) !== j) throw new Error('"' + name + '": no such extra, or given twice, ' + xs[j]);
       spec.extras = all.filter((x) => one(x, xs));
     } else if (key === 'space') {
@@ -591,11 +592,11 @@ export function cardFace(spec, f) {
   // The byline, and my position, the year and the context link.
   var counted = typeof spec.authors === 'number';
   var bylined = (spec.authors === 'short' || spec.authors === 'full' || counted) && f.byline;
-  var posShown = has('position') && f.place, yearShown = has('year') && f.year, ctxShown = has('context') && f.context;
+  var posShown = has('position') && f.place, stuShown = has('students') && f.students, stampShown = posShown || stuShown, yearShown = has('year') && f.year, ctxShown = has('context') && f.context;
   var inList = function (k) { return spec.links !== 'all' && spec.links.indexOf(k) >= 0; };
   var at = { pos: placeOf(spec, 'pos'), year: placeOf(spec, 'year'), context: placeOf(spec, 'context') };
-  var together = posShown && yearShown && !inList('year') && !inList('position') && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
-  var shows = { buttons: null, stamp: posShown && !inList('position'), year: yearShown && !together && !inList('year'), context: ctxShown && !inList('context') };
+  var together = stampShown && yearShown && !inList('year') && !inList('position') && at.pos.area === at.year.area && at.pos.v === at.year.v && at.pos.h === at.year.h;
+  var shows = { buttons: null, stamp: stampShown && !inList('position'), year: yearShown && !together && !inList('year'), context: ctxShown && !inList('context') };
   // The paper button, where the name asks and it has somewhere to link; its
   // item in the list where shown — or, on the embed page, which draws every
   // part, wherever it has somewhere to link. It is so many buttons wide.
@@ -605,7 +606,7 @@ export function cardFace(spec, f) {
   // The buttons' list as the name orders it: the paper button — first,
   // unless it says where, paperbutton — the links by key, each empty one a
   // button's room, each part it lists; then the rest, hidden.
-  var cells = { year: yearShown, position: posShown, context: ctxShown };
+  var cells = { year: yearShown, position: stampShown, context: ctxShown };
   var seq = [];
   if (paperLi && !inList('paperbutton')) seq.push({ paper: true });
   if (spec.links === 'all') f.keys.forEach(function (k, i) { seq.push({ link: i }); });
@@ -678,8 +679,8 @@ export function cardFace(spec, f) {
     figslot: fig && spec.figure === 'center' ? spec.figureSlot : u, figv: fig && spec.figure !== 'center' ? spec.figureAlign : u,
     wins: wins.join(' ') || u, empty: empty.join(' ') || u,
     authors: bylined ? (counted ? 'count' : spec.authors) : u, students: bylined && spec.marks === 'plain' ? 'plain' : u,
-    pos: yes(posShown), year: yes(yearShown), yearwith: yes(together), context: yes(ctxShown),
-    role: yes(has('role') && f.role), status: yes(has('status') && f.status),
+    pos: yes(stampShown), me: yes(posShown), year: yes(yearShown), yearwith: yes(together), context: yes(ctxShown),
+    role: yes(has('role') && f.role), stustamp: yes(stuShown), status: yes(has('status') && f.status),
     venue: yes(has('venue') && f.venue), venuename: spec.venueName, venueundated: yes(spec.venueDate === false),
     venuenoarxiv: yes(spec.venueArxiv === false), varxiv: yes(f.varxiv), venuealign: spec.venueAlign, venueat: spec.venueAt,
     venuefirst: yes((spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst),

@@ -5,7 +5,7 @@
 
 import { relKey, splitTitle, venueLine, venueUrl } from '../data.js';
 import {
-  paperHref, PAPER_TO, hasFigure, hasPosition, hasRole, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
+  paperHref, PAPER_TO, hasFigure, hasPosition, hasRole, hasStudents, hasVenue, hasStatus, hasYear, hasContext, titleStatus, cardLinks, cardText, embedHref, ownLink, siteHref, adsHref, journalHref,
 } from '../cards.js';
 
 // The link keys a card can be cut to, each named in the builder: code, a
@@ -45,6 +45,7 @@ export const itemFacts = (i) => ({
   figure: hasFigure(i),
   pos: hasPosition(i),
   role: hasRole(i),
+  students: hasStudents(i),
   paperTo: Object.fromEntries(PAPER_TO.map((t) => [t, !!paperHref(i, t)])),
   venue: hasVenue(i),
   vlink: hasVenue(i) && !!venueUrl(i),

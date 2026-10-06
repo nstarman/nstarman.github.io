@@ -335,6 +335,10 @@ a.card:hover .name{color:var(--accent)}
 .c-stamp, .c-year{letter-spacing:.04em; color:var(--ink-faint)}
 .c-stamp{font-family:var(--mono); font-size:.82em}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
+.c-stu{cursor:help}
+.c-py{white-space:nowrap}
+/* "student‡ 1st | 2nd" stays on the buttons' row, on one line. */
+.card[data-stustamp] .c-stamp{white-space:nowrap; font-size:.74em}
 .c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 .c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 /* A strip: my position, the year or the context link in the top area, or
@@ -568,7 +572,11 @@ a.card:hover .name{color:var(--accent)}
 .card:not([data-status]) .c-status,
 .card:not([data-titlestatus]) .c-tstatus,
 .card:not([data-context]) .c-context,
-.card:not([data-pos]) :is(.c-place, .c-sep),
+.card:not([data-pos]) .c-sep,
+.card:not([data-me]) .c-ent--me,
+.card:not([data-stustamp]) .c-ent:has(.c-stu),
+.card:not([data-me]) .c-ent--me + .c-ent > .c-stusep,
+.card:not([data-stustamp]) .c-ent:has(.c-stu) + .c-ent--me > .c-stusep,
 .card:not([data-role]) .c-role,
 .card[data-text="summary"] .c-det,
 .card[data-text="details"] .c-sum,
