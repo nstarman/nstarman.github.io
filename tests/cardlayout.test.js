@@ -133,8 +133,8 @@ describe('the browser’s own measurement of each card', () => {
         got.ops.forEach((o, i) => {
           const w = want.ops[i];
           const at = `${c.id} ${k.width} ${k.theme} op ${i} ${o.k}${o.s ? ` ${JSON.stringify(o.s)}` : ''}`;
-          // A line is as wide as the font says: a hair off where the browser kerns a pair differently.
-          for (const [key, tol] of [['x', 0.15], ['y', 0.15], ['w', o.k === 'text' ? 1.5 : 0.15], ['h', 0.15]]) {
+          // A line is as wide as the font says: a hair off — HarfBuzz shapes it here as Chrome does.
+          for (const [key, tol] of [['x', 0.15], ['y', 0.15], ['w', o.k === 'text' ? 0.25 : 0.15], ['h', 0.15]]) {
             expect(Math.abs(o[key] - w[key]), `${at}: ${key} ${o[key]} for ${w[key]}`).toBeLessThanOrEqual(tol);
           }
           for (const key of ['s', 'font', 'weight', 'color', 'fill', 'stroke', 'sw', 'href', 'svg', 'fit']) expect(o[key], `${at}: ${key}`).toEqual(w[key]);

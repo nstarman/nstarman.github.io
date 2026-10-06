@@ -293,7 +293,7 @@ its `controlOps` and `readSpec` lines in `model.js`, then its markup.
 `/cards/index.json`, which lists them) are the lead and headline packages' cards, for the profile
 README, drawn at build by a static endpoint (`src/pages/cards/`) in plain node. `src/lib/cardlayout.js`
 lays one out — a second implementation of the CSS, for the `softwareLead` and `softwareHeadline`
-presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files
+presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files, shaped by HarfBuzz as Chrome shapes it
 (`src/lib/textmeasure.js`) and handing the same model `cardpdf.js` measures to `cardsvg.js`. It throws
 on any name that asks for more than it draws. `tests/cardlayout.test.js` keeps it in step: its
 colours, steps and formulas are read from `global.css`; it must reproduce what the browser measured
