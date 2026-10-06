@@ -43,7 +43,7 @@ export const venueArea = (c) => (c.venueAt === 'beside' ? (c.venueFirst ? 'left'
 export const sameOrder = (a, b) => a.length === b.length && a.every((k, i) => k === b[i]);
 
 /** Whether an item has an extra. */
-export const has = (it, x) => ({ figure: it.figure, venue: it.venue, status: it.status, position: it.pos, year: it.year, role: it.role, context: it.context })[x];
+export const has = (it, x) => ({ figure: it.figure, venue: it.venue, status: it.status, position: it.pos, students: it.students && it.pos, year: it.year, role: it.role, context: it.context })[x];
 /** The byline as this item can have it: none with no authors. */
 export const authorsFor = (it, a) => (!it.byline ? 'none' : a);
 /** The title's link as this item can have it: none to a place it has not got. */

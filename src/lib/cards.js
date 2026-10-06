@@ -15,7 +15,7 @@ export const SITE_PRESETS = [
   { key: 'proceeding', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/.
-  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
+  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:link-authors:none-text:none-extras:position,students-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
   // Its figure is no link: on /publications/ that would be to itself.
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   { key: 'assist', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
@@ -50,6 +50,8 @@ export const CARD_TYPES = ['publication', 'highlight', 'software'];
 
 export const hasFigure = (item) => !!item.highlight?.image;
 export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
+/** A paper with a student of mine among its authors: the students extra. */
+export const hasStudents = (item) => item.type === 'publication' && (item.authors ?? []).some((a) => a.student);
 export const hasRole = (item) => item.type === 'software' && !!item.role;
 export const hasVenue = (item) => item.type === 'publication';
 /** The year stands on its own in a paper's or a synthesis's rail. */
@@ -77,7 +79,7 @@ export const linkKeys = (item) => [...new Set(cardLinks(item).map(relKey))];
 export function defaultSlug(item) {
   if (item.type === 'software') return 'size:320:400-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit-look:standard';
   if (!hasFigure(item)) return 'size:640:160-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right-look:standard';
-  return `size:320:400-figure:center:auto:link-title:short:link-authors:none-text:none-extras:${hasPosition(item) ? 'position' : 'none'}-buttons:all:fit-look:standard`;
+  return `size:320:400-figure:center:auto:link-title:short:link-authors:none-text:none-extras:${hasPosition(item) ? (hasStudents(item) ? 'position,students' : 'position') : 'none'}-buttons:all:fit-look:standard`;
 }
 
 /** A card's two tiers of text. A package has its own summary and details; a
@@ -129,7 +131,7 @@ export const embedHref = (item) => (primaryLink(item) ?? links(item)[0])?.url ??
 export function cardFacts(item, every = false) {
   return {
     every, type: item.type, figure: hasFigure(item), place: hasPosition(item), year: hasYear(item), context: hasContext(item),
-    role: hasRole(item), venue: hasVenue(item), status: hasStatus(item), tstatus: !!titleStatus(item), split: !!splitTitle(item),
+    role: hasRole(item), students: hasStudents(item), venue: hasVenue(item), status: hasStatus(item), tstatus: !!titleStatus(item), split: !!splitTitle(item),
     byline: item.type === 'publication', lead: hasPosition(item) && authorPosition(item) === 1,
     varxiv: item.type === 'publication' && !venueLine(item), refs: item.type === 'highlight' ? item.refs.length : 0,
     keys: cardLinks(item).map(relKey),

@@ -512,7 +512,7 @@ describe('the full title around its short one', () => {
 describe('presets', () => {
   it('parse, and make the same card, as the embed page has them, inlined on their own with nothing around them', () => {
     const [inlined, face] = new Function(`${placeOf.toString()}\n${cardFace.toString()}\nreturn [(${parseName.toString()}), cardFace];`)();
-    const rich = 'size:320:400-figure:center:authors:auto:link-title:nick:top:center-authors:full:marked:site-text:none-extras:venue,status,position,year,role,context-context:bottom:right-position:top-year:center:top:center-buttons:all:2:center:right-space:title_figure=8,left_center=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
+    const rich = 'size:320:400-figure:center:authors:auto:link-title:nick:top:center-authors:full:marked:site-text:none-extras:venue,status,position,students,year,role,context-context:bottom:right-position:top-year:center:top:center-buttons:all:2:center:right-space:title_figure=8,left_center=flex-area:left:share=25,top-look:feature,titleweight=mine,frame=4,buttongap=3,background=light';
     for (const n of [...SITE_PRESETS.map((p) => p.slug), NAME, rich, 'size:fill:200-figure:left:top:right:120px-title:short-authors:5:marked:orcid-text:details-extras:none-buttons:none:right:center:left']) {
       expect(inlined(n), n).toEqual(parseName(n));
       for (const i of items.filter((x) => CARD_TYPES.includes(x.type)).slice(0, 12)) expect(face(inlined(n), cardFacts(i, true)), n).toEqual(cardFace(parseName(n), cardFacts(i, true)));
@@ -624,6 +624,20 @@ describe('the grammar, at its edges', () => {
     expect(f.seq.some((x) => x.skip)).toBe(false);
     const g = cardFace(parseName(`${B}-extras:year-buttons:${keys[0]},${keys[1]},year,${keys[2]}:2:right`), cardFacts(it0));
     expect(g.seq.find((x) => x.skip)?.link).toBe(linkKeys(it0).indexOf(keys[2]));
+  });
+});
+
+describe('the students extra', () => {
+  const led = items.find((i) => i.id === 'potamides-joss');
+  const stu = (name, item = led) => cardFace(parseName(name), cardFacts(item)).data.stustamp;
+  const base = (x) => `size:fill:fit-figure:none-title:short-authors:none-text:none-extras:${x}-buttons:none`;
+  it('shows the students beside my position, only where it is named', () => {
+    expect(stu(base('position,students'))).toBeDefined();
+    expect(stu(base('position'))).toBeUndefined();
+  });
+  it('needs my position, and a student among the authors', () => {
+    expect(stu(base('students'))).toBeUndefined();
+    expect(stu(base('position,students'), items.find((i) => i.id === 'galactic-amnesia'))).toBeUndefined();
   });
 });
 
