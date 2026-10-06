@@ -7,6 +7,11 @@
       "lon": -8.4127,
       "matched": "A Coruña, Galicia, España"
     },
+    "ANU Research School of Astronomy and Astrophysics": {
+      "lat": -35.3207,
+      "lon": 149.0065,
+      "matched": "Mount Stromlo Observatory, Canberra, Australia (placed by hand)"
+    },
     "Arcetri Astrophysical Observatory (INAF)": {
       "lat": 43.7502,
       "lon": 11.2542,
@@ -77,6 +82,11 @@
       "lon": -81.6007,
       "matched": "Case Western Reserve University, 10900, Euclid Avenue, Little Italy, Cleveland, Cuyahoga County, Ohio, 44106, United States"
     },
+    "Center for Astrophysics Harvard & Smithsonian": {
+      "lat": 42.3814,
+      "lon": -71.1281,
+      "matched": "60 Garden Street, Cambridge, MA, USA (placed by hand)"
+    },
     "Center for Computational Astrophysics": {
       "lat": 40.7397,
       "lon": -73.9903,
@@ -91,6 +101,11 @@
       "lat": 40.0426,
       "lon": -1.0161,
       "matched": "Centro de Estudios de Física del Cosmos de Aragón, VF-TE-02, Arcos de las Salinas, Gúdar-Javalambre, Teruel, Aragón, España"
+    },
+    "CESR": {
+      "lat": 43.5626,
+      "lon": 1.4759,
+      "matched": "Toulouse, France (placed by hand) — same place as Institut de Recherche en Astrophysique et Planétologie, its successor"
     },
     "Chengdu Experimental Foreign Languages School": {
       "lat": 30.6587,
@@ -167,10 +182,20 @@
       "lon": -73.9644,
       "matched": "Hunter College, 695, Park Avenue, Carnegie Hill, Manhattan Community Board 8, Manhattan, New York County, New York, 10065, United States"
     },
+    "INAF-Osservatorio Astronomico di Cagliari": {
+      "lat": 39.2931,
+      "lon": 9.052,
+      "matched": "Via della Scienza 5, Selargius, Cagliari, Italy (placed by hand)"
+    },
     "Indian Institute of Science": {
       "lat": 13.0222,
       "lon": 77.5672,
       "matched": "Indian Institute of Science, CV Raman Road, Subedarpalya, Bengaluru West City Corporation, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560012, India"
+    },
+    "Institut de Recherche en Astrophysique et Planétologie": {
+      "lat": 43.5626,
+      "lon": 1.4759,
+      "matched": "Institut de Recherche en Astrophysique et Planétologie, 9, Avenue du Colonel Roche, Montaudran, Pont des Demoiselles / Ormeau/ Montaudran / La Terrasse / Malepère, Toulouse, Haute-Garonne, Occitanie, France métropolitaine, 31028, France"
     },
     "Institute for Advanced Study": {
       "lat": 40.3323,
@@ -191,6 +216,11 @@
       "lat": 55.6802,
       "lon": 12.5723,
       "matched": "Københavns Universitet, Copenhagen (geocoded) — same place as University of Copenhagen"
+    },
+    "Laboratoire d'Astrophysique de Marseille": {
+      "lat": 43.3436,
+      "lon": 5.4366,
+      "matched": "Laboratoire d'astrophysique de Marseille, Rue Frédéric Joliot Curie, Technopôle de Château-Gombert, Château-Gombert, Marseille 13e Arrondissement, Marseille, Bouches-du-Rhône, Provence-Alpes-Côte d'Azur, France métropolitaine, 13013, France"
     },
     "Lanzhou University": {
       "lat": 36.0505,
@@ -227,6 +257,11 @@
       "lon": 13.191,
       "matched": "hand-placed: Lund Observatory, Lund University"
     },
+    "Macquarie University": {
+      "lat": -33.7742,
+      "lon": 151.1127,
+      "matched": "Macquarie University, Christie Road, Macquarie Park, Sydney, New South Wales, 2113, Australia"
+    },
     "Massachusetts Institute of Technology": {
       "lat": 42.3583,
       "lon": -71.0966,
@@ -236,6 +271,16 @@
       "lat": 49.3966,
       "lon": 8.7234,
       "matched": "Max-Planck-Institut für Astronomie, Stockbrunnenweg, Königstuhl, Altstadt, Heidelberg, Baden-Württemberg, 69117, Deutschland"
+    },
+    "Max-Planck-Institut für Kernphysik": {
+      "lat": 49.3877,
+      "lon": 8.7093,
+      "matched": "Max-Planck-Institut für Kernphysik, 1, Saupfercheckweg, Speyererhof, Altstadt, Heidelberg, Baden-Württemberg, 69117, Deutschland"
+    },
+    "Michigan State University": {
+      "lat": 42.7024,
+      "lon": -84.4804,
+      "matched": "Michigan State University, 426, Auditorium Road, River Trail Neighborhood, East Lansing, Ingham County, Michigan, 48824, United States"
     },
     "Mills College": {
       "lat": 37.7799,
@@ -342,10 +387,20 @@
       "lon": -95.4048,
       "matched": "Rice University, 6100, Main Street, University Place, Houston, Harris County, Texas, 77005, United States"
     },
+    "Rochester Institute of Technology": {
+      "lat": 43.0827,
+      "lon": -77.6729,
+      "matched": "Rochester Institute of Technology, 1, Lomb Memorial Drive, City of Rochester, Monroe County, New York, 14623, United States"
+    },
     "Rochester, NY, USA": {
       "lat": 43.1573,
       "lon": -77.6152,
       "matched": "City of Rochester, Monroe County, New York, United States"
+    },
+    "Ruprecht Karls Universität Heidelberg": {
+      "lat": 49.4186,
+      "lon": 8.6692,
+      "matched": "Universität Heidelberg, Handschuhsheimer Landstraße, Handschuhsheim, Heidelberg, Baden-Württemberg, 69121, Deutschland"
     },
     "Ruprecht-Karls-Universität Heidelberg": {
       "lat": 49.4186,
@@ -381,6 +436,16 @@
       "lat": 40.7392,
       "lon": -73.9909,
       "matched": "hand-placed: 160 Fifth Ave, New York — Nominatim has no entry"
+    },
+    "Smithsonian Astrophysical Observatory": {
+      "lat": 42.3814,
+      "lon": -71.1281,
+      "matched": "60 Garden Street, Cambridge, MA, USA (placed by hand) — same place as Center for Astrophysics Harvard & Smithsonian"
+    },
+    "Smithsonian Institution": {
+      "lat": 38.8888,
+      "lon": -77.0259,
+      "matched": "Smithsonian Institution Building, 1000, Jefferson Drive Southwest, Ward 2, Washington, District of Columbia, 20560, United States"
     },
     "Southern African Large Telescope": {
       "lat": -32.376,
@@ -437,10 +502,30 @@
       "lon": -3.7178,
       "matched": "Facultad de Educación, Universidad Complutense de Madrid, Calle del Rector Royo-Villanova, Ciudad Universitaria, Moncloa-Aravaca, Madrid, Comunidad de Madrid, 28040, España"
     },
+    "Universidad de Antofagasta": {
+      "lat": -23.703,
+      "lon": -70.4222,
+      "matched": "Universidad de Antofagasta, Avenida Universidad de Antofagasta, Jardines del Sur, Antofagasta, Provincia de Antofagasta, Región de Antofagasta, 1271987, Chile"
+    },
+    "Universidad de Tarapacá": {
+      "lat": -33.44,
+      "lon": -70.6412,
+      "matched": "Universidad de Tarapacá, 26, José Victorino Lastarria, Santiago, Provincia de Santiago, Región Metropolitana de Santiago, 8320000, Chile"
+    },
+    "Universidad Nacional de Educacion a Distancia": {
+      "lat": 40.4455,
+      "lon": -3.729,
+      "matched": "Ciudad Universitaria, Madrid, Spain (placed by hand)"
+    },
     "Universidad Politecnica": {
       "lat": 41.2214,
       "lon": 1.7301,
       "matched": "Escola Politècnica Superior d''Enginyeria de Vilanova i la Geltrú (EPSEVG), 1, Avinguda de Víctor Balaguer, Barri de Mar, Vilanova i la Geltrú, Garraf, Barcelona, Catalunya, 08800, España"
+    },
+    "Università degli Studi di Cagliari": {
+      "lat": 39.2218,
+      "lon": 9.1107,
+      "matched": "Orto Botanico dell'Università degli Studi di Cagliari, Stampaxi/Stampace, Casteddu/Cagliari, Sardigna/Sardegna, Italia"
     },
     "Università di Bologna": {
       "lat": 44.4983,
@@ -457,10 +542,20 @@
       "lon": 11.3844,
       "matched": "Universität Innsbruck - Campus Innrain, Christoph-Probst-Platz, Innenstadt, Innsbruck, Tirol, 6020, Österreich"
     },
+    "Université Côte d'Azur": {
+      "lat": 43.717,
+      "lon": 7.2676,
+      "matched": "Parc Valrose - Université Côte d'Azur - Faculté des Sciences, 81, Avenue Valrose, Valrose, Borriglione, Nice, Alpes-Maritimes, Provence-Alpes-Côte d'Azur, France métropolitaine, 06108, France"
+    },
     "Université Lyon 1": {
       "lat": 45.7809,
       "lon": 4.8663,
       "matched": "Université Lyon 1, Avenue Claude Bernard, Tonkin, Villeurbanne, Lyon, Métropole de Lyon, Rhône, Auvergne-Rhône-Alpes, France métropolitaine, 69100, France"
+    },
+    "Université Pierre et Marie Curie": {
+      "lat": 48.8443,
+      "lon": 2.3437,
+      "matched": "Sorbonne Université - Curie, Rue Pierre et Marie Curie, Quartier du Val-de-Grâce, Paris 5e Arrondissement, Paris, Île-de-France, France métropolitaine, 75005, France"
     },
     "University College London": {
       "lat": 51.5242,
@@ -542,6 +637,11 @@
       "lon": -76.9439,
       "matched": "University of Maryland, College Park, Regents Drive, Lakeland, College Park, Prince George's County, Maryland, 20742, United States"
     },
+    "University of Massachusetts Amherst": {
+      "lat": 42.3893,
+      "lon": -72.5284,
+      "matched": "University of Massachusetts Amherst, County Circle, Amherst Center, Amherst, Hampshire County, Massachusetts, 01003, United States"
+    },
     "University of Michigan": {
       "lat": 42.2942,
       "lon": -83.71,
@@ -566,6 +666,11 @@
       "lat": 40.4442,
       "lon": -79.9625,
       "matched": "University of Pittsburgh, 4200, Fifth Avenue, Fifth & Forbes, Downtown, Pittsburgh, Allegheny County, Pennsylvania, 15260, United States"
+    },
+    "University of Rochester": {
+      "lat": 43.1299,
+      "lon": -77.6288,
+      "matched": "University of Rochester River Campus, Forest Lane, City of Rochester, Monroe County, New York, 14642, United States"
     },
     "University of St Andrews": {
       "lat": 56.3399,
@@ -596,6 +701,11 @@
       "lat": 43.0803,
       "lon": -89.431,
       "matched": "University of Wisconsin-Madison, Speedway Road, Regent, Madison, Dane County, Wisconsin, 53726, United States"
+    },
+    "University Paris VII": {
+      "lat": 48.8554,
+      "lon": 2.3316,
+      "matched": "Université Paris Cité – Campus Saint-Germain-des-Prés, 45, Rue des Saints-Pères, Quartier Saint-Thomas-d'Aquin, Paris 7e Arrondissement, Paris, Île-de-France, France métropolitaine, 75006, France"
     },
     "Universtity of Wisconsin": {
       "lat": 43.0766,

@@ -295,6 +295,62 @@
       ]
     },
     {
+      "orcid": "0000-0003-4568-7005",
+      "name": "Axel Donath",
+      "affiliations": [
+        {
+          "organization": "Center for Astrophysics Harvard & Smithsonian",
+          "city": "Cambridge",
+          "region": "Massachusetts",
+          "country": "US",
+          "role": "Postdoc Researcher",
+          "kind": "employment",
+          "start": "2021-10",
+          "end": null
+        },
+        {
+          "organization": "Max-Planck-Institut für Kernphysik",
+          "city": "Heidelberg",
+          "region": "Baden-Württemberg",
+          "country": "DE",
+          "role": null,
+          "kind": "employment",
+          "start": "2018-06",
+          "end": "2021-10"
+        },
+        {
+          "organization": "Ruprecht Karls Universität Heidelberg",
+          "city": "Heidelberg",
+          "region": "Baden-Württemberg",
+          "country": "DE",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2014",
+          "end": "2018"
+        },
+        {
+          "organization": "Ruprecht Karls Universität Heidelberg",
+          "city": "Heidelberg",
+          "region": "Baden-Württemberg",
+          "country": "DE",
+          "role": "M.Sc.",
+          "kind": "education",
+          "start": "2011",
+          "end": "2014"
+        },
+        {
+          "organization": "Ruprecht Karls Universität Heidelberg",
+          "city": "Heidelberg",
+          "region": "Baden-Württemberg",
+          "country": "DE",
+          "role": "B.Sc.",
+          "kind": "education",
+          "start": "2007",
+          "end": "2011"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0003-2528-3409",
       "name": "Brett M. Morris",
       "affiliations": [
@@ -753,7 +809,7 @@
         },
         {
           "organization": "European Southern Observatory",
-          "city": "Garching",
+          "city": "Garching bei Muenchen",
           "region": "Bayern",
           "country": "DE",
           "role": "ESO Fellow",
@@ -882,6 +938,82 @@
           "kind": "education",
           "start": "1980-09",
           "end": "1984-06"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-5445-5401",
+      "name": "Grant R. Tremblay",
+      "affiliations": [
+        {
+          "organization": "Smithsonian Astrophysical Observatory",
+          "city": "MA",
+          "region": "MA",
+          "country": "US",
+          "role": "Astrophysicist",
+          "kind": "employment",
+          "start": "2017-07",
+          "end": null
+        },
+        {
+          "organization": "Yale University",
+          "city": "New Haven",
+          "region": "CT",
+          "country": "US",
+          "role": "Einstein Fellow",
+          "kind": "employment",
+          "start": "2014-09",
+          "end": "2017-07"
+        },
+        {
+          "organization": "European Southern Observatory",
+          "city": "Garching bei Muenchen",
+          "region": "Bayern",
+          "country": "DE",
+          "role": "Fellow",
+          "kind": "employment",
+          "start": "2011-09",
+          "end": "2014-08"
+        },
+        {
+          "organization": "Rochester Institute of Technology",
+          "city": "Rochester",
+          "region": "NY",
+          "country": "US",
+          "role": "Ph.D. Astrophysics",
+          "kind": "education",
+          "start": "2008-09",
+          "end": "2011-05"
+        },
+        {
+          "organization": "Space Telescope Science Institute",
+          "city": "Baltimore",
+          "region": "Maryland",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": "2006-09",
+          "end": "2008-08"
+        },
+        {
+          "organization": "University of Rochester",
+          "city": "Rochester",
+          "region": "NY",
+          "country": "US",
+          "role": "B.S. Physics & Astronomy",
+          "kind": "education",
+          "start": "2002-08",
+          "end": "2006-05"
+        },
+        {
+          "organization": "Smithsonian Institution",
+          "city": "Washington",
+          "region": "District of Columbia",
+          "country": "US",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
         }
       ]
     },
@@ -1045,6 +1177,52 @@
       "affiliations": []
     },
     {
+      "orcid": "0000-0001-6637-6922",
+      "name": "James Tocknell",
+      "affiliations": [
+        {
+          "organization": "Macquarie University",
+          "city": "Macquarie Park",
+          "region": "New South Wales",
+          "country": "AU",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2013-10",
+          "end": null
+        },
+        {
+          "organization": "Macquarie University",
+          "city": "Macquarie Park",
+          "region": "New South Wales",
+          "country": "AU",
+          "role": "Bachelor of Advanced Science with Honours",
+          "kind": "education",
+          "start": "2009-01",
+          "end": "2012-12"
+        },
+        {
+          "organization": "Macquarie University",
+          "city": "Macquarie Park",
+          "region": "New South Wales",
+          "country": "AU",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Macquarie University",
+          "city": "Macquarie Park",
+          "region": "New South Wales",
+          "country": "AU",
+          "role": null,
+          "kind": "education",
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
       "orcid": "0000-0002-5612-3427",
       "name": "Jenny E. Greene",
       "affiliations": [
@@ -1185,7 +1363,7 @@
         {
           "organization": "Universidad Complutense",
           "city": "Madrid",
-          "region": null,
+          "region": "Comunidad de Madrid",
           "country": "ES",
           "role": "PhD applicant",
           "kind": "employment",
@@ -1609,6 +1787,168 @@
       ]
     },
     {
+      "orcid": "0000-0002-4576-9337",
+      "name": "Matteo Bachetti",
+      "affiliations": [
+        {
+          "organization": "INAF-Osservatorio Astronomico di Cagliari",
+          "city": "Selargius",
+          "region": "Cagliari",
+          "country": "IT",
+          "role": "Primo ricercatore (Senior Researcher)",
+          "kind": "employment",
+          "start": "2024-01",
+          "end": null
+        },
+        {
+          "organization": "INAF-Osservatorio Astronomico di Cagliari",
+          "city": "Selargius",
+          "region": "Cagliari",
+          "country": "IT",
+          "role": "Ricercatore (Staff scientist)",
+          "kind": "employment",
+          "start": "2015-12",
+          "end": "2023-12"
+        },
+        {
+          "organization": "INAF-Osservatorio Astronomico di Cagliari",
+          "city": "Selargius",
+          "region": "Cagliari",
+          "country": "IT",
+          "role": "Post-Doc",
+          "kind": "employment",
+          "start": "2014-09",
+          "end": "2015-11"
+        },
+        {
+          "organization": "Institut de Recherche en Astrophysique et Planétologie",
+          "city": "Toulouse",
+          "region": null,
+          "country": "FR",
+          "role": "Post-Doc",
+          "kind": "employment",
+          "start": "2011-09",
+          "end": "2014-08"
+        },
+        {
+          "organization": "CESR",
+          "city": "Toulouse",
+          "region": null,
+          "country": "FR",
+          "role": "Software Developer",
+          "kind": "employment",
+          "start": "2011-02",
+          "end": "2011-08"
+        },
+        {
+          "organization": "CESR",
+          "city": "Toulouse",
+          "region": null,
+          "country": "FR",
+          "role": "Internship/Post Doc",
+          "kind": "employment",
+          "start": "2010-02",
+          "end": "2010-12"
+        },
+        {
+          "organization": "Università degli Studi di Cagliari",
+          "city": "Cagliari",
+          "region": "Sardinia",
+          "country": "IT",
+          "role": "Ph.D.",
+          "kind": "education",
+          "start": "2007",
+          "end": "2010-02"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0003-0946-6176",
+      "name": "Médéric Boquien",
+      "affiliations": [
+        {
+          "organization": "Université Côte d'Azur",
+          "city": "Nice",
+          "region": null,
+          "country": "FR",
+          "role": "Professeur des Universités (full professor)",
+          "kind": "employment",
+          "start": "2023",
+          "end": null
+        },
+        {
+          "organization": "Universidad de Tarapacá",
+          "city": "Santiago",
+          "region": null,
+          "country": "CL",
+          "role": null,
+          "kind": "employment",
+          "start": "2023",
+          "end": "2023"
+        },
+        {
+          "organization": "Universidad de Antofagasta",
+          "city": "Antofagasta",
+          "region": "Antofagasta",
+          "country": "CL",
+          "role": "Faculty",
+          "kind": "employment",
+          "start": "2015",
+          "end": "2023"
+        },
+        {
+          "organization": "University of Cambridge",
+          "city": "Cambridge",
+          "region": "Cambridgeshire",
+          "country": "GB",
+          "role": "post-doctoral researcher",
+          "kind": "employment",
+          "start": "2013",
+          "end": "2015"
+        },
+        {
+          "organization": "Laboratoire d'Astrophysique de Marseille",
+          "city": "Marseille",
+          "region": "Provence-Alpes-Côte d'Azur",
+          "country": "FR",
+          "role": "post-doctoral researcher",
+          "kind": "employment",
+          "start": "2011",
+          "end": "2013"
+        },
+        {
+          "organization": "University of Massachusetts Amherst",
+          "city": "Amherst",
+          "region": "MA",
+          "country": "US",
+          "role": "post-doctoral researcher",
+          "kind": "employment",
+          "start": "2007",
+          "end": "2011"
+        },
+        {
+          "organization": "University Paris VII",
+          "city": "Paris",
+          "region": "Île-de-France",
+          "country": "FR",
+          "role": "Doctorate",
+          "kind": "education",
+          "start": "2004",
+          "end": "2007"
+        },
+        {
+          "organization": "Université Pierre et Marie Curie",
+          "city": "Paris",
+          "region": "Île-de-France",
+          "country": "FR",
+          "role": "DEA",
+          "kind": "education",
+          "start": "2003",
+          "end": "2004"
+        }
+      ]
+    },
+    {
       "orcid": "0000-0002-6257-2341",
       "name": "Monica Valluri",
       "affiliations": [
@@ -1799,9 +2139,9 @@
           "end": "2015-12"
         },
         {
-          "organization": "Ruprecht-Karls-Universität Heidelberg",
+          "organization": "Ruprecht Karls Universität Heidelberg",
           "city": "Heidelberg",
-          "region": null,
+          "region": "Baden-Württemberg",
           "country": "DE",
           "role": "Diploma in Physics",
           "kind": "education",
@@ -2021,7 +2361,7 @@
         {
           "organization": "New York University",
           "city": "New York",
-          "region": "New York",
+          "region": "NY",
           "country": "US",
           "role": "NASA Hubble Fellow",
           "kind": "employment",
@@ -2055,6 +2395,42 @@
           "country": "DK",
           "role": null,
           "kind": "employment",
+          "start": null,
+          "end": null
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-9351-6051",
+      "name": "Sergio Pascual",
+      "affiliations": [
+        {
+          "organization": "Universidad Complutense",
+          "city": "Madrid",
+          "region": "Comunidad de Madrid",
+          "country": "ES",
+          "role": null,
+          "kind": "employment",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Universidad Complutense",
+          "city": "Madrid",
+          "region": "Comunidad de Madrid",
+          "country": "ES",
+          "role": null,
+          "kind": "education",
+          "start": null,
+          "end": null
+        },
+        {
+          "organization": "Universidad Nacional de Educacion a Distancia",
+          "city": "Madrid",
+          "region": "Madrid",
+          "country": "ES",
+          "role": null,
+          "kind": "education",
           "start": null,
           "end": null
         }
@@ -2200,6 +2576,82 @@
           "kind": "education",
           "start": "1988-09",
           "end": "1992-07"
+        }
+      ]
+    },
+    {
+      "orcid": "0000-0002-0479-7235",
+      "name": "Wolfgang E. Kerzendorf",
+      "affiliations": [
+        {
+          "organization": "Michigan State University",
+          "city": "East Lansing",
+          "region": "Michigan",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2019-08",
+          "end": null
+        },
+        {
+          "organization": "Michigan State University",
+          "city": "East Lansing",
+          "region": "Michigan",
+          "country": "US",
+          "role": "Assistant Professor",
+          "kind": "employment",
+          "start": "2019-08",
+          "end": null
+        },
+        {
+          "organization": "New York University",
+          "city": "New York",
+          "region": "NY",
+          "country": "US",
+          "role": "Senior Research Associate",
+          "kind": "employment",
+          "start": "2019-01",
+          "end": "2019-08"
+        },
+        {
+          "organization": "European Southern Observatory",
+          "city": "Garching bei Muenchen",
+          "region": "Bayern",
+          "country": "DE",
+          "role": "ESO Fellow",
+          "kind": "employment",
+          "start": "2014-12",
+          "end": "2018-11"
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "Postdoctoral Fellow",
+          "kind": "employment",
+          "start": "2011-10",
+          "end": "2014-09"
+        },
+        {
+          "organization": "ANU Research School of Astronomy and Astrophysics",
+          "city": "Weston Creek",
+          "region": "ACT",
+          "country": "AU",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2007-02",
+          "end": "2011-12"
+        },
+        {
+          "organization": "Ruprecht Karls Universität Heidelberg",
+          "city": "Heidelberg",
+          "region": "Baden-Württemberg",
+          "country": "DE",
+          "role": "Vordiplom",
+          "kind": "education",
+          "start": "2002-10",
+          "end": "2006-10"
         }
       ]
     },
