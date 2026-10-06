@@ -280,6 +280,9 @@ describe('a line’s box', () => {
     expect(metrics(ts).asc + metrics(ts).desc).toBe(18);
     expect(lineBox(10, 1.35 * ts, ts).y).toBe(10);
     expect(lineBox(10, 17, ts).y).toBe(9); // a line a whole px short is a px above
+    // 524px: the title is 19.999872px, its line 26.9998px, its content 25px: two px of leading, so one above.
+    const big = 1.08 * (7.2 + 0.0216 * 524);
+    expect(lineBox(10, 1.35 * big, big).y).toBe(11);
   });
 
   it('puts the box in the line with the half-leading floored', () => {

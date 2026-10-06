@@ -131,9 +131,10 @@ export function lineBox(top, lh, size) {
 }
 
 /** The space above a line's content, half what is left of its height: taken to
- *  1/64 of a px, toward zero, and then floored — so a line a hair shorter than
- *  its content (a 17.9929px line of 18px content) has none, not a px negative. */
-const halfLeading = (leading) => Math.floor(Math.trunc(leading * 64) / 64 / 2);
+ *  the nearest 1/64 of a px, and then floored. A line a hair shorter than its
+ *  content (17.9929px of 18) has none, not a px negative; a line a hair short of
+ *  two px more (26.9998 of 25) has the whole px. */
+const halfLeading = (leading) => Math.floor(Math.round(leading * 64) / 64 / 2);
 
 /** A font's ascent and descent in px, as Chrome rounds them for the size it
  *  uses — each a half down, in integers (hundredths of a px, thousandths of an
