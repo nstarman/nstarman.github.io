@@ -34,7 +34,7 @@ export function GET({ site }) {
       page: abs(`/embed/${i.id}/`),
       default: defaultSlug(i),
       figure: hasFigure(i),
-      links: linkKeys(i),
+      links: linkKeys(i, true),
     })),
   };
   return new Response(`${JSON.stringify(body, null, 2)}\n`, { headers: { 'Content-Type': 'application/json' } });

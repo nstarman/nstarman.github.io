@@ -396,7 +396,7 @@ PR, or it renders as nothing.
 
 `repo` is the *paper's* repository; `code` is the software itself.
 
-A software card's last button is its stars (for a package with at least `STARS_MIN`, 40) — `stars` among the `buttons` keys — from `config/stars.json`,
+A software card's last button is its stars (for a package with at least `STARS_MIN`, 40; under it the link is `optional`: left out of `buttons:all`, shown where a name lists it — `buttons:code,docs,stars` — and a pill in the Card Builder, unticked) — `stars` among the `buttons` keys — from `config/stars.json`,
 a snapshot of each `repo`'s GitHub stars that `scripts/collect-stars.mjs` rewrites and
 `.github/workflows/refresh-stars.yml` proposes monthly as a pull request. Do not edit it by hand.
 

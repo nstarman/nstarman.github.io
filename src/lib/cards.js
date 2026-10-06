@@ -86,21 +86,24 @@ export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : Strin
 export const STARS_MIN = 40;
 
 /** A package's stars, as a link to who gave them — none where the count is
- *  unknown, rather than a button that says 0, or is under STARS_MIN.
+ *  unknown, rather than a button that says 0. Under STARS_MIN it is `optional`:
+ *  left out of a card's own buttons (`all`), and offered — named, or ticked in the
+ *  Card Builder — where `every` asks for every link a card could show.
  *  config/stars.json is refreshed monthly, so the number is a month old at worst. */
-function starLink(item) {
+function starLink(item, every) {
   const n = item.repo && starCounts.stars[item.repo];
-  return n == null || n < STARS_MIN ? [] : [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers` }];
+  if (n == null || (n < STARS_MIN && !every)) return [];
+  return [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers`, ...(n < STARS_MIN && { optional: true }) }];
 }
 
 /** The links a card carries, in order: for software its papers lead, each
  *  with its year. */
-export function cardLinks(item) {
-  return item.type === 'software' ? [...softwarePapers(item), ...links(item), ...starLink(item)] : links(item);
+export function cardLinks(item, every = false) {
+  return item.type === 'software' ? [...softwarePapers(item), ...links(item), ...starLink(item, every)] : links(item);
 }
 
 /** The link keys a card can be cut down to — `ads`, `preprint`, `code` … */
-export const linkKeys = (item) => [...new Set(cardLinks(item).map(relKey))];
+export const linkKeys = (item, every = false) => [...new Set(cardLinks(item, every).map(relKey))];
 
 /** What an embed shows when its URL asks for nothing in particular: the card
  *  the website draws for it, in a fixed box at the standard look, so an
@@ -163,7 +166,9 @@ export function cardFacts(item, every = false) {
     role: hasRole(item), students: hasStudents(item), venue: hasVenue(item), status: hasStatus(item), tstatus: !!titleStatus(item), split: !!splitTitle(item),
     byline: item.type === 'publication', lead: hasPosition(item) && authorPosition(item) === 1,
     varxiv: item.type === 'publication' && !venueLine(item), refs: item.type === 'highlight' ? item.refs.length : 0,
-    keys: cardLinks(item).map(relKey),
+    keys: cardLinks(item, every).map(relKey),
+    // Links a card offers but does not show of its own accord: named, they show.
+    optional: cardLinks(item, every).filter((l) => l.optional).map(relKey),
     paper: Object.fromEntries(['auto', 'journal', 'arxiv', 'ads', 'site'].map((k) => [k, !!paperHref(item, k === 'auto' ? undefined : k)])),
   };
 }

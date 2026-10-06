@@ -77,7 +77,7 @@ export function mountCardBuilder({ form, data }) {
 
   // The controls as the model reads them.
   const snap = () => new FormData(form);
-  const state = () => ({ it: items[form.elements.card.value], figureOn: el('eb-figure-on').checked, space, areasOn, btnOrder, groups, allLinks: [...form.querySelectorAll('[name=link]')].map((b) => b.value), limits });
+  const state = () => ({ it: items[form.elements.card.value], figureOn: el('eb-figure-on').checked, space, areasOn, btnOrder, groups, allLinks: [...form.querySelectorAll('[name=link]:not([data-optional])')].map((b) => b.value), limits });
   const spec = () => readSpec(snap(), state());
   const stackedIn = (a) => stackedInModel(snap(), state(), a);
   const canTuneRow = (r) => canTune(r.dataset.tune, snap(), state());
@@ -97,7 +97,7 @@ export function mountCardBuilder({ form, data }) {
     el('eb-extras-drop').hidden = !extras.innerHTML;
     // The paper button first, as it is in the box, where it has somewhere
     // to link; then each link's.
-    el('eb-links').innerHTML = (Object.values(it.paperTo).some(Boolean) ? '<label title="A button of words, paper, first among the buttons: to the article, else arXiv"><input type="checkbox" class="eb-check" name="paperbtn" />paper</label>' : '') + it.links.map(([k, name, title]) => `<label title="${esc(title)}"><input type="checkbox" class="eb-check" name="link" value="${k}" checked />${esc(name)}</label>`).join('');
+    el('eb-links').innerHTML = (Object.values(it.paperTo).some(Boolean) ? '<label title="A button of words, paper, first among the buttons: to the article, else arXiv"><input type="checkbox" class="eb-check" name="paperbtn" />paper</label>' : '') + it.links.map(([k, name, title, optional]) => `<label title="${esc(optional ? `${title}: not on a card of its own accord — tick it to show it` : title)}"><input type="checkbox" class="eb-check" name="link" value="${k}"${optional ? ' data-optional' : ' checked'} />${esc(name)}</label>`).join('');
   }
 
   // A part among the buttons shows where its extra is ticked; the paper
