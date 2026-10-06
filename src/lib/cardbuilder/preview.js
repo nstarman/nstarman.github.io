@@ -38,6 +38,7 @@ export const HITS = [
   ['.c-context', ['context']],
   ['.c-refs', ['foot']],
   ['.c-venue', ['venue']],
+  [':is(.c-xfoot, .btns[data-xg])', ['groups']],
   ['.c-foot', ['foot']],
   // An area, apart from what is in it: clicking its empty room.
   ['.eb-area', []],
@@ -184,34 +185,68 @@ export function attachPreview(frame, b) {
     };
     drag(doc, move, up, true);
   }, true);
-  // A button dragged among the others: dropped by one of them, it takes its
-  // place — the order line's < and >, by the pointer. The box itself, by
-  // the room around its buttons, moves between areas.
+  // A button dragged: dropped by another of its group, it takes its place — the
+  // order line's < and >, by the pointer; by a button of another group, it goes
+  // into that group there; and on an area, out of its group into the one that
+  // has the area, or a new one. The paper button and the parts among the
+  // buttons stay in the first group, so they only move along in it.
   doc.addEventListener('pointerdown', (e) => {
-    const li = e.button === 0 && !e.target.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-split-grip, .eb-areabtn, .eb-fig-grip') && e.target.closest?.('.c-foot li[data-rel]');
+    const li = e.button === 0 && !e.target.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-split-grip, .eb-areabtn, .eb-fig-grip') && e.target.closest?.(':is(.c-foot, .c-xfoot) li[data-rel]');
     if (!li) return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    const sibs = () => [...li.parentElement.children].filter((x) => x.dataset.rel && x.getClientRects().length);
+    const card = doc.querySelector('.card');
+    const shown = (x) => x.dataset.rel && x.getClientRects().length;
+    const sibsOf = (x) => [...x.parentElement.children].filter(shown);
+    const groupOf = (x) => +(x.parentElement.dataset.g ?? 0);
+    const key = li.dataset.rel, from = { group: groupOf(li), index: sibsOf(li).indexOf(li) };
+    const every = () => [...card.querySelectorAll(':is(.c-foot, .c-xfoot) li[data-rel]')].filter((x) => x !== li && x.getClientRects().length);
+    // Where it may go to: an area, each a zone to drop on.
+    const areas = b.groupsOf && !['paperbutton', 'year', 'position', 'context'].includes(key) ? ['left', 'center', 'right', 'bottom', 'top'] : [];
+    const r = card.getBoundingClientRect(), cs = frame.contentWindow.getComputedStyle(card), cols = cs.gridTemplateColumns.split(' ').map(parseFloat);
+    const pl = parseFloat(cs.paddingLeft), pr = parseFloat(cs.paddingRight), W = r.width, H = r.height;
+    const name = card.querySelector(':scope > .c-name'), foot = card.querySelector(':scope > .c-foot');
+    const T = Math.max(22, card.dataset.titleat === 'top' && name ? name.getBoundingClientRect().bottom - r.top : parseFloat(cs.paddingTop));
+    const B = Math.max(22, card.dataset.foot === 'bottom' && foot ? r.bottom - foot.getBoundingClientRect().top : parseFloat(cs.paddingBottom));
+    const L = cols[0] > 1 ? pl + cols[0] + cols[1] / 2 : Math.max(28, W / 6), R = cols[4] > 1 ? pr + cols[4] + cols[3] / 2 : Math.max(28, W / 6);
+    const zones = partZones({ W, H, T, B, L, R });
     const x0 = e.clientX, y0 = e.clientY;
-    let on = false, over = null;
+    let on = false, over = null, zone = null;
     const move = (ev) => {
-      if (!on && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
-      on = true;
-      li.classList.add('eb-dragging');
+      if (!on) {
+        if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
+        on = true;
+        li.classList.add('eb-dragging');
+        for (const a of areas) {
+          const [zx, zy, zw, zh] = zones[a], z = doc.createElement('span');
+          z.className = 'eb-drop';
+          z.dataset.drop = a;
+          Object.assign(z.style, { left: `${zx}px`, top: `${zy}px`, width: `${zw}px`, height: `${zh}px` });
+          card.append(z);
+        }
+      }
       li.style.translate = `${ev.clientX - x0}px ${ev.clientY - y0}px`;
-      // The shown button nearest the pointer, but this one.
-      const near = sibs().filter((x) => x !== li).map((x) => { const r = x.getBoundingClientRect(); return [x, Math.hypot(ev.clientX - (r.left + r.width / 2), ev.clientY - (r.top + r.height / 2))]; }).sort((a, b) => a[1] - b[1])[0];
+      // The button nearest the pointer, in any group, but this one — within its width.
+      const near = every().map((x) => { const q = x.getBoundingClientRect(); return [x, Math.hypot(ev.clientX - (q.left + q.width / 2), ev.clientY - (q.top + q.height / 2))]; }).sort((a, c) => a[1] - c[1])[0];
       over = near && near[1] < near[0].getBoundingClientRect().width ? near[0] : null;
-      for (const x of sibs()) x.classList.toggle('eb-drop-on-btn', x === over);
+      const x = ev.clientX - r.left, y = ev.clientY - r.top;
+      zone = over ? null : areas.find((a) => inBox(x, y, zones[a])) ?? null;
+      for (const q of every()) q.classList.toggle('eb-drop-on-btn', q === over);
+      for (const z of card.querySelectorAll('.eb-drop')) z.classList.toggle('eb-drop-on', z.dataset.drop === zone);
     };
     const up = () => {
       if (!on) return;
       dragged = true; // the click that follows the drop is no click
       li.classList.remove('eb-dragging');
       li.style.translate = '';
-      for (const x of sibs()) x.classList.remove('eb-drop-on-btn');
-      if (over) moveButton(sibs().indexOf(li), sibs().indexOf(over));
+      card.querySelectorAll('.eb-drop').forEach((z) => z.remove());
+      for (const q of every()) q.classList.remove('eb-drop-on-btn');
+      if (over) {
+        const to = { group: groupOf(over), index: sibsOf(over).indexOf(over) };
+        // Among its own group's, the first's as the order line has it.
+        if (to.group === 0 && from.group === 0) moveButton(from.index, to.index);
+        else b.moveKey({ key, from, to });
+      } else if (zone) b.moveKey({ key, from, to: { area: zone } });
     };
     drag(doc, move, up, true);
   }, true);
