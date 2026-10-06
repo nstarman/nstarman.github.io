@@ -76,9 +76,10 @@ const rows = institutionGroups(background);
                   <span class="when">{dateLabel({ date: groupDate(row.items) })}</span>
                   <span class="what">
                     <strong>{main.title}</strong>, {main.institution}
-                    {[main, ...row.items.filter((i) => i !== main)].flatMap((i) => longLines(i.details ?? [], '/cv/')).map((line) => (
-                      <span class="sub"><Inline spans={line} /></span>
-                    ))}
+                    {[main, ...row.items.filter((i) => i !== main)].flatMap((i) =>
+                      longLines(i.details ?? [], '/cv/').map((line, n) => (
+                        <span class="sub">{i !== main && n === 0 && <>{i.title}: </>}<Inline spans={line} /></span>
+                      )))}
                   </span>
                 </div>
               );
