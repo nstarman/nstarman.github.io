@@ -190,7 +190,9 @@ export function softwareModel(input, { slug, theme, measure }) {
   }
 
   // The buttons, under the words, as many to a row as fit.
-  y += 0.35 * L.fs + 0.3 * L.fs;
+  // A card with no buttons has no box for them: nothing after the words but the padding.
+  const has = input.links.length > 0;
+  if (has) y += 0.35 * L.fs + 0.3 * L.fs;
   const gap = 0.3 * L.fs;
   // The button's box: its size, or the least a button is — its corners still a quarter of its size.
   const ib = Math.max(L.ib, BUTTON_MIN);
@@ -216,7 +218,7 @@ export function softwareModel(input, { slug, theme, measure }) {
     }
     x += w + gap;
   }
-  const H = rowTop + ib + padB;
+  const H = (has ? rowTop + ib : y) + padB;
 
   const radii = Array(4).fill(L.rad);
   // The page's ground, then the card's tint of ink over it.

@@ -219,10 +219,23 @@ describe('what it draws is what the site holds', () => {
     }
   });
 
+  it('is as high as its words and padding where it has no buttons, with no box for them', () => {
+    const { input, slug } = softwareCards.find((c) => c.item.id === 'unxt');
+    const bare = softwareModel({ ...input, links: [] }, { slug, theme: 'light', measure });
+    const full = softwareModel(input, { slug, theme: 'light', measure });
+    const { pad, fs, ib } = lengths({ dials: parseName(slug).dials, width: CARD_SVG_WIDTH });
+    expect(buttonsOf(bare)).toHaveLength(0);
+    expect(full.h - bare.h).toBeCloseTo(0.65 * fs + Math.max(ib, BUTTON_MIN), 6);
+    const last = Math.max(...bare.ops.filter((o) => o.k === 'text').map((o) => o.y + o.h));
+    expect(bare.h).toBeGreaterThanOrEqual(last + pad[2]);
+  });
+
   it('files are named /cards/<id>-<theme>.svg', () => {
     expect(cardFile('unxt', 'dark')).toBe('/cards/unxt-dark.svg');
   });
 });
+
+const buttonsOf = (m) => m.ops.filter((o) => o.k === 'box' && o.href);
 
 describe('the pieces', () => {
   const w = (s) => s.length * 10;
