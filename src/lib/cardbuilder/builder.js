@@ -72,11 +72,12 @@ export function mountCardBuilder({ form, data }) {
   const space = {};            // the space tracks set, px or flex
   const areasOn = new Set();   // the areas added with their ⊕, there with nothing in them too
   const st = { lastAreas: 'below' }; // where the venue's own area last was, beside the authors': where it goes back to from their shared one
+  let groups = [];             // the other groups of buttons, as the name has them: carried, not yet edited here
   let btnOrder = [];           // the buttons' order, every key the item has: the shown ones, in it, are the name's list
 
   // The controls as the model reads them.
   const snap = () => new FormData(form);
-  const state = () => ({ it: items[form.elements.card.value], figureOn: el('eb-figure-on').checked, space, areasOn, btnOrder, allLinks: [...form.querySelectorAll('[name=link]')].map((b) => b.value), limits });
+  const state = () => ({ it: items[form.elements.card.value], figureOn: el('eb-figure-on').checked, space, areasOn, btnOrder, groups, allLinks: [...form.querySelectorAll('[name=link]')].map((b) => b.value), limits });
   const spec = () => readSpec(snap(), state());
   const stackedIn = (a) => stackedInModel(snap(), state(), a);
   const canTuneRow = (r) => canTune(r.dataset.tune, snap(), state());
@@ -169,6 +170,7 @@ export function mountCardBuilder({ form, data }) {
     for (const t in space) delete space[t];
     Object.assign(space, next.space);
     btnOrder = next.btnOrder;
+    groups = next.groups;
     if (next.lastAreas) st.lastAreas = next.lastAreas;
     showTracks();
   }

@@ -188,10 +188,15 @@ export function readSpec(f, st) {
     figure: !it.figure || !figureOn ? 'none' : f.get('figat'), figureAlign: f.get('figv'), figureSlot: f.get('figat') === 'center' ? f.get('figslot') : undefined, figureSize: f.get('figpx') === '' ? 'auto' : f.get('figunit') === 'px' ? `${figWidth(f)}px` : figWidth(f), figureH: ['left', 'right'].includes(f.get('figat')) && f.get('figh') !== 'center' ? f.get('figh') : undefined, sides: sidesOf(f, st), figureLink: f.get('figlink') === 'on',
     foot: f.get('foot'), footEnd: f.get('footend'), railAlign: f.get('railalign'), titleWeight: f.get('titleweight') || undefined, frame: f.get('framepx') !== '' ? String(clampInt(f.get('framepx'), 0, 32)) : f.get('frame') || undefined, buttonGap: f.get('bgap') !== '' ? (f.get('bgapu') === '%' ? `${clampInt(f.get('bgap'), 0, 100)}%` : String(clampInt(f.get('bgap'), 0, 32))) : undefined, partGap: f.get('partgap') !== '' ? String(Math.min(32, Math.max(0, Math.round(+f.get('partgap') * 10) / 10))) : undefined, space: { ...space }, title: f.get('title'), titleLink: linkFor(it, f.get('titlelink')), titleAt: f.get('titleat'), titleV: f.get('titleat') === 'top' ? f.get('titlev') : undefined, venueName: f.get('venuename') === 'short' && it.vshort ? 'short' : undefined, venueLink: f.get('venuelink') === 'none' && it.vlink ? false : undefined, venueDate: f.get('venuedate') ? undefined : false, venueArxiv: f.get('venuearxiv') ? undefined : false, paperButton: f.get('paperbtn') && it.byline ? { label: f.get('paperlabel') === 'icon' ? 'icon' : /^[A-Za-z0-9]{1,16}$/.test(f.get('paperword')) ? f.get('paperword') : 'paper', ...(f.get('paperto') && { to: f.get('paperto') }), ...(f.get('papercolor') && { color: f.get('papercolor') }) } : undefined, venueAt: { below: undefined, above: 'above', left: 'beside', right: 'beside', authors: 'authors' }[f.get('venueline')], venueFirst: f.get('venueline') === 'left' || (f.get('venueline') === 'authors' && f.get('venueorder') === 'before') ? true : undefined, venueSplit: ['left', 'right'].includes(f.get('venueline')) && f.get('vsplitn') !== '' ? (f.get('vsplitu') === 'px' ? `${clampInt(f.get('vsplitn'), 20, 800)}px` : String(clampInt(f.get('vsplitn'), 5, 95))) : undefined, venueAlign: ['below', 'above'].includes(f.get('venueline')) && f.get('venuealign') !== 'left' ? f.get('venuealign') : undefined, authorsFit: f.get('authorsfit') ? true : undefined, titleAlign: f.get('titlealign'), textAlign: f.get('textalign') !== 'left' ? f.get('textalign') : undefined, sizes: Object.fromEntries(FACES.filter((p) => f.get(`${p}size`)).map((p) => [p, String(Math.min(40, Math.max(8, Math.round(+f.get(`${p}size`) * 10) / 10)))])), weights: Object.fromEntries(FACES.filter((p) => f.get(`${p}weight`)).map((p) => [p, f.get(`${p}weight`)])), styles: Object.fromEntries(['title', ...FACES].filter((p) => f.get(`${p}style`) === 'italic').map((p) => [p, 'italic'])), fonts: Object.fromEntries(['title', ...FACES].filter((p) => f.get(`${p}face`)).map((p) => [p, f.get(`${p}face`)])), titleStatus: f.get('titlestatus') && it.tstatus ? true : undefined, rest: f.get('rest') || 'split',
     authors: authorsFor(it, f.get('authors') === 'n' ? namesN(f) : f.get('authors')), marks: f.get('marks'), authorLink: f.get('authorlink') || false, posAt: placed(f, 'pos'), yearAt: placed(f, 'year'), contextAt: placed(f, 'ctx'), text: it.text ? f.get('text') : 'none',
-    extras: f.getAll('extra').filter((x) => has(it, x)), links: linksOf(st.btnOrder, f, st.allLinks), perRow: f.get('perrow') ? clampInt(f.get('perrow'), 1, 12) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
+    extras: f.getAll('extra').filter((x) => has(it, x)), links: mainLinks(linksOf(st.btnOrder, f, st.allLinks), st.groups), groups: st.groups ?? [], perRow: f.get('perrow') ? clampInt(f.get('perrow'), 1, 12) : f.get('perp') === 'fit' ? 'fit' : undefined, background: f.get('background'),
   });
   return { id: f.get('card'), it, slug, width, height, format: f.get('format'), theme: f.get('theme') };
 }
+
+/** The first group's keys, less any another group has: a key is in one. The
+ *  builder has controls for the first group; another is carried as the name
+ *  has it, until it has controls of its own. */
+export const mainLinks = (links, groups) => (Array.isArray(links) && groups?.length ? links.filter((k) => !groups.some((g) => Array.isArray(g.links) && g.links.includes(k) && k !== 'empty')) : links);
 
 // ---- name → controls ----
 
@@ -306,7 +311,7 @@ export function controlOps(c, { it, stepPx, framePx }) {
   // A part the name lists among the buttons has its area there.
   for (const [k] of SMALL) if (listed.includes(CELL[k])) radio(`${k}at`, 'list');
   const venue = venueArea(c);
-  return { ops, state: { areasOn, space: { ...(c.space ?? {}) }, btnOrder, lastAreas: venue !== 'authors' ? venue : undefined } };
+  return { ops, state: { areasOn, space: { ...(c.space ?? {}) }, btnOrder, groups: c.groups ?? [], lastAreas: venue !== 'authors' ? venue : undefined } };
 }
 
 /** A preset as it comes out for this item: the extras it has not got drop,
@@ -320,6 +325,8 @@ export function fitName(name, it) {
   const paperButton = it.byline && Object.values(it.paperTo).some(Boolean) ? c.paperButton : undefined;
   const listed = c.links === 'all' ? keys : c.links.filter((k) => k === 'empty' || keys.includes(k) || (k === 'paperbutton' && paperButton) || (Object.values(CELL).includes(k) && c.extras.includes(k) && has(it, k)));
   const kept = listed[0] === 'paperbutton' ? listed.slice(1) : listed;
-  return formatName({ ...c, paperButton, links: sameOrder(kept, keys) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
+  // Another group of buttons keeps the keys the item has, and goes if it has none.
+  const groups = (c.groups ?? []).map((g) => (g.links === 'all' ? g : { ...g, links: g.links.filter((k) => k === 'empty' || keys.includes(k)) })).filter((g) => g.links === 'all' || g.links.some((k) => k !== 'empty'));
+  return formatName({ ...c, groups, paperButton, links: sameOrder(kept, keys) ? 'all' : kept, extras: c.extras.filter((x) => has(it, x)), authors: authorsFor(it, c.authors), titleLink: linkFor(it, c.titleLink), titleStatus: c.titleStatus && !!it.tstatus ? true : undefined, figure: it.figure ? c.figure : 'none',
     rest: c.rest ?? 'split', text: it.text ? c.text : 'none' });
 }

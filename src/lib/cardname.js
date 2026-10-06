@@ -125,6 +125,16 @@
 //            toward the card's edge left off; under the words or at the
 //            bottom, left (left off), center or right. buttons:all:fit:right,
 //            buttons:all:bottom:center
+//            The buttons are groups, and may be given again: the first buttons
+//            part is the card's own, and each part after it another group — its
+//            keys, its count to a row, its area and place — with every key in
+//            one group (all, in one; empty, in any). Another group is at its
+//            area, left, center, right or bottom, in a box of its own there —
+//            or, where that is the buttons' own, in a slot of their box at its
+//            place — or at the top, a strip. Only the first has the paper
+//            button, year, position and context.
+//            e.g. buttons:code,docs:left-buttons:stars:right
+//                 buttons:all:fit-buttons:stars:bottom:right
 //   paper    a paper's button of words, first in the buttons' box: its
 //            label, a word of up to 16 letters or digits — paper:paper —
 //            or icon, the paper glyph; then where it links: journal, arxiv,
@@ -263,7 +273,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t] != null && spac
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text = 'none', extras = [], links = 'all', perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, partGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text = 'none', extras = [], links = 'all', groups = [], perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, partGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -297,6 +307,14 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
   const bv = side && footEnd && footEnd !== 'top' ? footEnd : null;
   const bh = railAlign && railAlign !== (side ? foot : 'left') ? railAlign : null;
   const at = foot !== 'center' || bv || bh ? `:${foot}` + (bv || (side && bh === 'center') ? `:${footEnd || 'top'}` : '') + (bh ? `:${bh}` : '') : '';
+  // Another group's area and place, written where they depart from the buttons' own.
+  const groupAt = (g) => {
+    const a = g.area || foot;
+    const sd = a === 'left' || a === 'right';
+    const v = sd && g.v && g.v !== 'top' ? g.v : null;
+    const h = g.h && g.h !== (sd ? a : 'left') ? g.h : null;
+    return a !== foot || v || h ? `:${a}` + (v || (sd && h === 'center') ? `:${g.v || 'top'}` : '') + (h ? `:${h}` : '') : '';
+  };
   return [
     `size:${width}:${height}`,
     figure === 'none' ? 'figure:none' : `figure:${figure}${figure === 'center' ? (figureSlot && figureSlot !== 'title' ? `:${figureSlot}` : '') : `:${figureAlign}` + (figureH && figureH !== 'center' ? `:${figureH}` : '')}:${figureSize}` + (figureLink ? ':link' : ''),
@@ -313,6 +331,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
     `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
+    ...groups.map((g) => `buttons:${list(g.links, 'all')}` + (g.perRow ? `:${g.perRow}` : '') + groupAt(g)),
     ...(paperButton ? [`paper:${paperButton.label}${paperButton.to ? `:${paperButton.to}` : ''}${paperButton.color ? `:${paperButton.color}` : ''}`] : []),
     ...(space && spaceList(space) ? [`space:${spaceList(space)}`] : []),
     ...(tuned.length ? [`look:${tuned.join(',')}`] : []),
@@ -328,12 +347,14 @@ export function parseName(name) {
   const steps = ['minor', 'compact', 'standard', 'feature', 'display'];
   const spec = { dials: {}, figure: 'none', foot: 'center', titleLink: false, titleAt: 'center', authors: 'none', extras: [], links: 'all', background: 'normal' };
   const seen = {};
+  let nButtons = 0;
   const parts = String(name).split('-');
   for (let i = 0; i < parts.length; i += 1) {
     const kv = parts[i].split(':');
     const key = kv[0];
     // A part once — but area once for each area it sets: area:left, area:right.
-    const once = key === 'area' ? key + ':' + kv[1] : key;
+    // The buttons are groups: any number of parts, the first the main one.
+    const once = key === 'area' ? key + ':' + kv[1] : key === 'buttons' ? key + ':' + nButtons : key;
     if (seen[once]) throw new Error('"' + name + '": ' + once + ' is given twice');
     seen[once] = true;
     if (key === 'size' && kv.length === 3) {
@@ -462,22 +483,33 @@ export function parseName(name) {
       }
       // The keys; then so many to a row, or fit; then the area and the place
       // in it — in a side, up and down then across; else across.
+      const group = { links: kv[1] === 'all' ? 'all' : kv[1] === 'none' ? [] : ks };
+      const main = nButtons === 0;
+      nButtons += 1;
       const r = kv.slice(2);
       if (r.length && (r[0] === 'fit' || /^[0-9]+$/.test(r[0]))) {
         const n = r.shift();
         if (!(n === 'fit' || (/^[1-9][0-9]?$/.test(n) && +n <= 12))) throw new Error('"' + name + '": no such buttons to a row, ' + parts[i]);
-        spec.perRow = n === 'fit' ? 'fit' : +n;
+        group.perRow = n === 'fit' ? 'fit' : +n;
       }
       if (r.length) {
         const area = r.shift();
-        if (!one(area, ['left', 'center', 'right', 'bottom'])) throw new Error('"' + name + '": no such area for the buttons, ' + parts[i]);
+        // The main group's area is the card's buttons' area; another group may
+        // also be in the top, a strip of the card's padding.
+        if (!one(area, main ? ['left', 'center', 'right', 'bottom'] : ['left', 'center', 'right', 'bottom', 'top'])) throw new Error('"' + name + '": no such area for the buttons, ' + parts[i]);
         const side = area === 'left' || area === 'right';
-        spec.foot = area;
-        if (side) spec.footEnd = r.length && one(r[0], ['top', 'center', 'bottom']) ? r.shift() : 'top';
-        if (r.length && one(r[0], ['left', 'center', 'right'])) { const h = r.shift(); if (h !== (side ? area : 'left')) spec.railAlign = h; }
+        group.area = area;
+        if (side) group.v = r.length && one(r[0], ['top', 'center', 'bottom']) ? r.shift() : 'top';
+        if (r.length && one(r[0], ['left', 'center', 'right'])) { const h = r.shift(); if (h !== (side ? area : 'left')) group.h = h; }
         if (r.length) throw new Error('"' + name + '": no such place for the buttons, ' + parts[i]);
       }
-      spec.links = kv[1] === 'all' ? 'all' : kv[1] === 'none' ? [] : kv[1].split(',');
+      if (main) {
+        spec.links = group.links;
+        if (group.perRow) spec.perRow = group.perRow;
+        if (group.area) { spec.foot = group.area; if (group.v) spec.footEnd = group.v; if (group.h) spec.railAlign = group.h; }
+      } else {
+        (spec.groups = spec.groups || []).push(group);
+      }
     } else if (kv.length !== 2) {
       throw new Error('"' + name + '": not key:value, ' + parts[i]);
     } else if (key === 'figure' && kv[1] === 'none') {
@@ -545,6 +577,31 @@ export function parseName(name) {
     if (r.length) throw new Error('"' + name + '": no such place for ' + parts3[j] + ', ' + t.join(':'));
     spec[parts3[j] + 'At'] = at;
   }
+  // The buttons' groups: each key in one, empty as often as asked; all in
+  // one; and the parts that are no key — the paper button, the year, my
+  // position, the context link — in the main group alone.
+  if (spec.groups) {
+    const taken = {};
+    let alls = spec.links === 'all' ? 1 : 0;
+    const groups = [{ links: spec.links }].concat(spec.groups);
+    for (let g = 0; g < groups.length; g += 1) {
+      if (g > 0 && groups[g].links.length === 0) throw new Error('"' + name + '": a group of buttons with none');
+      if (groups[g].links === 'all') { if (g > 0 && (alls += 1) > 1) throw new Error('"' + name + '": all is in two groups of buttons'); continue; }
+      for (let j = 0; j < groups[g].links.length; j += 1) {
+        const k = groups[g].links[j];
+        if (k === 'empty') continue;
+        if (g > 0 && one(k, ['paperbutton', 'year', 'position', 'context'])) throw new Error('"' + name + '": ' + k + ' is among the first buttons, not another group');
+        if (taken[k]) throw new Error('"' + name + '": ' + k + ' is in two groups of buttons');
+        taken[k] = true;
+      }
+    }
+    // Where each is, the area the buttons' own where it names none, and its
+    // place in it as the buttons' is: a side's up and down then across.
+    spec.groups.forEach(function (g) {
+      if (!g.area) g.area = spec.foot;
+      if ((g.area === 'left' || g.area === 'right') && !g.v) g.v = 'top';
+    });
+  }
   // Standard is the own look of a card that fills its width.
   // A title size is its own, never the card's standard.
   if (spec.width === 'fill') for (const d in spec.dials) if (d !== 'titlesize' && spec.dials[d] === 'standard') delete spec.dials[d];
@@ -584,7 +641,7 @@ export function cardFace(spec, f) {
     var w = (sides[side] || {}).width, here = fig && spec.figure === side;
     if (w && w.indexOf('share=') === 0) return w.slice(6) + '%';
     if (w && w.indexOf('min=') === 0) return 'minmax(' + Math.max(+w.slice(4), here ? figPx || 0 : 0) + 'px, auto)';
-    if (w === 'buttons') return spec.foot === side ? 'auto' : null;
+    if (w === 'buttons') return spec.foot === side || (spec.groups || []).some(function (g) { return g.area === side; }) ? 'auto' : null;
     return here && figPx ? 'minmax(' + figPx + 'px, auto)' : null;
   };
   var wins = [];
@@ -603,47 +660,67 @@ export function cardFace(spec, f) {
   var pb = spec.paperButton && f.paper[spec.paperButton.to || 'auto'] ? spec.paperButton : null;
   var paperLi = !!pb || (f.every && ['auto', 'journal', 'arxiv', 'ads', 'site'].some(function (k) { return f.paper[k]; }));
   var pn = !pb || pb.label === 'icon' ? 1 : Math.ceil(0.27 * pb.label.length + 0.62);
-  // The buttons' list as the name orders it: the paper button — first,
-  // unless it says where, paperbutton — the links by key, each empty one a
-  // button's room, each part it lists; then the rest, hidden.
+  // The buttons' lists as the name orders them: the first group is the card's
+  // own, with the paper button — first, unless it says where, paperbutton —
+  // the links by key, each empty one a button's room, each part it lists;
+  // then the rest, hidden. Another group has only its keys and its rooms.
+  // Each key is in one group: the one that lists it, else the one that is
+  // all, else the first — hidden.
   var cells = { year: yearShown, position: stampShown, context: ctxShown };
-  var seq = [];
-  if (paperLi && !inList('paperbutton')) seq.push({ paper: true });
-  if (spec.links === 'all') f.keys.forEach(function (k, i) { seq.push({ link: i }); });
-  else {
-    spec.links.forEach(function (k) {
-      if (k === 'empty') seq.push({ empty: true });
-      else if (k === 'paperbutton') { if (paperLi) seq.push({ paper: true }); }
-      else if (k in cells) { if (cells[k]) seq.push({ cell: k }); }
-      else f.keys.forEach(function (key, i) { if (key === k) seq.push({ link: i }); });
-    });
-    f.keys.forEach(function (key, i) { if (spec.links.indexOf(key) < 0) seq.push({ link: i }); });
-  }
-  seq.forEach(function (x) { x.kept = x.paper ? !!pb : x.empty || !!x.cell || spec.links === 'all' || spec.links.indexOf(f.keys[x.link]) >= 0; });
+  var glist = [{ links: spec.links, perRow: spec.perRow, area: spec.foot, v: spec.footEnd, h: spec.railAlign }].concat(spec.groups || []);
+  var all = 0, own = {};
+  glist.forEach(function (g, n) {
+    if (g.links === 'all') all = n;
+    else g.links.forEach(function (k) { if (k !== 'empty' && !(k in own)) own[k] = n; });
+  });
+  var owner = function (k) { return k in own ? own[k] : all; };
+  var seqOf = function (g, n) {
+    var seq = [];
+    if (n === 0 && paperLi && !inList('paperbutton')) seq.push({ paper: true, kept: !!pb });
+    if (g.links === 'all') f.keys.forEach(function (k, i) { if (owner(k) === n) seq.push({ link: i, kept: true }); });
+    else {
+      g.links.forEach(function (k) {
+        if (k === 'empty') seq.push({ empty: true, kept: true });
+        else if (k === 'paperbutton') { if (paperLi) seq.push({ paper: true, kept: !!pb }); }
+        else if (k in cells) { if (cells[k]) seq.push({ cell: k, kept: true }); }
+        else f.keys.forEach(function (key, i) { if (key === k) seq.push({ link: i, kept: true }); });
+      });
+      if (n === 0) f.keys.forEach(function (k, i) { if (owner(k) === 0 && g.links.indexOf(k) < 0) seq.push({ link: i, kept: false }); });
+    }
+    return seq;
+  };
   // Counted as the room they take: the paper button so many buttons wide,
   // a part none — a row of its own in a grid — the rest one each; a row
   // never narrower than the paper button.
   var room = function (x) { return x.paper ? pn : x.cell ? 0 : 1; };
+  var side = spec.foot === 'left' || spec.foot === 'right';
+  var END = { top: 'start', left: 'start', center: 'center', bottom: 'end', right: 'end' };
+  // Each group: its list and, in a grid, its rows — the count to a row, and,
+  // on a right rail, where a short last row starts — and where it sits.
+  var groups = glist.map(function (g, n) {
+    var sq = seqOf(g, n);
+    var shown = sq.reduce(function (c, x) { return c + (x.kept ? room(x) : 0); }, 0);
+    var per = g.perRow === 'fit' || !shown ? null : Math.max(n === 0 && pb ? pn : 1, Math.min(shown, g.perRow || Math.ceil(Math.sqrt(shown))));
+    var area = n === 0 ? spec.foot : g.area, gs = area === 'left' || area === 'right';
+    var h = n === 0 ? spec.railAlign || (side ? spec.foot : 'left') : g.h || (gs ? area : 'left');
+    // On a right rail, a short last row sits at the right: its first button
+    // starts so many columns in. Rows run on from the last part listed among
+    // the buttons, which is a row of its own.
+    var skip = null, last = [];
+    sq.forEach(function (x) { if (x.kept) last = x.cell ? [] : last.concat([x]); });
+    var run = last.reduce(function (c, x) { return c + room(x); }, 0);
+    var short = per && h === 'right' ? run % per : 0;
+    if (short) { var c = 0; last.forEach(function (x) { if (c === run - short) skip = x; c += room(x); }); }
+    if (skip) skip.skip = true;
+    return { seq: sq, shown: shown, per: per, skip: skip ? per - short : null, area: area, side: gs, h: h, v: n === 0 ? (side ? spec.footEnd || 'top' : 'bottom') : gs ? g.v || 'top' : 'bottom', on: sq.some(function (x) { return x.kept; }) };
+  });
+  var seq = groups[0].seq, shown = groups[0].shown, per = groups[0].per, skip = groups[0].skip, railAt = groups[0].h;
   // The buttons are in their slot where any is kept; a list with none is
   // after the slots, hidden.
-  shows.buttons = seq.some(function (x) { return x.kept; });
-  var shown = seq.reduce(function (n, x) { return n + (x.kept ? room(x) : 0); }, 0);
-  var per = spec.perRow === 'fit' || !shown ? null : Math.max(pb ? pn : 1, Math.min(shown, spec.perRow || Math.ceil(Math.sqrt(shown))));
-  var side = spec.foot === 'left' || spec.foot === 'right';
-  var railAt = spec.railAlign || (side ? spec.foot : 'left');
-  // On a right rail, a short last row sits at the right: its first button
-  // starts so many columns in. Rows run on from the last part listed among
-  // the buttons, which is a row of its own.
-  var skip = null, last = [];
-  seq.forEach(function (x) { if (x.kept) last = x.cell ? [] : last.concat([x]); });
-  var run = last.reduce(function (n, x) { return n + room(x); }, 0);
-  var short = per && railAt === 'right' ? run % per : 0;
-  if (short) { var n = 0; last.forEach(function (x) { if (n === run - short) skip = x; n += room(x); }); }
-  if (skip) skip.skip = true;
+  shows.buttons = groups[0].on;
   // Each part's slot along the buttons' box, and its place across it; or,
   // hidden or in a strip of the card's padding, none.
-  var placed = { buttons: { area: spec.foot, v: side ? spec.footEnd || 'top' : 'bottom', h: railAt }, stamp: at.pos, year: at.year, context: at.context };
-  var END = { top: 'start', left: 'start', center: 'center', bottom: 'end', right: 'end' };
+  var placed = { buttons: { area: spec.foot, v: groups[0].v, h: railAt }, stamp: at.pos, year: at.year, context: at.context };
   var slot = {}, cross = {}, strip = {}, strips = [];
   ['buttons', 'stamp', 'year', 'context'].forEach(function (k) {
     var p = placed[k];
@@ -651,13 +728,26 @@ export function cardFace(spec, f) {
     slot[k] = shows[k] && !p.strip ? END[side ? p.v : p.h] : null;
     if (shows[k] && p.strip) { strip[k] = { area: p.area, h: p.h }; if (strips.indexOf(p.area) < 0) strips.push(p.area); }
   });
-  var railEmpty = !f.refs && !shown && !seq.some(function (x) { return x.cell; }) && !['stamp', 'year', 'context'].some(function (k) { return slot[k]; });
+  // Another group, where it is: a slot of the buttons' box where it is in
+  // their area, a strip at the top, or a box of its own in the area it names.
+  var feet = [];
+  groups.forEach(function (g, n) {
+    if (n === 0) return;
+    g.slot = null; g.strip = null; g.foot = null;
+    g.cross = END[g.side ? g.h : g.v];
+    if (!g.on) return;
+    if (g.area === spec.foot) { g.cross = END[side ? g.h : g.v]; g.slot = END[side ? g.v : g.h]; }
+    else if (g.area === 'top') { g.strip = { area: 'top', h: g.h }; if (strips.indexOf('top') < 0) strips.push('top'); }
+    else { g.foot = g.area; g.slot = END[g.side ? g.v : g.h]; if (feet.indexOf(g.area) < 0) feet.push(g.area); }
+  });
+  var inFoot = groups.some(function (g, n) { return n > 0 && g.on && !g.foot; });
+  var railEmpty = !f.refs && !shown && !seq.some(function (x) { return x.cell; }) && !['stamp', 'year', 'context'].some(function (k) { return slot[k]; }) && !inFoot;
   // An area the name gives that nothing is in is there all the same, empty.
   var holds = {
-    left: (fig && spec.figure === 'left') || (spec.foot === 'left' && !railEmpty),
-    right: (fig && spec.figure === 'right') || (spec.foot === 'right' && !railEmpty),
+    left: (fig && spec.figure === 'left') || (spec.foot === 'left' && !railEmpty) || feet.indexOf('left') >= 0,
+    right: (fig && spec.figure === 'right') || (spec.foot === 'right' && !railEmpty) || feet.indexOf('right') >= 0,
     top: (spec.titleAt === 'top' && spec.title !== 'none') || strips.indexOf('top') >= 0,
-    bottom: (spec.foot === 'bottom' && !railEmpty) || strips.indexOf('bottom') >= 0,
+    bottom: (spec.foot === 'bottom' && !railEmpty) || strips.indexOf('bottom') >= 0 || feet.indexOf('bottom') >= 0,
   };
   var empty = ['left', 'right', 'top', 'bottom'].filter(function (a) { return sides[a] && !holds[a]; });
   var yes = function (b) { return b ? '' : u; };
@@ -686,7 +776,7 @@ export function cardFace(spec, f) {
     venuefirst: yes((spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst),
     vsplit: yes(spec.venueAt === 'beside' && spec.venueSplit),
     paperbtn: yes(pb), paperlabel: pb && pb.label === 'icon' ? 'icon' : u, papercolor: pb ? pb.color : u,
-    foot: spec.foot, footend: spec.footEnd, railalign: spec.railAlign, rail: railEmpty ? 'empty' : u,
+    foot: spec.foot, footend: spec.footEnd, railalign: spec.railAlign, rail: railEmpty ? 'empty' : u, xfeet: feet.join(' ') || u,
     strips: strips.join(' ') || u,
     per: yes(per),
   };
@@ -705,7 +795,7 @@ export function cardFace(spec, f) {
     '--hT': (sides.top || {}).height != null ? sides.top.height + 'px' : u, '--hB': (sides.bottom || {}).height != null ? sides.bottom.height + 'px' : u,
     '--figw': figW || u, '--colL': sideCol('left') || u, '--colR': sideCol('right') || u,
     '--gr': spec.partGap != null ? spec.partGap + 'px' : u,
-    '--per': per || u, '--skip': skip ? per - short : u,
+    '--per': per || u, '--skip': skip || u,
   };
   ['title', 'body', 'authors', 'venue', 'position', 'year', 'context'].forEach(function (p) {
     if (p !== 'title') {
@@ -721,5 +811,5 @@ export function cardFace(spec, f) {
     var v = (spec.space || {})[t];
     style['--sp-' + t] = !v ? u : v !== 'flex' ? v + 'px' : rows.indexOf(t) >= 0 ? '100fr' : '1fr';
   });
-  return { data: data, style: style, seq: seq, slot: slot, cross: cross, strip: strip, paper: pb };
+  return { data: data, style: style, seq: seq, groups: groups, feet: feet, slot: slot, cross: cross, strip: strip, paper: pb };
 }

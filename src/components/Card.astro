@@ -15,6 +15,7 @@ import { cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref
 import { parseName, cardFace } from '../lib/cardname.js';
 import { ordinal } from '../lib/inline.js';
 import LinkIcon from './LinkIcon.astro';
+import ButtonList from './ButtonList.astro';
 import Inline from './Inline.astro';
 import Byline from './Byline.astro';
 import VenueBits from './VenueBits.astro';
@@ -160,6 +161,33 @@ const contextLabel = topic && `${topic[1]} research highlights`;
         where it is apart, and the context link: each in its slot, or, in a
         strip or hidden, after the slots. */}
     {(() => {
+      // The first group's buttons: the links, the paper button and the parts the
+      // name lists among them, each in its place. (Another group is a
+      // ButtonList: links and rooms only.)
+      const buttons = (g, where) => (
+        <ul class="btns btns--icon" {...where} data-gh={g.h} data-gv={g.v}>
+          {g.seq.map((x) => {
+            const li = { 'data-off': x.kept ? undefined : '', 'data-skip': x.skip ? '' : undefined };
+            if (x.paper) return (
+              <li class="c-paperli" data-rel="paperbutton" {...li}>
+                <a class="c-paperbtn" href={paperTo[face.paper?.to ?? 'auto'] ?? Object.values(paperTo).find(Boolean)} aria-label={paperWord} title={paperWord}
+                   data-auto={paperTo.auto} data-journal={paperTo.journal} data-arxiv={paperTo.arxiv} data-ads={paperTo.ads} data-site={paperTo.site}>
+                  <span class="c-pword">{paperWord}</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
+                </a>
+              </li>
+            );
+            if (x.empty) return <li data-rel="empty" aria-hidden="true" {...li}></li>;
+            if (x.cell) return (
+              <li class="c-cell" data-rel={x.cell} {...li}>
+                {x.cell === 'year' && <span class="c-year">{year(item)}</span>}
+                {x.cell === 'position' && <span class="c-stamp"><span class="c-place">{place}</span></span>}
+                {x.cell === 'context' && context({})}
+              </li>
+            );
+            return <LinkIcon link={linkList[x.link]} {...li} />;
+          })}
+        </ul>
+      );
       const context = (extra) => <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} aria-label={contextLabel} title={contextLabel} {...extra}>Context&nbsp;›</a>;
       const stampBits = () => stamp.map((x, i) => <span class={x.me ? 'c-ent c-ent--me' : 'c-ent'}>{i > 0 && <span class="c-stusep"> | </span>}{x.me
         ? <span class="c-place">{place}</span>
@@ -171,30 +199,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
         // them, never without an address (hidden, it keeps one), and the
         // parts the name lists there, each in a row of its own; one not
         // kept, data-off.
-        if (k === 'buttons') return (face.seq.length > 0 || allCounts) && (
-          <ul class="btns btns--icon" data-cross={face.cross.buttons}>
-            {face.seq.map((x) => {
-              const li = { 'data-off': x.kept ? undefined : '', 'data-skip': x.skip ? '' : undefined };
-              if (x.paper) return (
-                <li class="c-paperli" data-rel="paperbutton" {...li}>
-                  <a class="c-paperbtn" href={paperTo[face.paper?.to ?? 'auto'] ?? Object.values(paperTo).find(Boolean)} aria-label={paperWord} title={paperWord}
-                     data-auto={paperTo.auto} data-journal={paperTo.journal} data-arxiv={paperTo.arxiv} data-ads={paperTo.ads} data-site={paperTo.site}>
-                    <span class="c-pword">{paperWord}</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paper" /></svg>
-                  </a>
-                </li>
-              );
-              if (x.empty) return <li data-rel="empty" aria-hidden="true" {...li}></li>;
-              if (x.cell) return (
-                <li class="c-cell" data-rel={x.cell} {...li}>
-                  {x.cell === 'year' && <span class="c-year">{year(item)}</span>}
-                  {x.cell === 'position' && <span class="c-stamp">{stampBits()}</span>}
-                  {x.cell === 'context' && context({})}
-                </li>
-              );
-              return <LinkIcon link={linkList[x.link]} {...li} />;
-            })}
-          </ul>
-        );
+        if (k === 'buttons') return (face.seq.length > 0 || allCounts) && buttons(face.groups[0], cross);
         if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{stamp.length ? <><span class="c-py">{stampBits()}<span class="c-sep"> | </span><span class="c-yr">{year(item)}</span></span></> : null}{!stamp.length && <span class="c-yr">{year(item)}</span>}</span>;
         if (k === 'year') return !isSoftware && <span class="c-year" {...cross}>{year(item)}</span>;
         return topic && context(cross);
@@ -202,7 +207,18 @@ const contextLabel = topic && `${topic[1]} research highlights`;
       // A part the name lists among the buttons is drawn there alone.
       const inList = (k) => spec.links !== 'all' && spec.links.includes(k);
       const keys = ['buttons', 'stamp', 'year', 'context'].filter((k) => !inList({ stamp: 'position' }[k] ?? k));
-      return <>{['start', 'center', 'end'].map((s) => <div class="c-slot" data-at={s}>{keys.filter((k) => face.slot[k] === s).map(part)}</div>)}{keys.filter((k) => !face.slot[k]).map(part)}</>;
+      // Another group of buttons, in a slot of this box, in a strip at the top —
+      // or in a box of its own, below.
+      const others = face.groups.slice(1).filter((g) => !g.foot);
+      const there = (g) => <ButtonList group={g} links={linkList} where={g.strip ? { 'data-cross': g.cross, 'data-strip': g.strip.area, 'data-across': g.strip.h } : { 'data-cross': g.cross }} />;
+      return <>{['start', 'center', 'end'].map((s) => <div class="c-slot" data-at={s}>{keys.filter((k) => face.slot[k] === s).map(part)}{others.filter((g) => g.slot === s).map(there)}</div>)}{keys.filter((k) => !face.slot[k]).map(part)}{others.filter((g) => !g.slot).map(there)}</>;
     })()}
   </div>
+  {/* A group of buttons in an area of its own — apart from the buttons' box
+      — has a box there, with the same three slots. */}
+  {face.feet.map((area) => (
+    <div class="c-xfoot" data-at={area}>
+      {['start', 'center', 'end'].map((s) => <div class="c-slot" data-at={s}>{face.groups.slice(1).filter((g) => g.foot === area && g.slot === s).map((g) => <ButtonList group={g} links={linkList} where={{ 'data-cross': g.cross }} />)}</div>)}
+    </div>
+  ))}
 </article>
