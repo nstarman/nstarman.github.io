@@ -255,10 +255,12 @@ stylesheet reads, and the buttons' list in its order — is `cardFace` in
 gathers. `Card.astro` draws from it, and the embed page runs the same source,
 so a card and its embed cannot disagree; a new axis is a new key there.
 
-A paper whose first author is a student of mine (`student` on that author)
-carries a tag beside my position and the year, "student-led‡" in the student's
-colour — † undergraduate, ‡ graduate — then a bar, with a hover saying so. It follows the
-position, so it shows wherever a card shows that, and it needs no name part.
+A paper with a student of mine among its authors (`student` on that author)
+shows them beside my position: "student‡ 1st | 2nd" where they were first and
+I second, "1st | student‡ 4th" where they were fourth. The student is in their
+colour — † undergraduate, ‡ graduate — with a hover saying so; the order is the
+authors'. It follows the position, so it shows wherever a card shows that, and
+it needs no name part.
 
 Each publication, synthesis and package can be embedded at `/embed/<id>/`,
 with any card named in the query — `?card=size:640:160-figure:none-text:summary-buttons:all:right-look:standard`

@@ -64,11 +64,12 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === h?.topic);
 // "nth", unless the record states it on purpose.
 const pos = isSoftware ? null : authorPosition(item);
 const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : 'nth');
-// A paper a student of mine led — first author — says so beside my position,
-// in the student's colour and mark (the key is on /publications/).
-const led = item.type === 'publication' ? item.authors?.[0]?.student : null;
-const ledMark = { undergraduate: '†', graduate: '‡' }[led];
-const ledTitle = led && `Led by ${led === 'graduate' ? 'a graduate' : 'an undergraduate'} student I supervised or advised`;
+// Beside my position, each student of mine on the paper, with theirs, in
+// author order: "student‡ 1st | 2nd" — they were first and I second.
+const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
+const mark = { undergraduate: '†', graduate: '‡' };
+const students = item.type === 'publication' ? (item.authors ?? []).flatMap((a, i) => (a.student ? [{ student: a.student, pos: i + 1 }] : [])) : [];
+const stamp = place ? [...students, { me: true, pos }].sort((x, y) => x.pos - y.pos) : [];
 // A paper's byline, at the lengths the authors axis offers: short is the first
 // three and "et al." — two at minor type, where three wrap — and full is up to
 // maxAuthors (eight, as /publications/ shows them). Every cut keeps me: past
@@ -160,6 +161,9 @@ const contextLabel = topic && `${topic[1]} research highlights`;
         strip or hidden, after the slots. */}
     {(() => {
       const context = (extra) => <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} aria-label={contextLabel} title={contextLabel} {...extra}>Context&nbsp;›</a>;
+      const stampBits = () => stamp.map((x, i) => <>{i > 0 && <span class="c-stusep"> | </span>}{x.me
+        ? <span class="c-place">{place}</span>
+        : <span class={`c-stu stu--${x.student}`} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>student<sup>{mark[x.student]}</sup> {ordinal(x.pos)}</span>}</>);
       const part = (k) => {
         const strip = face.strip[k] ? { 'data-strip': face.strip[k].area, 'data-across': face.strip[k].h } : {};
         const cross = { 'data-cross': face.cross[k], ...strip };
@@ -183,7 +187,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
               if (x.cell) return (
                 <li class="c-cell" data-rel={x.cell} {...li}>
                   {x.cell === 'year' && <span class="c-year">{year(item)}</span>}
-                  {x.cell === 'position' && <span class="c-stamp">{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-stusep"> | </span></>}<span class="c-place">{place}</span></span>}
+                  {x.cell === 'position' && <span class="c-stamp">{stampBits()}</span>}
                   {x.cell === 'context' && context({})}
                 </li>
               );
@@ -191,7 +195,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
             })}
           </ul>
         );
-        if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place ? <>{led && <><span class={`c-stu stu--${led}`} title={ledTitle} aria-label={ledTitle}>student-led<sup>{ledMark}</sup></span><span class="c-stusep"> | </span></>}<span class="c-py"><span class="c-place">{place}</span><span class="c-sep"> | </span><span class="c-yr">{year(item)}</span></span></> : null}{!place && <span class="c-yr">{year(item)}</span>}</span>;
+        if (k === 'stamp') return !isSoftware && <span class="c-stamp" {...cross}>{place ? <><span class="c-py">{stampBits()}<span class="c-sep"> | </span><span class="c-yr">{year(item)}</span></span></> : null}{!place && <span class="c-yr">{year(item)}</span>}</span>;
         if (k === 'year') return !isSoftware && <span class="c-year" {...cross}>{year(item)}</span>;
         return topic && context(cross);
       };
