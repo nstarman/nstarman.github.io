@@ -240,7 +240,7 @@ export function mountCardBuilder({ form, data }) {
     wasSet.wmode = wset;
     wasSet.hmode = hset;
     el('eb-px').hidden = !widthOpen;
-    el('eb-px-w').hidden = el('eb-widths').hidden = !wset;
+    el('eb-px-w').hidden = !wset;
     el('eb-px-h').hidden = !hset;
     el('eb-shapes').hidden = !(wset && hset);
     el('eb-w-shown').textContent = wset && !widthOpen ? `${s.width}px` : 'set';

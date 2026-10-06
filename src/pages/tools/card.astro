@@ -102,7 +102,7 @@ const data = {
               <span class="eb-px" id="eb-px" role="group" aria-label="Width and height" hidden>
                 <span class="sep" aria-hidden="true">|</span>
                 <NumBox id="eb-px-w" title="The width, in pixels" name="px" min={FIXED_MIN} max={FIXED_MAX} value="320" label="Width in pixels" unit="px" after="wide" />
-                <span class="pilltoggle" id="eb-widths" role="radiogroup" aria-label="Preset widths"></span>
+                <span class="pilltoggle" id="eb-widths" hidden role="radiogroup" aria-label="Preset widths"></span>
                 <NumBox id="eb-px-h" title="The height, in pixels" name="hpx" min={FIXED_MIN_HEIGHT} max={FIXED_MAX} value="400" label="Height in pixels" unit="px" after="high" />
                 <span class="pilltoggle" id="eb-shapes" role="radiogroup" aria-label="Shape">
                   {['4x5', '1x1', '8x5', '4x1'].map((a) => <label title={`${a.replace('x', ' wide by ')} high`}><input type="radio" class="posradio" name="shape" value={a} />{a.replace('x', ':')}</label>)}
