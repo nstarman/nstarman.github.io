@@ -257,7 +257,7 @@ so a card and its embed cannot disagree; a new axis is a new key there.
 
 A paper whose first author is a student of mine (`student` on that author)
 carries a tag beside my position and the year, "student-led‡" in the student's
-colour — † undergraduate, ‡ graduate — with a hover saying so. It follows the
+colour — † undergraduate, ‡ graduate — then a bar, with a hover saying so. It follows the
 position, so it shows wherever a card shows that, and it needs no name part.
 
 Each publication, synthesis and package can be embedded at `/embed/<id>/`,
