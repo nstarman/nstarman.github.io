@@ -90,7 +90,7 @@ export function mountCardBuilder({ form, data }) {
     const x = (on, v, title) => (on ? `<label title="${title}"><input type="checkbox" class="eb-check" name="extra" value="${v}" />${v}</label>` : '');
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
       + x(it.pos, 'position', 'My author position, as 1st')
-      + x(it.students && it.pos, 'students', 'My students on the paper, with their positions, beside mine')
+      + x(it.students, 'students', 'My students on the paper, with their positions, beside mine')
       + x(it.year, 'year', 'The year')
       + x(it.context, 'context', 'A link to its topic on /research/');
     el('eb-extras-drop').hidden = !extras.innerHTML;

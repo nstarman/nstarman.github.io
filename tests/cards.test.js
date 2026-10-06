@@ -635,8 +635,8 @@ describe('the students extra', () => {
     expect(stu(base('position,students'))).toBeDefined();
     expect(stu(base('position'))).toBeUndefined();
   });
-  it('needs my position, and a student among the authors', () => {
-    expect(stu(base('students'))).toBeUndefined();
+  it('stands alone, but needs a student among the authors', () => {
+    expect(stu(base('students'))).toBeDefined();
     expect(stu(base('position,students'), items.find((i) => i.id === 'galactic-amnesia'))).toBeUndefined();
   });
 });
