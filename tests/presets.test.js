@@ -119,3 +119,13 @@ describe('section order', () => {
     expect(ids({ order: ['nope'] })).toEqual(ids());
   });
 });
+
+describe('a fellowship', () => {
+  it('is a position that sits with Grants & Fellowships, not Professional Appointments', () => {
+    const where = (id) => resolve('complete').sections.find((s) => s.items.some((i) => i.id === id))?.id;
+    for (const id of ['massey-junior-fellow', 'brinson-prize-fellowship', 'pacific-postdoc-program']) {
+      expect(where(id)).toBe('grants-major');
+    }
+    expect(where('mit-postdoc')).toBe('positions');
+  });
+});

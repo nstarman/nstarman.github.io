@@ -14,9 +14,13 @@ import { items, lists } from './data.js';
 
 const asArray = (v) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);
 
-/** A section's `match` is a plain AND over fields; array values mean "any of". */
-function matches(item, match) {
-  return Object.entries(match).every(([field, want]) => asArray(want).includes(item[field]));
+/**
+ * A section's `match` is a plain AND over fields; array values mean "any of".
+ * `not` is the same shape, and rules an item out where every field in it holds.
+ */
+function matches(item, { not, ...match }) {
+  const holds = (m) => Object.entries(m).every(([field, want]) => asArray(want).includes(item[field]));
+  return holds(match) && !(not && holds(not));
 }
 
 export const presetNames = Object.keys(presets).filter((k) => !k.startsWith('$'));

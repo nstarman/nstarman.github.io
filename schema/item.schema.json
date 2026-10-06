@@ -356,6 +356,19 @@
           "location": {
             "type": "string"
           },
+          "tier": {
+            "description": "Set on a position that was awarded, a fellowship: it then sits with Grants & Fellowships (major) rather than under Professional Appointments. Not an award or a grant — it is still a position.",
+            "enum": [
+              "major",
+              "minor"
+            ]
+          },
+          "amount": {
+            "$ref": "#/$defs/amount"
+          },
+          "funder": {
+            "type": "string"
+          },
           "groupRoles": {
             "type": "boolean",
             "description": "Print this role together with the others at the same institution that set this too, as one row — \"Coordinator & Core Developer, Astropy\". Only roles that opt in are grouped."
