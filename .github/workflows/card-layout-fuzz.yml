@@ -44,7 +44,11 @@ jobs:
     name: fuzz
     # On a pull request, only the one label.
     if: github.event_name != 'pull_request' || github.event.label.name == 'fuzz-cards'
-    runs-on: ubuntu-latest
+    # A Mac: the renderer is calibrated to the Chrome there, which positions text at
+    # subpixels. Chrome on Linux rounds glyph advances to whole px, so its lines break
+    # elsewhere, and so does a Mac's at a device scale of 2 — it is the same card
+    # either way, but not the one the README's readers' browsers draw.
+    runs-on: macos-latest
     timeout-minutes: 45
     env:
       FUZZ_SITE: http://localhost:4321
@@ -60,7 +64,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Install the browser the cards are laid out in
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       # The test imports the site's own modules into the page, so it needs the
       # dev server, not a build.
