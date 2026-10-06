@@ -12,7 +12,7 @@ import { FIGURE_SLOTS } from '../cardname.js';
 import { inBox } from './model.js';
 import { cellGrid, partZones, venueDrops } from './geometry.js';
 import { drag, shownIn } from './dom.js';
-import { attachGrip, attachPlus } from './overlay.js';
+import { attachGrip, attachPlus, attachSize } from './overlay.js';
 
 // The preview's hitboxes: each part of the card, outlined, brings up what
 // tunes it — first match wins, so a link button beats the box it sits in,
@@ -58,6 +58,7 @@ export function attachPreview(frame, b) {
   doc.documentElement.classList.add('eb-hits');
   attachGrip(frame, b);
   attachPlus(frame, b);
+  attachSize(frame, b);
   // A part is what it is; what is left — the card's own room, the box a
   // buttons' box fills its side with, or a title's box past its words — is the
   // area under the pointer, where there is one, not the part that happens
@@ -72,7 +73,7 @@ export function attachPreview(frame, b) {
     return [...r.getClientRects()].some((b) => x >= b.left - 2 && x <= b.right + 2 && y >= b.top - 2 && y <= b.bottom + 2);
   };
   const find = (t, x, y) => {
-    if (t.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-areabtn')) return null;
+    if (t.closest?.('.eb-plus, .eb-band, .eb-area-grip, .eb-size-grip, .eb-areabtn')) return null;
     for (const [q, keys] of HITS) {
       const el = t.closest?.(q);
       if (!el) continue;
