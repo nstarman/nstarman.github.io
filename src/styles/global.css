@@ -165,16 +165,17 @@ h2{
    SITE_PRESETS). On /software/ the areas' headings separate what follows, and
    on the home page nothing does, so it carries no divider of its own. */
 .lead{margin-bottom:.7rem}
-/* An area's tiers, a grid each, run on as one list. */
-.soft + .soft{margin-top:.7rem}
-/* A tier's cards are one size on the whole page, whatever area they are in:
-   its rows are at least as tall as its tallest card at full width, measured —
-   potamides; cosmology.api; zeroth, its summary on two lines. A row still
-   grows for a card that needs more (galactic_dynamics_interoperability's name
-   wraps) rather than clip it. Re-measure if a tier gains a longer card. */
-.soft.soft--headline{grid-auto-rows:minmax(13.6rem, auto)}
-.soft.soft--other{grid-auto-rows:minmax(7.2rem, auto)}
-.soft.soft--useful{grid-auto-rows:minmax(6.5rem, auto)}
+/* An area's cards run on in one grid, its tiers in order, and each keeps its
+   tier's size on the whole page: aligned to the top of its row rather than
+   stretched to the tallest there, and at least as tall as its tier's tallest
+   card at full width, measured — potamides; cosmology.api; zeroth, its summary
+   on two lines. A tier is its preset's text size, which the card carries. A
+   card that needs more still grows (galactic_dynamics_interoperability's name
+   wraps) rather than clip. Re-measure if a tier gains a longer card. */
+.soft.soft--area{grid-auto-rows:auto; align-items:start}
+.soft--area > :not([data-textsize]){min-height:13.6rem}
+.soft--area > [data-textsize="compact"]{min-height:7.2rem}
+.soft--area > [data-textsize="minor"]{min-height:6.5rem}
 .hl-intro.sw-intro{margin-bottom:.9rem}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath
