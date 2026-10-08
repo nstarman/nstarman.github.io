@@ -271,6 +271,11 @@ describe('softwareUsed', () => {
     expect(new Set(used)).toEqual(new Set(['galax', 'unxt', 'potamides', 'coordinax', 'galactopinns']));
   });
 
+  it('leads with a paper\'s main package, the one it names first', () => {
+    expect(softwareUsed([resolve('potamides-apj')]).map((s) => s.id)).toEqual(['potamides', 'galax', 'coordinax', 'unxt']);
+    expect(softwareUsed([resolve('pinns-mnras')])[0].id).toBe('galactopinns');
+  });
+
   it('skips a ref that is not software', () => {
     expect(softwareUsed([{ refs: ['potamides-apj'] }, {}])).toEqual([]);
   });
