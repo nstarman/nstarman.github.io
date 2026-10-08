@@ -55,6 +55,11 @@
       "url": "https://github.com/xggs-dev/potamides"
     }
   ],
+  "refs": [
+    "potamides",
+    "galax",
+    "unxt"
+  ],
   "tags": [
     "streams",
     "jax",

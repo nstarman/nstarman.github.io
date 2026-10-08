@@ -1140,6 +1140,11 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   padding:.08em .4em; white-space:nowrap; transition:color .15s, background-color .15s}
 .inline-card:hover,.inline-card:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
 
+/* Under a topic's carousel: the packages its papers used, as inline-cards. */
+.hl-software{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:.9rem 0 0}
+.hl-software ul{display:flex; flex-wrap:wrap; gap:.4rem .5rem; list-style:none; margin:0; padding:0}
+.hl-software-head{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-mute)}
+
 /* ---------- publications: topic menu, and the mobile author fold ---------- */
 .ttlgroup{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap}
 .tagmenu{position:relative}

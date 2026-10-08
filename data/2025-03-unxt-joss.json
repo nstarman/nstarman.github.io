@@ -57,7 +57,8 @@
     }
   ],
   "refs": [
-    "unxt"
+    "unxt",
+    "quax"
   ],
   "tags": [
     "jax",

@@ -42,6 +42,9 @@
       "url": "https://github.com/GalacticDynamics/phasecurvefit"
     }
   ],
+  "refs": [
+    "phasecurvefit"
+  ],
   "tags": [
     "software"
   ],

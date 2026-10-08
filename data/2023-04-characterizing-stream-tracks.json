@@ -75,6 +75,9 @@
       "url": "https://zenodo.org/record/7265571"
     }
   ],
+  "refs": [
+    "trackstream"
+  ],
   "tags": [
     "streams",
     "dynamics"

@@ -46,6 +46,11 @@
       "url": "https://github.com/charlottemyers/galactoPINNs"
     }
   ],
+  "refs": [
+    "galactopinns",
+    "galax",
+    "unxt"
+  ],
   "tags": [
     "machine-learning",
     "dynamics"

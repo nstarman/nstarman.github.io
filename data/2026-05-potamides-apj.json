@@ -52,6 +52,12 @@
   "venue": {
     "journal": "The Astrophysical Journal"
   },
+  "refs": [
+    "potamides",
+    "galax",
+    "coordinax",
+    "unxt"
+  ],
   "arxiv": "2605.07809",
   "bibcode": "2026arXiv260507809W",
   "tags": [
