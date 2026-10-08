@@ -1,0 +1,33 @@
+---
+// /tools/ — tools and packages with repos of their own. Each publishes its
+// GitHub Pages site under this domain, at /<repo>/, so it looks like part of
+// this site without being built by it; this page is how anyone finds them.
+// Links are absolute: the pages are not in this build, so a site-absolute
+// href would fail test:links and 404 under `astro dev`.
+import Base from '../../layouts/Base.astro';
+
+const tools = [
+  {
+    href: 'https://nstarkman.space/boundinstance/',
+    name: 'boundinstance',
+    text: 'Weakref-based instance descriptors.',
+  },
+];
+---
+<Base title="Tools — Nathaniel Starkman" description="Tools and packages hosted in their own repositories, under nstarkman.space.">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="h2row"><h2>Tools</h2></div>
+        <div class="soft">
+          {tools.map((t) => (
+            <a class="card toolcard" href={t.href}>
+              <span class="name">{t.name}</span>
+              <p>{t.text}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>

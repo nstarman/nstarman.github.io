@@ -55,12 +55,12 @@ nav ul a{
   color:var(--ink-mute);
 }
 nav ul a:hover{color:var(--accent); text-decoration:none}
-/* Long labels blow out the bar on a phone, so Publications and Software fall
+/* Long labels blow out the bar on a phone, so the links with a mark fall
    back to their mark. The word stays in the DOM, clipped, so the link keeps
-   its name for screen readers. From 36rem, where the bar's tightened spacing
+   its name for screen readers. From 39rem, where the bar's tightened spacing
    (below) no longer fits every word. */
 .navico{display:none; width:.875rem; height:.875rem; fill:currentColor}
-@media (max-width:36rem){
+@media (max-width:39rem){
   nav ul a:has(.navico){display:flex; align-items:center; min-height:24px}
   .navico{display:block}
   a:has(> .navico) .navtext{position:absolute; width:1px; height:1px; margin:-1px;
@@ -715,23 +715,25 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .toolsback{display:flex; justify-content:flex-end; align-items:flex-start; height:0; position:relative; top:.6rem; font-family:var(--mono); font-size:.72rem}
 
 /* The bar is one line of fixed height, so it must never wrap: its name,
-   links and theme toggle want about 40rem. Below 41rem its spacing tightens,
-   every word kept; below 36rem Publications and Software fall back to their
-   mark (above) and Home drops — the name already goes home, so Home is a
-   second copy of the same link; and below 22rem, a small phone, the name
-   and the links' padding shrink a little. */
-@media (max-width:41rem){
+   links and theme toggle want about 44rem. Below 44.5rem its spacing tightens,
+   every word kept; below 39rem Research, Publications, Software and Tools
+   fall back to their mark (above) and Home drops — the name already goes
+   home, so Home is a second copy of the same link; and below 23.5rem, a small
+   phone, the name, the links' padding and the bar's own shrink. Each
+   breakpoint sits just past where the wider layout stops fitting. */
+@media (max-width:44.5rem){
   nav .wrap{padding-inline:1rem; gap:.25rem}
   nav ul{gap:.1rem}
   nav ul li a{padding-inline:.35rem}
   .themetoggle{margin-left:0}
 }
-@media (max-width:36rem){
+@media (max-width:39rem){
   nav ul li:first-child{display:none}
 }
-@media (max-width:22rem){
+@media (max-width:23.5rem){
+  nav .wrap{padding-inline:.75rem}
   nav .who{font-size:1.05rem}
-  nav ul li a{padding-inline:.25rem}
+  nav ul li a{padding-inline:.15rem}
 }
 
 @media (max-width:34rem){
