@@ -1,0 +1,54 @@
+---
+// /webdev/tiers/ — every package by its `tier`, in the order /software/ draws
+// them: a check on the data, not a page to show.
+import Base from '../../layouts/Base.astro';
+import { byType } from '../../lib/data.js';
+
+const TIERS = [
+  { tier: 'lead', text: 'The lead package, a card across the page.' },
+  { tier: 'headline', text: 'Cards, by order and then newest first.' },
+  { tier: 'other', text: 'Compact cards, A–Z.' },
+  { tier: 'useful', text: 'Small cards, not research software, A–Z.' },
+];
+const all = byType('software');
+const inTier = (tier) => {
+  const s = all.filter((i) => i.tier === tier);
+  return tier === 'headline'
+    ? s.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    : s.sort((a, b) => a.title.localeCompare(b.title));
+};
+---
+<Base title="Software Tiers — Nathaniel Starkman" description="Each package on nstarkman.space and the tier it is listed in.">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="h2row"><h2>Software Tiers</h2></div>
+        <p class="lede">Each of the {all.length} packages and the <code>tier</code> that places it on <a href="/software/">/software/</a>.</p>
+        {TIERS.map(({ tier, text }) => {
+          const list = inTier(tier);
+          return (
+            <>
+              <h3 id={`tier-${tier}`}><code>{tier}</code> <span class="cvcount">{list.length}</span></h3>
+              <p>{text}</p>
+              <ol class="tierlist">
+                {list.map((s) => (
+                  <li>
+                    <a href={`/software/#sw-${s.id}`}>{s.title}</a>
+                    {s.order != null && <span class="tier-meta"> order {s.order}</span>}
+                    {s.repo && <span class="tier-meta"> · <a href={`https://github.com/${s.repo}`}>{s.repo}</a></span>}
+                  </li>
+                ))}
+              </ol>
+            </>
+          );
+        })}
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .tierlist { margin: 0 0 1.5em; padding-left: 1.5em; }
+  .tierlist li { margin: 0.2em 0; }
+  .tier-meta { color: var(--ink-mute); font-size: 0.9em; }
+</style>
