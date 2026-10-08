@@ -3,6 +3,7 @@
   "id": "galactic-dynamics-interoperability",
   "type": "software",
   "tier": "useful",
+  "group": "dynamics",
   "cvs": [],
   "date": {
     "start": "2024-07",

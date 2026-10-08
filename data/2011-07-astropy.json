@@ -40,5 +40,6 @@
     "astropy",
     "open-source"
   ],
-  "tier": "lead"
+  "tier": "lead",
+  "group": "astropy"
 }

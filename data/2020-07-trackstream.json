@@ -3,6 +3,7 @@
   "id": "trackstream",
   "type": "software",
   "tier": "other",
+  "group": "dynamics",
   "cvs": [],
   "date": {
     "start": "2020-07",

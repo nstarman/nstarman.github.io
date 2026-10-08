@@ -3,6 +3,7 @@
   "id": "oncequinox",
   "type": "software",
   "tier": "useful",
+  "group": "jax",
   "cvs": [],
   "date": {
     "start": "2025-10",

@@ -108,6 +108,19 @@ export const HIGHLIGHT_TOPICS = [
   ]],
 ];
 
+/**
+ * The areas of /software/, in order: [group, heading, introduction]. A
+ * package's `group` puts it in one; its `tier` sets its card's size there. The
+ * introduction may carry [text](url), as an item's `details` does.
+ */
+export const SOFTWARE_GROUPS = [
+  ['astropy', 'Astropy', 'The community core package for astronomy in Python, and cosmology.api, a standard interface for cosmology libraries.'],
+  ['jax', 'The JAX Stack', 'Physics in JAX, built in layers: quax lets custom array types through JAX, unxt adds units, coordinax vectors and frames, and galax orbits and potentials — each differentiable and GPU-ready.'],
+  ['dynamics', 'Stellar Streams & Potentials', 'Measuring stellar streams and the gravitational potentials they trace, most of it built on the JAX stack.'],
+  ['dark-matter', 'Dark Matter', 'The code behind searching thunderstorms for macroscopic dark matter.'],
+  ['utilities', 'Utilities', 'Small, general-purpose packages that fell out of the work above.'],
+];
+
 /** "Nathaniel" -> "N."; "Adrian M." -> "A. M."  */
 function initials(given) {
   return given

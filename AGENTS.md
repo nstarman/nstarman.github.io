@@ -114,7 +114,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `type` | also required | also accepted |
 |---|---|---|
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
-| `software` | — | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
+| `software` | `tier`, `group` | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `role`, `location`, `groupRoles` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder` |
@@ -138,6 +138,13 @@ grouping off per section.
 from *Small Grants* and *Travel Awards*. `type` × `tier` gives those four
 buckets, and `config/presets.json` maps each to a heading. A fellowship is
 funding, so it is a `grant`; an `award` is an honour or a prize.
+
+**`group`** on a `software` item is its area on `/software/` — `astropy`,
+`jax`, `dynamics`, `dark-matter` or `utilities`. The areas' headings, order and
+one-line introductions are `SOFTWARE_GROUPS` in `src/lib/data.js`; a new area
+is a schema change plus a line there. Within an area, `tier` sets the card:
+`lead` (one package, the largest), then `headline`, `other` and `useful`, each
+smaller.
 
 **`presentation`** covers everything that used to be split across "Invited
 Talks", "Selected Presentations" and "Conferences & Workshops" — `kind` carries

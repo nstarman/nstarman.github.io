@@ -162,21 +162,13 @@ h2{
 
 /* ---------- software ---------- */
 /* The lead package: its card ("Software — the lead package" in
-   SITE_PRESETS) and, below it, the
-   first tier divider. */
-.lead{margin-bottom:2rem; position:relative}
-/* The divider now sits in the gap below the box rather than inside its tint. */
-/* The lead's underline is the first of the tier dividers, not decoration: it
-   marks the boundary between the lead and the tier below it, and matches
-   .tierbreak's 32% width so a page of them reads as one series. On the home
-   page there are no tiers below — the section stops after the headline grid —
-   so the rule was one hairline floating in a gap, separating the last thing
-   from nothing. */
-.lead::after{
-  content:""; position:absolute; bottom:-1.05rem; left:50%; transform:translateX(-50%);
-  width:32%; height:1px; background:var(--ink-faint); opacity:.24;
-}
-.lead--last::after{content:none}
+   SITE_PRESETS). On /software/ the areas' headings separate what follows, and
+   on the home page nothing does, so it carries no divider of its own. */
+.lead{margin-bottom:.7rem}
+/* An area's grid holds every tier: each row as tall as its own tallest card,
+   not the grid's, so a row of small cards stays small. */
+.soft.soft--area{grid-auto-rows:auto}
+.hl-intro.sw-intro{margin-bottom:.9rem}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath
    stayed three-up. auto-fill keeps the tracks, so a card is the same width
@@ -780,11 +772,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .contrib-desc{
   color:var(--ink-mute); font-size:.76rem;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
-}
-
-.tierbreak{
-  height:1px; width:32%; margin:1.4rem auto 1.2rem;
-  background:var(--ink-faint); opacity:.24;
 }
 
 /* Software tier 3: the long tail. Same card, three across instead of two, and

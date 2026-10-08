@@ -43,6 +43,7 @@
     "units"
   ],
   "tier": "headline",
+  "group": "jax",
   "refs": [
     "unxt-joss"
   ]
