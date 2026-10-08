@@ -117,8 +117,8 @@ export const SOFTWARE_GROUPS = [
   ['astropy', 'Astropy', 'The community core package for astronomy in Python, and cosmology.api, a standard interface for cosmology libraries.'],
   ['foundations', 'Foundations: Arrays, Units & Coordinates', 'The layers the rest is built on, in JAX: quax lets custom array types through JAX’s primitives, with plum’s multiple dispatch beneath it; unxt adds units, and coordinax vectors, frames and transformations.'],
   ['dynamics', 'Galactic Dynamics & Streams', 'Orbits, potentials and the stellar streams that trace them: galax integrates orbits and generates streams, and the rest measure streams and learn potentials — most of it in JAX, on the foundations above.'],
+  ['dark-matter', 'Dark Matter Direct Detection', 'The code behind searching thunderstorms for macroscopic dark matter.'],
   ['numerics', 'Numerics', 'Numerical pieces JAX was missing: extras for Diffrax, scipy.special, bounded loops and kernel density estimates.'],
-  ['dark-matter', 'Dark Matter', 'The code behind searching thunderstorms for macroscopic dark matter.'],
   ['utilities', 'Utilities', 'Small, general-purpose packages that fell out of the work above.'],
 ];
 

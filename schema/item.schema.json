@@ -264,8 +264,8 @@
               "astropy",
               "foundations",
               "dynamics",
-              "numerics",
               "dark-matter",
+              "numerics",
               "utilities"
             ]
           },

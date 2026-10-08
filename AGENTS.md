@@ -141,7 +141,7 @@ funding, so it is a `grant`; an `award` is an honour or a prize.
 
 **`group`** on a `software` item is its area on `/software/`, by what it is
 for rather than what it is written in — `astropy`, `foundations`, `dynamics`,
-`numerics`, `dark-matter` or `utilities`. The areas' headings, order and
+`dark-matter`, `numerics` or `utilities`. The areas' headings, order and
 one-line introductions are `SOFTWARE_GROUPS` in `src/lib/data.js`; a new area
 is a schema change plus a line there. Within an area, `tier` sets the card:
 `lead` (one package, the largest), then `headline`, `other` and `useful`, each
