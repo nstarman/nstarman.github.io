@@ -165,9 +165,16 @@ h2{
    SITE_PRESETS). On /software/ the areas' headings separate what follows, and
    on the home page nothing does, so it carries no divider of its own. */
 .lead{margin-bottom:.7rem}
-/* An area's grid holds every tier: each row as tall as its own tallest card,
-   not the grid's, so a row of small cards stays small. */
-.soft.soft--area{grid-auto-rows:auto}
+/* An area's tiers, a grid each, run on as one list. */
+.soft + .soft{margin-top:.7rem}
+/* A tier's cards are one size on the whole page, whatever area they are in:
+   its rows are at least as tall as its tallest card at full width, measured —
+   potamides; cosmology.api; zeroth, its summary on two lines. A row still
+   grows for a card that needs more (galactic_dynamics_interoperability's name
+   wraps) rather than clip it. Re-measure if a tier gains a longer card. */
+.soft.soft--headline{grid-auto-rows:minmax(13.6rem, auto)}
+.soft.soft--other{grid-auto-rows:minmax(7.2rem, auto)}
+.soft.soft--useful{grid-auto-rows:minmax(6.5rem, auto)}
 .hl-intro.sw-intro{margin-bottom:.9rem}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath

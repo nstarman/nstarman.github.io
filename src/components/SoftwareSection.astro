@@ -59,15 +59,26 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
         <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
       </div>
     )}
-    {/* One grid for the area, its tiers in order: a card's preset says which
-        tier it is in, and no tier is left a row to itself. */}
-    <div class:list={['soft', 'soft--area', emptied(g.items.filter((s) => s !== lead))]}>
-      {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
-      {byTitle(g.items, 'other').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
-      {/* Things worth having that are not research software: smaller cards
-          again, because they are useful rather than notable. */}
-      {byTitle(g.items, 'useful').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
-    </div>
+    {/* A grid per tier, so a card is only ever beside its own tier — and a
+        tier's rows are one height on the whole page (soft--<tier>), so its
+        cards are one size whatever area they are in. */}
+    {headliners(g.items).length > 0 && (
+      <div class:list={['soft', 'soft--headline', emptied(headliners(g.items))]}>
+        {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
+      </div>
+    )}
+    {byTitle(g.items, 'other').length > 0 && (
+      <div class:list={['soft', 'soft--other', emptied(byTitle(g.items, 'other'))]}>
+        {byTitle(g.items, 'other').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
+      </div>
+    )}
+    {/* Things worth having that are not research software: smaller cards
+        again, because they are useful rather than notable. */}
+    {byTitle(g.items, 'useful').length > 0 && (
+      <div class:list={['soft', 'soft--useful', emptied(byTitle(g.items, 'useful'))]}>
+        {byTitle(g.items, 'useful').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
+      </div>
+    )}
   </>
 ))}
 
