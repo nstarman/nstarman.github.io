@@ -1,5 +1,5 @@
-// The Card Builder, as a module: everything /tools/card/ does apart from its
-// markup, which is src/pages/tools/card.astro, and its stylesheets,
+// The Card Builder, as a module: everything /webdev/card/ does apart from its
+// markup, which is src/pages/webdev/card.astro, and its stylesheets,
 // src/styles/card-builder.css (the page) and card-builder-preview.css (injected
 // into the preview frame).
 //

@@ -6,6 +6,13 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://nstarkman.space',
   build: { format: 'directory' },
-  // Tools that moved; old links still land.
-  redirects: { '/cv/builder': '/tools/cv/', '/tools/embed': '/tools/card/' },
+  // Pages that moved; old links still land. /tools/ became /webdev/, freeing it
+  // for the list of tools hosted in their own repos.
+  redirects: {
+    '/cv/builder': '/webdev/cv/',
+    '/tools/embed': '/webdev/card/',
+    '/tools/cv': '/webdev/cv/',
+    '/tools/card': '/webdev/card/',
+    '/tools': '/webdev/',
+  },
 });

@@ -15,8 +15,8 @@ const nav = [
 // Which nav entry the current URL belongs to. Prefix matching, so /cv/2page/
 // still marks CV; "/" has to be exact or it would match all.
 const here = Astro.url.pathname.replace(/\/+$/, '') || '/';
-// A page under /tools/, but not the list of tools itself.
-const inTool = here.startsWith('/tools/');
+// A page under /webdev/, but not the list of them itself.
+const inTool = here.startsWith('/webdev/');
 const isCurrent = (href) => {
   const base = href.replace(/\/+$/, '') || '/';
   return base === '/' ? here === '/' : here === base || here.startsWith(`${base}/`);
@@ -87,10 +87,10 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
       </div>
     </nav>
 
-    {/* A tool's way back to the list of tools, under the nav's right end —
+    {/* A web-dev tool's way back to their list, under the nav's right end —
         the tools are not in the nav, so nothing up there would lead back. */}
     {inTool && (
-      <div class="wrap toolsback"><a href="/tools/" class="toolsbtn">Tools</a></div>
+      <div class="wrap toolsback"><a href="/webdev/" class="toolsbtn">Web Dev</a></div>
     )}
 
     <slot />
@@ -102,8 +102,8 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
             visitor who goes looking, so they live down here rather than in
             the nav. */}
         <span class="footmeta">
-          <a href="/tools/" class:list={['toolsbtn', isCurrent('/tools/') && 'on']}
-             aria-current={isCurrent('/tools/') ? 'page' : undefined}>Tools</a>
+          <a href="/webdev/" class:list={['toolsbtn', isCurrent('/webdev/') && 'on']}
+             aria-current={isCurrent('/webdev/') ? 'page' : undefined}>Web Dev</a>
           <span class="sep" aria-hidden="true">|</span>
           <a href="https://github.com/nstarman/nstarman.github.io/commits/main">Last updated <time datetime={updated}>{updatedLabel}</time></a>
         </span>

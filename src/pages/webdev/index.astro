@@ -1,26 +1,26 @@
 ---
-// /tools/ — the things built on the database rather than shown from it. Out of
+// /webdev/ — the things built on the database rather than shown from it. Out of
 // the nav on purpose: reached from the footer.
 import Base from '../../layouts/Base.astro';
 
 const tools = [
   {
-    href: '/tools/cv/',
+    href: '/webdev/cv/',
     name: 'CV Builder',
     text: 'The complete CV with a tick box on every entry and line. Choose what goes in, then compile your own PDF in the browser.',
   },
   {
-    href: '/tools/card/',
+    href: '/webdev/card/',
     name: 'Card Builder',
     text: 'Any card on this site, for another page: an iframe that stays current, or an image for places that strip iframes, such as a GitHub README.',
   },
 ];
 ---
-<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database.">
+<Base title="Web Dev — Nathaniel Starkman" description="Tools built on the nstarkman.space database.">
   <main>
     <section>
       <div class="wrap">
-        <div class="h2row"><h2>Tools</h2></div>
+        <div class="h2row"><h2>Web Dev</h2></div>
         <div class="soft">
           {tools.map((t) => (
             /* The whole card is the link: it is the only thing to do with it. */

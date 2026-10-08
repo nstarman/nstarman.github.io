@@ -269,7 +269,7 @@ which show, so one static page serves every combination. `/embed/index.json`
 lists the items and presets; `/embed/resize.js` sizes card iframes to fit.
 Like an `id`, these URLs must not move once published.
 
-`/tools/card/` — under Tools, in the footer — is the point-and-click way in.
+`/webdev/card/` — under Web Dev, in the footer — is the point-and-click way in.
 It also draws the images, in the browser, from the live preview: nothing is
 rendered at build time, so any combination can be had as a file. One
 measurement, `src/lib/cardpdf.js` — every box, figure, icon and line of text where
@@ -282,7 +282,7 @@ the CV builder uses) sets it again in the same faces, its text selectable and it
 links live. The layout stays the CSS's alone, so a new axis needs nothing in any
 of them.
 
-The page `src/pages/tools/card.astro` is markup and thin wiring; the builder is
+The page `src/pages/webdev/card.astro` is markup and thin wiring; the builder is
 a module, `src/lib/cardbuilder/`, whose `index.js` lists its public API and
 what each file is for. `model.js` (the controls ⇄ a name), `geometry.js`,
 `settings.js` and `facts.js` are pure and tested in `tests/cardbuilder.test.js`;
