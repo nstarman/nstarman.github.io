@@ -3,6 +3,7 @@
   "id": "phasecurvefit",
   "type": "software",
   "tier": "headline",
+  "order": 2,
   "cvs": [
     "np",
     "2page",
