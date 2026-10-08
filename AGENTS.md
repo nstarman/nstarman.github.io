@@ -475,7 +475,22 @@ must not take the name of a path here: `webdev`, `cv`, `embed`, `cards`,
 `research`, `publications`, `software`, `tools`.
 
 Such a repo looks like this site by using its layout. It adds this repo as a
-git submodule at `site/`, and its pages wrap themselves in `Base.astro`:
+git submodule at `site/` — shallow, and checked out to the three files it
+uses, so it carries one commit of about 4 MB rather than the whole site:
+
+```bash
+git submodule add --depth 1 https://github.com/nstarman/nstarman.github.io site
+git config -f .gitmodules submodule.site.shallow true
+git -C site sparse-checkout set --no-cone \
+  /src/layouts/Base.astro /src/components/IconSprite.astro /src/styles/global.css
+```
+
+`shallow` is committed, in `.gitmodules`; the sparse checkout is not, so a
+fresh clone repeats that last line after `git clone --recurse-submodules`.
+CI needs neither: `actions/checkout` with `submodules: true` fetches one
+commit already, and the build reads only those three files.
+
+Its pages wrap themselves in `Base.astro`:
 
 ```astro
 ---
