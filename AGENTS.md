@@ -466,6 +466,37 @@ the pull request instead of leaving it green with nothing run.
   Copy the title exactly — it is `U+267E U+FE0F & U+27A1`, and an emoji that
   merely looks the same will not match.
 
+## Sites hosted in their own repos
+
+Any repo under `nstarman/` that publishes to GitHub Pages from Actions appears
+at `nstarkman.space/<repo>/`, laid onto this site without this site building
+it — a package's docs, a skill collection, a tool run in the browser. So a repo
+must not take the name of a path here: `webdev`, `cv`, `embed`, `cards`,
+`research`, `publications`, `software`, `tools`.
+
+Such a repo looks like this site by using its layout. It adds this repo as a
+git submodule at `site/`, and its pages wrap themselves in `Base.astro`:
+
+```astro
+---
+import Base from '../../site/src/layouts/Base.astro';
+---
+<Base title="Skills — Nathaniel Starkman" section="/software/" repo="nstarman/skills">
+  <main>…</main>
+</Base>
+```
+
+`section` marks its nav entry; `repo` is where "Last updated" links. Its
+`astro.config.mjs` sets `site: 'https://nstarkman.space'` and `base: '/<repo>'`.
+Dependabot (`package-ecosystem: gitsubmodule`) proposes each change to this
+site's design as a pull request there. `Base.astro` imports only its stylesheet
+and icons and links site-absolute, so it works from the submodule;
+`tests/base-hosted.test.js` holds it to that.
+
+It is found from here as any software is: a `software` item in `data/`, its
+page linked with an absolute `https://nstarkman.space/<repo>/` URL — a
+site-absolute one fails `test:links`, since the page is not in this build.
+
 ## Do not
 
 - **Do not** edit `README.md` in [nstarman/nstarman] by hand — it is generated.

@@ -4,7 +4,19 @@
 import '../styles/global.css';
 import IconSprite from '../components/IconSprite.astro';
 
-const { title, description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.' } = Astro.props;
+// Base is also the layout of the sites hosted in repos of their own and
+// published under this domain, at /<repo>/, which import it from a submodule
+// of this repo. So it imports only its stylesheet and icons — a test holds it
+// to that — and every href is site-absolute, so that under such a site's
+// `base`, /research/ still reaches this one. Its pages pass `section`, the nav
+// entry they belong to ('/software/'), and `repo`, whose commits "Last
+// updated" links to.
+const {
+  title,
+  description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.',
+  section,
+  repo = 'nstarman/nstarman.github.io',
+} = Astro.props;
 const nav = [
   { href: '/', label: 'Home' },
   { href: '/research/', label: 'Research', icon: 'i-telescope' },
@@ -14,7 +26,7 @@ const nav = [
 ];
 // Which nav entry the current URL belongs to. Prefix matching, so /cv/2page/
 // still marks CV; "/" has to be exact or it would match all.
-const here = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const here = (section ?? Astro.url.pathname).replace(/\/+$/, '') || '/';
 // A page under /webdev/, but not the list of them itself.
 const inTool = here.startsWith('/webdev/');
 const isCurrent = (href) => {
@@ -105,7 +117,7 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
           <a href="/webdev/" class:list={['toolsbtn', isCurrent('/webdev/') && 'on']}
              aria-current={isCurrent('/webdev/') ? 'page' : undefined}>Web Dev</a>
           <span class="sep" aria-hidden="true">|</span>
-          <a href="https://github.com/nstarman/nstarman.github.io/commits/main">Last updated <time datetime={updated}>{updatedLabel}</time></a>
+          <a href={`https://github.com/${repo}/commits/main`}>Last updated <time datetime={updated}>{updatedLabel}</time></a>
         </span>
       </div>
     </footer>
