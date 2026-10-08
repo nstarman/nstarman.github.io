@@ -875,6 +875,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
   .entry--full .body{display:contents}
   .entry--full .btns--icon{flex-direction:row; margin-top:.5rem}
   .entry--full .body > :is(.card, .absmore){order:1}
+  .entry--full .body > .swrow{order:1}
 }
 /* ADS and arXiv on the publications page, same pills as the home page. */
 .pubprofiles{display:flex; align-items:center; gap:.5rem}
@@ -891,6 +892,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .entry--full .abstract{color:var(--ink-2)}
 
 .absmore{margin-top:.45rem}
+.entry--full .swrow{margin-top:.6rem}
 /* A publication's highlight and its proceedings sit just under it. */
 .entry--full .body > .card{margin-top:.6rem}
 .absmore summary{
@@ -1139,6 +1141,12 @@ nav ul a.on:hover{color:var(--accent); border-color:var(--accent)}
   background:color-mix(in srgb, var(--ink) 6%, transparent); border-radius:6px;
   padding:.08em .4em; white-space:nowrap; transition:color .15s, background-color .15s}
 .inline-card:hover,.inline-card:focus-visible{color:var(--accent); background:var(--accent-soft); text-decoration:none}
+
+/* The packages a paper used, as inline-cards: under a topic's carousel on
+   /research/, and under a paper's card on /publications/. */
+.swrow{display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem .6rem; margin:.9rem 0 0}
+.swrow ul{display:flex; flex-wrap:wrap; gap:.4rem .5rem; list-style:none; margin:0; padding:0}
+.swrow-head{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-mute)}
 
 /* ---------- publications: topic menu, and the mobile author fold ---------- */
 .ttlgroup{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap}

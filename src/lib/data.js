@@ -197,6 +197,25 @@ export function softwarePapers(sw) {
   return out.sort((a, b) => (a.year ?? '9999').localeCompare(b.year ?? '9999'));
 }
 
+/**
+ * The packages of mine a set of papers used, most-used first.
+ *
+ * The other direction from softwarePapers: a paper's `refs` name the packages
+ * it used, read from its software section, so /research/ can list a topic's
+ * software under its papers. A package's own paper refs it too (`unxt-joss`
+ * refs `unxt`), which is the use it was written for.
+ */
+export function softwareUsed(papers) {
+  const n = new Map();
+  for (const p of papers) {
+    for (const id of p.refs ?? []) {
+      const s = resolve(id);
+      if (s?.type === 'software') n.set(s, (n.get(s) ?? 0) + 1);
+    }
+  }
+  return [...n].sort((a, b) => b[1] - a[1] || a[0].title.localeCompare(b[0].title)).map(([s]) => s);
+}
+
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */
 const orcidUrl = (orcid) => (orcid ? `https://orcid.org/${orcid}` : null);
 

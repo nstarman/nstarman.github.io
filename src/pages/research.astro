@@ -1,10 +1,11 @@
 ---
-import { PRESET, embedHref as mainHref } from '../lib/cards.js';
+import { PRESET, embedHref as mainHref, siteHref } from '../lib/cards.js';
 import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import Card from '../components/Card.astro';
-import { byType, resolve, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
+import SoftwareRow from '../components/SoftwareRow.astro';
+import { byType, resolve, softwareUsed, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { spans } from '../lib/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
@@ -15,7 +16,8 @@ const anchor = (id) => `hl-${id}`;
 // A topic with no card yet is skipped.
 const groups = HIGHLIGHT_TOPICS
   .map(([key, label, intro]) => ({ key, label, intro, items: highlights.filter((i) => i.highlight.topic === key) }))
-  .filter((g) => g.items.length > 0);
+  .filter((g) => g.items.length > 0)
+  .map((g) => ({ ...g, software: softwareUsed(g.items) }));
 
 
 // An intro's `[](item:id)` becomes that paper's inline-card. A typo fails the
@@ -24,6 +26,8 @@ const inlineCard = (s) => {
   const p = resolve(s.item);
   if (!p) throw new Error(`research highlights: [](item:${s.item}) names no item`);
   const name = s.t || titleOf(p, 'nick');
+  // A package's card is on /software/, not here, whatever its highlight says.
+  if (p.type === 'software') return { name, href: siteHref(p) };
   return { name, href: p.highlight ? `#${anchor(p.id)}` : mainHref(p) };
 };
 ---
@@ -65,6 +69,8 @@ const inlineCard = (s) => {
             {g.items.map((item) => <Card item={item} preset={PRESET.carousel} id={anchor(item.id)} heading="h5" />)}
           </div>
           </div>
+          {/* The packages these papers used. */}
+          <SoftwareRow items={g.software} id={`hl-sw-${g.key}`} />
           </>)}
         </>}
 

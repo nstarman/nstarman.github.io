@@ -9,6 +9,7 @@ import {
   authorPosition,
   venueUrl,
   softwarePapers,
+  softwareUsed,
   displayName,
   authors,
   venueLine,
@@ -259,6 +260,19 @@ describe('venueUrl', () => {
       .filter((p) => p.status === 'published' && (p.venue?.journal || p.venue?.booktitle))
       .filter((p) => !venueUrl(p));
     expect(missing.map((p) => p.id)).toEqual([]);
+  });
+});
+
+describe('softwareUsed', () => {
+  it('lists the packages the papers used, most-used first', () => {
+    const used = softwareUsed(['potamides-apj', 'pinns-mnras'].map(resolve)).map((s) => s.id);
+    // galax and unxt in both; potamides, coordinax and galactoPINNs in one.
+    expect(used.slice(0, 2)).toEqual(['galax', 'unxt']);
+    expect(new Set(used)).toEqual(new Set(['galax', 'unxt', 'potamides', 'coordinax', 'galactopinns']));
+  });
+
+  it('skips a ref that is not software', () => {
+    expect(softwareUsed([{ refs: ['potamides-apj'] }, {}])).toEqual([]);
   });
 });
 

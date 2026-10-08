@@ -1,12 +1,13 @@
 ---
 // One publication, as /publications/ lists it.
 import { PRESET } from '../lib/cards.js';
-import { authors, venueLine, year, links, authorPosition } from '../lib/data.js';
+import { authors, venueLine, year, links, authorPosition, softwareUsed } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
 import LinkIcons from './LinkIcons.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 import Card from './Card.astro';
+import SoftwareRow from './SoftwareRow.astro';
 
 const { item, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
 
@@ -50,6 +51,9 @@ const pos = authorPosition(item);
       <Card item={item} preset={PRESET.paperHighlight}
             id={`hl-${item.id}`} />
     )}
+
+    {/* The packages of mine it used, read from its software section. */}
+    {abstract && <SoftwareRow items={softwareUsed([item])} id={`pub-sw-${item.id}`} />}
 
     {abstract && item.abstract && (
       <details class="absmore">

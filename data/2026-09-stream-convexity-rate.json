@@ -46,6 +46,13 @@
       "orcid": "0000-0003-2806-1414"
     }
   ],
+  "refs": [
+    "potamides",
+    "phasecurvefit",
+    "galax",
+    "coordinax",
+    "unxt"
+  ],
   "tags": [
     "extragalactic",
     "streams",

@@ -57,6 +57,9 @@
       "url": "https://zenodo.org/record/8400583"
     }
   ],
+  "refs": [
+    "cosmology-api"
+  ],
   "tags": [
     "cmb",
     "cosmology"

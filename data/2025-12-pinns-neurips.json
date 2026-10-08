@@ -45,6 +45,9 @@
       "url": "https://github.com/charlottemyers/galactoPINNs"
     }
   ],
+  "refs": [
+    "galactopinns"
+  ],
   "tags": [
     "machine-learning",
     "dynamics"
