@@ -615,7 +615,8 @@ describe('the grammar, at its edges', () => {
       const once = formatName(spec);
       expect(formatName(parseName(once)), once).toBe(once);
     }
-  });
+    // Under 1 s alone, but over 3 s with the machine busy: past vitest's 5 s default.
+  }, 20_000);
   it('sets a short last row at the right from the last part listed among the buttons', () => {
     const it0 = items.find((i) => i.type === 'publication' && linkKeys(i).length >= 3 && cardFacts(i).year);
     const keys = linkKeys(it0).slice(0, 3);
