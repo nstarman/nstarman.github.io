@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import Card from '../components/Card.astro';
+import SoftwareRow from '../components/SoftwareRow.astro';
 import { byType, resolve, softwareUsed, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { spans } from '../lib/inline.js';
 
@@ -68,15 +69,8 @@ const inlineCard = (s) => {
             {g.items.map((item) => <Card item={item} preset={PRESET.carousel} id={anchor(item.id)} heading="h5" />)}
           </div>
           </div>
-          {/* The packages these papers used, each to its card on /software/. */}
-          {g.software.length > 0 && (
-            <div class="hl-software">
-              <span class="hl-software-head" id={`hl-sw-${g.key}`}>Software</span>
-              <ul aria-labelledby={`hl-sw-${g.key}`}>
-                {g.software.map((s) => <li><a class="inline-card" href={siteHref(s)}>{s.title}</a></li>)}
-              </ul>
-            </div>
-          )}
+          {/* The packages these papers used. */}
+          <SoftwareRow items={g.software} id={`hl-sw-${g.key}`} />
           </>)}
         </>}
 
