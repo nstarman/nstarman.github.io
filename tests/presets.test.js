@@ -63,6 +63,16 @@ describe('resolve', () => {
     expect(sw.items.length + sw.dropped).toBe(all);
   });
 
+  it('orders software by tier, so the lead package starts', () => {
+    const tiers = ['lead', 'headline', 'other', 'useful'];
+    for (const name of ['complete', 'np', '1page']) {
+      const sw = resolve(name).sections.find((s) => s.id === 'software').items;
+      expect(sw[0].id).toBe('astropy');
+      const ranks = sw.map((i) => tiers.indexOf(i.tier));
+      expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
+    }
+  });
+
   it('narrows to an explicit id list, for the builder', () => {
     const only = new Set(['mit-postdoc']);
     const picked = resolve('complete', only).sections.flatMap((s) => s.items);

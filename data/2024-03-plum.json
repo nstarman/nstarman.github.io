@@ -3,7 +3,8 @@
   "id": "plum",
   "type": "software",
   "cvs": [
-    "np"
+    "np",
+    "2page"
   ],
   "featured": true,
   "date": {

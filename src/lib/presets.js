@@ -52,6 +52,11 @@ export function preset(name) {
  */
 const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.length : i; };
 
+// `"sort": "tier"` orders a section by the tiers /software/ uses: lead, headline, other,
+// useful, and by `order` within a tier. Stable, so ties stay newest-first.
+const TIERS = ['lead', 'headline', 'other', 'useful'];
+const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
+
 export function resolve(name, only, { prefix = {}, order = [] } = {}) {
   const spec = preset(name);
 
@@ -89,7 +94,10 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
     // is showing all of it.
     const whole = items.filter((i) => matches(i, section.match)).length;
 
-    // `items` is already newest-first, so a limit keeps the most recent.
+    if (section.sort === 'tier') picked = picked.sort(byTier);
+
+    // `items` is already newest-first, so a limit keeps the most recent —
+    // or, sorted by tier, the most prominent.
     if (section.limit) picked = picked.slice(0, section.limit);
     const dropped = whole - picked.length;
 

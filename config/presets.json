@@ -54,6 +54,7 @@
         "type": "software"
       },
       "layout": "grid",
+      "sort": "tier",
       "page": "/software/"
     },
     "talks-invited": {
@@ -208,7 +209,7 @@
       },
       {
         "id": "software",
-        "limit": 7,
+        "limit": 8,
         "columns": 4
       },
       {

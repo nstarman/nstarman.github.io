@@ -4,7 +4,9 @@
   "type": "software",
   "tier": "other",
   "group": "dynamics",
-  "cvs": [],
+  "cvs": [
+    "np"
+  ],
   "date": {
     "start": "2025-11",
     "present": true
