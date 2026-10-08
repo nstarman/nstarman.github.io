@@ -198,7 +198,9 @@ export function softwarePapers(sw) {
 }
 
 /**
- * The packages of mine a set of papers used, most-used first.
+ * The packages of mine a set of papers used, most-used first, and otherwise
+ * in the order the papers name them — a paper names its main package first,
+ * so for one paper that leads.
  *
  * The other direction from softwarePapers: a paper's `refs` name the packages
  * it used, read from its software section, so /research/ can list a topic's
@@ -213,7 +215,8 @@ export function softwareUsed(papers) {
       if (s?.type === 'software') n.set(s, (n.get(s) ?? 0) + 1);
     }
   }
-  return [...n].sort((a, b) => b[1] - a[1] || a[0].title.localeCompare(b[0].title)).map(([s]) => s);
+  // A Map keeps first-seen order and sort is stable, so ties keep it.
+  return [...n].sort((a, b) => b[1] - a[1]).map(([s]) => s);
 }
 
 /** Where a co-author's name points. ORCID is the identifier, so it is the link. */

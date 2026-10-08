@@ -415,8 +415,10 @@ actually know — `"2025"` is honest; an invented `"2025-01-01"` is not.
 
 Items point at each other by bare id. A media entry references the paper it
 covered; a talk references the paper it presented. A paper references the
-packages of mine it used, as its software section names them — `/research/`
-lists them under each topic's papers — and a package references its own paper. This replaces the LaTeX
+packages of mine it used, as its software section names them, its main
+package first — `/publications/` lists them in that order under the paper,
+`/research/` under each topic's papers — and a package references its own
+paper. This replaces the LaTeX
 `\hyperref` labels.
 
 ## 3. Validate before pushing
