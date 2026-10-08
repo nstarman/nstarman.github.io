@@ -3,7 +3,7 @@
   "id": "spexial",
   "type": "software",
   "tier": "other",
-  "group": "jax",
+  "group": "numerics",
   "cvs": [],
   "date": {
     "start": "2024-10",

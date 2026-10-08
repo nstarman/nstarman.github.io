@@ -262,8 +262,9 @@
             "description": "Which area of the software listing it sits in. The areas, their order and their one-line introductions are SOFTWARE_GROUPS in src/lib/data.js; `tier` then sets its card's size within the area.",
             "enum": [
               "astropy",
-              "jax",
+              "foundations",
               "dynamics",
+              "numerics",
               "dark-matter",
               "utilities"
             ]

@@ -3,7 +3,7 @@
   "id": "jaxmore",
   "type": "software",
   "tier": "other",
-  "group": "jax",
+  "group": "numerics",
   "cvs": [],
   "date": {
     "start": "2026-02",
