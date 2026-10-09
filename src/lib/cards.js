@@ -9,10 +9,10 @@ export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIG
 /** The cards the website itself renders, by name, and where; a page names
  *  the one it draws by its key, PRESET.<key>. */
 export const SITE_PRESETS = [
-  { key: 'softwareLead', slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
-  { key: 'softwareHeadline', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
-  { key: 'softwareOther', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
-  { key: 'softwareUseful', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
+  { key: 'softwareFlagship', slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  { key: 'softwareMajor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
+  { key: 'softwareMinor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
+  { key: 'softwareUtility', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
   { key: 'proceeding', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/, which its title links to —
@@ -30,7 +30,7 @@ export const PRESET = Object.fromEntries(SITE_PRESETS.map((p) => [p.key, p.slug]
  *  the site gives each — the one thing both the site and the README's images
  *  (src/pages/cards/) read, so they cannot disagree about which package gets
  *  which card. */
-export const TIER_PRESET = { lead: 'softwareLead', headline: 'softwareHeadline' };
+export const TIER_PRESET = { flagship: 'softwareFlagship', major: 'softwareMajor' };
 
 /** The width, in px, the software cards are drawn at for the README's images:
  *  src/pages/cards/. */

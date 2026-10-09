@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "is-annotated",
   "type": "software",
-  "tier": "useful",
+  "tier": "utility",
   "group": "utilities",
   "cvs": [],
   "date": {

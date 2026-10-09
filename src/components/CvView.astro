@@ -200,7 +200,7 @@ const mapFor = (s) => {
            split lived on the papers, which the publication list already holds. */
         <div class="soft soft--mini">
           {s.items.map((item) => (
-            <Card item={item} preset={PRESET.softwareOther} id={`item-${item.id}`}>
+            <Card item={item} preset={PRESET.softwareMinor} id={`item-${item.id}`}>
               <a slot="corner" class="srclink" href={`/records/${item.id}.json`}
                  aria-label={`${item.title} — JSON source`} title="JSON source">{'}'}</a>
               {pick && (

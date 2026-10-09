@@ -270,12 +270,12 @@
             ]
           },
           "tier": {
-            "description": "Prominence on the website's software listing. Exactly one item should be `lead`. `useful` is the small-card tier below the rest \u2014 things worth having but not research software. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
+            "description": "Prominence on the website's software listing. From most to least prominent: `flagship`, `major`, `minor`, `utility`. Exactly one item should be `flagship`. `utility` is the small-card tier below the rest \u2014 things worth having but not research software. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
             "enum": [
-              "lead",
-              "headline",
-              "other",
-              "useful"
+              "flagship",
+              "major",
+              "minor",
+              "utility"
             ]
           },
           "repo": {
@@ -291,7 +291,7 @@
           },
           "order": {
             "type": "integer",
-            "description": "Position within the `headline` tier. Lower first; items without it count as 0 and keep their newest-first order, so a positive value sends one to the end."
+            "description": "Position within the `major` tier. Lower first; items without it count as 0 and keep their newest-first order, so a positive value sends one to the end."
           },
           "highlight": {
             "$ref": "#/$defs/highlight",

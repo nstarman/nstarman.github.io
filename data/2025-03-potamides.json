@@ -41,7 +41,7 @@
     "jax",
     "streams"
   ],
-  "tier": "headline",
+  "tier": "major",
   "group": "dynamics",
   "order": 1
 }

@@ -37,7 +37,7 @@ const word = fc.oneof(
 );
 const sentence = fc.array(word, { minLength: 1, maxLength: 40 }).map((w) => w.join(' '));
 const widths = fc.integer({ min: 120, max: 1200 });
-const tiers = fc.constantFrom('lead', 'headline');
+const tiers = fc.constantFrom('flagship', 'major');
 const themes = fc.constantFrom('light', 'dark');
 const label = fc.oneof(fc.stringMatching(/^[0-9]{4}$/), fc.stringMatching(/^[0-9]{1,3}(\.[0-9])?k?$/));
 const KEYS = ['paper', 'doi', 'preprint', 'repo', 'code', 'docs', 'data', 'slides', 'ads', 'homepage', 'event', 'stars'];
@@ -79,7 +79,7 @@ describe('whatever the data', () => {
       // (a button's label is as small as the text can be, but is a link.)
       const body = texts(model).filter((o) => o.font === 'IBM Plex Sans' && !o.href && Math.abs(o.size - L.fs) < 1e-9).map((o) => o.s);
       expect(join(body)).toBe(c.input.text.replace(/\s/g, ''));
-      if (c.input.tier === 'lead' && c.input.role) {
+      if (c.input.tier === 'flagship' && c.input.role) {
         const role = texts(model).filter((o) => o.font === 'IBM Plex Mono' && o.weight === 400).map((o) => o.s);
         expect(join(role)).toBe(c.input.role.toUpperCase().replace(/\s/g, ''));
       }

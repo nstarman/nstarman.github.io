@@ -144,7 +144,7 @@ for rather than what it is written in — `astropy`, `foundations`, `dynamics`,
 `dark-matter`, `numerics` or `utilities`. The areas' headings, order and
 one-line introductions are `SOFTWARE_GROUPS` in `src/lib/data.js`; a new area
 is a schema change plus a line there. Within an area, `tier` sets the card:
-`lead` (one package, the largest), then `headline`, `other` and `useful`, each
+`flagship` (one package, the largest), then `major`, `minor` and `utility`, each
 smaller.
 
 **`presentation`** covers everything that used to be split across "Invited
@@ -253,7 +253,7 @@ Lists are comma-separated — a `+` would read as a space in a URL query.
 
 The website's cards fill their width — a grid sets it — and fit their content, and it uses only
 the presets in `SITE_PRESETS` (`src/lib/cards.js`), each named by its key —
-`<Card preset={PRESET.softwareLead} …>` — never written out, and a test holds
+`<Card preset={PRESET.softwareFlagship} …>` — never written out, and a test holds
 the pages to the keys. Never give a card a class of its own for a
 look: a new look is a new preset, and so is available everywhere at once.
 
@@ -302,9 +302,9 @@ themselves the builder never decides how a card looks — it writes a name and
 its `controlOps` and `readSpec` lines in `model.js`, then its markup.
 
 **Software cards as images, without a browser.** `/cards/<id>-<light|dark>.svg` (and
-`/cards/index.json`, which lists them) are the lead and headline packages' cards, for the profile
+`/cards/index.json`, which lists them) are the `flagship` and `major` packages' cards, for the profile
 README, drawn at build by a static endpoint (`src/pages/cards/`) in plain node. `src/lib/cardlayout.js`
-lays one out — a second implementation of the CSS, for the `softwareLead` and `softwareHeadline`
+lays one out — a second implementation of the CSS, for the `softwareFlagship` and `softwareMajor`
 presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files, shaped by HarfBuzz as Chrome shapes it
 (`src/lib/textmeasure.js`) and handing the same model `cardpdf.js` measures to `cardsvg.js`. It throws
 on any name that asks for more than it draws. `tests/cardlayout.test.js` keeps it in step: its

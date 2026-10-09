@@ -68,7 +68,7 @@ describe('the numbers are the stylesheet’s', () => {
   });
 
   it('the icons are the sprite’s, a link by its key', () => {
-    const ops = softwareModel(softwareInput(items.find((i) => i.id === 'unxt')), { slug: atWidth(PRESET_OF.softwareHeadline, 400), theme: 'light', measure }).ops;
+    const ops = softwareModel(softwareInput(items.find((i) => i.id === 'unxt')), { slug: atWidth(PRESET_OF.softwareMajor, 400), theme: 'light', measure }).ops;
     expect(ops.filter((o) => o.k === 'svg').map((o) => o.svg.match(/viewBox="([^"]+)"/)[1])).toHaveLength(4);
   });
 });
@@ -140,9 +140,9 @@ describe('what it takes a name for', () => {
 
   it('refuses a name that asks for more than it draws', () => {
     const input = softwareInput(items.find((i) => i.id === 'unxt'));
-    const base = atWidth(PRESET_OF.softwareHeadline, 400);
+    const base = atWidth(PRESET_OF.softwareMajor, 400);
     const draw = (slug) => () => softwareModel(input, { slug, theme: 'light', measure });
-    expect(draw(PRESET_OF.softwareHeadline)).toThrow(/software tier presets/);
+    expect(draw(PRESET_OF.softwareMajor)).toThrow(/software tier presets/);
     expect(draw(base.replace('figure:none', 'figure:center:auto'))).toThrow(/software tier presets/);
     expect(draw(base.replace('authors:none', 'authors:short'))).toThrow(/software tier presets/);
     expect(draw(base.replace('buttons:all:fit', 'buttons:code'))).toThrow(/software tier presets/);
@@ -156,10 +156,10 @@ describe('what it takes a name for', () => {
 
 describe('what it draws is what the site holds', () => {
   it('a card for each lead and headline package, with its preset and no other', () => {
-    const want = items.filter((i) => i.type === 'software' && ['lead', 'headline'].includes(i.tier)).map((i) => i.id).sort();
+    const want = items.filter((i) => i.type === 'software' && ['flagship', 'major'].includes(i.tier)).map((i) => i.id).sort();
     expect(softwareCards.map((c) => c.input.id).sort()).toEqual(want);
     expect(want.length).toBeGreaterThanOrEqual(7);
-    expect(Object.keys(TIER_PRESET).sort()).toEqual(['headline', 'lead']);
+    expect(Object.keys(TIER_PRESET).sort()).toEqual(['flagship', 'major']);
   });
 
   for (const card of softwareCards) {
@@ -182,7 +182,7 @@ describe('what it draws is what the site holds', () => {
         // Every word of the text, in order, none dropped or added.
         const body = texts.filter((o) => o.font === 'IBM Plex Sans' && o.size === lengths({ dials: parseName(slug).dials, width }).fs).map((o) => o.s).reduce((a, b) => (a.endsWith('-') ? a + b : `${a} ${b}`));
         expect(body).toBe(input.text.replace(/\s+/g, ' '));
-        if (record.tier === 'lead') expect(texts.filter((o) => o.color === `${TOKENS.accent[THEMES.indexOf(theme)].toLowerCase()}ff`).map((o) => o.s).join(' ')).toBe(record.role.toUpperCase());
+        if (record.tier === 'flagship') expect(texts.filter((o) => o.color === `${TOKENS.accent[THEMES.indexOf(theme)].toLowerCase()}ff`).map((o) => o.s).join(' ')).toBe(record.role.toUpperCase());
 
         const svg = drawCard(card, theme);
         const meta = await sharp(Buffer.from(svg)).metadata();
@@ -220,11 +220,11 @@ describe('what it draws is what the site holds', () => {
 
   it('lays the cards out in rows: the lead alone, as wide as two, the others two to a row, each row one height', () => {
     const rows = Object.values(Object.groupBy(softwareCards, (c) => c.row));
-    expect(rows.map((r) => r.map((c) => c.input.tier))).toEqual([['lead'], ...Array.from({ length: Math.ceil((softwareCards.length - 1) / 2) }, (_, i) => (i * 2 + 2 <= softwareCards.length - 1 ? ['headline', 'headline'] : ['headline']))]);
+    expect(rows.map((r) => r.map((c) => c.input.tier))).toEqual([['flagship'], ...Array.from({ length: Math.ceil((softwareCards.length - 1) / 2) }, (_, i) => (i * 2 + 2 <= softwareCards.length - 1 ? ['major', 'major'] : ['major']))]);
     for (const row of rows) {
       expect(new Set(row.map((c) => c.height)).size).toBe(1);
       for (const c of row) {
-        expect(c.width).toBe(c.input.tier === 'lead' ? CARD_WIDE : CARD_SVG_WIDTH);
+        expect(c.width).toBe(c.input.tier === 'flagship' ? CARD_WIDE : CARD_SVG_WIDTH);
         expect(c.height).toBeGreaterThanOrEqual(softwareModel(c.input, { slug: c.slug, theme: 'light', measure }).h - 1e-9);
       }
     }

@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "cosmology-api",
   "type": "software",
-  "tier": "other",
+  "tier": "minor",
   "group": "astropy",
   "cvs": [],
   "date": {

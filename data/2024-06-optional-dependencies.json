@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "optional-dependencies",
   "type": "software",
-  "tier": "other",
+  "tier": "minor",
   "group": "utilities",
   "cvs": [],
   "date": {

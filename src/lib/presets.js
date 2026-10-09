@@ -52,9 +52,9 @@ export function preset(name) {
  */
 const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.length : i; };
 
-// `"sort": "tier"` orders a section by the tiers /software/ uses: lead, headline, other,
-// useful, and by `order` within a tier. Stable, so ties stay newest-first.
-const TIERS = ['lead', 'headline', 'other', 'useful'];
+// `"sort": "tier"` orders a section by the tiers /software/ uses: flagship, major, minor,
+// utility, and by `order` within a tier. Stable, so ties stay newest-first.
+const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
 export function resolve(name, only, { prefix = {}, order = [] } = {}) {

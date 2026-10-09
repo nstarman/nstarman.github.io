@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "galactic-dynamics-interoperability",
   "type": "software",
-  "tier": "useful",
+  "tier": "utility",
   "group": "dynamics",
   "cvs": [],
   "date": {

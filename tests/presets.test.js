@@ -63,8 +63,8 @@ describe('resolve', () => {
     expect(sw.items.length + sw.dropped).toBe(all);
   });
 
-  it('orders software by tier, so the lead package starts', () => {
-    const tiers = ['lead', 'headline', 'other', 'useful'];
+  it('orders software by tier, so the flagship package starts', () => {
+    const tiers = ['flagship', 'major', 'minor', 'utility'];
     for (const name of ['complete', 'np', '1page']) {
       const sw = resolve(name).sections.find((s) => s.id === 'software').items;
       expect(sw[0].id).toBe('astropy');
