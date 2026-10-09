@@ -19,9 +19,9 @@ const contributed = tail ? contributions.repos : [];
 const year = (d) => d.slice(0, 4);
 
 const all = byType('software');
-const lead = all.find((s) => s.tier === 'lead');
+const lead = all.find((s) => s.tier === 'flagship');
 // Array.sort is stable, so equal `order` keeps byType's newest-first.
-const headliners = (items) => items.filter((s) => s.tier === 'headline')
+const headliners = (items) => items.filter((s) => s.tier === 'major')
   .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const byTitle = (items, tier) => items.filter((s) => s.tier === tier)
   .sort((a, b) => a.title.localeCompare(b.title));
@@ -39,11 +39,11 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
   <>
     {lead && (
       <div class="lead">
-        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
       </div>
     )}
     <div class:list={['soft', emptied(headliners(all))]}>
-      {headliners(all).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
+      {headliners(all).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMajor} />)}
     </div>
   </>
 )}
@@ -56,17 +56,17 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
     <p class:list={['hl-intro', 'sw-intro', emptied(g.items)]}>{spans(g.intro, '/cv/').map((s) => (s.url ? <a href={s.url}>{s.t}</a> : s.t))}</p>
     {g.items.includes(lead) && (
       <div class="lead">
-        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
       </div>
     )}
     {/* One grid for the area, its tiers in order. Each card keeps its tier's
         size beside a larger one rather than stretching to it (soft--area). */}
     <div class:list={['soft', 'soft--area', emptied(g.items.filter((s) => s !== lead))]}>
-      {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
-      {byTitle(g.items, 'other').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
+      {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMajor} />)}
+      {byTitle(g.items, 'minor').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMinor} />)}
       {/* Things worth having that are not research software: smaller cards
           again, because they are useful rather than notable. */}
-      {byTitle(g.items, 'useful').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
+      {byTitle(g.items, 'utility').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUtility} />)}
     </div>
   </>
 ))}

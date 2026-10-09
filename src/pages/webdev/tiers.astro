@@ -5,15 +5,15 @@ import Base from '../../layouts/Base.astro';
 import { byType } from '../../lib/data.js';
 
 const TIERS = [
-  { tier: 'lead', text: 'The lead package, a card across the page.' },
-  { tier: 'headline', text: 'Cards, by order and then newest first.' },
-  { tier: 'other', text: 'Compact cards, A–Z.' },
-  { tier: 'useful', text: 'Small cards, not research software, A–Z.' },
+  { tier: 'flagship', text: 'The lead package, a card across the page.' },
+  { tier: 'major', text: 'Cards, by order and then newest first.' },
+  { tier: 'minor', text: 'Compact cards, A–Z.' },
+  { tier: 'utility', text: 'Small cards, not research software, A–Z.' },
 ];
 const all = byType('software');
 const inTier = (tier) => {
   const s = all.filter((i) => i.tier === tier);
-  return tier === 'headline'
+  return tier === 'major'
     ? s.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     : s.sort((a, b) => a.title.localeCompare(b.title));
 };

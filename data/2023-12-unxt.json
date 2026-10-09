@@ -42,7 +42,7 @@
     "jax",
     "units"
   ],
-  "tier": "headline",
+  "tier": "major",
   "group": "foundations",
   "refs": [
     "unxt-joss"

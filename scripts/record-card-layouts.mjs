@@ -17,7 +17,7 @@ import { syncKey } from './lib/cardsync.mjs';
 
 const site = process.argv[2] ?? 'http://localhost:4321';
 const { chromium } = await import('playwright');
-const tiers = readItems().map((r) => r.item).filter((i) => i.type === 'software' && ['lead', 'headline'].includes(i.tier));
+const tiers = readItems().map((r) => r.item).filter((i) => i.type === 'software' && ['flagship', 'major'].includes(i.tier));
 
 const browser = await chromium.launch();
 // 1280 wide is where the root font size is exactly 16px, which the renderer assumes.

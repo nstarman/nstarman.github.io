@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "quaxed",
   "type": "software",
-  "tier": "other",
+  "tier": "minor",
   "group": "foundations",
   "cvs": [],
   "date": {

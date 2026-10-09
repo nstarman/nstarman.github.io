@@ -10,7 +10,7 @@ import { measure } from './textmeasure.js';
 
 export const THEMES = ['light', 'dark'];
 
-const TIER_ORDER = Object.keys(TIER_PRESET); // lead, then headline
+const TIER_ORDER = Object.keys(TIER_PRESET); // flagship, then major
 
 /** Each lead and headline package, as the Software page orders them, with the
  *  name of its card, its width, its row and the height it shares with the rest
@@ -19,13 +19,13 @@ export const softwareCards = items
   .filter((i) => i.type === 'software' && i.tier in TIER_PRESET)
   .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier) || a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
   .map((item) => {
-    const width = item.tier === 'lead' ? CARD_WIDE : CARD_SVG_WIDTH;
+    const width = item.tier === 'flagship' ? CARD_WIDE : CARD_SVG_WIDTH;
     return { input: softwareInput(item), width, slug: atWidth(SITE_PRESETS.find((p) => p.key === TIER_PRESET[item.tier]).slug, width) };
   });
 const rows = [];
 for (const c of softwareCards) {
   const last = rows.at(-1);
-  if (c.input.tier === 'headline' && last?.[0].input.tier === 'headline' && last.length < 2) last.push(c); else rows.push([c]);
+  if (c.input.tier === 'major' && last?.[0].input.tier === 'major' && last.length < 2) last.push(c); else rows.push([c]);
 }
 rows.forEach((row, i) => {
   const height = Math.max(...row.map((c) => softwareModel(c.input, { slug: c.slug, theme: 'light', measure }).h));
