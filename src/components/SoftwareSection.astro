@@ -39,6 +39,11 @@ const boxes = (items) => {
   }
   return out;
 };
+// Whether box i is a box at each count of columns the area's grid can have —
+// 2 and 3 (one column puts every major on its own row) — as global.css's
+// container queries name them: only where it shares a row with a major card,
+// so in the last major row's free places. Elsewhere its cards run on, across.
+const boxAt = (majors, i) => [2, 3].filter((c) => i < Math.ceil(majors / c) * c - majors).join(' ') || undefined;
 const groups = tail
   ? SOFTWARE_GROUPS
     .map(([key, label, intro]) => ({ key, label, intro, items: all.filter((s) => s.group === key) }))
@@ -73,12 +78,13 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
         <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
       </div>
     )}
-    {/* One grid for the area: its major cards, then boxes of the same size
-        holding the smaller ones (soft--area). */}
+    {/* One grid for the area: its major cards, then the smaller ones in
+        boxes of the same size — a box beside a major card, its cards running
+        on across the grid elsewhere (soft--area). */}
     <div class:list={['soft', 'soft--area', emptied(g.items.filter((s) => s !== lead))]}>
       {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMajor} />)}
-      {boxes(g.items).map((box) => (
-        <div class="sw-box">
+      {boxes(g.items).map((box, i) => (
+        <div class="sw-box" data-box={boxAt(headliners(g.items).length, i)}>
           {box.map((s) => (s.tier === 'minor'
             ? <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMinor} />
             : <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUtility} />))}
