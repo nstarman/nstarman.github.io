@@ -13,7 +13,7 @@
 import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, HIGHLIGHT_TOPICS } from '../lib/data.js';
 import { cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref, paperHref, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, cardFace } from '../lib/cardname.js';
-import { ordinal } from '../lib/inline.js';
+import { ordinal, plain } from '../lib/inline.js';
 import LinkIcon from './LinkIcon.astro';
 import ButtonList from './ButtonList.astro';
 import Inline from './Inline.astro';
@@ -145,7 +145,8 @@ const contextLabel = topic && `${topic[1]} research highlights`;
   {((isSoftware && item.role) || sum || det) && (
     <div class="c-text">
       {isSoftware && item.role && <p class="c-role">{item.role}</p>}
-      {sum && <p class="c-sum"><Inline text={sum} base="/cv/" /></p>}
+      {/* A package's summary in full, for where its card cuts it short. */}
+      {sum && <p class="c-sum" title={isSoftware ? plain(sum) : undefined}><Inline text={sum} base="/cv/" /></p>}
       {det && <p class="c-det"><Inline text={det} base="/cv/" /></p>}
     </div>
   )}

@@ -165,17 +165,34 @@ h2{
    SITE_PRESETS). On /software/ the areas' headings separate what follows, and
    on the home page nothing does, so it carries no divider of its own. */
 .lead{margin-bottom:.7rem}
-/* An area's cards run on in one grid, its tiers in order, and each keeps its
-   tier's size on the whole page: aligned to the top of its row rather than
-   stretched to the tallest there, and at least as tall as its tier's tallest
-   card at full width, measured — potamides; cosmology.api; zeroth, its summary
-   on two lines. A tier is its preset's text size, which the card carries. A
-   card that needs more still grows (galactic_dynamics_interoperability's name
-   wraps) rather than clip. Re-measure if a tier gains a longer card. */
-.soft.soft--area{grid-auto-rows:auto; align-items:start}
-.soft--area > :not([data-textsize]){min-height:13.6rem}
-.soft--area > [data-textsize="compact"]{min-height:7.2rem}
-.soft--area > [data-textsize="minor"]{min-height:6.5rem}
+/* An area's grid is half-columns, in pairs, and rows of --sw-u. A major card
+   is a pair by two rows; a minor card a pair by one row, a little under half
+   a major's height; a utility card a square, one half-column by one row.
+   Beside a major card the smaller ones stack in a box of its size, filled top
+   to bottom (SoftwareSection's boxes): two minor cards, or four utility ones,
+   in its place. Elsewhere a box is display:contents and its cards run on
+   across, a row of them at a time. Which boxes are boxes depends on the count
+   of columns, so SoftwareSection marks each with the counts it is a box at,
+   and the queries below give that count: a pair is 13rem at least and the gap
+   .7rem, so two fit from 26.7rem and three from 40.4rem. --sw-u is a
+   half-column on the 49rem page, so the square is square there; a narrower
+   column narrows it. Dense, so a smaller card fills a hole a larger one left.
+   A card that needs more still grows its row (galactic_dynamics_
+   interoperability's name wraps) rather than clip — measured: the tallest
+   minor card is 115px, the row 113. */
+.soft.soft--area{--sw-u:7.08rem; container-type:inline-size;
+  grid-template-columns:repeat(auto-fill, minmax(6.15rem,1fr) minmax(6.15rem,1fr));
+  grid-auto-rows:minmax(var(--sw-u), auto); grid-auto-flow:row dense}
+.soft--area > .card:not([data-textsize]){grid-column:span 2; grid-row:span 2}
+.sw-box{display:contents; grid-column:span 2; grid-row:span 2;
+  grid-template-columns:1fr 1fr; grid-auto-rows:minmax(var(--sw-u), auto); gap:.7rem; align-content:start}
+@container (26.7rem <= width < 40.4rem){ .sw-box[data-box~="2"]{display:grid} }
+@container (width >= 40.4rem){ .sw-box[data-box~="3"]{display:grid} }
+.soft--area [data-textsize="compact"]{grid-column:span 2}
+.soft--area [data-textsize="minor"]{width:min(var(--sw-u), 100%); justify-self:center}
+/* A square has room for one line of its summary; the card's title attribute
+   holds the rest. */
+.soft--area [data-textsize="minor"] .c-sum{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .hl-intro.sw-intro{margin-bottom:.9rem}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath
@@ -932,9 +949,10 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
 
 #sw-yes:checked ~ .lead:not(:has(> .card[data-paper])),
-#sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
+#sw-yes:checked ~ .soft .card:not([data-paper]),
+#sw-yes:checked ~ .soft .sw-box:not(:has(> .card[data-paper])){display:none}
 /* A package's anchor, #sw-<id>, which a card's title:…:site links to. */
-:is(.lead, .soft) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+:is(.lead, .soft, .sw-box) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
 /* The dividers between tiers stay. Hiding one took its margins with it — the
    only thing separating those grids — so the filtered headline card ran
    straight into the row beneath. A tier the filter empties completely is the
