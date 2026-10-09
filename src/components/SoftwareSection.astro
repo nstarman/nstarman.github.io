@@ -25,6 +25,20 @@ const headliners = (items) => items.filter((s) => s.tier === 'major')
   .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 const byTitle = (items, tier) => items.filter((s) => s.tier === tier)
   .sort((a, b) => a.title.localeCompare(b.title));
+// An area's minor and utility cards, packed in order into boxes the size of a
+// major card, each filled top to bottom before the next: a minor card is a
+// row of a box, a utility card half of one. Minors come first, so one always
+// starts a row.
+const boxes = (items) => {
+  const out = [];
+  let used = 4;
+  for (const [s, size] of [...byTitle(items, 'minor').map((s) => [s, 2]), ...byTitle(items, 'utility').map((s) => [s, 1])]) {
+    if (used + size > 4) { out.push([]); used = 0; }
+    out.at(-1).push(s);
+    used += size;
+  }
+  return out;
+};
 const groups = tail
   ? SOFTWARE_GROUPS
     .map(([key, label, intro]) => ({ key, label, intro, items: all.filter((s) => s.group === key) }))
@@ -59,14 +73,17 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
         <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
       </div>
     )}
-    {/* One grid for the area, its tiers in order. Each card keeps its tier's
-        size beside a larger one rather than stretching to it (soft--area). */}
+    {/* One grid for the area: its major cards, then boxes of the same size
+        holding the smaller ones (soft--area). */}
     <div class:list={['soft', 'soft--area', emptied(g.items.filter((s) => s !== lead))]}>
       {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMajor} />)}
-      {byTitle(g.items, 'minor').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMinor} />)}
-      {/* Things worth having that are not research software: smaller cards
-          again, because they are useful rather than notable. */}
-      {byTitle(g.items, 'utility').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUtility} />)}
+      {boxes(g.items).map((box) => (
+        <div class="sw-box">
+          {box.map((s) => (s.tier === 'minor'
+            ? <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareMinor} />
+            : <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUtility} />))}
+        </div>
+      ))}
     </div>
   </>
 ))}

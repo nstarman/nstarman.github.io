@@ -165,22 +165,20 @@ h2{
    SITE_PRESETS). On /software/ the areas' headings separate what follows, and
    on the home page nothing does, so it carries no divider of its own. */
 .lead{margin-bottom:.7rem}
-/* An area's cards cascade in one grid of half-columns and rows of --sw-u: a
-   major card is two of each, a minor one two half-columns by one row — so two
-   stack in a major's place, a little under half its height — and a utility
-   card a square of one half-column by one row, four to a major's place. Pairs
-   of half-columns, so a major never starts on an odd one, and a pair is
-   13rem at least, as a column was. --sw-u is a half-column on the 49rem page,
-   so the square is square there; a narrower half-column narrows it. Dense, so
-   a smaller card fills a hole a larger one left. A card that needs more still
-   grows its row (galactic_dynamics_interoperability's name wraps) rather
-   than clip — measured: the tallest minor card is 115px, the row 113. */
-.soft.soft--area{--sw-u:7.08rem;
-  grid-template-columns:repeat(auto-fill, minmax(6.15rem,1fr) minmax(6.15rem,1fr));
-  grid-auto-rows:minmax(var(--sw-u), auto); grid-auto-flow:row dense}
-.soft--area > :not([data-textsize]){grid-column:span 2; grid-row:span 2}
-.soft--area > [data-textsize="compact"]{grid-column:span 2}
-.soft--area > [data-textsize="minor"]{width:min(var(--sw-u), 100%); justify-self:center}
+/* An area's grid holds its major cards and boxes of the same size, each
+   holding smaller cards (SoftwareSection's boxes): a minor card a row of the
+   box, a little under half a major's height, so two stack in its place; a
+   utility card a square, half a row, so four do. --sw-u is a row, and a half
+   of a column on the 49rem page, so the square is square there; a narrower
+   column narrows it. A card that needs more still grows its row
+   (galactic_dynamics_interoperability's name wraps) rather than clip —
+   measured: the tallest minor card is 115px, the row 113. A row with no
+   major card is as tall as its boxes. */
+.soft.soft--area{--sw-u:7.08rem; grid-auto-rows:auto}
+.soft--area > .card{min-height:calc(2 * var(--sw-u) + .7rem)}
+.sw-box{display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(var(--sw-u), auto); gap:.7rem; align-content:start}
+.sw-box > [data-textsize="compact"]{grid-column:span 2}
+.sw-box > [data-textsize="minor"]{width:min(var(--sw-u), 100%); justify-self:center}
 .hl-intro.sw-intro{margin-bottom:.9rem}
 /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so filtering the
    list down to one card made it stretch the full width while the row beneath
@@ -937,9 +935,10 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .posradio:focus-visible ~ .h2row .pubfilter{outline:2px solid var(--accent); outline-offset:2px}
 
 #sw-yes:checked ~ .lead:not(:has(> .card[data-paper])),
-#sw-yes:checked ~ .soft .card:not([data-paper]){display:none}
+#sw-yes:checked ~ .soft .card:not([data-paper]),
+#sw-yes:checked ~ .soft .sw-box:not(:has(> .card[data-paper])){display:none}
 /* A package's anchor, #sw-<id>, which a card's title:…:site links to. */
-:is(.lead, .soft) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+:is(.lead, .soft, .sw-box) > .card[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
 /* The dividers between tiers stay. Hiding one took its margins with it — the
    only thing separating those grids — so the filtered headline card ran
    straight into the row beneath. A tier the filter empties completely is the
