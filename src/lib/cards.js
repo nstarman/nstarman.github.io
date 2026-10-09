@@ -12,7 +12,7 @@ export const SITE_PRESETS = [
   { key: 'softwareFlagship', slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
   { key: 'softwareMajor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
   { key: 'softwareMinor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
-  { key: 'softwareUtility', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },
+  { key: 'softwareUtility', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:none-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras, a square of name and links' },
   { key: 'proceeding', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:full:marked-text:none-extras:venue-buttons:all:fit:right', where: 'Publications — a proceeding under its paper' },
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/, which its title links to —
