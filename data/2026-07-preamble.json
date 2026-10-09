@@ -28,5 +28,6 @@
       "url": "https://github.com/nstarman/preamble"
     }
   ],
-  "tier": "useful"
+  "tier": "useful",
+  "group": "utilities"
 }

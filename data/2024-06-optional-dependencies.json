@@ -3,6 +3,7 @@
   "id": "optional-dependencies",
   "type": "software",
   "tier": "other",
+  "group": "utilities",
   "cvs": [],
   "date": {
     "start": "2024-06",

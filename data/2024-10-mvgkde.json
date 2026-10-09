@@ -3,6 +3,7 @@
   "id": "mvgkde",
   "type": "software",
   "tier": "other",
+  "group": "numerics",
   "cvs": [],
   "date": {
     "start": "2024-10",

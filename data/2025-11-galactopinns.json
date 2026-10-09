@@ -3,6 +3,7 @@
   "id": "galactopinns",
   "type": "software",
   "tier": "other",
+  "group": "dynamics",
   "cvs": [],
   "date": {
     "start": "2025-11",

@@ -3,6 +3,7 @@
   "id": "phasecurvefit",
   "type": "software",
   "tier": "other",
+  "group": "dynamics",
   "cvs": [
     "np",
     "2page",

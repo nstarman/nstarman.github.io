@@ -45,5 +45,6 @@
     "jax",
     "coordinates"
   ],
-  "tier": "headline"
+  "tier": "headline",
+  "group": "foundations"
 }

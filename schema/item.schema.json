@@ -254,9 +254,21 @@
       },
       "then": {
         "required": [
-          "tier"
+          "tier",
+          "group"
         ],
         "properties": {
+          "group": {
+            "description": "Which area of the software listing it sits in. The areas, their order and their one-line introductions are SOFTWARE_GROUPS in src/lib/data.js; `tier` then sets its card's size within the area.",
+            "enum": [
+              "astropy",
+              "foundations",
+              "dynamics",
+              "dark-matter",
+              "numerics",
+              "utilities"
+            ]
+          },
           "tier": {
             "description": "Prominence on the website's software listing. Exactly one item should be `lead`. `useful` is the small-card tier below the rest \u2014 things worth having but not research software. Keeping this in data is what removed an `id === \"astropy\"` special case from the page.",
             "enum": [

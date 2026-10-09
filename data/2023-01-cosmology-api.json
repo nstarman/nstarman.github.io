@@ -3,6 +3,7 @@
   "id": "cosmology-api",
   "type": "software",
   "tier": "other",
+  "group": "astropy",
   "cvs": [],
   "date": {
     "start": "2023-01"

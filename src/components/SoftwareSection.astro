@@ -1,13 +1,15 @@
 ---
-// Three tiers, two dividers: the lead package, the headliners as cards, then
-// everything else compactly. Tier comes from the data, not from an id check.
+// /software/ is in areas — SOFTWARE_GROUPS, each with its introduction — and
+// within an area, tiers: the lead package, the headliners as cards, then the
+// rest and the utilities ever smaller. Area and tier both come from the data.
 import { PRESET } from '../lib/cards.js';
-import { byType, softwarePapers } from '../lib/data.js';
+import { byType, softwarePapers, SOFTWARE_GROUPS } from '../lib/data.js';
+import { spans } from '../lib/inline.js';
 import contributions from '/config/contributions.json';
 import Card from './Card.astro';
 
-// The landing page shows the lead and the headliners only; the long tail is
-// what "All software →" is for.
+// The landing page shows the lead and the headliners only, with no areas;
+// the rest is what "All software →" is for.
 const { tail = true } = Astro.props;
 
 // The fourth tier: everything else he has a merged pull request in, which is
@@ -19,46 +21,55 @@ const year = (d) => d.slice(0, 4);
 const all = byType('software');
 const lead = all.find((s) => s.tier === 'lead');
 // Array.sort is stable, so equal `order` keeps byType's newest-first.
-const headline = all.filter((s) => s.tier === 'headline')
+const headliners = (items) => items.filter((s) => s.tier === 'headline')
   .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-const other = (tail ? all.filter((s) => s.tier === 'other') : [])
+const byTitle = (items, tier) => items.filter((s) => s.tier === tier)
   .sort((a, b) => a.title.localeCompare(b.title));
-// Fourth tier: things worth having that are not research software. Smaller
-// cards again, because they are useful rather than notable.
-const useful = (tail ? all.filter((s) => s.tier === 'useful') : [])
-  .sort((a, b) => a.title.localeCompare(b.title));
-// If nothing in a tier has a paper, the paper filter empties it — and a
-// divider above an empty grid separates nothing. Marked here rather than in
+const groups = tail
+  ? SOFTWARE_GROUPS
+    .map(([key, label, intro]) => ({ key, label, intro, items: all.filter((s) => s.group === key) }))
+    .filter((g) => g.items.length > 0)
+  : [];
+// If nothing in a grid or an area has a paper, the paper filter empties it —
+// and a heading over nothing introduces nothing. Marked here rather than in
 // CSS because it is a fact about the data, and it is recomputed every build.
-const emptied = (tier) => (tier.length > 0 && !tier.some((s) => softwarePapers(s).length) ? 'tier-nopaper' : undefined);
+const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier-nopaper' : undefined);
 ---
-{lead && (
-  <div class:list={['lead', !tail && 'lead--last']}>
-    <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
-  </div>
-)}
-
-<div class:list={['soft', emptied(headline)]}>
-  {headline.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
-</div>
-
-{other.length > 0 && (
+{!tail && (
   <>
-    <div class:list={['tierbreak', emptied(other)]} role="presentation"></div>
-    <div class:list={['soft', 'soft--mini', emptied(other)]}>
-      {other.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
+    {lead && (
+      <div class="lead">
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
+      </div>
+    )}
+    <div class:list={['soft', emptied(headliners(all))]}>
+      {headliners(all).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
     </div>
   </>
 )}
 
-{useful.length > 0 && (
+{/* Flat, every part a sibling of the filter's radios, so the paper filter is
+    a plain sibling selector — see software.astro. */}
+{groups.map((g) => (
   <>
-    <div class:list={['tierbreak', emptied(useful)]} role="presentation"></div>
-    <div class:list={['soft', 'soft--tiny', emptied(useful)]}>
-      {useful.map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
+    <h3 id={`sw-group-${g.key}`} class:list={['hl-topic', emptied(g.items)]}>{g.label}</h3>
+    <p class:list={['hl-intro', 'sw-intro', emptied(g.items)]}>{spans(g.intro, '/cv/').map((s) => (s.url ? <a href={s.url}>{s.t}</a> : s.t))}</p>
+    {g.items.includes(lead) && (
+      <div class="lead">
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
+      </div>
+    )}
+    {/* One grid for the area, its tiers in order. Each card keeps its tier's
+        size beside a larger one rather than stretching to it (soft--area). */}
+    <div class:list={['soft', 'soft--area', emptied(g.items.filter((s) => s !== lead))]}>
+      {headliners(g.items).map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareHeadline} />)}
+      {byTitle(g.items, 'other').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareOther} />)}
+      {/* Things worth having that are not research software: smaller cards
+          again, because they are useful rather than notable. */}
+      {byTitle(g.items, 'useful').map((s) => <Card item={s} id={`sw-${s.id}`} preset={PRESET.softwareUseful} />)}
     </div>
   </>
-)}
+))}
 
 {contributed.length > 0 && (
   <details class="contribs">

@@ -3,6 +3,7 @@
   "id": "diffraxtra",
   "type": "software",
   "tier": "other",
+  "group": "numerics",
   "cvs": [],
   "date": {
     "start": "2025-02",
