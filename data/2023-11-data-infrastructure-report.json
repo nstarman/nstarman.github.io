@@ -1,0 +1,310 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "data-infrastructure-report",
+  "type": "publication",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2023-11"
+  },
+  "title": "The Future of Astronomical Data Infrastructure: Meeting Report",
+  "status": "published",
+  "entryType": "misc",
+  "authors": [
+    {
+      "family": "Blanton",
+      "given": "Michael R."
+    },
+    {
+      "family": "Evans",
+      "given": "Janet D."
+    },
+    {
+      "family": "Norman",
+      "given": "Dara"
+    },
+    {
+      "family": "O'Mullane",
+      "given": "William"
+    },
+    {
+      "family": "Price-Whelan",
+      "given": "Adrian"
+    },
+    {
+      "family": "Rizzi",
+      "given": "Luca"
+    },
+    {
+      "family": "Accomazzi",
+      "given": "Alberto"
+    },
+    {
+      "family": "Ansdell",
+      "given": "Megan"
+    },
+    {
+      "family": "Bailey",
+      "given": "Stephen"
+    },
+    {
+      "family": "Barrett",
+      "given": "Paul"
+    },
+    {
+      "family": "Berukoff",
+      "given": "Steven"
+    },
+    {
+      "family": "Bolton",
+      "given": "Adam"
+    },
+    {
+      "family": "Borrill",
+      "given": "Julian"
+    },
+    {
+      "family": "Cruz",
+      "given": "Kelle"
+    },
+    {
+      "family": "Dalcanton",
+      "given": "Julianne"
+    },
+    {
+      "family": "Desai",
+      "given": "Vandana"
+    },
+    {
+      "family": "Dubois-Felsmann",
+      "given": "Gregory P."
+    },
+    {
+      "family": "Economou",
+      "given": "Frossie"
+    },
+    {
+      "family": "Ferguson",
+      "given": "Henry"
+    },
+    {
+      "family": "Field",
+      "given": "Bryan"
+    },
+    {
+      "family": "Foreman-Mackey",
+      "given": "Dan"
+    },
+    {
+      "family": "Forero-Romero",
+      "given": "Jaime"
+    },
+    {
+      "family": "Gaffney",
+      "given": "Niall"
+    },
+    {
+      "family": "Gillies",
+      "given": "Kim"
+    },
+    {
+      "family": "Graham",
+      "given": "Matthew J."
+    },
+    {
+      "family": "Gwyn",
+      "given": "Steven"
+    },
+    {
+      "family": "Hennawi",
+      "given": "Joseph"
+    },
+    {
+      "family": "Hughes",
+      "given": "Anna L. H."
+    },
+    {
+      "family": "Jaffe",
+      "given": "Tess"
+    },
+    {
+      "family": "Jagannathan",
+      "given": "Preshanth"
+    },
+    {
+      "family": "Jenness",
+      "given": "Tim"
+    },
+    {
+      "family": "Jurić",
+      "given": "Mario"
+    },
+    {
+      "family": "Kavelaars",
+      "given": "JJ"
+    },
+    {
+      "family": "Kee",
+      "given": "Kerk"
+    },
+    {
+      "family": "Kern",
+      "given": "Jeff"
+    },
+    {
+      "family": "Kremin",
+      "given": "Anthony"
+    },
+    {
+      "family": "Labrie",
+      "given": "Kathleen"
+    },
+    {
+      "family": "Lacy",
+      "given": "Mark"
+    },
+    {
+      "family": "Law",
+      "given": "Casey"
+    },
+    {
+      "family": "Martínez-Galarza",
+      "given": "Rafael"
+    },
+    {
+      "family": "McCully",
+      "given": "Curtis"
+    },
+    {
+      "family": "McEnery",
+      "given": "Julie"
+    },
+    {
+      "family": "Miller",
+      "given": "Bryan"
+    },
+    {
+      "family": "Moriarty",
+      "given": "Christopher"
+    },
+    {
+      "family": "Muench",
+      "given": "August"
+    },
+    {
+      "family": "Muna",
+      "given": "Demitri"
+    },
+    {
+      "family": "Murillo",
+      "given": "Angela"
+    },
+    {
+      "family": "Narayan",
+      "given": "Gautham"
+    },
+    {
+      "family": "Neill",
+      "given": "James D."
+    },
+    {
+      "family": "Nikutta",
+      "given": "Robert"
+    },
+    {
+      "family": "Ojha",
+      "given": "Roopesh"
+    },
+    {
+      "family": "Olsen",
+      "given": "Knut"
+    },
+    {
+      "family": "O'Meara",
+      "given": "John"
+    },
+    {
+      "family": "Rusholme",
+      "given": "Ben"
+    },
+    {
+      "family": "Seaman",
+      "given": "Robert"
+    },
+    {
+      "family": "Starkman",
+      "given": "Nathaniel",
+      "me": true
+    },
+    {
+      "family": "Still",
+      "given": "Martin"
+    },
+    {
+      "family": "Stoehr",
+      "given": "Felix"
+    },
+    {
+      "family": "Swinbank",
+      "given": "John D."
+    },
+    {
+      "family": "Teuben",
+      "given": "Peter"
+    },
+    {
+      "family": "Toledo",
+      "given": "Ignacio"
+    },
+    {
+      "family": "Tollerud",
+      "given": "Erik"
+    },
+    {
+      "family": "Turk",
+      "given": "Matthew D."
+    },
+    {
+      "family": "Turner",
+      "given": "James"
+    },
+    {
+      "family": "Vacca",
+      "given": "William"
+    },
+    {
+      "family": "Vieira",
+      "given": "Joaquin"
+    },
+    {
+      "family": "Weaver",
+      "given": "Benjamin"
+    },
+    {
+      "family": "Weiner",
+      "given": "Benjamin"
+    },
+    {
+      "family": "Weiss",
+      "given": "Jason"
+    },
+    {
+      "family": "Westfall",
+      "given": "Kyle"
+    },
+    {
+      "family": "Willman",
+      "given": "Beth"
+    },
+    {
+      "family": "Zhao",
+      "given": "Lily"
+    }
+  ],
+  "arxiv": "2311.04272",
+  "primaryClass": "astro-ph.IM",
+  "refs": [
+    "the-future-of-astrophysical-data"
+  ]
+}

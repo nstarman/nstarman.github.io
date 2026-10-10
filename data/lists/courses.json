@@ -1,0 +1,8 @@
+{
+  "$schema": "../../schema/list.schema.json",
+  "id": "courses",
+  "entries": [
+    "PhD — Galactic Dynamics · Cosmology · AST 1501: Introduction to Research · AST 1500: Introduction to Research Astrophysics Literature · Machine Learning · Symbolic Mathematics",
+    "Bachelor's — Graduate Quantum Mechanics I & II · Graduate Electrodynamics · Graduate CMB Cosmology · Graduate Bayesian Modeling · General Relativity (graduate cross-listed) · Computational Methods in Physics · Galaxies and Cosmology · Physics and Frontiers I & II · Physics Today and Tomorrow · Stars and Planets · Analog and Digital Electronics · Introduction to Modern Physics · Undergraduate Research Physics: Modeling CMB Detectors · Advanced Physics Lab · Thermodynamics and Statistical Mechanics · Stellar Physics · Astronomical Techniques · Biophysics Modeling · Senior Seminar · Elementary Computer Programming · Calculus for Science & Engineering II & III · Elementary Differential Equations · Linear Algebra · Mathematical Methods of Physics I & II · Dark Matter"
+  ]
+}
