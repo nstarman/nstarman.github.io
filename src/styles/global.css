@@ -211,7 +211,7 @@ h2{
 .card .btns{margin-top:auto; padding-top:.6rem}
 .card .name{font-family:var(--mono); font-size:.95rem; font-weight:500; color:var(--ink)}
 .card p{margin:0; font-size:.88rem; color:var(--ink-mute); line-height:1.5}
-/* A card that is itself a link, on /webdev/: the title takes the hover. */
+/* A card that is itself a link, on /tools/: the title takes the hover. */
 a.card{color:inherit}
 a.card:hover{text-decoration:none; background:color-mix(in srgb, var(--ink) 5%, transparent)}
 a.card:hover .name{color:var(--accent)}
