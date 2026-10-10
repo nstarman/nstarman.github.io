@@ -1,0 +1,72 @@
+---
+// /tools/ — the things built rather than shown: the site's own, on the
+// database (Web Dev, at /webdev/), and those in repos of their own. Out of the
+// nav on purpose: reached from the footer.
+import Base from '../../layouts/Base.astro';
+
+const groups = [
+  {
+    id: 'webdev',
+    name: 'Web Dev',
+    tools: [
+      {
+        href: '/webdev/cv/',
+        name: 'CV Builder',
+        text: 'The complete CV with a tick box on every entry and line. Choose what goes in, then compile your own PDF in the browser.',
+      },
+      {
+        href: '/webdev/card/',
+        name: 'Card Builder',
+        text: 'Any card on this site, for another page: an iframe that stays current, or an image for places that strip iframes, such as a GitHub README.',
+      },
+      {
+        href: '/webdev/tiers/',
+        name: 'Software Tiers',
+        text: 'Every package and the tier that places it on the software page.',
+      },
+    ],
+  },
+  {
+    id: 'software-development',
+    name: 'Software Development',
+    tools: [
+      {
+        href: 'https://github.com/nstarman/cz-gitmoji-action',
+        name: 'cz-gitmoji-action',
+        text: 'GitHub Actions for cz-gitmoji: gitmoji commit messages, checked in CI.',
+      },
+    ],
+  },
+  {
+    id: 'paper-writing',
+    name: 'Paper Writing',
+    tools: [
+      {
+        href: 'https://github.com/nstarman/preamble',
+        name: 'preamble',
+        text: 'A LaTeX preamble worth reusing: packages of base commands, maths notation, and astronomy units, survey names and software links.',
+      },
+    ],
+  },
+];
+---
+<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database, and for writing code and papers.">
+  <main>
+    {groups.map((g) => (
+      <section id={g.id}>
+        <div class="wrap">
+          <div class="h2row"><h2>{g.name}</h2></div>
+          <div class="soft">
+            {g.tools.map((t) => (
+              /* The whole card is the link: it is the only thing to do with it. */
+              <a class="card toolcard" href={t.href}>
+                <span class="name">{t.name}</span>
+                <p>{t.text}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))}
+  </main>
+</Base>
