@@ -15,6 +15,9 @@
   "nickTitle": "When Streams Curve Away",
   "status": "submitted",
   "entryType": "misc",
+  "venue": {
+    "journal": "The Astrophysical Journal"
+  },
   "arxiv": "2609.40057",
   "primaryClass": "astro-ph.GA",
   "authors": [
