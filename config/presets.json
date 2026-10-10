@@ -139,6 +139,16 @@
       "match": {
         "type": "media"
       }
+    },
+    "languages": {
+      "heading": "Languages",
+      "icon": "education",
+      "list": "languages"
+    },
+    "courses": {
+      "heading": "Courses",
+      "icon": "education",
+      "list": "courses"
     }
   },
   "complete": {
@@ -161,7 +171,9 @@
       "service",
       "outreach",
       "grants-minor",
-      "media"
+      "media",
+      "languages",
+      "courses"
     ]
   },
   "np": {

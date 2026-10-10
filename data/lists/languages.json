@@ -1,0 +1,9 @@
+{
+  "$schema": "../../schema/list.schema.json",
+  "id": "languages",
+  "entries": [
+    "English — native reading, speaking and writing",
+    "Spanish — beginner speaking, oral comprehension and writing",
+    "Hebrew — beginner speaking, oral comprehension and writing"
+  ]
+}
