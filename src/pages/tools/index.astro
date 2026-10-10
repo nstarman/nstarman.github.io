@@ -48,9 +48,20 @@ const groups = [
       },
     ],
   },
+  {
+    id: 'agent-skills',
+    name: 'Agent Skills',
+    tools: [
+      {
+        href: 'https://github.com/nstarman/skills/tree/main/diataxis',
+        name: 'diataxis',
+        text: 'Audits and restructures documentation into the Diátaxis modes — tutorials, how-to guides, reference and explanation — without breaking links.',
+      },
+    ],
+  },
 ];
 ---
-<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database, and for writing code and papers.">
+<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database, for writing code and papers, and agent skills.">
   <main>
     {groups.map((g) => (
       <section id={g.id}>
