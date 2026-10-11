@@ -2,7 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "asa-astrostatistics-interest-group-student-paper-finalist",
   "type": "award",
-  "tier": "minor",
+  "tier": "major",
   "cvs": [
     "np"
   ],
