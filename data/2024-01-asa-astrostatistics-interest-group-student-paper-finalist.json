@@ -1,0 +1,26 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "asa-astrostatistics-interest-group-student-paper-finalist",
+  "type": "award",
+  "tier": "minor",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024-01"
+  },
+  "title": "Finalist, ASA Astrostatistics Interest Group Student Paper Competition",
+  "recipient": "Nathaniel Starkman",
+  "details": "Finalist for [Stream Members Only](item:stream-members-only); presented at JSM 2024 ([talk](item:asa-astrostatistics-interest-group-paper-competition-talk)).",
+  "funder": "ASA Astrostatistics Interest Group",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://astrostat.org"
+    }
+  ],
+  "refs": [
+    "stream-members-only",
+    "asa-astrostatistics-interest-group-paper-competition-talk"
+  ]
+}
