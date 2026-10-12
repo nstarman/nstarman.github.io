@@ -142,8 +142,9 @@ export function paperHref(item, to) {
 }
 
 /** Where a card's title links, title:…:link — the item itself: a paper's
- *  paper or preprint, a package's first link. */
-export const ownLink = (item) => (item.type === 'software' ? links(item)[0] : (primaryLink(item) ?? links(item)[0])) ?? null;
+ *  paper or preprint, a package's website (homepage, else docs, else its first link). */
+const siteLink = (item) => ['homepage', 'docs'].map((rel) => links(item).find((l) => l.rel === rel)).find(Boolean) ?? links(item)[0];
+export const ownLink = (item) => (item.type === 'software' ? siteLink(item) : (primaryLink(item) ?? links(item)[0])) ?? null;
 
 /** title:…:ads — its ADS abstract, where it has a bibcode. */
 export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}/abstract` : null);
