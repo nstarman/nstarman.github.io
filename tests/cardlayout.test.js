@@ -171,7 +171,7 @@ describe('what it draws is what the site holds', () => {
         const links = model.ops.filter((o) => o.k === 'box' && o.href).map((o) => o.href);
         expect(links).toEqual(cardLinks(record).map((l) => new URL(l.url).href));
         const texts = model.ops.filter((o) => o.k === 'text');
-        expect(texts[0]).toMatchObject({ s: record.title, href: input.href, font: 'IBM Plex Mono' });
+        expect(texts[0]).toMatchObject({ s: record.title, href: new URL(input.href).href, font: 'IBM Plex Mono' });
         // The stars last, as a count, where the package has enough; else no button.
         if (linkKeys(record).includes('stars')) {
           expect(linkKeys(record).at(-1)).toBe('stars');
