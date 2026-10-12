@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "jwst-go-10246-cen-a",
+  "type": "grant",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2026"
+  },
+  "title": "JWST GO 10246: Exploring the Accretion History and Halo of Giant Elliptical Cen A with Resolved Stars",
+  "shortTitle": "JWST GO 10246",
+  "tier": "major",
+  "funder": "Space Telescope Science Institute",
+  "summary": "Co-Investigator",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=10246"
+    }
+  ],
+  "tags": [
+    "jwst",
+    "stellar-halos"
+  ]
+}
