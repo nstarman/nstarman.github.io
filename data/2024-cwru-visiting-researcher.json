@@ -1,0 +1,19 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "cwru-visiting-researcher",
+  "type": "position",
+  "cvs": [
+    "np",
+    "2page"
+  ],
+  "date": {
+    "start": "2024",
+    "present": true
+  },
+  "title": "Visiting Researcher",
+  "institution": "Case Western Reserve University",
+  "location": "Cleveland, OH, USA",
+  "details": [
+    "Department of Physics."
+  ]
+}
