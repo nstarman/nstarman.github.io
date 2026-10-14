@@ -876,7 +876,9 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .entry--full .venueline .dot{margin:0 .4rem; color:var(--ink-faint)}
 .entry--full .venueline .yr{font-family:var(--mono); font-size:.8rem;
   font-variant-numeric:tabular-nums}
-.entry--full .abstract{max-width:none; margin:.55rem 0 0}
+/* Set off from the entry as a quotation is: a grey rule, and indented past it. */
+.entry--full .abstract{max-width:none; margin:.55rem 0 0 .3rem;
+  padding-left:.9rem; border-left:2px solid var(--rule-strong)}
 .entry--full .btns--icon{flex:none; flex-direction:column; gap:.35rem; margin:.15rem 0 0}
 
 /* On a phone the column of buttons becomes a row, and it sits under the
