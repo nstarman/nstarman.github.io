@@ -8,12 +8,12 @@
     "1page"
   ],
   "date": {
-    "start": "2026-05"
+    "start": "2026-10"
   },
   "title": "Potamides: Mapping Dark Matter Halo Shapes from Stellar Stream Tracks in the Local Universe",
   "shortTitle": "Potamides: Halo Shapes from Stream Curvature",
   "nickTitle": "Potamides",
-  "status": "accepted",
+  "status": "published",
   "entryType": "article",
   "authors": [
     {
@@ -50,7 +50,10 @@
     }
   ],
   "venue": {
-    "journal": "The Astrophysical Journal"
+    "journal": "The Astrophysical Journal",
+    "volume": "1010",
+    "number": "2",
+    "pages": "120"
   },
   "refs": [
     "potamides",
@@ -58,8 +61,15 @@
     "coordinax",
     "unxt"
   ],
+  "doi": "10.3847/1538-4357/aea0d4",
   "arxiv": "2605.07809",
   "bibcode": "2026arXiv260507809W",
+  "links": [
+    {
+      "rel": "paper",
+      "url": "https://iopscience.iop.org/article/10.3847/1538-4357/aea0d4"
+    }
+  ],
   "tags": [
     "extragalactic",
     "streams",

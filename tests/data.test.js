@@ -238,7 +238,6 @@ describe('venueUrl', () => {
 
   it('gives an unpublished paper no article link, because there is no article', () => {
     expect(venueUrl(resolve('pinns-mnras'))).toBeNull();
-    expect(venueUrl(resolve('potamides-apj'))).toBeNull();
   });
 
   it('never points a venue at an arXiv DOI', () => {
