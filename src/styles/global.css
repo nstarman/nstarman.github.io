@@ -920,10 +920,11 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .pubmore-btns button[aria-expanded="true"]::before{transform:rotate(90deg)}
 :is(.pubmore-btns button, .bibcopy):hover{color:var(--ink)}
 /* The BibTeX as the abstract is set off — a grey rule and indent — with Copy in its corner. */
-.bibtex{position:relative; margin:.55rem 0 0 .3rem; padding-left:.9rem; border-left:2px solid var(--rule-strong)}
-.bibtex pre{margin:0; padding-right:5rem; font-family:var(--mono); font-size:.72rem; line-height:1.45;
+.bibtex{display:flow-root; margin:.55rem 0 0 .3rem; padding-left:.9rem; border-left:2px solid var(--rule-strong)}
+.bibtex pre{margin:0; font-family:var(--mono); font-size:.72rem; line-height:1.45;
   color:var(--ink-2); white-space:pre-wrap; overflow-wrap:anywhere}
-.bibcopy{position:absolute; top:0; right:0; padding:0 .6rem; border:1px solid var(--rule-strong);
+/* Floated, so only the lines beside it make room for it. */
+.bibcopy{float:right; margin:0 0 .3rem .8rem; padding:0 .6rem; border:1px solid var(--rule-strong);
   border-radius:8px; corner-shape:squircle; background:var(--ground); transition:.15s}
 .bibcopy:hover, .bibcopy:focus-visible{color:var(--ground); background:var(--ink); border-color:var(--ink)}
 
