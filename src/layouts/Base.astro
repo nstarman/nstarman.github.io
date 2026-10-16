@@ -117,7 +117,7 @@ const updatedLabel = built.toLocaleDateString('en-GB', { day: 'numeric', month: 
           <a href="/tools/" class:list={['toolsbtn', isCurrent('/tools/') && 'on']}
              aria-current={isCurrent('/tools/') ? 'page' : undefined}>Tools</a>
           <span class="sep" aria-hidden="true">|</span>
-          <a href={`https://github.com/${repo}/commits/main`}>Last updated <time datetime={updated}>{updatedLabel}</time></a>
+          <a href={`https://github.com/${repo}`}>Last updated <time datetime={updated}>{updatedLabel}</time></a>
         </span>
       </div>
     </footer>
