@@ -921,9 +921,11 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 :is(.pubmore-btns button, .bibcopy):hover{color:var(--ink)}
 /* The BibTeX as the abstract is set off — a grey rule and indent — with Copy in its corner. */
 .bibtex{position:relative; margin:.55rem 0 0 .3rem; padding-left:.9rem; border-left:2px solid var(--rule-strong)}
-.bibtex pre{margin:0; padding-right:4rem; font-family:var(--mono); font-size:.72rem; line-height:1.45;
+.bibtex pre{margin:0; padding-right:5rem; font-family:var(--mono); font-size:.72rem; line-height:1.45;
   color:var(--ink-2); white-space:pre-wrap; overflow-wrap:anywhere}
-.bibcopy{position:absolute; top:0; right:0}
+.bibcopy{position:absolute; top:0; right:0; padding:0 .6rem; border:1px solid var(--rule-strong);
+  border-radius:999px; background:var(--ground); transition:.15s}
+.bibcopy:hover, .bibcopy:focus-visible{color:var(--ground); background:var(--ink); border-color:var(--ink)}
 
 .entry--unpub .yr{font-style:italic}
 /* Submitted is less settled than accepted, so its pill sits a step fainter. */
