@@ -888,7 +888,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
   .entry--full{flex-direction:column; align-items:stretch; gap:0}
   .entry--full .body{display:contents}
   .entry--full .btns--icon{flex-direction:row; margin-top:.5rem}
-  .entry--full .body > :is(.card, .absmore){order:1}
+  .entry--full .body > :is(.card, .pubmore){order:1}
   .entry--full .body > .swrow{order:1}
 }
 /* ADS and arXiv on the publications page, same pills as the home page. */
@@ -905,19 +905,25 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .entry--full .venueline .venue{font-style:italic; color:var(--ink-2)}
 .entry--full .abstract{color:var(--ink-2)}
 
-.absmore{margin-top:.45rem}
+.pubmore{margin-top:.45rem}
 .entry--full .swrow{margin-top:.6rem}
 /* A publication's highlight and its proceedings sit just under it. */
 .entry--full .body > .card{margin-top:.6rem}
-.absmore summary{
-  cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; list-style:none; min-height:24px;
+.pubmore-btns{display:flex; gap:1.1rem}
+.pubmore-btns button, .bibcopy{
+  cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; min-height:24px;
+  background:none; border:0; padding:0;
   font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ink-mute);
 }
-.absmore summary::-webkit-details-marker{display:none}
-.absmore summary::before{content:"\25B8"; color:var(--ink-faint); transition:transform .15s ease}
-.absmore[open] summary::before{transform:rotate(90deg)}
-.absmore summary:hover{color:var(--ink)}
+.pubmore-btns button::before{content:"\25B8"; color:var(--ink-faint); transition:transform .15s ease}
+.pubmore-btns button[aria-expanded="true"]::before{transform:rotate(90deg)}
+:is(.pubmore-btns button, .bibcopy):hover{color:var(--ink)}
+/* The BibTeX as the abstract is set off — a grey rule and indent — with Copy in its corner. */
+.bibtex{position:relative; margin:.55rem 0 0 .3rem; padding-left:.9rem; border-left:2px solid var(--rule-strong)}
+.bibtex pre{margin:0; padding-right:4rem; font-family:var(--mono); font-size:.72rem; line-height:1.45;
+  color:var(--ink-2); white-space:pre-wrap; overflow-wrap:anywhere}
+.bibcopy{position:absolute; top:0; right:0}
 
 .entry--unpub .yr{font-style:italic}
 /* Submitted is less settled than accepted, so its pill sits a step fainter. */
@@ -926,17 +932,6 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 /* A co-author's name links to their ORCID. Eight accent-coloured names in a row
    would turn a byline into a wall of links, so it reads as text and only shows
    itself on hover and focus. */
-/* A mark with no button around it. The profile pills are places to go; this is
-   a file to take, so it reads as a glyph rather than another destination. */
-.baremark{
-  width:1.75rem; height:1.75rem; border-radius:32%;
-  display:inline-flex; align-items:center; justify-content:center;
-  color:var(--ink-faint); border:1px solid var(--rule-strong); transition:color .15s, border-color .15s;
-}
-.baremark .ico{width:1.2rem; height:.9rem; text-transform:none; letter-spacing:0; fill:currentColor; display:block}
-.baremark .ico text{fill:var(--ink-faint)}
-.baremark:hover, .baremark:focus-visible{color:var(--accent); border-color:var(--accent); text-decoration:none}
-.baremark:hover .ico text, .baremark:focus-visible .ico text{fill:var(--accent)}
 
 /* ---------- software: filter by whether a package has a paper ---------- */
 /* Two stops, All first and selected: the list's own state is every package, and
