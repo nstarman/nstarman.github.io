@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "charlotte-myers-goldwater-scholar",
+  "type": "media",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026-04"
+  },
+  "title": "MIT News: Three from MIT named 2026 Goldwater Scholars",
+  "details": "My student Charlotte Myers named a 2026 Goldwater Scholar, for her work applying machine learning to model galactic structure — physics-informed neural networks for the Milky Way's gravitational potential",
+  "outlet": "MIT News",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://news.mit.edu/2026/three-mit-named-2026-goldwater-scholars-0423"
+    }
+  ],
+  "refs": [
+    "charlotte-myers-mit-with-prof-lina-necib-mit",
+    "pinns-mnras",
+    "pinns-neurips"
+  ]
+}
