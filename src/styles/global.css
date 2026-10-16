@@ -380,6 +380,8 @@ a.card:hover .name{color:var(--accent)}
 .c-context{font-family:var(--ff-context, var(--mono)); font-size:var(--fs-context, .77em); font-weight:var(--fw-context, 400); font-style:var(--fst-context, normal); letter-spacing:.06em;
   text-transform:uppercase; color:color-mix(in srgb, var(--ink-faint) 70%, transparent)}
 .c-context:hover{color:var(--accent); text-decoration:none}
+/* Plex Mono's › is centred on the x-height; lift it to the caps' centre. */
+.c-chev{position:relative; top:-.08em}
 /* A 13px-high line of small type: widen the hit area, not the line. */
 .c-context{position:relative}
 .c-context::after{content:""; position:absolute; inset:-6px -4px}

@@ -189,7 +189,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
           })}
         </ul>
       );
-      const context = (extra) => <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} aria-label={contextLabel} title={contextLabel} {...extra}>Context&nbsp;›</a>;
+      const context = (extra) => <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} aria-label={contextLabel} title={contextLabel} {...extra}>Context&nbsp;<span class="c-chev">›</span></a>;
       const stampBits = () => stamp.map((x, i) => <span class={x.me ? 'c-ent c-ent--me' : 'c-ent'}>{i > 0 && <span class="c-stusep"> | </span>}{x.me
         ? <span class="c-place">{place}</span>
         : <span class={`c-stu stu--${x.student}`} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>student<sup>{mark[x.student]}</sup> {ordinal(x.pos)}</span>}</span>);
