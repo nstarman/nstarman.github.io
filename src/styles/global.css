@@ -924,7 +924,7 @@ footer .wrap .toolsbtn:hover, .toolsbtn:hover{border-color:var(--accent); text-d
 .bibtex pre{margin:0; padding-right:5rem; font-family:var(--mono); font-size:.72rem; line-height:1.45;
   color:var(--ink-2); white-space:pre-wrap; overflow-wrap:anywhere}
 .bibcopy{position:absolute; top:0; right:0; padding:0 .6rem; border:1px solid var(--rule-strong);
-  border-radius:999px; background:var(--ground); transition:.15s}
+  border-radius:8px; corner-shape:squircle; background:var(--ground); transition:.15s}
 .bibcopy:hover, .bibcopy:focus-visible{color:var(--ground); background:var(--ink); border-color:var(--ink)}
 
 .entry--unpub .yr{font-style:italic}
