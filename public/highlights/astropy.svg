@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="5 3.5 150 147" role="img" aria-label="Astropy">
+<title>Astropy</title>
+<style>	.st0{fill:url(#path3837_1_);}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:13;}
+	.st2{fill:#FFFFFF;}
+	.st3{fill:#FFFFFF;stroke:#FFFFFF;stroke-width:2.3603;stroke-linecap:round;stroke-linejoin:round;}
+	.st4{fill:none;stroke:#FFFFFF;stroke-width:3.7264;}
+	.st5{fill:none;stroke:#FFFFFF;stroke-width:4.0254;}
+	.st6{fill:none;stroke:#FFFFFF;stroke-width:4.063;}</style>
+<linearGradient id="path3837_1_" gradientUnits="userSpaceOnUse" x1="-737.8835" y1="1639.9272" x2="-817.2668" y2="1735.7957" gradientTransform="matrix(1.0651 -0.9041 0.8901 1.0732 -593.9965 -2438.5088)"> <stop offset="0" style="stop-color:#FFA900"/> <stop offset="1" style="stop-color:#FD0000"/> </linearGradient> <path id="path3837" class="st0" d="M140.9,25.4c23.8,28.7,16,75.1-17.5,103.6s-80,28.2-103.9-0.5l0,0C-4.4,99.7,3.5,53.3,37,24.9 S117-3.3,140.9,25.4L140.9,25.4z"/> <path id="path5413" class="st1" d="M82.1,75.6C60.7,56.3,48.5,84,59.9,101.1c12.5,18.8,39.4,18.4,55.2,4.3c20-17.8,19.5-49.7,2-69" /> <path id="path3819" class="st2" d="M95,91.3c-4.8,4.7-16.1,2.6-25.3-4.5l0,0C60.5,79.6,57,70,61.8,65.4l0,0 c4.8-4.7,16.1-2.6,25.3,4.5l0,0C96.3,77,99.9,86.6,95,91.3L95,91.3z"/> <path id="path3853" class="st3" d="M101.1,28.5l9.3,15.7L124.7,30l-18.1-7.6L101.1,28.5z"/> <g id="g3804" transform="matrix(0.95039189,0,0,0.93299787,-2.487134,-0.56516029)"> <path id="path3855-7" class="st4" d="M105.7,23l-1.6-9.7l0.1,0.3l0,0"/> <path id="path3855-7-0" class="st5" d="M95.6,22.1l10.7,0.5H106l0,0"/> <path id="path3855-7-05" class="st6" d="M111.9,27.7l-6.8-5.4l0.3,0.2l0,0"/> </g> <path id="path3942" class="st1" d="M51.8,131.2c2.4,2.1,10.5,5.5,13.3,9c2.9,3.6,2.4,7.8,2.4,10.2"/> <path id="path2987-5" class="st1" d="M76.7,83.7c26.2,14.4,31.4-16,15.8-30.4c-17.2-15.9-44-9.3-56.3,8.4 c-15.8,22.6-7.1,54.6,15.6,69.6c0.8,0.6,1.7,1.1,2.6,1.6"/>
+</svg>

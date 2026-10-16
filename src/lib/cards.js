@@ -10,6 +10,8 @@ export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIG
  *  the one it draws by its key, PRESET.<key>. */
 export const SITE_PRESETS = [
   { key: 'softwareFlagship', slug: 'size:fill:fit-figure:none-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature', where: 'Software — the lead package' },
+  // The lead's card with its logo at the right; the README's image of it (src/pages/cards/) draws no figure, so it keeps softwareFlagship.
+  { key: 'softwareLead', slug: 'size:fill:fit-figure:right:center:112px-title:full:whole:link:top-authors:none-text:details-extras:role-buttons:all:fit-look:feature,frame=none', where: 'Software — the lead package, with its logo' },
   { key: 'softwareMajor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none-buttons:all:fit', where: 'Software — the headliners' },
   { key: 'softwareMinor', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:compact', where: 'Software — the long tail; the CV’s software' },
   { key: 'softwareUtility', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:summary-extras:none-buttons:all:fit-look:minor', where: 'Software — useful extras' },

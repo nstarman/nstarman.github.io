@@ -58,7 +58,7 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
   <>
     {lead && (
       <div class="lead">
-        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
       </div>
     )}
     <div class:list={['soft', emptied(headliners(all))]}>
@@ -75,7 +75,7 @@ const emptied = (items) => (!items.some((s) => softwarePapers(s).length) ? 'tier
     <p class:list={['hl-intro', 'sw-intro', emptied(g.items)]}>{spans(g.intro, '/cv/').map((s) => (s.url ? <a href={s.url}>{s.t}</a> : s.t))}</p>
     {g.items.includes(lead) && (
       <div class="lead">
-        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareFlagship} />
+        <Card item={lead} id={`sw-${lead.id}`} preset={PRESET.softwareLead} />
       </div>
     )}
     {/* One grid for the area: its major cards, then the smaller ones in
