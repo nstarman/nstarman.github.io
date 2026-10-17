@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref,
+  LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref, TIER_PRESET,
   FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
@@ -522,7 +522,8 @@ describe('presets', () => {
   it('are exactly the cards the website renders', () => {
     const used = usedPresets();
     expect([...used.written]).toEqual([]);
-    expect([...used.keys].sort()).toEqual(Object.keys(PRESET).sort());
+    // The README's images (src/pages/cards/) draw the tier presets, which no page need name.
+    expect([...new Set([...used.keys, ...Object.values(TIER_PRESET)])].sort()).toEqual(Object.keys(PRESET).sort());
   });
 
   it('are written as the canonical name, and so is every item default', () => {
