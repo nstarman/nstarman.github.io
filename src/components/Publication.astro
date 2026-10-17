@@ -3,6 +3,7 @@
 import { PRESET } from '../lib/cards.js';
 import { authors, venueLine, year, links, authorPosition, softwareUsed } from '../lib/data.js';
 import { mathParts } from '../lib/maths.js';
+import { toBibtex } from '../lib/bibtex.js';
 import LinkIcons from './LinkIcons.astro';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
@@ -18,6 +19,9 @@ const pending = item.status !== 'published' ? item.status : null;
 // The filter on /publications/ is CSS over this attribute, so it has to be on
 // the outermost element — that is what gets hidden.
 const pos = authorPosition(item);
+// In-preparation papers have no citable form, as in the .bib file.
+const bib = abstract && item.status !== 'in-prep' ? toBibtex(item) : null;
+const more = abstract && (item.abstract || bib);
 ---
 <article id={anchor} class={`entry--full${pending ? ` entry--unpub entry--${pending}` : ''}`}
          data-pos={pos ?? undefined}
@@ -55,16 +59,29 @@ const pos = authorPosition(item);
     {/* The packages of mine it used, read from its software section. */}
     {abstract && <SoftwareRow items={softwareUsed([item])} id={`pub-sw-${item.id}`} />}
 
-    {abstract && item.abstract && (
-      <details class="absmore">
-        <summary>Abstract</summary>
-        <p class="abstract">
-          {/* Only the MathML Temml produced is set as HTML; the surrounding prose
-              stays ordinary text and is escaped as usual. */}
-          {mathParts(item.abstract).map((part) =>
-            part.maths ? <Fragment set:html={part.html} /> : part.text)}
-        </p>
-      </details>
+    {/* The abstract and the BibTeX, each a toggle on one line, opening below
+        both — two <details> would each open under its own summary. */}
+    {more && (
+      <div class="pubmore">
+        <div class="pubmore-btns">
+          {item.abstract && <button type="button" aria-expanded="false" aria-controls={`abs-${item.id}`}>Abstract</button>}
+          {bib && <button type="button" aria-expanded="false" aria-controls={`bib-${item.id}`}>BibTeX</button>}
+        </div>
+        {item.abstract && (
+          <p class="abstract" id={`abs-${item.id}`} hidden>
+            {/* Only the MathML Temml produced is set as HTML; the surrounding prose
+                stays ordinary text and is escaped as usual. */}
+            {mathParts(item.abstract).map((part) =>
+              part.maths ? <Fragment set:html={part.html} /> : part.text)}
+          </p>
+        )}
+        {bib && (
+          <div class="bibtex" id={`bib-${item.id}`} hidden>
+            <button type="button" class="bibcopy">Copy</button>
+            <pre>{bib}</pre>
+          </div>
+        )}
+      </div>
     )}
 
     {/* Each proceeding of this paper, as a strip under it. */}
@@ -73,3 +90,26 @@ const pos = authorPosition(item);
 
   <LinkIcons links={trail} />
 </article>
+
+<script>
+  // One listener for every entry: a toggle shows its panel, Copy copies the BibTeX.
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.pubmore-btns button, .bibcopy');
+    if (!btn) return;
+    if (btn.classList.contains('bibcopy')) {
+      try {
+        await navigator.clipboard.writeText(btn.nextElementSibling.textContent);
+        btn.textContent = 'Copied';
+      } catch {
+        // Clipboard refused: select the text so it can be copied by hand.
+        getSelection().selectAllChildren(btn.nextElementSibling);
+        btn.textContent = 'Selected';
+      }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      return;
+    }
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
+  });
+</script>
