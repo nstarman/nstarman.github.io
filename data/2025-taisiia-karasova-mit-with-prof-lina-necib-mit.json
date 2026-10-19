@@ -11,5 +11,8 @@
   },
   "title": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)",
   "details": "Machine Learning Galaxy intrinsic sizes",
-  "student": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)"
+  "student": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)",
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)"
+  ]
 }
