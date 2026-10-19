@@ -374,7 +374,9 @@ correct entry needs. Two rules matter:
 `entryType` is the BibTeX type and is **not** derivable from `status` — a
 published conference paper is `inproceedings`, a preprint is `misc`. `venue`
 uses BibTeX-native names (`journal`, `booktitle`, `publisher`, `school`,
-`series`, `volume`, `number`, `pages`, `address`) so the mapping is direct.
+`series`, `volume`, `number`, `pages`, `address`, `year`, `month`) so the mapping is
+direct. `venue.year` and `venue.month` are the issue's own, set only where they
+differ from `date.start`: BibTeX uses them, while the site and CV keep `date.start`.
 The citekey is derived, never written: `[<Collab>+]<Lead>:<year>:<citeslug ?? id>`,
 defined in `citekey()` in `src/lib/bibtex.js` and in the constitution (Article VI).
 `citeslug` names the key's last part where it is not the `id`. A published
