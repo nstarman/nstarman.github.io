@@ -1,0 +1,52 @@
+name: Refresh skills
+
+# The Agent Skills section of /tools/ reads config/skills.json, a snapshot of the
+# card.json beside each skill in nstarman/skills. This takes a new one once a
+# week and opens a pull request, so a card on the site is reviewed like any
+# other change. It never pushes to the default branch.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # 06:00 UTC on Mondays
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-skills
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-skills
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Collect
+        run: node scripts/collect-skills.mjs
+
+      - name: Verify the site still builds
+        run: |
+          npm run test:schema
+          npm run build
+
+      - name: Open a pull request if a card changed
+        run: |
+          if git diff --quiet -- config/skills.json; then
+            echo "No skill cards changed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          body=$'Cards from `scripts/collect-skills.mjs`, run weekly by `.github/workflows/refresh-skills.yml`, reading each `card.json` in [nstarman/skills](https://github.com/nstarman/skills).'
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the agent skill cards" "$body" config/skills.json

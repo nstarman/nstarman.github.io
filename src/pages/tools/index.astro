@@ -3,6 +3,8 @@
 // database (Web Dev, at /webdev/), and those in repos of their own. Out of the
 // nav on purpose: reached from the footer.
 import Base from '../../layouts/Base.astro';
+// Agent Skills come from nstarman/skills via scripts/collect-skills.mjs.
+import skillCards from '/config/skills.json';
 
 const groups = [
   {
@@ -51,18 +53,7 @@ const groups = [
   {
     id: 'agent-skills',
     name: 'Agent Skills',
-    tools: [
-      {
-        href: 'https://github.com/nstarman/skills/tree/main/diataxis',
-        name: 'diataxis',
-        text: 'Audits and restructures documentation into the Diátaxis modes — tutorials, how-to guides, reference and explanation — without breaking links.',
-      },
-      {
-        href: 'https://github.com/nstarman/skills/tree/main/engaging-hybrid-compute',
-        name: 'engaging-hybrid-compute',
-        text: "Splits a research project between a laptop and MIT's Engaging cluster: edit locally, run Slurm jobs on the cluster, and sync code and results through a private git repo.",
-      },
-    ],
+    tools: skillCards.skills.map((s) => ({ href: s.href, name: s.name, text: s.description })),
   },
 ];
 ---
