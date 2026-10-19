@@ -20,5 +20,16 @@
     "family": "McKeigan",
     "given": "Connor",
     "level": "undergraduate"
-  }
+  },
+  "journey": [
+    {
+      "organization": "University of Toronto",
+      "city": "Toronto",
+      "region": "ON",
+      "country": "CA",
+      "start": "2023",
+      "end": "2025",
+      "role": "Undergraduate thesis student"
+    }
+  ]
 }

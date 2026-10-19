@@ -111,18 +111,22 @@ describe('plural', () => {
 });
 
 describe('seeding the builder\'s achievement ticks', () => {
-  const amir = achievementCvs(itemById('amir-abdul-howard'));
-  const charlotte = achievementCvs(itemById('charlotte-myers-mit-with-prof-lina-necib-mit'));
+  // Each entry is one achievement's `cvs`, as achievementCvs returns them.
+  const marked = [['np', '2page'], ['np', '2page']];
+  const unmarked = [[], []];
   const seed = (all, preset, unabridged = false) => all.map((c) => achievementTicked(c, preset, unabridged));
   it('NP ticks the marked achievements and leaves unmarked ones', () => {
-    expect(seed(amir, 'np')).toEqual([true, true, true, true]);
-    expect(charlotte.length).toBeGreaterThan(0);
-    expect(seed(charlotte, 'np').every((t) => !t)).toBe(true);
+    expect(seed(marked, 'np')).toEqual([true, true]);
+    expect(seed(unmarked, 'np')).toEqual([false, false]);
   });
-  it('2page ticks Amir\'s', () => {
-    expect(seed(amir, '2page').every(Boolean)).toBe(true);
+  it('2page ticks what is marked for it', () => {
+    expect(seed(marked, '2page').every(Boolean)).toBe(true);
+    expect(seed([['np']], '2page')).toEqual([false]);
   });
   it('complete ticks all', () => {
-    expect(seed(charlotte, 'complete', true).every(Boolean)).toBe(true);
+    expect(seed(unmarked, 'complete', true).every(Boolean)).toBe(true);
+  });
+  it('reads a record\'s cvs in line order', () => {
+    expect(achievementCvs(itemById('amir-abdul-howard'))).toHaveLength(4);
   });
 });

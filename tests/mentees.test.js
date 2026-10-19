@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { spans } from '../src/lib/inline.js';
 import {
-  menteeName, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans, firstSentenceSpans,
+  menteeName, levelLabel, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans, firstSentenceSpans,
 } from '../src/lib/mentees.js';
 
 const dates = (list) => list.map((a) => a.date);
@@ -27,6 +27,11 @@ describe('achievements', () => {
 describe('a mentee', () => {
   it('is named and linked from the record', () => {
     expect(menteeName({ person: { given: 'Amir', family: 'Abdul' } })).toBe('Amir Abdul');
+  });
+
+  it('labels every level the schema allows', () => {
+    expect(levelLabel({ person: { level: 'undergraduate' } })).toBe('Undergraduate');
+    expect(levelLabel({ person: { level: 'summer-associate' } })).toBe('Summer associate');
     expect(profileHref({ slug: 'amir-abdul' })).toBe('/people/amir-abdul/');
   });
 

@@ -536,7 +536,8 @@
                   "undergraduate",
                   "graduate",
                   "postbac",
-                  "postdoc"
+                  "postdoc",
+                  "summer-associate"
                 ]
               }
             }

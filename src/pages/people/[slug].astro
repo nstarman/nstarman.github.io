@@ -7,14 +7,14 @@ import '../../styles/people.css';
 import { PRESET } from '../../lib/cards.js';
 import { collabHref } from '../../lib/collabmap.js';
 import { dateLabel } from '../../lib/data.js';
-import { mentees, menteeKey, menteeBySlug, menteeName, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
+import { mentees, menteeKey, menteeBySlug, menteeName, levelLabel, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
 
 export const getStaticPaths = () => mentees().map((m) => ({ params: { slug: m.slug } }));
 
 const m = menteeBySlug(Astro.params.slug);
 const name = menteeName(m);
 const initials = `${m.person.given[0]}${m.person.family[0]}`;
-const level = m.person.level[0].toUpperCase() + m.person.level.slice(1);
+const level = levelLabel(m);
 const papers = menteePapers(m);
 const software = menteeSoftware(m);
 const ach = achievements(m);

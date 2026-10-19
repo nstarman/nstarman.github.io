@@ -35,7 +35,11 @@
       "kind": "award",
       "date": "2026-04",
       "title": "Barry Goldwater Scholarship",
-      "url": "https://news.mit.edu/2026/three-mit-named-2026-goldwater-scholars-0423"
+      "url": "https://news.mit.edu/2026/three-mit-named-2026-goldwater-scholars-0423",
+      "cvs": [
+        "np",
+        "2page"
+      ]
     },
     {
       "kind": "press",

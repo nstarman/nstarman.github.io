@@ -232,7 +232,8 @@ describe('mentees on the map', () => {
   });
 
   it('fills a mentee with no ORCID from their journey', () => {
-    expect(by('amir-abdul').pins.map((p) => p.organization)).toEqual(['Massachusetts Institute of Technology']);
+    expect(by('amir-abdulgadir').pins.map((p) => p.organization))
+      .toEqual(['Massachusetts Institute of Technology', 'Howard University']);
   });
 
   it('keeps a mentee with nothing to place, with no pins', () => {
@@ -244,7 +245,7 @@ describe('mentees on the map', () => {
   });
 
   it('links a mentee by slug', () => {
-    expect(collabHref('amir-abdul')).toBe('/research/?collab=amir-abdul#collaborators');
+    expect(collabHref('amir-abdulgadir')).toBe('/research/?collab=amir-abdulgadir#collaborators');
     expect(collabHref('nobody')).toBeNull();
   });
 });

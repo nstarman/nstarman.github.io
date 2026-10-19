@@ -10,16 +10,24 @@
     "start": "2025-06",
     "end": "2026"
   },
-  "title": "Amir Abdul (Howard)",
+  "title": "Amir Abdulgadir (Howard)",
   "details": "Baryon Modeling in External Galaxies with Stellar Streams",
-  "student": "Amir Abdul (Howard)",
-  "slug": "amir-abdul",
+  "student": "Amir Abdulgadir (Howard)",
+  "slug": "amir-abdulgadir",
   "person": {
-    "family": "Abdul",
+    "family": "Abdulgadir",
     "given": "Amir",
     "level": "undergraduate"
   },
   "journey": [
+    {
+      "organization": "Howard University",
+      "city": "Washington",
+      "region": "DC",
+      "country": "US",
+      "start": "2024",
+      "role": "Undergraduate, Astrophysics"
+    },
     {
       "organization": "Massachusetts Institute of Technology",
       "city": "Cambridge",
@@ -38,7 +46,8 @@
       "cvs": [
         "np",
         "2page"
-      ]
+      ],
+      "url": "https://oge.mit.edu/msrp/profiles/amir-abdulgadir/"
     },
     {
       "kind": "talk",
@@ -60,12 +69,19 @@
     },
     {
       "kind": "talk",
-      "date": "2026-03",
-      "title": "2026 APS Global Physics Summit, March 14–20",
+      "date": "2026-03-16",
+      "title": "Constraining Dark Matter in External Galaxies Using Stellar Streams",
+      "event": "2026 APS Global Physics Summit, March 14–20",
+      "url": "https://meetings-archive.aps.org/smt/2026/apr-d80/4/",
       "cvs": [
         "np",
         "2page"
       ]
     }
-  ]
+  ],
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)",
+    "Zeineb Mezghanni (MIT)"
+  ],
+  "research": "Amir weighs the dark matter of other galaxies with the stellar streams around them. Working from Euclid images, he finds galaxies with streams, subtracts the host galaxy's light to isolate each stream, and measures its path, width and brightness; together these constrain the host's total mass and shape, and taking away the stars leaves the dark matter."
 }

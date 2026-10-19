@@ -18,6 +18,10 @@ export const menteeName = (m) => `${m.person.given} ${m.person.family}`;
 /** What the collaborator map calls them: their ORCID, else their slug. */
 export const menteeKey = (m) => m.person.orcid ?? m.slug;
 export const profileHref = (m) => `/people/${m.slug}/`;
+// How a level reads in a sentence. A summer associate is not a student — Reem
+// wrote code with me, not research — so the label says what the role was.
+const LEVELS = { undergraduate: 'Undergraduate', graduate: 'Graduate', postbac: 'Postbac', postdoc: 'Postdoc', 'summer-associate': 'Summer associate' };
+export const levelLabel = (m) => LEVELS[m.person.level];
 
 /** The mentoring items that have a `person`, newest first. */
 export const pickMentees = (all) => all.filter((i) => i.type === 'mentoring' && i.person).sort(byStart);

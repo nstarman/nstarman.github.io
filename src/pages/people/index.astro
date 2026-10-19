@@ -3,9 +3,8 @@
 import Base from '../../layouts/Base.astro';
 import '../../styles/people.css';
 import { dateLabel } from '../../lib/data.js';
-import { mentees, menteeName, profileHref, researchSpans, firstSentenceSpans } from '../../lib/mentees.js';
+import { mentees, menteeName, levelLabel, profileHref, researchSpans, firstSentenceSpans } from '../../lib/mentees.js';
 
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
 // The first sentence of the research text, as plain words.
 const first = (m) => firstSentenceSpans(researchSpans(m.research)).map((s) => s.t).join('');
 ---
@@ -23,7 +22,7 @@ const first = (m) => firstSentenceSpans(researchSpans(m.research)).map((s) => s.
                 : <span class="pp-initials" aria-hidden="true">{m.person.given[0]}{m.person.family[0]}</span>}
               <div>
                 <h2><a href={profileHref(m)}>{menteeName(m)}</a></h2>
-                <p class="pp-meta">{[cap(m.person.level), m.institution, dateLabel(m)].filter(Boolean).join(' · ')}</p>
+                <p class="pp-meta">{[levelLabel(m), m.institution, dateLabel(m)].filter(Boolean).join(' · ')}</p>
                 {m.badge && <span class="pp-badge">{m.badge}</span>}
                 {m.research && <p class="pp-meta">{first(m)}</p>}
               </div>

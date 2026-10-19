@@ -17,5 +17,11 @@
       "rel": "homepage",
       "url": "https://openastronomy.org/gsoc/gsoc2026/"
     }
-  ]
+  ],
+  "slug": "reem-hamraz",
+  "person": {
+    "family": "Hamraz",
+    "given": "Reem",
+    "level": "summer-associate"
+  }
 }
