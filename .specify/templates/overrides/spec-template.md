@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Folds into**: specs/<area>/spec.md — the area spec this feature changes; a new area if none fits
+**Folds into**: [specs/<area>/spec.md] — the area spec this feature changes; a new area if none fits
 
 **Input**: User description: "$ARGUMENTS"
 
@@ -132,7 +132,7 @@
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
 
-## On landing
+## On landing *(mandatory)*
 
 When the feature lands, fold this spec's requirements into the area spec named
 in **Folds into** — rewritten there as its current contract — and delete this

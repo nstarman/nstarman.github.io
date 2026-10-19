@@ -18,8 +18,10 @@ describe('Spec Kit template overrides', () => {
   it('the constitution has its ten articles', () => expect(articles).toHaveLength(10));
   it("the plan's Constitution Check has a row per article, in order, by its heading", () =>
     expect(rows).toEqual(articles));
-  it('a feature spec names the area spec it folds into', () =>
-    expect(spec).toContain('**Folds into**: specs/'));
-  it('a feature spec ends by saying how it lands', () =>
-    expect(spec).toMatch(/^## On landing$/m));
+  // /speckit-specify fills [bracketed] placeholders and removes sections that
+  // don't apply unless they are marked (mandatory), so both are written its way.
+  it('a feature spec names the area spec it folds into, as a placeholder to fill', () =>
+    expect(spec).toContain('**Folds into**: [specs/<area>/spec.md]'));
+  it('a feature spec ends by saying how it lands, a section it may not drop', () =>
+    expect(spec).toMatch(/^## On landing \*\(mandatory\)\*$/m));
 });
