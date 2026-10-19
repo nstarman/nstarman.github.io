@@ -323,7 +323,8 @@ not exported: a text-sized iframe sits badly in prose.
 
 A `mentoring` item with a `person` is a mentee with a profile at `/people/<slug>/`.
 `person` is `{ family, given, level, orcid? }`, `level` one of `undergraduate`,
-`graduate`, `postbac`, `postdoc`; `slug` is the URL segment and is required with
+`graduate`, `postbac`, `postdoc`, `summer-associate` (someone who wrote code with
+me rather than research); `slug` is the URL segment and is required with
 it, as `person` is with every other profile field (`photo` as `people/<name>.webp`,
 `badge`, `research`, `journey`, `achievements`).
 
