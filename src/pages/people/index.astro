@@ -3,13 +3,12 @@
 import Base from '../../layouts/Base.astro';
 import '../../styles/people.css';
 import { dateLabel } from '../../lib/data.js';
-import { spans } from '../../lib/inline.js';
-import { mentees, menteeName, profileHref } from '../../lib/mentees.js';
+import { mentees, menteeName, profileHref, researchSpans } from '../../lib/mentees.js';
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 // The first sentence of the research text, as plain words.
 const first = (m) => {
-  const t = spans(m.research).map((s) => s.t).join('');
+  const t = researchSpans(m.research).map((s) => s.t).join('');
   return t.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? t;
 };
 ---

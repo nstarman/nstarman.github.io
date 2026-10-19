@@ -13,7 +13,7 @@
 .pp-section{margin-top:2rem}
 .pp-cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); gap:1rem; margin-bottom:1rem}
 .pp-ach{list-style:none; padding:0; margin:0}
-.pp-ach li{display:flex; gap:.8rem; flex-wrap:wrap; padding:.45rem 0; border-top:1px solid var(--line, currentColor)}
+.pp-ach li{display:flex; gap:.8rem; flex-wrap:wrap; padding:.45rem 0; border-top:1px solid var(--rule)}
 .pp-ach .when{font-family:var(--mono); font-size:.85rem; color:var(--ink-2); min-width:5rem}
 .pp-ach .kind{font-size:.78rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); min-width:4.5rem}
 .pp-ach .what{flex:1 1 14rem}

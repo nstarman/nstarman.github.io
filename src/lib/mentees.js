@@ -5,7 +5,9 @@
 // pure functions over arrays so the tests need no data; the wrappers at the
 // bottom hand them the database.
 
-import { byType, resolve } from './data.js';
+import { byType, resolve, titleOf } from './data.js';
+import { siteHref } from './cards.js';
+import { spans } from './inline.js';
 
 // Partial dates compare correctly as strings: "2026-04" > "2026" > "2025-07",
 // so the more precise date of two sharing a prefix sorts first, newest first.
@@ -47,3 +49,14 @@ export const menteeById = (id) => mentees().find((m) => m.id === id);
 export const menteeBySlug = (slug) => mentees().find((m) => m.slug === slug);
 export const menteePapers = (m) => papersOf(m, byType('publication'));
 export const menteeSoftware = (m) => softwareOf(m, menteePapers(m), byType('software'), resolve);
+
+/** `research` as spans with a link each: a `[](item:id)` is named by the item's
+ *  nickTitle and points at its place on this site, as /research/'s introductions
+ *  name theirs. An id naming no item throws, so a typo fails the build. */
+export const researchSpans = (text, lookup = resolve) =>
+  spans(text).map((s) => {
+    if (!s.item) return s;
+    const p = lookup(s.item);
+    if (!p) throw new Error(`research: [](item:${s.item}) names no item`);
+    return { ...s, t: s.t || titleOf(p, 'nick'), url: siteHref(p) };
+  });

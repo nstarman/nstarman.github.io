@@ -6,8 +6,7 @@ import Card from '../../components/Card.astro';
 import '../../styles/people.css';
 import { PRESET } from '../../lib/cards.js';
 import { dateLabel } from '../../lib/data.js';
-import { spans } from '../../lib/inline.js';
-import { mentees, menteeBySlug, menteeName, menteePapers, menteeSoftware, achievements } from '../../lib/mentees.js';
+import { mentees, menteeBySlug, menteeName, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
 
 export const getStaticPaths = () => mentees().map((m) => ({ params: { slug: m.slug } }));
 
@@ -40,7 +39,7 @@ const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `wi
 
         {m.research && <section class="pp-section">
           <h2>Our research</h2>
-          <p>{spans(m.research, '/cv/').map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+          <p>{researchSpans(m.research).map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
         </section>}
 
         {(papers.length > 0 || software.length > 0) && <section class="pp-section">

@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
-  menteeName, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements,
+  menteeName, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans,
 } from '../src/lib/mentees.js';
 
 const dates = (list) => list.map((a) => a.date);
@@ -56,5 +56,17 @@ describe('a mentee', () => {
     const byId = { pkg, own, p1: { id: 'p1', type: 'publication' } };
     const papers = [{ refs: ['pkg', 'p1'] }, { refs: ['pkg'] }];
     expect(softwareOf(m, papers, [own], (id) => byId[id]).map((s) => s.id)).toEqual(['pkg', 'own']);
+  });
+});
+
+describe('researchSpans', () => {
+  it('names an item link by its nickTitle and points it at this site', () => {
+    const out = researchSpans('We wrote [](item:pinns-mnras) together.');
+    const link = out.find((s) => s.item === 'pinns-mnras');
+    expect(link.t).toBeTruthy();
+    expect(link.url).toMatch(/^\/publications\/#pub-pinns-mnras$/);
+  });
+  it('throws on an id that names nothing', () => {
+    expect(() => researchSpans('[](item:no-such-item)')).toThrow(/names no item/);
   });
 });
