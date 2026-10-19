@@ -44,10 +44,13 @@ jobs:
           npm run test:schema
           npm run build
 
-      # Never fails the job: the pull request opens with its CI red and the
-      # differences from ADS in its description.
+      # Never fails the job. A pull request opened with the workflow token
+      # triggers no CI, so every failure is listed in its description instead;
+      # CI runs when someone pushes to the branch.
       - name: Compare our BibTeX with ADS's
-        run: npm run test:bibtex | tee bibtex.txt || true
+        run: |
+          npm run test:bibtex | tee bibtex.txt || true
+          npx vitest run tests/bibtex.test.js tests/bibcompare.test.js 2>&1 | tee vitest-bibtex.txt || true
 
       - name: Open a pull request if anything moved
         run: |
@@ -61,8 +64,12 @@ jobs:
           body+=$(grep '^  [a-z0-9]' changed.txt | grep ': ' | sed 's/^ */- /')
 
           if grep -q FAILED bibtex.txt; then
-            body+=$'\n\nDiffers from ADS:\n\n'
+            body+=$'\n\nBibTeX checks failed:\n\n'
             body+=$(grep -E 'FAILED|^    ' bibtex.txt | sed 's/^/    /')
+          fi
+          if grep -qE 'FAIL|×|AssertionError' vitest-bibtex.txt; then
+            body+=$'\n\nUnit tests failed:\n\n'
+            body+=$(grep -A1 -E 'FAIL|×|AssertionError' vitest-bibtex.txt | sed 's/^/    /')
           fi
 
           # shellcheck disable=SC2086 # one path per word
