@@ -13,7 +13,10 @@ Notes.md
 cv/cv.json
 
 # local dev-server config
-.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/speckit-*/
 
 # python bytecode from the scripts in scripts/
 __pycache__/
