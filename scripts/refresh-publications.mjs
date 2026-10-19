@@ -13,7 +13,7 @@
 // The token is read from the environment (a repo secret in CI), never stored.
 
 import fs from 'node:fs';
-import { parseBibtex } from '../src/lib/bibcompare.js';
+import { parseBibtex, splitExport } from '../src/lib/bibcompare.js';
 import { readItems } from './lib/items.mjs';
 import {
   adsQuery, changes, usable, arxivAbstract, crossrefAbstract, arxivByTitle,
@@ -97,21 +97,28 @@ for (const { path, item } of readItems()) {
 }
 // The archive's own BibTeX for every bibcode, kept verbatim as the reference
 // that `npm run test:bibtex` compares our entries with.
-const res = await fetch(`${API}/export/bibtex`, {
-  method: 'POST',
-  headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-  body: JSON.stringify({ bibcode: [...bibcodes] }),
-});
-if (!res.ok) throw new Error(`ADS export/bibtex: HTTP ${res.status}`);
-const snapshot = {};
-for (const entry of (await res.json()).export.split(/^(?=@)/m).filter((e) => e.startsWith('@'))) {
-  snapshot[parseBibtex(entry).key] = entry.trim();
-}
-const json = JSON.stringify(Object.fromEntries(Object.entries(snapshot).sort(([a], [b]) => (a < b ? -1 : 1))), null, 2) + '\n';
-if (!fs.existsSync(SNAPSHOT) || fs.readFileSync(SNAPSHOT, 'utf8') !== json) {
-  moved++;
-  console.log(`  ${SNAPSHOT}: moved`);
-  if (!check) fs.writeFileSync(SNAPSHOT, json);
+if (bibcodes.size) {
+  try {
+    const res = await fetch(`${API}/export/bibtex`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      // maxauthor 0 = every author; by default ADS cuts a long list to "and others"
+      body: JSON.stringify({ bibcode: [...bibcodes], maxauthor: 0 }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const exported = (await res.json()).export;
+    if (typeof exported !== 'string') throw new Error('no "export" in the response');
+    const snapshot = {};
+    for (const entry of splitExport(exported)) snapshot[parseBibtex(entry).key] = entry;
+    const json = JSON.stringify(Object.fromEntries(Object.entries(snapshot).sort(([a], [b]) => (a < b ? -1 : 1))), null, 2) + '\n';
+    if (!fs.existsSync(SNAPSHOT) || fs.readFileSync(SNAPSHOT, 'utf8') !== json) {
+      moved++;
+      console.log(`  ${SNAPSHOT}: moved`);
+      if (!check) fs.writeFileSync(SNAPSHOT, json);
+    }
+  } catch (e) {
+    console.log(`  failed      bibtex export: ${e.message}`);
+  }
 }
 
 console.log(`\n${moved} publication(s) ${check ? 'would change' : 'updated'}.`);

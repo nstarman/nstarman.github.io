@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseBibtex, compareToArchive } from '../src/lib/bibcompare.js';
+import { parseBibtex, compareToArchive, splitExport } from '../src/lib/bibcompare.js';
 
 const ARCH = String.raw`@ARTICLE{2025ApJ...980..253S,
        author = {{Starkman}, Nathaniel and {Nibauer}, Jacob and {Bovy}, J. and {P{\'e}rez}, Ana},
@@ -42,4 +42,20 @@ describe('compareToArchive', () => {
     expect(compareToArchive(OURS.replace('Nibauer, Jacob', 'Nibaur, Jacob'), ARCH, { preprint: false })[0].field).toBe('author'));
   it('a preprint skips the venue', () =>
     expect(compareToArchive(OURS, ARCH.replace('{\\apj}', '{arXiv e-prints}').replace('{980}', '{}'), { preprint: true })).toEqual([]));
+  it('an archive author list cut to "and others" is a difference that says so', () => {
+    const cut = ARCH.replace(/author = \{.*\},\n/, 'author = {{Starkman}, Nathaniel and others},\n');
+    const [d] = compareToArchive(OURS, cut, { preprint: false });
+    expect(d.field).toBe('author');
+    expect(d.theirs).toMatch(/ and others$/);
+  });
+  it('dotless i and special letters match their Unicode forms', () => {
+    const arch = String.raw`@ARTICLE{k, author = {{Mart{\'\i}n}, Ana and {S{\o}rensen}, Bo and {Stra{\ss}e}, C}, year = 2025}`;
+    const ours = '@article{x, author = {Martín, Ana and Sørensen, Bo and Straße, C}, year = {2025}}';
+    expect(compareToArchive(ours, arch, { preprint: false })).toEqual([]);
+  });
+  it('a field without "=" throws instead of looping', () =>
+    expect(() => parseBibtex('@article{k, oops }')).toThrow(/without "="/));
+  it('splitExport drops leading text and @comment blocks', () =>
+    expect(splitExport('\n\n@ARTICLE{a, year = 1}\n\n@comment{x}\n@MISC{b, year = 2}\n'))
+      .toEqual(['@ARTICLE{a, year = 1}', '@MISC{b, year = 2}']));
 });

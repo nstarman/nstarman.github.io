@@ -12,6 +12,7 @@ export function parseBibtex(text) {
   const skip = () => { while (i < text.length && /[\s,]/.test(text[i])) i++; };
   for (skip(); i < text.length && text[i] !== '}'; skip()) {
     const eq = text.indexOf('=', i);
+    if (eq < 0) throw new Error(`BibTeX field without "=" near "${text.slice(i, i + 30)}"`);
     const name = text.slice(i, eq).trim().toLowerCase();
     i = eq + 1;
     while (/\s/.test(text[i])) i++;
@@ -35,6 +36,11 @@ export function parseBibtex(text) {
   return { type: head[1].toLowerCase(), key: head[2], fields };
 }
 
+/** The entries of an export, one string each; text before the first `@` and
+ *  `@comment{…}` blocks are dropped. */
+export const splitExport = (text) =>
+  text.split(/^(?=@)/m).filter((e) => e.startsWith('@') && !/^@comment\b/i.test(e)).map((e) => e.trim());
+
 const ACCENT = { "'": '́', '`': '̀', '"': '̈', '^': '̂', '~': '̃', '=': '̄', c: '̧', v: '̌' };
 
 // ponytail: the AASTeX macros ADS emits for the journals we publish in; add one when a new journal appears.
@@ -46,7 +52,10 @@ const JOURNALS = {
   pasp: 'Publications of the Astronomical Society of the Pacific',
 };
 
+const LETTERS = { o: 'ø', O: 'Ø', ss: 'ß', l: 'ł', aa: 'å', AA: 'Å' };
 const norm = (v) => v
+  .replace(/\\([ij])(?![A-Za-z])/g, '$1') // dotless i and j, before the accent that sits on them
+  .replace(/\\(ss|aa|AA|o|O|l)(?![A-Za-z])/g, (_, k) => LETTERS[k])
   .replace(/\\([`'"^~=])\s*\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\([cv])[ ]?\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\&/g, '&')
@@ -61,6 +70,8 @@ const splitName = (n) => {
 };
 
 function sameAuthors(a, b) {
+  // ADS cut the list ("and others"): a difference, with the cause in the value
+  if (/ and others$/.test(b) && !/ and others$/.test(a)) return [a, b];
   const x = a.split(' and '), y = b.split(' and ');
   for (let k = 0; k < Math.max(x.length, y.length); k++) {
     const p = x[k] && splitName(x[k]), q = y[k] && splitName(y[k]);
