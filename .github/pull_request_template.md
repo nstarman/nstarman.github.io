@@ -1,6 +1,7 @@
 <!--
-  Adding an item? Fill in the first section and delete the second.
-  Changing code, schema or templates? Delete the first and fill in the second.
+  Adding an item? Keep the first section and delete the others.
+  Changing code, schema or templates? Keep the second.
+  A change that went through Spec Kit? Keep the second and the third.
   Conventions live in AGENTS.md.
 -->
 
@@ -33,3 +34,11 @@
 - [ ] `npm run test:schema` passes
 - [ ] If a `link.rel` value or a `type` was added, every renderer was updated in this PR
 - [ ] If a constraint was added, `schema/invalid/` gained a fixture proving it is enforced
+
+---
+
+## Changing behaviour
+
+- [ ] The area spec it changes is updated (`specs/<area>/spec.md`)
+- [ ] The feature folder is folded into it and deleted
+- [ ] The plan's Constitution Check passed, or each violation is justified
