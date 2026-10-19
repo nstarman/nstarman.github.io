@@ -227,6 +227,14 @@ is red until then (constitution, Article X).
 Do not run `/speckit-taskstoissues` unless asked. It opens GitHub issues, and
 an issue here needs the ♾️&➡ milestone, which it does not set.
 
+The plan and spec templates are this repo's own, in
+`.specify/templates/overrides/`: the plan's Constitution Check is a row per
+article, and a feature spec names the area spec it folds into
+(`tests/speckit-templates.test.js` keeps the rows in step with the
+constitution). They replace Spec Kit's core templates whole, so after
+`specify integration upgrade`, diff them against the new ones in
+`.specify/templates/`.
+
 ## Sites hosted in their own repos
 
 Any repo under `nstarman/` that publishes to GitHub Pages from Actions appears
