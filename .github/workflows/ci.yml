@@ -36,14 +36,14 @@ jobs:
       - run: npm ci
 
       # Constitution Article X: specs/ describes the system as it is, and git
-      # holds what it superseded. Design notes are not specs; they stay on
-      # their branch. Planning files (plan, tasks, research) are deleted when a
-      # feature lands; spec.md stays. (A superseded spec can't be told apart by
-      # a script, so that half of the article is review's.)
+      # holds what it superseded. A feature's specs/NNN-*/ folder is folded
+      # into its area spec and deleted when it lands; design notes stay on
+      # their branch. (A superseded spec can't be told apart by a script, so
+      # that half of the article is review's.)
       - name: Design notes stay on their branch
         run: |
-          if git ls-files | grep -E '^(docs/superpowers/|specs/[^/]+/((plan|tasks|research|data-model|quickstart)\.md$|contracts/|checklists/))'; then
-            echo "::error::Design notes and planning files are branch working material; delete them when a feature lands (spec.md stays)."
+          if git ls-files | grep -E '^(docs/superpowers/|specs/[0-9]+-)'; then
+            echo "::error::Fold the feature into its area spec under specs/ and delete specs/NNN-*/ (constitution, Article X); design notes stay on their branch."
             exit 1
           fi
 

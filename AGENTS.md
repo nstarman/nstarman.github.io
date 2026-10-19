@@ -187,16 +187,16 @@ the pull request instead of leaving it green with nothing run.
 
 ## 4. Open the PR
 
-- Branch `add/<id>`, e.g. `add/eas-2026-s10`.
+- Branch `add/<id>`, e.g. `add/eas-2026-s10` — the rule for a data item's
+  branch; other branches have no naming rule.
 - **One item per PR.** They then never conflict and each is reviewable at a glance.
 - Fill in the pull request template.
 - Title: `Add <type>: <title>`.
-- Milestone: **♾️&➡** by default, for pull requests and issues alike.
-  It is the standing milestone for this repo rather than a release marker, so
-  assign it unless something more specific applies:
+- Milestone: **♾️&➡**, the standing milestone for this repo rather than a
+  release marker. `.github/workflows/milestone-prs.yml` sets it on every pull
+  request when it opens; set it by hand only on an issue:
 
   ```bash
-  gh pr edit <number> --milestone "♾️&➡"
   gh issue edit <number> --milestone "♾️&➡"
   ```
 
@@ -205,23 +205,24 @@ the pull request instead of leaving it green with nothing run.
 
 ## Feature work with Spec Kit
 
-Adding an item is sections 1–4. A change to what the site, the CVs or the
-scripts do can run through Spec Kit, whose commands are installed for Claude
-Code and Copilot: `/speckit-specify`, then `/speckit-plan`, `/speckit-tasks`
-and `/speckit-implement`. `/speckit-plan` checks the plan against the
-constitution.
+Adding an item is sections 1–4. A change goes through Spec Kit when it changes
+what an area spec says the system does; data items, fixes that bring the code
+back in line with its spec, and refactors don't. Its commands are installed
+for Claude Code and Copilot: `/speckit-specify`, then `/speckit-plan`,
+`/speckit-tasks` and `/speckit-implement`. `/speckit-plan` checks the plan
+against the constitution.
 
 The specs named for an area — `specs/data-model/`, `specs/cards/` and the rest —
 describe the system as it is. A change to what one covers updates it in the
 same pull request.
 
-A feature's folder is `specs/NNN-<name>/`, and only its `spec.md` merges. The
-planning files Spec Kit writes beside it — `plan.md`, `tasks.md`,
-`research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `checklists/` —
-are working material. CI's *Design notes stay on their branch* step fails while
-any of them is tracked, so a feature PR is red until they go: review them on
-the branch, then delete them in the last push. A spec the change supersedes is
-rewritten or deleted in the same PR (constitution, Article X).
+A feature's `specs/NNN-<name>/` folder is working material, `spec.md`
+included. Its spec names the area spec it folds into. In the last push, fold
+the feature's requirements into that area spec — rewritten as its current
+contract, not appended as a changelog — or into a new `specs/<area>/spec.md`
+where it fits no area, and delete the whole folder. CI's *Design notes stay on
+their branch* step fails while any `specs/NNN-*` is tracked, so a feature PR
+is red until then (constitution, Article X).
 
 Do not run `/speckit-taskstoissues` unless asked. It opens GitHub issues, and
 an issue here needs the ♾️&➡ milestone, which it does not set.
