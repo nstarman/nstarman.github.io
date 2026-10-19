@@ -10,6 +10,11 @@
       "name": "engaging-hybrid-compute",
       "description": "Splits a research project between a laptop and MIT's Engaging cluster: edit locally, run Slurm jobs on the cluster, and sync code and results through a private git repo.",
       "href": "https://github.com/nstarman/skills/tree/main/engaging-hybrid-compute"
+    },
+    {
+      "name": "syw-overleaf-dropbox",
+      "description": "Guides writing a paper with showyourwork and Overleaf, using the Dropbox copy of the Overleaf project as the local text mirror: where to edit text versus code, how a build pushes figures and numbers, and the stalls and silent non-builds to expect.",
+      "href": "https://github.com/nstarman/skills/tree/main/syw-overleaf-dropbox"
     }
   ]
 }
