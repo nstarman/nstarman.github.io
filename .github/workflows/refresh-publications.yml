@@ -42,12 +42,16 @@ jobs:
       - name: Verify the data still validates and the site builds
         run: |
           npm run test:schema
-          npm run test:bibtex
           npm run build
+
+      # Never fails the job: the pull request opens with its CI red and the
+      # differences from ADS in its description.
+      - name: Compare our BibTeX with ADS's
+        run: npm run test:bibtex | tee bibtex.txt || true
 
       - name: Open a pull request if anything moved
         run: |
-          files=$(git status --porcelain -- data | cut -c4-)
+          files=$(git status --porcelain -- data config/bibtex-reference.json | cut -c4-)
           if [ -z "$files" ]; then
             echo "Every publication is current." >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -55,6 +59,11 @@ jobs:
 
           body=$'Updated by `scripts/refresh-publications.mjs`, run every six months, or by hand, by `.github/workflows/refresh-publications.yml`. Only missing or changed fields are written:\n\n'
           body+=$(grep '^  [a-z0-9]' changed.txt | grep ': ' | sed 's/^ */- /')
+
+          if grep -q FAILED bibtex.txt; then
+            body+=$'\n\nDiffers from ADS:\n\n'
+            body+=$(grep -E 'FAILED|^    ' bibtex.txt | sed 's/^/    /')
+          fi
 
           # shellcheck disable=SC2086 # one path per word
           scripts/open-refresh-pr.sh "$BRANCH" "Refresh the publications" "$body" $files
