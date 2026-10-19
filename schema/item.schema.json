@@ -508,7 +508,179 @@
               "type": "string"
             },
             "description": "What the student produced — talks, posters, papers."
+          },
+          "person": {
+            "description": "The mentee as a person, which makes this record a profile at /people/<slug>/. Needs `slug`.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "family",
+              "given",
+              "level"
+            ],
+            "properties": {
+              "family": {
+                "type": "string",
+                "minLength": 1
+              },
+              "given": {
+                "type": "string",
+                "minLength": 1
+              },
+              "orcid": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+              },
+              "level": {
+                "enum": [
+                  "undergraduate",
+                  "graduate",
+                  "postbac",
+                  "postdoc"
+                ]
+              }
+            }
+          },
+          "slug": {
+            "description": "The profile's URL segment, /people/<slug>/.",
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "photo": {
+            "description": "Path under public/.",
+            "type": "string",
+            "pattern": "^people/[a-z0-9-]+\\.(webp|jpg|png)$"
+          },
+          "badge": {
+            "type": "string",
+            "minLength": 1
+          },
+          "research": {
+            "type": "string",
+            "minLength": 1
+          },
+          "journey": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organization",
+                "country",
+                "start"
+              ],
+              "properties": {
+                "organization": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "city": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "region": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "country": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "start": {
+                  "$ref": "#/$defs/partialDate"
+                },
+                "end": {
+                  "$ref": "#/$defs/partialDate"
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "achievements": {
+            "description": "What the mentee did, kept in their own record and never as the owner's items.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "date",
+                "title"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "award",
+                    "talk",
+                    "poster",
+                    "press",
+                    "program"
+                  ]
+                },
+                "date": {
+                  "$ref": "#/$defs/partialDate"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "event": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "location": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "outlet": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "url": {
+                  "type": "string",
+                  "pattern": "^https?://\\S+$"
+                },
+                "cvs": {
+                  "description": "Which CV presets include this item, by the names in config/presets.json. Omit or leave empty for none — the complete CV takes everything regardless. This replaced the `% SKIP: (*)` markers the LaTeX CV used.",
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "np",
+                      "2page",
+                      "1page"
+                    ]
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
           }
+        },
+        "dependentRequired": {
+          "slug": [
+            "person"
+          ],
+          "photo": [
+            "person"
+          ],
+          "badge": [
+            "person"
+          ],
+          "research": [
+            "person"
+          ],
+          "journey": [
+            "person"
+          ],
+          "achievements": [
+            "person"
+          ],
+          "person": [
+            "slug"
+          ]
         }
       }
     },
@@ -790,6 +962,11 @@
         "orcid": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+        },
+        "mentee": {
+          "description": "The id of this author's mentoring record, where they are someone I mentored with a profile.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
         },
         "affiliation": {
           "type": "string",

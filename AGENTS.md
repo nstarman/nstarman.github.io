@@ -119,7 +119,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 | `position` | `institution` | `role`, `location`, `groupRoles` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder` |
 | `presentation` | `kind` | `event`, `location` |
-| `mentoring` | `student` | `institution`, `coSupervisors`, `outputs` |
+| `mentoring` | `student` | `institution`, `coSupervisors`, `outputs`, and for a profile `person`, `slug`, `photo`, `badge`, `research`, `journey`, `achievements` |
 | `teaching` | — | `institution`, `course`, `role` |
 | `service`, `outreach` | — | `organization`, `role` |
 | `media` | `outlet` | — |
@@ -318,6 +318,25 @@ until the rest pass. The recording is at several widths (200 to 640 px), so wrap
 
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.
+
+### Mentees
+
+A `mentoring` item with a `person` is a mentee with a profile at `/people/<slug>/`.
+`person` is `{ family, given, level, orcid? }`, `level` one of `undergraduate`,
+`graduate`, `postbac`, `postdoc`; `slug` is the URL segment and is required with
+it, as `person` is with every other profile field (`photo` as `people/<name>.webp`,
+`badge`, `research`, `journey`, `achievements`).
+
+- `journey` is the mentee's path, a list of `{ organization, city?, region?, country, start, end?, role? }`.
+  Each `organization` must be a name in `config/places.json`.
+- `achievements` are `{ kind, date, title, event?, location?, outlet?, url?, cvs? }`,
+  `kind` one of `award`, `talk`, `poster`, `press`, `program`. They live in the
+  mentee's record and **never as items of their own**: a mentee's award is not my
+  award. `cvs` names the presets that list one.
+- A paper is tied to its mentee by `mentee: "<mentoring id>"` on the author, beside
+  `family` and `given`. The profile finds its papers and their software from that;
+  nothing is listed on the mentee's record. An author's `student` must equal the
+  mentee's `person.level` where both are set.
 
 ### `location` — a place, never an institution
 
