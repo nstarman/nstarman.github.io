@@ -72,9 +72,9 @@ rather than a card and is never exported.
   PNG and PDF downloads draw the circle with no code of their own for it.
   *Enforced:* `tests/cards.test.js` ("the students extra", "student stamp"),
   `tests/cardbuilder.test.js` ("carries the students' photo face").
-- **FR-010** My position, the year and the context link, placed with buttons
-  that sit under the words or at the bottom, default up and down to the middle
-  of the buttons' row (`placeOf`, `src/lib/cardname.js`) — of their whole box
+- **FR-010** My position and my students' stamp, the year and the context
+  link, placed with buttons that sit under the words or at the bottom, default
+  up and down to the middle of the buttons' row (`placeOf`, `src/lib/cardname.js`) — of their whole box
   where they wrap to two rows — so the default is written nowhere; `:bottom`
   names the row's foot. Buttons in a side area keep that area's own default.
   On a card with no buttons, a student's photo does not make its line taller.
