@@ -12,8 +12,11 @@ Notes.md
 # cv.typ reads this; it is copied in per preset by scripts/build-cv-pdfs.sh
 cv/cv.json
 
-# local dev-server config
-.claude/
+# .claude/ is local (dev-server config, settings, worktrees) except Spec Kit's skills
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/speckit-*/
 
 # python bytecode from the scripts in scripts/
 __pycache__/
