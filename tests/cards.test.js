@@ -204,7 +204,9 @@ describe('card names', () => {
     expect(formatName({ text: 'none', authors: 'full', extras: ['position', 'year'] })).toContain('-authors:full:plain-text:none-extras:position,year-');
     // A strip's left is its default, and the buttons' box is where it sits left out.
     expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'top', h: 'left' } })).toContain('-position:top-');
-    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', v: 'bottom', h: 'right' } })).not.toContain('-position:');
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', v: 'center', h: 'right' } })).not.toContain('-position:');
+    // The middle of the buttons' row is the default up and down; their foot is named.
+    expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', v: 'bottom', h: 'right' } })).toContain('-position:center:bottom-');
     expect(formatName({ text: 'none', extras: ['position'], posAt: { area: 'center', h: 'left' } })).toContain('-position:center:left-');
     // Not an area away from the buttons, and in a strip only across it.
     for (const bad of ['position:left', 'position:top:bottom', 'position:center:middle', 'authors:full:top:left', 'authors:position:top']) {
@@ -214,8 +216,8 @@ describe('card names', () => {
 
   it('place a part with the buttons, at the end away from them left out', () => {
     const at = (name, part) => placeOf(parseName(`size:fill:fit-text:none-extras:year,context-${name}`), part);
-    expect(at('buttons:all', 'year')).toEqual({ area: 'center', v: 'bottom', h: 'right' });
-    expect(at('buttons:all:center:right', 'year')).toEqual({ area: 'center', v: 'bottom', h: 'left' });
+    expect(at('buttons:all', 'year')).toEqual({ area: 'center', v: 'center', h: 'right' });
+    expect(at('buttons:all:center:right', 'year')).toEqual({ area: 'center', v: 'center', h: 'left' });
     expect(at('buttons:all:right', 'year')).toEqual({ area: 'right', v: 'bottom', h: 'right' });
     expect(at('buttons:all:left:center', 'context')).toEqual({ area: 'left', v: 'center', h: 'left' });
     // In the box, center alone reads as up and down; across, it follows that.
@@ -641,6 +643,20 @@ describe('the students extra', () => {
     expect(stu(base('students'))).toBeDefined();
     expect(stu(base('position,students'), items.find((i) => i.id === 'galactic-amnesia'))).toBeUndefined();
   });
+  it('takes a photo face, students:photo, written only where the extra is', () => {
+    expect(parseName(`${base('students')}-students:photo`).stampFace).toBe('photo');
+    expect(parseName(`${base('students')}-students:word`).stampFace).toBeUndefined();
+    expect(formatName(parseName(`${base('students')}-students:photo`))).toContain('-students:photo-');
+    expect(formatName(parseName(`${base('students')}-students:word`))).not.toContain('students:');
+    expect(formatName(parseName(`${base('position')}-students:photo`))).not.toContain('students:');
+    for (const bad of ['students:face', 'students:photo:round', 'students']) expect(() => parseName(`${base('students')}-${bad}`), bad).toThrow();
+  });
+  it('sets data-stuphoto only with the extra shown and the photo face', () => {
+    const photo = (name) => cardFace(parseName(name), cardFacts(led)).data.stuphoto;
+    expect(photo(`${base('students')}-students:photo`)).toBeDefined();
+    expect(photo(base('students'))).toBeUndefined();
+    expect(photo(`${base('position')}-students:photo`)).toBeUndefined();
+  });
 });
 
 describe('the Card Builder\'s snippets', () => {
@@ -743,7 +759,7 @@ describe('student stamp', () => {
   const byId = (id) => items.find((i) => i.id === id);
   it('links a student with a profile to it', () => {
     const [s] = studentStamp(byId('pinns-mnras'));
-    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers' });
+    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers', photo: 'people/charlotte-myers.webp' });
   });
   it('leaves a student with no profile plain', () => {
     // A made-up paper, so the test holds once every real student has a profile.
@@ -752,9 +768,10 @@ describe('student stamp', () => {
       { family: 'Starkman', given: 'Nathaniel', me: true },
     ] };
     expect(studentStamp(paper)).toEqual([{ student: 'graduate', pos: 1 }]);
+    expect(studentStamp(paper)[0]).not.toHaveProperty('photo');
   });
   it('links Sirui Wu, a mentee who was not my student', () => {
     const [s] = studentStamp(byId('potamides-apj'));
-    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu' });
+    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu', photo: 'people/sirui-wu.webp' });
   });
 });

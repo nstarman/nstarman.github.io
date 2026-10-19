@@ -92,6 +92,10 @@ export function mountCardBuilder({ form, data }) {
     extras.innerHTML = x(it.role, 'role', 'My role in the package')
       + x(it.pos, 'position', 'My author position, as 1st')
       + x(it.students, 'students', 'My students on the paper, with their positions, beside mine')
+      // …and their face there: the word, student‡, or each one's photo.
+      + (it.students ? '<span class="pilltoggle" id="eb-stuface" role="radiogroup" aria-label="My students shown as">'
+        + '<label title="Each student as the word, student‡ 1st"><input type="radio" class="posradio" name="stuface" value="word" checked />word</label>'
+        + '<label title="Each student as their photo, where they have one: [photo] 1st"><input type="radio" class="posradio" name="stuface" value="photo" />photo</label></span>' : '')
       + x(it.year, 'year', 'The year')
       + x(it.context, 'context', 'A link to its topic on /research/');
     el('eb-extras-drop').hidden = !extras.innerHTML;
@@ -305,6 +309,8 @@ export function mountCardBuilder({ form, data }) {
     // A status pill belongs to a paper that has one to show.
     el('eb-tstatus').hidden = !s.it.tstatus;
     el('eb-vstatus').hidden = !s.it.status;
+    // The students' face belongs to the students extra, ticked.
+    for (const r of form.querySelectorAll('[name=stuface]')) r.disabled = !extraOn('students');
     el('eb-varxiv').hidden = !s.it.varxiv;
     el('eb-vname').hidden = el('eb-vname-key').hidden = !s.it.vshort;
     el('eb-vlink').hidden = el('eb-vlink-key').hidden = !s.it.vlink;

@@ -66,7 +66,8 @@ const topic = HIGHLIGHT_TOPICS.find(([key]) => key === h?.topic);
 const pos = isSoftware ? null : authorPosition(item);
 const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : 'nth');
 // Beside my position, each student of mine on the paper, with theirs, in
-// author order: "student‡ 1st | 2nd" — they were first and I second.
+// author order: "student‡ 1st | 2nd" — they were first and I second. Each
+// with a photo carries it too, shown in place of the word by students:photo.
 const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
 const mark = { undergraduate: '†', graduate: '‡' };
 const students = studentStamp(item);
@@ -195,7 +196,7 @@ const contextLabel = topic && `${topic[1]} research highlights`;
         const Stu = stuTag(x);
         return <span class={x.me ? 'c-ent c-ent--me' : 'c-ent'}>{i > 0 && <span class="c-stusep"> | </span>}{x.me
           ? <span class="c-place">{place}</span>
-          : <Stu class={`c-stu stu--${x.student}`} href={x.href} aria-label={x.href ? `${x.name} — student profile (${ordinal(x.pos)} author)` : undefined} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>student<sup>{mark[x.student]}</sup> {ordinal(x.pos)}</Stu>}</span>;
+          : <Stu class={`c-stu stu--${x.student}`} href={x.href} aria-label={x.href ? `${x.name} — student profile (${ordinal(x.pos)} author)` : undefined} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>{x.photo && <img class="c-stuphoto" src={`/${x.photo}`} alt="" loading="lazy" />}<span class="c-stuword">student<sup>{mark[x.student]}</sup></span> {ordinal(x.pos)}</Stu>}</span>;
       });
       const part = (k) => {
         const strip = face.strip[k] ? { 'data-strip': face.strip[k].area, 'data-across': face.strip[k].h } : {};

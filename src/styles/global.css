@@ -356,6 +356,15 @@ a.card:hover .name{color:var(--accent)}
 .c-py{white-space:nowrap}
 /* "student‡ 1st | 2nd" stays on the buttons' row, on one line. */
 .card[data-stustamp] .c-stamp{white-space:nowrap; font-size:.74em}
+/* students:photo — "[photo] 1st": each student with a photo as a circle
+   ringed in their level's colour, in place of the word and its mark. Sized
+   from the buttons, three quarters of one, so it reads beside them; the
+   negative margin keeps it from growing a line that has no buttons. */
+.c-stuphoto{display:none}
+.card[data-stuphoto] .c-stuphoto{display:inline-block; box-sizing:border-box; width:calc(var(--ib) * .75); height:calc(var(--ib) * .75); margin:calc(var(--ib) * -.2) .1em calc(var(--ib) * -.2) 0; border:1.5px solid; border-radius:999px; object-fit:cover; vertical-align:middle}
+.card[data-stuphoto] .stu--undergraduate .c-stuphoto{border-color:var(--stu-ug)}
+.card[data-stuphoto] .stu--graduate .c-stuphoto{border-color:var(--stu-grad)}
+.card[data-stuphoto] .c-stu:has(.c-stuphoto) .c-stuword{display:none}
 .c-yr{font-size:var(--fs-year, 1em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 .c-year{font-size:var(--fs-year, .82em); font-weight:var(--fw-year, 400); font-style:var(--fst-year, normal); font-family:var(--ff-year, var(--mono))}
 /* A strip: my position, the year or the context link in the top area, or

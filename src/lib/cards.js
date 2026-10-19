@@ -20,7 +20,7 @@ export const SITE_PRESETS = [
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/, which its title links to —
   // the paper button is the way out to the journal.
-  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
+  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-students:photo-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
   // Its figure is no link: on /publications/ that would be to itself.
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   { key: 'assist', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
@@ -73,11 +73,12 @@ export const CARD_TYPES = ['publication', 'highlight', 'software'];
 export const hasFigure = (item) => !!item.highlight?.image;
 export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
 /** My students on a paper, in author order, each with their place and — where
- *  the author names a mentee with a profile — the profile's address and name. */
+ *  the author names a mentee with a profile — the profile's address and name,
+ *  and their photo (a path under public/) where the record has one. */
 export const studentStamp = (item) => item.type !== 'publication' ? [] : (item.authors ?? []).flatMap((a, i) => {
   if (!a.student) return [];
   const m = a.mentee ? menteeById(a.mentee) : null;
-  return [{ student: a.student, pos: i + 1, ...(m && { href: profileHref(m), name: menteeName(m) }) }];
+  return [{ student: a.student, pos: i + 1, ...(m && { href: profileHref(m), name: menteeName(m), ...(m.photo && { photo: m.photo }) }) }];
 });
 /** A paper with a student of mine among its authors: the students extra. */
 export const hasStudents = (item) => item.type === 'publication' && (item.authors ?? []).some((a) => a.student);

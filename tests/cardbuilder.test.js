@@ -51,6 +51,15 @@ describe('controls ⇄ name', () => {
     expect(roundTrip(slug, i)).toBe(fitName(slug, itemFacts(i)));
   });
 
+  it('carries the students\' photo face, students:photo, through the controls', () => {
+    const i = pool.find((x) => x.id === 'pinns-mnras');
+    const slug = 'size:fill:fit-figure:none-title:short-authors:none-text:none-extras:position,students-students:photo-buttons:all';
+    expect(roundTrip(slug, i)).toBe(fitName(slug, itemFacts(i)));
+    expect(roundTrip(slug, i)).toContain('-students:photo-');
+    const { ops } = controlOps(parseName(slug), { it: itemFacts(i), stepPx: STEP_PX, framePx: FRAME_PX });
+    expect(ops).toContainEqual(['radio', 'stuface', 'photo']);
+  });
+
   it('drops what an item has not got: no figure, no byline, no text', () => {
     const it = { links: [], paperTo: {}, figure: false, byline: false, text: false, venue: false, pos: false, year: false, role: false, students: false, context: false };
     const c = parseName(fitName('size:fill:fit-figure:left:top:auto-title:full:split-authors:full:plain-text:summary-extras:venue,position-buttons:all', it));
