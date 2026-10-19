@@ -766,10 +766,10 @@ describe('student stamp', () => {
       { family: 'Starkman', given: 'Nathaniel', me: true },
     ] };
     expect(studentStamp(paper)).toEqual([{ student: 'graduate', pos: 1 }]);
+    expect(studentStamp(paper)[0]).not.toHaveProperty('photo');
   });
   it('links Sirui Wu, a mentee who was not my student', () => {
     const [s] = studentStamp(byId('potamides-apj'));
-    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu' });
-    expect(s).not.toHaveProperty('photo');
+    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu', photo: 'people/sirui-wu.webp' });
   });
 });
