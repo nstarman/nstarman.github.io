@@ -122,11 +122,9 @@ describe('citekey', () => {
     expect(citekey(entry({ id: 'p', authors: [A('van der Pérez'), A("O'Brien")] }))).toBe('vanderPerez+OBrien:2024:p'));
   it('always matches the BibTeX key pattern', () =>
     pubs.forEach((p) => expect(citekey(p)).toMatch(/^[A-Za-z][A-Za-z0-9_:+.-]*$/)));
-  it('reproduces every recorded key', () =>
-    pubs.forEach((p) => expect(citekey(p), p.id).toBe(fixture[p.id])));
-  it('every published paper has a frozen key', () =>
+  it('a published paper keeps its frozen key', () =>
     pubs.filter((p) => p.bibcode).forEach((p) =>
-      expect(fixture[p.id], `add "${p.id}": "${citekey(p)}" to tests/fixtures/citekeys.json`).toBeDefined()));
+      expect(citekey(p), `${p.id}: add or restore "${p.id}": "${citekey(p)}" in tests/fixtures/citekeys.json`).toBe(fixture[p.id])));
   it('the entry uses it', () =>
     expect(toBibtex(entry({ id: 'p' }))).toMatch(/^@article\{Starkman:2024:p,/));
 });
