@@ -102,6 +102,17 @@ export function achievementLines(item, preset, { complete = false } = {}) {
     });
 }
 
+/** Each achievement's `cvs`, in the order `achievementLines` prints them. */
+export const achievementCvs = (item) =>
+  sortAchievements(item.achievements).reverse().map((a) => a.cvs ?? []);
+
+/**
+ * Whether an achievement's line starts ticked when the builder is seeded from
+ * `preset`: the complete CV prints them all, any other only those it is marked for.
+ */
+export const achievementTicked = (cvs, preset, unabridged) =>
+  Boolean(unabridged) || (cvs ?? []).includes(preset);
+
 /**
  * What kind of line index `i` is on an entry whose lines run: `base` detail
  * lines, then complete-only ones up to `detailCount`, then achievements. The

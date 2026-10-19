@@ -110,7 +110,7 @@ const builderData = {
         <iframe id="preview" title="CV preview" hidden></iframe>
 
         <div id="tree">
-          <CvView cv={cv} pick picked={picked} level={startLevel} completeLines={startsComplete} />
+          <CvView cv={cv} pick picked={picked} level={startLevel} startPreset={START} completeLines={startsComplete} />
         </div>
       </div>
     </section>
@@ -124,7 +124,7 @@ const builderData = {
   <script>
     import { cvModel } from '../../lib/cvmodel.js';
     import { encode, decode, loadReport } from '../../lib/selection.js';
-    import { plural } from '../../lib/inline.js';
+    import { plural, achievementTicked } from '../../lib/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
     import { readSpacing, writeSpacing } from '../../lib/cvspacing.js';
     import { move, holdDrag } from '../../lib/secorder.js';
@@ -348,8 +348,11 @@ const builderData = {
         // A complete-only line belongs to the complete CV alone, so it stays
         // unticked for every other preset even though they are "full" detail.
         const unabridged = UNABRIDGED[t.dataset.preset] ?? false;
+        // An achievement prints by its own `cvs`, whatever the detail level.
         subs().forEach((b) => {
-          b.checked = full && (b.dataset.complete === undefined || unabridged);
+          b.checked = b.dataset.cvs !== undefined
+            ? achievementTicked(b.dataset.cvs.split(',').filter(Boolean), t.dataset.preset, unabridged)
+            : full && (b.dataset.complete === undefined || unabridged);
         });
         // Its grids' columns too, the usual 3 where it does not say.
         for (const g of columnGroups()) setColumns(g, PRESET_COLUMNS[t.dataset.preset]?.[g.dataset.columnsOf] ?? 3);

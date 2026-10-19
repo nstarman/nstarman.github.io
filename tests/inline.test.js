@@ -4,7 +4,8 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, plural, ordinal } from '../src/lib/inline.js';
+import { spans, plain, lines, detailLines, plural, ordinal, achievementCvs, achievementTicked } from '../src/lib/inline.js';
+import { resolve as itemById } from '../src/lib/data.js';
 
 describe('spans', () => {
   it('leaves prose alone', () => {
@@ -106,5 +107,22 @@ describe('plural', () => {
     expect(plural(1, 'talk')).toBe('1 talk');
     expect(plural(3, 'talk')).toBe('3 talks');
     expect(plural(0, 'entry', 'entries')).toBe('0 entries');
+  });
+});
+
+describe('seeding the builder\'s achievement ticks', () => {
+  const amir = achievementCvs(itemById('amir-abdul-howard'));
+  const charlotte = achievementCvs(itemById('charlotte-myers-mit-with-prof-lina-necib-mit'));
+  const seed = (all, preset, unabridged = false) => all.map((c) => achievementTicked(c, preset, unabridged));
+  it('NP ticks the marked achievements and leaves unmarked ones', () => {
+    expect(seed(amir, 'np')).toEqual([true, true, true, true]);
+    expect(charlotte.length).toBeGreaterThan(0);
+    expect(seed(charlotte, 'np').every((t) => !t)).toBe(true);
+  });
+  it('2page ticks Amir\'s', () => {
+    expect(seed(amir, '2page').every(Boolean)).toBe(true);
+  });
+  it('complete ticks all', () => {
+    expect(seed(charlotte, 'complete', true).every(Boolean)).toBe(true);
   });
 });
