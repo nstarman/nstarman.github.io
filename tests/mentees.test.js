@@ -55,13 +55,13 @@ describe('a mentee', () => {
     expect(papersOf(m, pubs).map((p) => p.id)).toEqual(['new', 'old']);
   });
 
-  it('has each package once, from their papers then their own', () => {
-    const m = { id: 'amir' };
-    const pkg = { id: 'pkg', type: 'software' };
-    const own = { id: 'own', type: 'software', authors: [{ mentee: 'amir' }] };
-    const byId = { pkg, own, p1: { id: 'p1', type: 'publication' } };
-    const papers = [{ refs: ['pkg', 'p1'] }, { refs: ['pkg'] }];
-    expect(softwareOf(m, papers, [own], (id) => byId[id]).map((s) => s.id)).toEqual(['pkg', 'own']);
+  it('lists only the packages whose own paper they wrote, not the ones those papers used', () => {
+    const m = { id: 'sirui' };
+    const papers = [{ id: 'joss', refs: ['theirs', 'used'] }];
+    const theirs = { id: 'theirs', type: 'software', refs: ['joss'] };       // the paper is this package's own
+    const used = { id: 'used', type: 'software', refs: ['someone-elses'] };  // cited, not written by them
+    const own = { id: 'own', type: 'software', authors: [{ mentee: 'sirui' }] };
+    expect(softwareOf(m, papers, [theirs, used, own, own]).map((s) => s.id)).toEqual(['theirs', 'own']);
   });
 });
 

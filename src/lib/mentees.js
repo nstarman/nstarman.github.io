@@ -30,12 +30,15 @@ export const pickMentees = (all) => all.filter((i) => i.type === 'mentoring' && 
 export const papersOf = (m, pubs) =>
   pubs.filter((p) => p.authors?.some((a) => a.mentee === m.id)).sort(byStart);
 
-/** Software from the refs of the mentee's papers, then software they wrote
- *  themselves, each once, in first-seen order. */
-export function softwareOf(m, papers, software, lookup) {
-  const fromRefs = papers.flatMap((p) => (p.refs ?? []).map(lookup)).filter((i) => i?.type === 'software');
+/** The packages that are theirs: each whose own paper (a package `refs` its
+ *  paper) is one of the mentee's, then any they are an author of, each once.
+ *  Not the packages their papers merely used — a paper refs those too, and a
+ *  student who ran galax did not write it. */
+export function softwareOf(m, papers, software) {
+  const ids = new Set(papers.map((p) => p.id));
+  const theirs = software.filter((s) => s.refs?.some((r) => ids.has(r)));
   const authored = software.filter((s) => s.authors?.some((a) => a.mentee === m.id));
-  return [...new Set([...fromRefs, ...authored])];
+  return [...new Set([...theirs, ...authored])];
 }
 
 export const sortAchievements = (list) => [...(list ?? [])].sort(newestFirst((a) => a.date));
@@ -54,7 +57,7 @@ export const mentees = () => pickMentees(byType('mentoring'));
 export const menteeById = (id) => mentees().find((m) => m.id === id);
 export const menteeBySlug = (slug) => mentees().find((m) => m.slug === slug);
 export const menteePapers = (m) => papersOf(m, byType('publication'));
-export const menteeSoftware = (m) => softwareOf(m, menteePapers(m), byType('software'), resolve);
+export const menteeSoftware = (m) => softwareOf(m, menteePapers(m), byType('software'));
 
 /** `research` as spans with a link each: a `[](item:id)` is named by the item's
  *  nickTitle and points at its place on this site, as /research/'s introductions
