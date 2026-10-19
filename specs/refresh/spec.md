@@ -2,7 +2,7 @@
 
 **Covers**: `.github/workflows/refresh-*.yml`, `.github/workflows/card-layout-fuzz.yml`,
 `.github/workflows/milestone-prs.yml`, `scripts/refresh-publications.mjs`,
-`scripts/collect-stars.mjs`, `scripts/collect-contributions.mjs`,
+`scripts/collect-stars.mjs`, `scripts/collect-skills.mjs`, `scripts/collect-contributions.mjs`,
 `scripts/collect-collaborators.mjs`, `scripts/collect-acknowledgements.mjs`,
 `scripts/scrape-astropy-voting-members.mjs`, `scripts/scrape-astropy-team-history.mjs`,
 `scripts/sync-software-figures.mjs`, `scripts/fetch-affiliations.mjs`,
@@ -25,14 +25,14 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
 ## Requirements
 
 - **FR-001** Remote facts are committed snapshots: `config/stars.json`,
-  `config/contributions.json`, `config/collaborators.json`,
+  `config/skills.json`, `config/contributions.json`, `config/collaborators.json`,
   `config/acknowledgements.json`, `config/astropy-voting-members.json`,
   `config/astropy-team-history.json`, `config/places.json`,
   `config/bibtex-reference.json`, `src/assets/world-equal-earth.json`,
   `public/highlights/*` with `highlight.source.sha`, and the publication fields
   `abstract`, `bibcode`, `doi`, `citations` and author `affiliation` in `data/`.
   The site imports them (`src/lib/data.js`, `collabmap.js`, `places.js`,
-  `worldmap.js`, `SoftwareSection.astro`); no build step or test calls a network
+  `worldmap.js`, `SoftwareSection.astro`, `pages/tools/index.astro`); no build step or test calls a network
   service, `tests/cardlayout.differential.test.js` excepted (FR-016)
   (Article VIII). *Enforced:* review — no check exists (Article VIII says so).
 - **FR-002** Every generated snapshot carries a `$comment` naming its script and
@@ -181,6 +181,13 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   light, plus dark at 400 and 808, and `syncKey` from `scripts/lib/cardsync.mjs`
   (a hash of the card rules of `global.css` and `Card.astro`). *Enforced:*
   `tests/cardlayout.test.js` (see `specs/cards/spec.md`).
+- **FR-023** `scripts/collect-skills.mjs` writes `config/skills.json`: for
+  each top-level folder of `nstarman/skills` (on `main`, or `SKILLS_REF`) that
+  holds a `SKILL.md`, its `card.json`'s `name` and `description` and an `href`
+  to that folder on `main`, sorted by folder. A skill without `card.json`, or a
+  card that is not exactly two non-empty strings `name` and `description`,
+  throws and writes nothing. The card format is that repo's `AGENTS.md`.
+  *Enforced:* review.
 
 ## Key Entities
 
@@ -221,6 +228,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
 | `refresh-publications.yml` | `0 6 1 1,7 *` | `refresh-publications.mjs` | `data/*` (`abstract`, `bibcode`, `doi`, `citations`), `config/bibtex-reference.json` | `ADS_TOKEN` (as `ADS_API_TOKEN`) |
 | `refresh-software-figures.yml` | `0 6 1 1,7 *` | `sync-software-figures.mjs` | `public/highlights/*`, `data/*` (`highlight.source.sha`) | — (`github.token`) |
 | `refresh-stars.yml` | `0 6 1 * *` | `collect-stars.mjs` | `config/stars.json` | — (`github.token`) |
+| `refresh-skills.yml` | `0 6 * * 1` | `collect-skills.mjs` | `config/skills.json` | — (`github.token`) |
 | `refresh-contributions.yml` | `0 6 1 * *` | `collect-contributions.mjs` | `config/contributions.json` | — (`github.token`) |
 | `refresh-acknowledgements.yml` | `30 6 1 * *` | `collect-acknowledgements.mjs`, `collect-collaborators.mjs --new`, `geocode-places.mjs` | `config/acknowledgements.json`, `config/collaborators.json`, `config/places.json` | `ADS_TOKEN` |
 | `refresh-astropy-voting-members.yml` | `30 6 1 9 *` | `scrape-astropy-voting-members.mjs` | `config/astropy-voting-members.json` | — |
@@ -236,6 +244,7 @@ proposing:
 | `refresh-publications` | `test:schema`, `build`; `test:bibtex`, `bibtex.test.js`, `bibcompare.test.js` reported, never failing |
 | `refresh-software-figures` | `test:schema`, `build`, `test:links` |
 | `refresh-stars` | `test:schema`, `build` |
+| `refresh-skills` | `test:schema`, `build` |
 | `refresh-contributions` | `test:schema`, `build`, `test:a11y` |
 | `refresh-acknowledgements` | `npm test`, `continue-on-error`, outcome in the PR body |
 | `refresh-astropy-voting-members` | `npm test` (fails the job) |
