@@ -59,6 +59,17 @@ describe('the database', () => {
       expect(slugs.filter((s, i) => slugs.indexOf(s) !== i)).toEqual([]);
     });
 
+    it('gives every mentee ORCID once', () => {
+      const ids = mentees.map((m) => m.person.orcid).filter(Boolean);
+      expect(ids.filter((o, i) => ids.indexOf(o) !== i)).toEqual([]);
+    });
+
+    it("keeps an achievement's cvs within its mentoring item's own", () => {
+      const bad = mentees.flatMap((m) => (m.achievements ?? [])
+        .flatMap((a) => (a.cvs ?? []).filter((c) => !(m.cvs ?? []).includes(c)).map((c) => `${m.id}: ${c}`)));
+      expect(bad).toEqual([]);
+    });
+
     it('places every journey stop', () => {
       const bad = mentees.flatMap((m) => (m.journey ?? [])
         .filter((j) => !locate(j.organization)).map((j) => `${m.id}: ${j.organization}`));
