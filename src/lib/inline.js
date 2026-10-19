@@ -8,6 +8,9 @@
 // Spans, not HTML: the same model feeds the website and the Typst CV, and only
 // one of those understands markup.
 
+import { dateLabel } from './data.js';
+import { sortAchievements } from './mentees.js';
+
 // `[text](https://…)` for the web, and `[text](item:some-id)` to point at
 // another entry on the same CV — the CV cross-references itself (a position
 // citing the grants that funded it) and a bare URL cannot express that.
@@ -80,4 +83,21 @@ export function detailLines(item, { complete = false } = {}) {
     ...(item.supervisors?.length ? [spans(`Supervisors: ${item.supervisors.join(', ')}`)] : []),
     ...(complete ? lines(item.detailsComplete) : []),
   ];
+}
+
+/**
+ * A mentee's marked achievements, one span array per line, oldest first so the
+ * entry reads as a progression. They follow everything `detailLines` returns,
+ * so existing line indexes keep their meaning, and are gated by their own
+ * `cvs` rather than by the section's detail level: a short CV that drops
+ * details can still carry the one achievement worth a line. `complete` shows all.
+ */
+export function achievementLines(item, preset, { complete = false } = {}) {
+  return sortAchievements(item.achievements).reverse()
+    .filter((a) => complete || a.cvs?.includes(preset))
+    .map((a) => {
+      const what = a.url ? `[${a.title}](${a.url})` : a.title;
+      const where = a.event ?? a.outlet;
+      return spans(`${what}${where ? ` — ${where}` : ''} (${dateLabel({ date: { start: a.date } })})`);
+    });
 }

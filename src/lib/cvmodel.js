@@ -8,7 +8,7 @@
 import person from '/config/person.json';
 import { resolve } from './presets.js';
 import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
-import { spans, detailLines } from './inline.js';
+import { spans, detailLines, achievementLines } from './inline.js';
 
 /**
  * The groups a section can break into, in the order a CV reads them: newest
@@ -95,7 +95,8 @@ function trailing(item) {
 }
 
 /** One item as a row of the model. */
-function rowOf(item, cv, s, keepLine) {
+export function rowOf(item, cv, s, keepLine) {
+  const detail = detailLines(item, { complete: cv.includeAll });
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.
@@ -110,8 +111,10 @@ function rowOf(item, cv, s, keepLine) {
     // summary/details split, and what make_short.py could not express.
     // Span arrays, not strings: `details` may be several lines and may carry
     // inline links, and Typst would print the markup verbatim otherwise.
-    lines: detailLines(item, { complete: cv.includeAll }).filter((_, i) =>
-      keepLine ? keepLine(item.id, i) : s.detail === 'full'),
+    lines: [...detail.filter((_, i) => keepLine ? keepLine(item.id, i) : s.detail === 'full'),
+            // Marked achievements follow every detail line, and have their own gate.
+            ...achievementLines(item, cv.name, { complete: cv.includeAll })
+              .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
     trailing: trailing(item),
     recipient: item.recipient ?? null,
     recipientInline: cv.recipientInline || (item.recipientInline ?? false),

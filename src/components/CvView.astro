@@ -6,7 +6,7 @@ import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
 import { softwarePapers, positionStops, institutionGroups, groupedByDefault, groupDate, groupTitle, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
-import { detailLines } from '../lib/inline.js';
+import { detailLines, achievementLines } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
 import Inline from './Inline.astro';
@@ -41,7 +41,12 @@ const merged = (list) => {
 const isPicked = (id) => !picked || picked.has(id);
 // Elaboration is a list of lines, and in the builder each one is its own
 // choice — inclusion is a tick, not a level.
-const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []);
+// A mentee's marked achievements follow them, gated by their own `cvs` rather
+// than the detail level, exactly as the PDF model has them.
+const detail = (i) => [
+  ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []),
+  ...achievementLines(i, cv.name, { complete: cv.includeAll }),
+];
 // Which of those lines only the complete CV shows. They are appended last, so
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.

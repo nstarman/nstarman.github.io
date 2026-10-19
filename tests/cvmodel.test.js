@@ -2,7 +2,7 @@
 // shows up in the PDF and the page at once — and neither can be diffed easily.
 
 import { describe, expect, it } from 'vitest';
-import { cvModel } from '../src/lib/cvmodel.js';
+import { cvModel, rowOf } from '../src/lib/cvmodel.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 const complete = cvModel('complete');
@@ -162,5 +162,33 @@ describe('every item', () => {
     // `student` was imported equal to `title`, so the subject repeated it.
     const mentoring = complete.sections.find((s) => s.id === 'mentoring');
     for (const i of mentoring.items) expect(text(i.subject)).not.toBe(i.title);
+  });
+});
+
+describe('mentee achievements', () => {
+  const item = {
+    id: 'm', type: 'mentoring', title: 'M', date: { start: '2024' },
+    details: 'About M.',
+    achievements: [
+      { kind: 'award', date: '2026-03', title: 'Prize', event: 'AAS', cvs: ['2page'] },
+      { kind: 'talk', date: '2025', title: 'Talk', url: 'https://x.org', outlet: 'Out' },
+    ],
+  };
+  const row = (name, keepLine, includeAll = false) =>
+    rowOf(item, { name, includeAll }, { detail: name === '2page' ? 'summary' : 'full' }, keepLine);
+  const lines = (r) => r.lines.map(text);
+
+  it('prints a marked achievement even where details are dropped', () => {
+    expect(lines(row('2page'))).toEqual(['Prize — AAS (2026)']);
+  });
+  it('prints neither on a preset that marks neither', () => {
+    expect(lines(row('np'))).toEqual(['About M.']);
+  });
+  it('prints all, oldest first, on the complete CV', () => {
+    expect(lines(row('complete', undefined, true)))
+      .toEqual(['About M.', 'Talk — Out (2025)', 'Prize — AAS (2026)']);
+  });
+  it('is not kept by a builder tick of an earlier line', () => {
+    expect(lines(row('complete', (_id, i) => i === 0, true))).toEqual(['About M.']);
   });
 });
