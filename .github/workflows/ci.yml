@@ -35,6 +35,15 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # Constitution Article X: specs/ describes the system as it is. Feature
+      # folders and design notes are branch working material, never merged.
+      - name: Specs are current, not history
+        run: |
+          if git ls-files | grep -E '^(specs/[0-9]{3}-|docs/superpowers/)'; then
+            echo "::error::Fold these into specs/<area>/spec.md and delete them before merging."
+            exit 1
+          fi
+
       # unit tests over src/lib: the database loader, preset resolution, the
       # render model both the site and cv.typ read, and BibTeX escaping
       - name: Unit tests
