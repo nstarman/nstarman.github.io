@@ -93,12 +93,14 @@ to merge; one item per data PR; non-trivial logic leaves a test.
 
 ### X. Specs describe the system as it is
 
-`specs/<area>/spec.md` is that area's current contract; a change to behaviour
-updates its spec in the same PR. Feature folders `specs/NNN-*` and design notes
-are branch working material and never reach `main`. History is git's.
+A spec under `specs/` is the current contract for what it covers. A change to
+behaviour updates that spec in the same PR; a spec the change supersedes is
+rewritten or deleted, never kept beside its replacement. Design notes that are
+not specs (`docs/superpowers/`) stay on their branch. History is git's.
 
-*Why:* a well-specified repo, not an archive of its design. *Enforced:* the CI
-step "Specs are current, not history" in `.github/workflows/ci.yml`; review.
+*Why:* a well-specified repo, not an archive of its design. *Enforced:* review;
+the CI step "Design notes stay on their branch" in `.github/workflows/ci.yml`
+rejects `docs/superpowers/` on `main`.
 
 ## Governance
 
