@@ -450,7 +450,7 @@ whatever it touched:
 |---|---|
 | `test:unit` | the loader, preset resolution, the render model, BibTeX escaping |
 | `test:schema` | the schema, `<date.start>-<id>.json` filenames, refs, cross-links, and the bad fixtures still being rejected |
-| `test:bibtex` | one entry per publication, braces balanced, maths in abstracts intact |
+| `test:bibtex` | one entry per publication, braces balanced, maths in abstracts intact, each paper with a `bibcode` compared field by field against the ADS export in `config/bibtex-reference.json` |
 | `build` | the site compiles |
 | `test:a11y` | every heading and link has an accessible name |
 | `test:links` | every internal href, anchor and asset in `dist/` resolves |
