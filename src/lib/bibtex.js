@@ -68,8 +68,12 @@ function names(item) {
 export function toBibtex(item) {
   if (item.type !== 'publication') return null;
 
-  const [year, month] = (item.date?.start ?? '').split('-');
   const v = item.venue ?? {};
+  // The journal's issue date, where it differs from date.start; its month is
+  // never mixed with date.start's year.
+  const [startYear, startMonth] = (item.date?.start ?? '').split('-');
+  const year = v.year ?? startYear;
+  const month = v.year ? v.month : startMonth;
 
   const fields = [
     ['author', names(item)],
@@ -90,7 +94,7 @@ export function toBibtex(item) {
     ['eprint', item.arxiv],
     ['archivePrefix', item.arxiv ? 'arXiv' : null],
     ['primaryClass', item.primaryClass],
-    ['adsurl', item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}/abstract` : null],
+    ['adsurl', item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}` : null],
     ['abstract', item.abstract && escAbstract(item.abstract)],
     // `status` is the only place "submitted"/"in prep" is recorded, so it has
     // to reach the reader somehow; note is where BibTeX puts that.
