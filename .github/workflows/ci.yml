@@ -37,12 +37,13 @@ jobs:
 
       # Constitution Article X: specs/ describes the system as it is, and git
       # holds what it superseded. Design notes are not specs; they stay on
-      # their branch. (A superseded spec can't be told apart by a script, so
-      # that half of the article is review's.)
+      # their branch. Planning files (plan, tasks, research) are deleted when a
+      # feature lands; spec.md stays. (A superseded spec can't be told apart by
+      # a script, so that half of the article is review's.)
       - name: Design notes stay on their branch
         run: |
-          if git ls-files | grep -E '^docs/superpowers/'; then
-            echo "::error::Design notes are branch working material; remove them before merging."
+          if git ls-files | grep -E '^(docs/superpowers/|specs/[^/]+/(plan|tasks|research)\.md$)'; then
+            echo "::error::Design notes and planning files are branch working material; delete them when a feature lands (spec.md stays)."
             exit 1
           fi
 
