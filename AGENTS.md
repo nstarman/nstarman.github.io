@@ -7,6 +7,9 @@ website, the profile README at [nstarman/nstarman], three CV PDFs, and a BibTeX
 file. Adding a conference, a paper, or a package means adding **one file** —
 never editing a rendered output by hand.
 
+The principles are in [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
+and win any conflict; this file is how to do the work.
+
 [nstarman/nstarman]: https://github.com/nstarman/nstarman
 
 ---
@@ -113,7 +116,7 @@ its name, so nothing hard-codes which preset is the unabridged one.
 
 | `type` | also required | also accepted |
 |---|---|---|
-| `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citekey`, `citations`, `highlight` |
+| `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citeslug`, `citations`, `highlight` |
 | `software` | `tier`, `group` | `repo`, `authors`, `version`, `role`, `doi`, `highlight` |
 | `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `role`, `location`, `groupRoles` |
@@ -372,8 +375,11 @@ correct entry needs. Two rules matter:
 published conference paper is `inproceedings`, a preprint is `misc`. `venue`
 uses BibTeX-native names (`journal`, `booktitle`, `publisher`, `school`,
 `series`, `volume`, `number`, `pages`, `address`) so the mapping is direct.
-`citekey` defaults to `id`; set it only to preserve a key already cited
-elsewhere.
+The citekey is derived, never written: `[<Collab>+]<Lead>:<year>:<citeslug ?? id>`,
+defined in `citekey()` in `src/lib/bibtex.js` and in the constitution (Article VI).
+`citeslug` names the key's last part where it is not the `id`. A published
+paper's key is frozen in `tests/fixtures/citekeys.json`, and each entry is
+checked against `config/bibtex-reference.json`.
 
 A workshop or conference proceeding of a paper that exists in full sets
 `preliminaryOf` to that paper's id. `/publications/` then lists it as an
@@ -526,22 +532,16 @@ site-absolute one fails `test:links`, since the page is not in this build.
 
 ## Do not
 
-- **Do not** edit `README.md` in [nstarman/nstarman] by hand — it is generated.
-- **Do not** edit the built PDFs under `cv/`, the generated `.bib`, or `dist/`.
-- **Do not** put two items in one file.
-- **Do not** change an `id` after merge — `refs` elsewhere point at it.
-- **Do not** invent a `link.rel` value, or add an ADS link instead of `bibcode`.
-- **Do not** write an author as a display string, or truncate an author list.
-- **Do not** hand-write star counts or citation numbers that a script fetches.
+- **Do not** edit `README.md` in [nstarman/nstarman] by hand — it is generated (constitution, Article I).
+- **Do not** edit the built PDFs under `cv/`, the generated `.bib`, or `dist/` (constitution, Article I).
+- **Do not** put two items in one file (constitution, Article II).
+- **Do not** change an `id` after merge — `refs` elsewhere point at it (constitution, Article III).
+- **Do not** invent a `link.rel` value (constitution, Article IV).
+- **Do not** add an ADS link instead of `bibcode` (constitution, Article V).
+- **Do not** write an author as a display string, or truncate an author list (constitution, Article V).
+- **Do not** hand-write star counts or citation numbers that a script fetches (constitution, Article V).
 
 ## Why it is shaped this way
 
-Three artefacts used to restate the same facts — a 1119-line LaTeX CV, the
-profile README, and a Jekyll site — and they drifted. The site sat unchanged for
-over a year while the CV gained new submissions. The old CV even tried to solve
-this, with a Python script stripping `% SKIP: (*)` markers out of the `.tex` and
-then injecting `\vspace{-10pt}` to repair the layout.
-
-The idea was right; the mechanism was fragile. Here the selection lives in data
-(`cvs`, `summary`/`details`, `tier`) and the renderers read it. Adding a conference is
-one small file, and it appears everywhere at once.
+Facts live in one place and renderers read them: see Articles I and VII of the
+[constitution](.specify/memory/constitution.md).
