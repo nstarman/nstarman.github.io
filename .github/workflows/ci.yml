@@ -39,7 +39,7 @@ jobs:
       # folders and design notes are branch working material, never merged.
       - name: Specs are current, not history
         run: |
-          if git ls-files | grep -E '^(specs/[0-9]{3}-|docs/superpowers/)'; then
+          if git ls-files | grep -E '^(specs/[0-9]+-|docs/superpowers/)'; then
             echo "::error::Fold these into specs/<area>/spec.md and delete them before merging."
             exit 1
           fi
