@@ -1,10 +1,18 @@
 {
   "astropy-v5-paper": "Astropy+Price-Whelan+:2022:astropy-v5",
+  "characterizing-stream-tracks": "Starkman+:2023:stream-tracks",
+  "cmb-spectrum-distortions": "Starkman+:2024:cmb-spectral-distortions",
+  "data-infrastructure-report": "Blanton+:2023:data-infrastructure-report",
   "euclid-eggs-pilot": "Euclid+Starkman+:2026:stream-halo-geometry",
   "galactic-amnesia": "Necib+:2026:galactic-amnesia",
+  "macro-lightning": "Starkman+:2020:macro-lightning",
   "maximum-discs": "Starkman+:2018:maximum-discs",
+  "pal5-gaia-dr2": "Starkman+:2020:pal5-gaia-dr2",
   "pinns-mnras": "Myers+:2026:galactic-pinns",
   "potamides-apj": "Wu+:2026:potamides-halo-shapes",
+  "sparc-halo-density": "Li+:2018:sparc-halo-density",
+  "stream-convexity-rate": "Starkman+:2026:stream-convexity-rate",
   "stream-members-only": "Starkman+:2025:stream-members",
-  "streamsculptor": "Nibauer+:2025:streamsculptor"
+  "streamsculptor": "Nibauer+:2025:streamsculptor",
+  "unxt-joss": "Starkman+:2025:unxt"
 }
