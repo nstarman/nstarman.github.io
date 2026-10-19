@@ -82,7 +82,8 @@ function sameAuthors(a, b, prefix) {
     const p = x[k] && splitName(x[k]), q = y[k] && splitName(y[k]);
     // given names agree when one side's initials begin the other's: "Jeremy" ~ "Jeremy J."
     const same = p && q && p.family === q.family
-      && (p.initials.startsWith(q.initials) || q.initials.startsWith(p.initials));
+      && (p.initials === q.initials
+        || (p.initials && q.initials && (p.initials.startsWith(q.initials) || q.initials.startsWith(p.initials))));
     if (!same) return [x[k] ?? '', y[k] ?? ''];
   }
   return null;

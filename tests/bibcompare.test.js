@@ -69,6 +69,10 @@ describe('compareToArchive', () => {
     expect(compareToArchive(e('Jeremy'), e('Jeremy J.'), { preprint: false })).toEqual([]);
     expect(compareToArchive(e('S. S.'), e('Stacy'), { preprint: false })).toEqual([]);
     expect(compareToArchive(e('Jeremy'), e('Karl'), { preprint: false })).toHaveLength(1);
+    // empty initials are not a wildcard
+    expect(compareToArchive(e(''), e('Jeremy'), { preprint: false })).toHaveLength(1);
+    expect(compareToArchive(e('Jeremy'), e(''), { preprint: false })).toHaveLength(1);
+    expect(compareToArchive(e(''), e(''), { preprint: false })).toEqual([]);
   });
   it('title case, a leading The and a literal name\'s The are ignored', () => {
     const a = '@article{k, title = {Data-Driven Streams}, journal = {The Astrophysical Journal}, author = {{The Astropy Collaboration}}}';

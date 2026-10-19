@@ -827,6 +827,7 @@
       "description": "BibTeX-native field names, so the mapping to a .bib entry is direct rather than translated.",
       "type": "object",
       "additionalProperties": false,
+      "dependentRequired": { "month": ["year"] },
       "properties": {
         "journal": {
           "type": "string"
