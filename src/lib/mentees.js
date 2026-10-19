@@ -15,6 +15,8 @@ const newestFirst = (key) => (a, b) => (key(a) < key(b) ? 1 : key(a) > key(b) ? 
 const byStart = newestFirst((i) => i.date?.start ?? '');
 
 export const menteeName = (m) => `${m.person.given} ${m.person.family}`;
+/** What the collaborator map calls them: their ORCID, else their slug. */
+export const menteeKey = (m) => m.person.orcid ?? m.slug;
 export const profileHref = (m) => `/people/${m.slug}/`;
 
 /** The mentoring items that have a `person`, newest first. */

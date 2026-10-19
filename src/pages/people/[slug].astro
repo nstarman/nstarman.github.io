@@ -7,7 +7,7 @@ import '../../styles/people.css';
 import { PRESET } from '../../lib/cards.js';
 import { collabHref } from '../../lib/collabmap.js';
 import { dateLabel } from '../../lib/data.js';
-import { mentees, menteeBySlug, menteeName, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
+import { mentees, menteeKey, menteeBySlug, menteeName, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
 
 export const getStaticPaths = () => mentees().map((m) => ({ params: { slug: m.slug } }));
 
@@ -34,7 +34,7 @@ const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `wi
             <h1>{name}</h1>
             <p class="pp-meta">{meta}</p>
             {m.badge && <span class="pp-badge">{m.badge}</span>}
-            <p class="pp-meta"><a href={collabHref(m.person.orcid ?? m.slug)}>See their path on the collaborator map →</a></p>
+            <p class="pp-meta"><a href={collabHref(menteeKey(m))}>See their path on the collaborator map →</a></p>
           </div>
         </div>
 

@@ -13,7 +13,7 @@ import collaborators from '/config/collaborators.json';
 import { locate } from './places.js';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
-import { mentees, menteeName, profileHref, topAchievements, researchSpans } from './mentees.js';
+import { mentees, menteeKey, menteeName, profileHref, topAchievements, researchSpans } from './mentees.js';
 import { byType, venueUrl, links, assists, primaryLink } from './data.js';
 
 // Re-exported because the map's callers and tests have always reached for them
@@ -72,16 +72,18 @@ export function lastFirst(name) {
 const covers = (post, date) =>
   Boolean(post.start) && post.start <= date && (!post.end || post.end >= date);
 
-const FAR = '9999';
-/** Do two posts' date ranges meet? Open ends run on; partial dates compare as strings. */
-const meets = (a, b) => a.start <= (b.end ?? FAR) && b.start <= (a.end ?? FAR);
+// An end of "2023" runs to the end of 2023, so it must sort after "2023-09":
+// '~' follows every digit and '-'. An open end runs on for ever.
+const last = (post) => (post.end ?? '9999') + '~';
+/** Do two posts' date ranges meet? Partial dates cover their whole year or month. */
+export const meets = (a, b) => a.start <= last(b) && b.start <= last(a);
 
 /** The posts to put on the map for one person: the ORCID record's, then each
  *  `journey` post of a mentee whose institution the record has no overlapping
  *  post for. ORCID wins; the record fills its gaps. */
-function postsOf(orcidPosts, journey = []) {
+export function postsOf(orcidPosts, journey = []) {
   const extra = journey
-    .filter((j) => !orcidPosts.some((o) => o.organization === j.organization && o.start && meets(o, j)))
+    .filter((j) => !orcidPosts.some((o) => o.start && locate(o.organization) === locate(j.organization) && meets(o, j)))
     .map((j) => ({ ...j, role: j.role }));
   return [...orcidPosts, ...extra]
     .filter((a) => a.start && a.organization && locate(a.organization))
@@ -106,7 +108,7 @@ const firstSentence = (text) =>
 export function collaboratorMap(menteeList = mentees()) {
   const papers = papersByAuthor();
   const people = [];
-  const bySlug = new Map(menteeList.map((m) => [m.person.orcid ?? m.slug, m]));
+  const bySlug = new Map(menteeList.map((m) => [menteeKey(m), m]));
 
   const entries = collaborators.people.map((c) => ({
     orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: bySlug.get(c.orcid),
@@ -137,7 +139,7 @@ export function collaboratorMap(menteeList = mentees()) {
       };
     });
     people.push({
-      key: person.orcid ?? m.slug,
+      key: person.orcid ?? menteeKey(m),
       orcid: person.orcid,
       name: person.name,
       pins,

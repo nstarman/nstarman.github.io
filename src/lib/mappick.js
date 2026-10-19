@@ -72,7 +72,7 @@ function wire(fig) {
   // A byline links to /research/?collab=<orcid or slug>#collaborators: the fragment
   // brings the map into view, and this picks that person on it.
   const asked = new URLSearchParams(location.search).get('collab');
-  const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.key === asked);
+  const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.key === asked || el.dataset.slug === asked);
   pick.value = li ? li.dataset.c : '';
   show(pick.value);
   li?.classList.add('is-arrived');

@@ -98,7 +98,7 @@ const label = (pin) =>
 
   <ol class="cmap-list">
     {people.map((p) => (
-      <li id={`collab-${people.indexOf(p)}`} data-key={p.key} data-mentee={p.mentee ? '' : undefined} data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
+      <li id={`collab-${people.indexOf(p)}`} data-key={p.key} data-slug={p.mentee?.slug} data-mentee={p.mentee ? '' : undefined} data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
         {/* Where the record came from, and the way to check it. */}
         {p.orcid && <a class="cmap-orcid" href={`https://orcid.org/${p.orcid}`}
            aria-label={`${p.name} on ORCID`} title={`${p.name} on ORCID — ${p.orcid}`}>

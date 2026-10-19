@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, collabHref, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
+import { collaboratorMap, collabHref, postsOf, meets, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
   from '../src/lib/collabmap.js';
 
-import { mentees } from '../src/lib/mentees.js';
+import places from '../config/places.json';
+import { mentees, menteeKey } from '../src/lib/mentees.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins);
@@ -220,7 +221,7 @@ describe('mentees on the map', () => {
   it('has every mentee once, keyed by ORCID or slug', () => {
     for (const m of mentees()) {
       expect(people.filter((p) => p.mentee?.slug === m.slug)).toHaveLength(1);
-      expect(by(m.slug).key).toBe(m.person.orcid ?? m.slug);
+      expect(by(m.slug).key).toBe(menteeKey(m));
     }
   });
 
@@ -245,5 +246,44 @@ describe('mentees on the map', () => {
   it('links a mentee by slug', () => {
     expect(collabHref('amir-abdul')).toBe('/research/?collab=amir-abdul#collaborators');
     expect(collabHref('nobody')).toBeNull();
+  });
+});
+
+describe('merging a mentee journey into an ORCID record', () => {
+  const MIT = 'Massachusetts Institute of Technology';
+  const orcid = [{ organization: MIT, start: '2023-09', end: '2027-05' }];
+  const orgs = (posts) => posts.map((p) => p.organization);
+  const Q = 'Princeton University';
+
+  it('adds a journey post the ORCID record lacks', () => {
+    const out = postsOf(orcid, [{ organization: Q, start: '2025-06', end: '2025-08' }]);
+    expect(orgs(out)).toEqual([Q, MIT]);
+  });
+
+  it('skips a journey post an ORCID post at the same place overlaps', () => {
+    expect(postsOf(orcid, [{ organization: MIT, start: '2025-06', end: '2025-08' }])).toHaveLength(1);
+  });
+
+  it('skips it across mixed date precision', () => {
+    const o = [{ organization: MIT, start: '2021', end: '2023' }];
+    expect(postsOf(o, [{ organization: MIT, start: '2023-09', end: '2023-12' }])).toHaveLength(1);
+  });
+
+  it('skips it when the record names the same place differently', () => {
+    const alias = Object.keys(places.places).find((k) => places.places[k].sameAs);
+    const target = places.places[alias].sameAs;
+    const o = [{ organization: target, start: '2023-09' }];
+    expect(postsOf(o, [{ organization: alias, start: '2024-01', end: '2024-03' }])).toHaveLength(1);
+  });
+
+  it('keeps a journey post at the same place that does not overlap', () => {
+    expect(postsOf(orcid, [{ organization: MIT, start: '2020-06', end: '2020-08' }])).toHaveLength(2);
+  });
+
+  it('compares partial dates by the whole period they name', () => {
+    expect(meets({ start: '2023-09' }, { start: '2021', end: '2023' })).toBe(true);
+    expect(meets({ start: '2024' }, { start: '2021', end: '2023-12' })).toBe(false);
+    expect(meets({ start: '2023-12', end: '2024' }, { start: '2023', end: '2023-12' })).toBe(true);
+    expect(meets({ start: '2020', end: '2021' }, { start: '2022' })).toBe(false);
   });
 });
