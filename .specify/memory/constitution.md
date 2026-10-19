@@ -45,7 +45,8 @@ ties the schema's enums to the renderers.
 Dates at the precision known. Authors structured, every one, in order. Stars,
 citations, abstracts and archive BibTeX come from scripts, never by hand.
 Coordinates are geocoded by `scripts/geocode-places.mjs` and corrected by hand
-only where the geocoder is wrong (`sameAs` entries are hand-written too). ADS/SciX through `bibcode`, never a link.
+only where the geocoder is wrong (`sameAs` entries are hand-written too).
+ADS/SciX through `bibcode`, never a link.
 
 *Enforced:* the schema; the refresh workflows, which rewrite their snapshots;
 review between runs.
@@ -104,14 +105,14 @@ A spec under `specs/` is the current contract for what it covers. A change to
 behaviour updates that spec in the same PR; a spec the change supersedes is
 rewritten or deleted, never kept beside its replacement. Design notes that are
 not specs (`docs/superpowers/`) stay on their branch. When a feature lands, its
-`specs/NNN-*/` folder keeps `spec.md`; `plan.md`, `tasks.md`, `research.md` and
-the other planning files Spec Kit writes beside them are deleted in the same PR.
+`specs/NNN-*/` folder keeps `spec.md` alone; the planning files Spec Kit writes
+beside it (`plan.md`, `tasks.md`, `research.md`, `data-model.md`,
+`quickstart.md`, `contracts/`, `checklists/`) are deleted in the same PR.
 History is git's.
 
 *Why:* a well-specified repo, not an archive of its design. *Enforced:* review;
 the CI step "Design notes stay on their branch" in `.github/workflows/ci.yml`
-rejects `docs/superpowers/` and any tracked `specs/*/plan.md`,
-`specs/*/tasks.md` or `specs/*/research.md`.
+rejects `docs/superpowers/` and each of those planning files.
 
 ## Governance
 
@@ -120,7 +121,7 @@ articles. An amendment is a PR that changes the constitution and bumps its
 version: major to remove or redefine an article, minor to add one, patch for
 wording. Amend by editing this file under these rules; `/speckit-constitution`
 is not used to amend it, since it rewrites from Spec Kit's template and its own
-versioning rule. The footer records the version, ratification date and the pinned Spec
-Kit tag.
+versioning rule. The footer records the version, ratification date and the
+pinned Spec Kit tag.
 
 **Version**: 1.0.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19 | **Spec Kit**: v1.1.0
