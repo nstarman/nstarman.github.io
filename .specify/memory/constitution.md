@@ -82,7 +82,7 @@ An invalid item fails CI rather than vanishing; an unplaced talk is listed, not
 dropped; the build and tests never call a network service — remote facts arrive
 as committed snapshots.
 
-*Enforced:* CI; `geocode-places --check`.
+*Enforced:* CI (`test:schema` rejects an invalid item); an unplaced talk is listed under the map.
 
 ### IX. Gates are mandatory
 
