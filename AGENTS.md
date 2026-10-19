@@ -503,7 +503,7 @@ Any repo under `nstarman/` that publishes to GitHub Pages from Actions appears
 at `nstarkman.space/<repo>/`, laid onto this site without this site building
 it — a package's docs, a skill collection, a tool run in the browser. So a repo
 must not take the name of a path here: `webdev`, `cv`, `embed`, `cards`,
-`research`, `publications`, `software`, `tools`.
+`research`, `people`, `publications`, `software`, `tools`.
 
 Such a repo looks like this site by using its layout. It adds this repo as a
 git submodule at `site/` — shallow, and checked out to the three files it

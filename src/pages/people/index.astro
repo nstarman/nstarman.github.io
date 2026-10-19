@@ -1,0 +1,40 @@
+---
+// Everyone I have mentored who has a profile.
+import Base from '../../layouts/Base.astro';
+import '../../styles/people.css';
+import { dateLabel } from '../../lib/data.js';
+import { spans } from '../../lib/inline.js';
+import { mentees, menteeName, profileHref } from '../../lib/mentees.js';
+
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+// The first sentence of the research text, as plain words.
+const first = (m) => {
+  const t = spans(m.research).map((s) => s.t).join('');
+  return t.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? t;
+};
+---
+<Base title="People — Nathaniel Starkman" section="/people/">
+  <main>
+    <section>
+      <div class="wrap pp-index">
+        <h1>People</h1>
+        <p class="lede">The students and researchers I have mentored.</p>
+        <ul class="pp-list">
+          {mentees().map((m) => (
+            <li>
+              {m.photo
+                ? <img class="pp-photo" src={`/${m.photo}`} alt="" />
+                : <span class="pp-initials" aria-hidden="true">{m.person.given[0]}{m.person.family[0]}</span>}
+              <div>
+                <h2><a href={profileHref(m)}>{menteeName(m)}</a></h2>
+                <p class="pp-meta">{[cap(m.person.level), m.institution, dateLabel(m)].filter(Boolean).join(' · ')}</p>
+                {m.badge && <span class="pp-badge">{m.badge}</span>}
+                {m.research && <p class="pp-meta">{first(m)}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </main>
+</Base>

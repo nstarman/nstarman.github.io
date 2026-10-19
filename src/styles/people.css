@@ -1,0 +1,22 @@
+/* /people/ — a profile per mentee, and the index of them. Cards are the site's
+   own Card; this sheet lays out the page around them. */
+.pp-head{display:flex; gap:1.2rem; align-items:center; flex-wrap:wrap; margin-bottom:1.5rem}
+.pp-photo{width:6.5rem; height:6.5rem; border-radius:50%; object-fit:cover; flex:none}
+.pp-initials{display:grid; place-items:center; width:6.5rem; height:6.5rem; border-radius:50%; flex:none;
+  background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-line);
+  font-size:2rem; font-weight:500; letter-spacing:.04em}
+.pp-index .pp-photo, .pp-index .pp-initials{width:3.5rem; height:3.5rem; font-size:1.2rem}
+.pp-head h1{margin:0 0 .2rem}
+.pp-meta{margin:0; color:var(--ink-2)}
+.pp-badge{display:inline-block; margin:.4rem .6rem .2rem 0; padding:.1rem .6rem; border-radius:2rem;
+  color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent-line); font-size:.88rem}
+.pp-section{margin-top:2rem}
+.pp-cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); gap:1rem; margin-bottom:1rem}
+.pp-ach{list-style:none; padding:0; margin:0}
+.pp-ach li{display:flex; gap:.8rem; flex-wrap:wrap; padding:.45rem 0; border-top:1px solid var(--line, currentColor)}
+.pp-ach .when{font-family:var(--mono); font-size:.85rem; color:var(--ink-2); min-width:5rem}
+.pp-ach .kind{font-size:.78rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); min-width:4.5rem}
+.pp-ach .what{flex:1 1 14rem}
+.pp-list{list-style:none; padding:0; margin:0; display:grid; gap:1.2rem}
+.pp-list li{display:flex; gap:1rem; align-items:center}
+.pp-list h2{font-size:1.15rem; margin:0}
