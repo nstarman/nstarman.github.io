@@ -57,7 +57,9 @@
   "venue": {
     "journal": "The Astrophysical Journal",
     "volume": "980",
-    "pages": "253"
+    "pages": "253",
+    "year": "2025",
+    "month": "02"
   },
   "doi": "10.3847/1538-4357/ad94f2",
   "arxiv": "2311.16960",

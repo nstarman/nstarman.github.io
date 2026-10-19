@@ -58,4 +58,27 @@ describe('compareToArchive', () => {
   it('splitExport drops leading text and @comment blocks', () =>
     expect(splitExport('\n\n@ARTICLE{a, year = 1}\n\n@comment{x}\n@MISC{b, year = 2}\n'))
       .toEqual(['@ARTICLE{a, year = 1}', '@MISC{b, year = 2}']));
+  it('tilde is a space, and a dash run is one hyphen', () => {
+    const a = '@article{k, author = {Marleau, F.~R.}, pages = {2292--2301}}';
+    const b = '@article{k, author = {Marleau, F. R.}, pages = {2292-2301}}';
+    expect(compareToArchive(a, b, { preprint: false })).toEqual([]);
+    expect(compareToArchive(a.replace('--', '–'), b, { preprint: false })).toEqual([]);
+  });
+  it('given names match when one side is a prefix of the other', () => {
+    const e = (g) => `@article{k, author = {Webb, ${g}}}`;
+    expect(compareToArchive(e('Jeremy'), e('Jeremy J.'), { preprint: false })).toEqual([]);
+    expect(compareToArchive(e('S. S.'), e('Stacy'), { preprint: false })).toEqual([]);
+    expect(compareToArchive(e('Jeremy'), e('Karl'), { preprint: false })).toHaveLength(1);
+  });
+  it('title case, a leading The and a literal name\'s The are ignored', () => {
+    const a = '@article{k, title = {Data-Driven Streams}, journal = {The Astrophysical Journal}, author = {{The Astropy Collaboration}}}';
+    const b = '@article{k, title = {Data-driven streams}, journal = {\\apj}, author = {{Astropy Collaboration}}}';
+    expect(compareToArchive(a, b, { preprint: false })).toEqual([]);
+  });
+  it('a preprint also skips doi, year and month', () => {
+    const a = '@article{k, doi = {10.1/x}, year = {2026}, month = {oct}}';
+    const b = '@article{k, doi = {10.48550/arXiv.1}, year = 2026, month = may}';
+    expect(compareToArchive(a, b, { preprint: true })).toEqual([]);
+    expect(compareToArchive(a, b, { preprint: false }).map((d) => d.field)).toEqual(['doi', 'month']);
+  });
 });

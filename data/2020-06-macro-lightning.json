@@ -22,16 +22,16 @@
       "orcid": "0000-0003-3954-3291"
     },
     {
-      "family": "Sidhu",
-      "given": "Jagjit Singh",
-      "orcid": "0000-0002-1956-1305",
-      "affiliation": "Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA"
-    },
-    {
       "family": "Winch",
       "given": "Harrison",
       "orcid": "0000-0002-0092-6271",
       "affiliation": "David A. Dunlap Department of Astronomy and Astrophysics / Dunlap Institute, University of Toronto, Toronto, Ontario M5S, Canada"
+    },
+    {
+      "family": "Sidhu",
+      "given": "Jagjit Singh",
+      "orcid": "0000-0002-1956-1305",
+      "affiliation": "Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA"
     },
     {
       "family": "Starkman",
@@ -43,7 +43,9 @@
   "venue": {
     "journal": "Physical Review D",
     "volume": "103",
-    "pages": "063024"
+    "pages": "063024",
+    "year": "2021",
+    "month": "03"
   },
   "doi": "10.1103/PhysRevD.103.063024",
   "links": [
@@ -70,7 +72,7 @@
   "tags": [
     "dark-matter"
   ],
-  "internal": "CV says (2020); PRD volume 103 is 2021. Year taken from the CV — confirm. Author order Sidhu before Winch, as on arXiv and INSPIRE, confirmed by the author (2026-09-26); Crossref's record has the two swapped - do not 'correct' to it.",
+  "internal": "Author order follows the published PRD version as deposited by APS (Crossref) and shown on ADS; arXiv lists Sidhu before Winch. The year is the PRD issue year, 2021, in venue.year, while date.start keeps the arXiv date.",
   "citekey": "Starkman+:2020:macro-lightning",
   "arxiv": "2006.16272",
   "primaryClass": "astro-ph.CO",

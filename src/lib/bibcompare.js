@@ -59,6 +59,7 @@ const norm = (v) => v
   .replace(/\\([`'"^~=])\s*\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\([cv])[ ]?\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\&/g, '&')
+  .replace(/~/g, ' ') // after the \~ accent
   .replace(/\{\\textendash\}|(?<!-)--(?!-)/g, '–')
   .replace(/\{\\textemdash\}|---/g, '—')
   .replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
@@ -72,16 +73,22 @@ const splitName = (n) => {
 function sameAuthors(a, b) {
   // ADS cut the list ("and others"): a difference, with the cause in the value
   if (/ and others$/.test(b) && !/ and others$/.test(a)) return [a, b];
-  const x = a.split(' and '), y = b.split(' and ');
+  // a literal name (one token, no comma) ignores a leading "The "
+  const strip = (n) => (n.includes(',') ? n : n.replace(/^The /, ''));
+  const x = a.split(' and ').map(strip), y = b.split(' and ').map(strip);
   for (let k = 0; k < Math.max(x.length, y.length); k++) {
     const p = x[k] && splitName(x[k]), q = y[k] && splitName(y[k]);
-    if (!p || !q || p.family !== q.family || p.initials !== q.initials) return [x[k] ?? '', y[k] ?? ''];
+    // given names agree when one side's initials begin the other's: "Jeremy" ~ "Jeremy J."
+    const same = p && q && p.family === q.family
+      && (p.initials.startsWith(q.initials) || q.initials.startsWith(p.initials));
+    if (!same) return [x[k] ?? '', y[k] ?? ''];
   }
   return null;
 }
 
 const SKIP = ['abstract', 'note'];
-const VENUE = ['journal', 'volume', 'number', 'pages'];
+// ADS records a preprint's venue as "arXiv e-prints", its DOI as the arXiv one, and its date as the arXiv date.
+const VENUE = ['journal', 'volume', 'number', 'pages', 'doi', 'year', 'month'];
 
 /** Fields in both entries that differ, as `{ field, ours, theirs }`; `[]` when
  *  they agree. The key, `abstract`, `note` and fields only one side has are
@@ -93,6 +100,9 @@ export function compareToArchive(ours, archive, { preprint }) {
     if (!(field in t) || SKIP.includes(field) || (preprint && VENUE.includes(field))) continue;
     const macro = (v) => (field === 'journal' ? v.replace(/\\([a-z]+)\b/g, (m, k) => JOURNALS[k] ?? m) : v);
     let a = norm(macro(o[field])), b = norm(macro(t[field]));
+    if (field === 'journal') { a = a.replace(/^The /, ''); b = b.replace(/^The /, ''); }
+    if (field === 'title') { a = a.toLowerCase(); b = b.toLowerCase(); }
+    if (field === 'pages') { a = a.replace(/[-–—]+/g, '-'); b = b.replace(/[-–—]+/g, '-'); }
     if (field === 'month') { a = a.toLowerCase(); b = b.toLowerCase(); }
     if (field === 'author') {
       const d = sameAuthors(a, b);

@@ -831,6 +831,16 @@
         "journal": {
           "type": "string"
         },
+        "year": {
+          "type": "string",
+          "pattern": "^[0-9]{4}$",
+          "description": "The issue's year, where it differs from date.start — BibTeX uses it."
+        },
+        "month": {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])$",
+          "description": "The issue's month, where it differs from date.start — BibTeX uses it. Used only with venue.year."
+        },
         "booktitle": {
           "type": "string",
           "description": "For @inproceedings / @incollection."

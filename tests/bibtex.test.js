@@ -71,6 +71,26 @@ describe('an entry', () => {
   });
 });
 
+describe('year, month and adsurl', () => {
+  it('uses the journal issue date when venue.year is set, never mixing months', () => {
+    const b = toBibtex(entry({ venue: { year: '2021', month: '03' } }));
+    expect(b).toMatch(/year\s+= \{2021\}/);
+    expect(b).toMatch(/month\s+= \{mar\}/);
+    const noMonth = toBibtex(entry({ venue: { year: '2021' } }));
+    expect(noMonth).toContain('{2021}');
+    expect(noMonth).not.toMatch(/month\s+=/);
+  });
+  it('falls back to date.start', () => {
+    const b = toBibtex(entry());
+    expect(b).toContain('= {2024}');
+    expect(b).toContain('= {feb}');
+  });
+  it('writes the ADS url without /abstract', () => {
+    expect(toBibtex(entry({ bibcode: '2022ApJ...935..167A' })))
+      .toContain('= {https://ui.adsabs.harvard.edu/abs/2022ApJ...935..167A}');
+  });
+});
+
 describe('the whole bibliography', () => {
   it('emits one entry per publication', () => {
     expect((bib.match(/^@/gm) ?? []).length).toBe(pubs.length);
