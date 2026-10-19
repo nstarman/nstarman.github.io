@@ -743,7 +743,7 @@ describe('student stamp', () => {
   const byId = (id) => items.find((i) => i.id === id);
   it('links a student with a profile to it', () => {
     const [s] = studentStamp(byId('pinns-mnras'));
-    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/' });
+    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers' });
   });
   it('leaves a student with no profile plain', () => {
     const withStudent = items.find((i) => i.type === 'publication' && i.authors?.some((a) => a.student && !a.mentee));
