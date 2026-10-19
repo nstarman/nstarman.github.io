@@ -2,6 +2,7 @@
 // src/lib/cardname.js; this adds what needs the database: the website's
 // presets, an item's default card, and its links and extras.
 import starCounts from '/config/stars.json';
+import { menteeById, profileHref } from './mentees.js';
 import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from './data.js';
 
 export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
@@ -72,6 +73,13 @@ export const CARD_TYPES = ['publication', 'highlight', 'software'];
 export const hasFigure = (item) => !!item.highlight?.image;
 export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
 /** A paper with a student of mine among its authors: the students extra. */
+/** My students on a paper, in author order, each with their place and — where
+ *  the author names a mentee with a profile — the profile's address. */
+export const studentStamp = (item) => item.type !== 'publication' ? [] : (item.authors ?? []).flatMap((a, i) => {
+  if (!a.student) return [];
+  const m = a.mentee ? menteeById(a.mentee) : null;
+  return [{ student: a.student, pos: i + 1, ...(m && { href: profileHref(m) }) }];
+});
 export const hasStudents = (item) => item.type === 'publication' && (item.authors ?? []).some((a) => a.student);
 export const hasRole = (item) => item.type === 'software' && !!item.role;
 export const hasVenue = (item) => item.type === 'publication';
