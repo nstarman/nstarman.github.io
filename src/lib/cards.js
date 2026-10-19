@@ -73,11 +73,12 @@ export const CARD_TYPES = ['publication', 'highlight', 'software'];
 export const hasFigure = (item) => !!item.highlight?.image;
 export const hasPosition = (item) => item.type !== 'software' && authorPosition(item) != null;
 /** My students on a paper, in author order, each with their place and — where
- *  the author names a mentee with a profile — the profile's address and name. */
+ *  the author names a mentee with a profile — the profile's address and name,
+ *  and their photo (a path under public/) where the record has one. */
 export const studentStamp = (item) => item.type !== 'publication' ? [] : (item.authors ?? []).flatMap((a, i) => {
   if (!a.student) return [];
   const m = a.mentee ? menteeById(a.mentee) : null;
-  return [{ student: a.student, pos: i + 1, ...(m && { href: profileHref(m), name: menteeName(m) }) }];
+  return [{ student: a.student, pos: i + 1, ...(m && { href: profileHref(m), name: menteeName(m), ...(m.photo && { photo: m.photo }) }) }];
 });
 /** A paper with a student of mine among its authors: the students extra. */
 export const hasStudents = (item) => item.type === 'publication' && (item.authors ?? []).some((a) => a.student);

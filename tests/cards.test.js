@@ -641,6 +641,20 @@ describe('the students extra', () => {
     expect(stu(base('students'))).toBeDefined();
     expect(stu(base('position,students'), items.find((i) => i.id === 'galactic-amnesia'))).toBeUndefined();
   });
+  it('takes a photo face, students:photo, written only where the extra is', () => {
+    expect(parseName(`${base('students')}-students:photo`).stampFace).toBe('photo');
+    expect(parseName(`${base('students')}-students:word`).stampFace).toBeUndefined();
+    expect(formatName(parseName(`${base('students')}-students:photo`))).toContain('-students:photo-');
+    expect(formatName(parseName(`${base('students')}-students:word`))).not.toContain('students:');
+    expect(formatName(parseName(`${base('position')}-students:photo`))).not.toContain('students:');
+    for (const bad of ['students:face', 'students:photo:round', 'students']) expect(() => parseName(`${base('students')}-${bad}`), bad).toThrow();
+  });
+  it('sets data-stuphoto only with the extra shown and the photo face', () => {
+    const photo = (name) => cardFace(parseName(name), cardFacts(led)).data.stuphoto;
+    expect(photo(`${base('students')}-students:photo`)).toBeDefined();
+    expect(photo(base('students'))).toBeUndefined();
+    expect(photo(`${base('position')}-students:photo`)).toBeUndefined();
+  });
 });
 
 describe('the Card Builder\'s snippets', () => {
@@ -743,7 +757,7 @@ describe('student stamp', () => {
   const byId = (id) => items.find((i) => i.id === id);
   it('links a student with a profile to it', () => {
     const [s] = studentStamp(byId('pinns-mnras'));
-    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers' });
+    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers', photo: 'people/charlotte-myers.webp' });
   });
   it('leaves a student with no profile plain', () => {
     // A made-up paper, so the test holds once every real student has a profile.
@@ -756,5 +770,6 @@ describe('student stamp', () => {
   it('links Sirui Wu, a mentee who was not my student', () => {
     const [s] = studentStamp(byId('potamides-apj'));
     expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu' });
+    expect(s).not.toHaveProperty('photo');
   });
 });

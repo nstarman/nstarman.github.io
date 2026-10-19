@@ -108,6 +108,11 @@
 //            e.g. context:bottom:right  context:bottom:right
 //   position <place>                where my author position sits
 //            e.g. position:top:right
+//   students word · photo           my students beside my position, where
+//            e.g. students:photo        extras has them: the word, student‡
+//                                   1st (the default, left off), or each
+//                                   one's circular photo, [photo] 1st — the
+//                                   word kept for one with no photo
 //   year     <place>                where the year sits. Where my position is
 //            e.g. year:top:right    in the same place, the two read as one,
 //                                   "1st | 2026"
@@ -273,7 +278,7 @@ const spaceList = (space) => SPACE_TRACKS.filter((t) => space[t] != null && spac
 
 /** Spec → name: every part written, in a fixed order, but the look's settings
  *  that do not depart. */
-export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text = 'none', extras = [], links = 'all', groups = [], perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, partGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton }) {
+export function formatName({ width = 'fill', height = 'fit', figure = 'none', figureAlign = 'center', figureSize = 'auto', figureH, figureSlot, figureLink = false, sides = {}, foot = 'center', footEnd, title = 'full', rest = 'split', titleLink = false, titleAt = 'center', titleAlign, titleV, titleStatus, authors = 'none', marks = 'plain', text = 'none', extras = [], links = 'all', groups = [], perRow, posAt, authorLink = false, contextAt, yearAt, railAlign, titleWeight, textAlign, frame, buttonGap, partGap, space, dials = {}, background = 'normal', sizes = {}, weights = {}, styles = {}, fonts = {}, venueName, venueLink, venueDate, venueArxiv, venueAlign, venueAt, venueFirst, venueSplit, authorsFit, paperButton, stampFace }) {
   const list = (v, all) => (v === all ? all : v.length ? v.join(',') : 'none');
   // Standard is the own look of a card that fills its width, so it departs
   // from nothing there.
@@ -329,6 +334,7 @@ export function formatName({ width = 'fill', height = 'fit', figure = 'none', fi
     ...(extras.includes('venue') && (venueName === 'short' || venueLink === false || venueDate === false || venueArxiv === false || venueAlign || venueAt) ? [`venue:${venueName || 'full'}${venueLink === false ? ':unlinked' : ''}${venueDate === false ? ':undated' : ''}${venueArxiv === false ? ':noarxiv' : ''}${venueAt === 'above' ? ':above' : ''}${venueAt === 'authors' || venueAt === 'beside' ? `:${venueAt}${venueFirst ? ':before' : ''}${venueAt === 'beside' && venueSplit ? `:${venueSplit}` : ''}` : venueAlign ? `:${venueAlign}` : ''}`] : []),
     ...(extras.includes('context') && place('context', contextAt) ? [`context${place('context', contextAt)}`] : []),
     ...(extras.includes('position') && place('pos', posAt) ? [`position${place('pos', posAt)}`] : []),
+    ...(extras.includes('students') && stampFace === 'photo' ? ['students:photo'] : []),
     ...(extras.includes('year') && place('year', yearAt) ? [`year${place('year', yearAt)}`] : []),
     `buttons:${list(links, 'all')}` + (perRow ? `:${perRow}` : '') + at,
     ...groups.map((g) => `buttons:${list(g.links, 'all')}` + (g.perRow ? `:${g.perRow}` : '') + groupAt(g)),
@@ -462,6 +468,11 @@ export function parseName(name) {
       if (noarxiv) spec.venueArxiv = false;
       if (align === 'authors' || align === 'beside') spec.venueAt = align;
       else if (align && align !== 'left') spec.venueAlign = align;
+    } else if (key === 'students') {
+      // My students' face beside my position: the word, student‡ — the
+      // default, never written — or each one's photo, where they have one.
+      if (kv.length !== 2 || !one(kv[1], ['word', 'photo'])) throw new Error('"' + name + '": no such students, ' + parts[i]);
+      if (kv[1] === 'photo') spec.stampFace = 'photo';
     } else if ((key === 'context' || key === 'year' || key === 'position') && kv.length >= 2) {
       // A place — settled once the buttons' area is known.
       spec[(key === 'position' ? 'pos' : key) + 'At'] = kv.slice(1);
@@ -771,7 +782,7 @@ export function cardFace(spec, f) {
     wins: wins.join(' ') || u, empty: empty.join(' ') || u,
     authors: bylined ? (counted ? 'count' : spec.authors) : u, students: bylined && spec.marks === 'plain' ? 'plain' : u,
     pos: yes(stampShown), me: yes(posShown), year: yes(yearShown), yearwith: yes(together), context: yes(ctxShown),
-    role: yes(has('role') && f.role), stustamp: yes(stuShown), status: yes(has('status') && f.status),
+    role: yes(has('role') && f.role), stustamp: yes(stuShown), stuphoto: yes(stuShown && spec.stampFace === 'photo'), status: yes(has('status') && f.status),
     venue: yes(has('venue') && f.venue), venuename: spec.venueName, venueundated: yes(spec.venueDate === false),
     venuenoarxiv: yes(spec.venueArxiv === false), varxiv: yes(f.varxiv), venuealign: spec.venueAlign, venueat: spec.venueAt,
     venuefirst: yes((spec.venueAt === 'authors' || spec.venueAt === 'beside') && spec.venueFirst),
