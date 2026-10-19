@@ -306,5 +306,8 @@
   "primaryClass": "astro-ph.IM",
   "refs": [
     "the-future-of-astrophysical-data"
-  ]
+  ],
+  "abstract": "The astronomical community is grappling with the increasing volume and complexity of data produced by modern telescopes, due to difficulties in reducing, accessing, analyzing, and combining archives of data. To address this challenge, we propose the establishment of a coordinating body, an \"entity,\" with the specific mission of enhancing the interoperability, archiving, distribution, and production of both astronomical data and software. This report is the culmination of a workshop held in February 2023 on the Future of Astronomical Data Infrastructure. Attended by 70 scientists and software professionals from ground-based and space-based missions and archives spanning the entire spectrum of astronomical research, the group deliberated on the prevailing state of software and data infrastructure in astronomy, identified pressing issues, and explored potential solutions. In this report, we describe the ecosystem of astronomical data, its existing flaws, and the many gaps, duplication, inconsistencies, barriers to access, drags on productivity, missed opportunities, and risks to the long-term integrity of essential data sets. We also highlight the successes and failures in a set of deep dives into several different illustrative components of the ecosystem, included as an appendix.",
+  "bibcode": "2023arXiv231104272B",
+  "citations": 1
 }
