@@ -34,7 +34,7 @@ const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `wi
             <h1>{name}</h1>
             <p class="pp-meta">{meta}</p>
             {m.badge && <span class="pp-badge">{m.badge}</span>}
-            <p class="pp-meta"><a href={collabHref(m.slug)}>See their path on the collaborator map →</a></p>
+            <p class="pp-meta"><a href={collabHref(m.person.orcid ?? m.slug)}>See their path on the collaborator map →</a></p>
           </div>
         </div>
 
