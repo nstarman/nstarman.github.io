@@ -746,9 +746,15 @@ describe('student stamp', () => {
     expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers' });
   });
   it('leaves a student with no profile plain', () => {
-    const withStudent = items.find((i) => i.type === 'publication' && i.authors?.some((a) => a.student && !a.mentee));
-    const s = studentStamp(withStudent);
-    expect(s.length).toBeGreaterThan(0);
-    expect(s.every((x) => x.href === undefined)).toBe(true);
+    // A made-up paper, so the test holds once every real student has a profile.
+    const paper = { type: 'publication', authors: [
+      { family: 'Student', given: 'A', student: 'graduate' },
+      { family: 'Starkman', given: 'Nathaniel', me: true },
+    ] };
+    expect(studentStamp(paper)).toEqual([{ student: 'graduate', pos: 1 }]);
+  });
+  it('links Sirui Wu, a mentee who was not my student', () => {
+    const [s] = studentStamp(byId('potamides-apj'));
+    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu' });
   });
 });
