@@ -270,7 +270,9 @@ export function placeOf(spec, part) {
   const bv = side ? spec.footEnd || 'top' : 'bottom';
   const bh = spec.railAlign || (side ? box : 'left');
   const away = { top: 'bottom', bottom: 'top', center: side ? 'center' : 'right', left: 'right', right: 'left' };
-  return side ? { area: area, v: at.v || away[bv], h: at.h || bh } : { area: area, v: at.v || 'bottom', h: at.h || away[bh] };
+  // Under the words, up and down defaults to the middle of the buttons' row,
+  // so "1st | 2026" and a student's photo sit level with the buttons.
+  return side ? { area: area, v: at.v || away[bv], h: at.h || bh } : { area: area, v: at.v || 'center', h: at.h || away[bh] };
 }
 
 /** The tracks set, in a fixed order. */
