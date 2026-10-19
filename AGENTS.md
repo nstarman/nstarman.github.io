@@ -486,6 +486,25 @@ the pull request instead of leaving it green with nothing run.
   Copy the title exactly — it is `U+267E U+FE0F & U+27A1`, and an emoji that
   merely looks the same will not match.
 
+## Feature work with Spec Kit
+
+Adding an item is sections 1–4. A change to what the site, the CVs or the
+scripts do can run through Spec Kit, whose commands are installed for Claude
+Code and Copilot: `/speckit-specify`, then `/speckit-plan`, `/speckit-tasks`
+and `/speckit-implement`. `/speckit-plan` checks the plan against the
+constitution.
+
+A feature's folder is `specs/NNN-<name>/`, and only its `spec.md` merges. The
+planning files Spec Kit writes beside it — `plan.md`, `tasks.md`,
+`research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `checklists/` —
+are working material. CI's *Design notes stay on their branch* step fails while
+any of them is tracked, so a feature PR is red until they go: review them on
+the branch, then delete them in the last push. A spec the change supersedes is
+rewritten or deleted in the same PR (constitution, Article X).
+
+Do not run `/speckit-taskstoissues` unless asked. It opens GitHub issues, and
+an issue here needs the ♾️&➡ milestone, which it does not set.
+
 ## Sites hosted in their own repos
 
 Any repo under `nstarman/` that publishes to GitHub Pages from Actions appears
