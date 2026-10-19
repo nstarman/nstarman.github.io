@@ -13,7 +13,7 @@ import collaborators from '/config/collaborators.json';
 import { locate } from './places.js';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
-import { mentees, menteeKey, menteeName, profileHref, topAchievements, researchSpans } from './mentees.js';
+import { mentees, menteeKey, menteeName, profileHref, topAchievements, researchSpans, firstSentenceSpans } from './mentees.js';
 import { byType, venueUrl, links, assists, primaryLink } from './data.js';
 
 // Re-exported because the map's callers and tests have always reached for them
@@ -94,8 +94,7 @@ export function postsOf(orcidPosts, journey = []) {
 }
 
 /** First sentence of a mentee's research, as spans with item links resolved. */
-const firstSentence = (text) =>
-  text ? researchSpans(text.split(/(?<=[.!?])\s/)[0]) : null;
+const firstSentence = (text) => (text ? firstSentenceSpans(researchSpans(text)) : null);
 
 /**
  * One entry per collaborator who can be put on the map at all: they have at
@@ -108,10 +107,10 @@ const firstSentence = (text) =>
 export function collaboratorMap(menteeList = mentees()) {
   const papers = papersByAuthor();
   const people = [];
-  const bySlug = new Map(menteeList.map((m) => [menteeKey(m), m]));
+  const byKey = new Map(menteeList.map((m) => [menteeKey(m), m]));
 
   const entries = collaborators.people.map((c) => ({
-    orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: bySlug.get(c.orcid),
+    orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: byKey.get(c.orcid),
   }));
   for (const m of menteeList) {
     if (!entries.some((e) => e.m === m)) {

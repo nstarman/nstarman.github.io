@@ -62,3 +62,21 @@ export const researchSpans = (text, lookup = resolve) =>
     if (!p) throw new Error(`research: [](item:${s.item}) names no item`);
     return { ...s, t: s.t || titleOf(p, 'nick'), url: siteHref(p) };
   });
+
+/** The first sentence of resolved spans, so an item link keeps its name. A stop
+ *  is not the end after "et al.", "e.g.", "i.e." or a lone initial like "J.". */
+export function firstSentenceSpans(list) {
+  const text = list.map((s) => s.t).join('');
+  let end = text.length;
+  for (const m of text.matchAll(/[.!?](?=\s|$)/g)) {
+    if (/(?:\bet al|\be\.g|\bi\.e|(?<![A-Za-z])[A-Z])$/.test(text.slice(0, m.index))) continue;
+    end = m.index + 1;
+    break;
+  }
+  let at = 0;
+  return list.flatMap((s) => {
+    const t = s.t.slice(0, Math.max(0, end - at));
+    at += s.t.length;
+    return t ? [{ ...s, t }] : [];
+  });
+}

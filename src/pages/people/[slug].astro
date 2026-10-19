@@ -58,7 +58,7 @@ const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `wi
           <ul class="pp-ach">
             {ach.map((a) => (
               <li>
-                <span class="when">{a.date}</span>
+                <span class="when">{dateLabel({ date: { start: a.date } }, { month: true })}</span>
                 <span class="kind">{KIND[a.kind] ?? a.kind}</span>
                 <span class="what">
                   {a.url ? <a href={a.url}>{a.title}</a> : a.title}

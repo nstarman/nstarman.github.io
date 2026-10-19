@@ -1,8 +1,9 @@
 // The mentee helpers, on items built here rather than on the database.
 
 import { describe, expect, it } from 'vitest';
+import { spans } from '../src/lib/inline.js';
 import {
-  menteeName, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans,
+  menteeName, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans, firstSentenceSpans,
 } from '../src/lib/mentees.js';
 
 const dates = (list) => list.map((a) => a.date);
@@ -68,5 +69,22 @@ describe('researchSpans', () => {
   });
   it('throws on an id that names nothing', () => {
     expect(() => researchSpans('[](item:no-such-item)')).toThrow(/names no item/);
+  });
+});
+
+describe('firstSentenceSpans', () => {
+  const first = (t) => firstSentenceSpans(spans(t)).map((s) => s.t).join('');
+  it('stops at the first sentence', () => {
+    expect(first('One thing. Another.')).toBe('One thing.');
+  });
+  it('does not cut at et al., e.g., i.e. or an initial', () => {
+    expect(first('With Smith et al. we fit it. Then more.')).toBe('With Smith et al. we fit it.');
+    expect(first('Streams, e.g. GD-1, fit. Next.')).toBe('Streams, e.g. GD-1, fit.');
+    expect(first('Dark matter, i.e. halos, matter. Next.')).toBe('Dark matter, i.e. halos, matter.');
+    expect(first('Led by J. Nibauer on streams. Next.')).toBe('Led by J. Nibauer on streams.');
+  });
+  it('keeps a link across the cut whole', () => {
+    expect(firstSentenceSpans(spans('See [paper](https://x.org) now. More.')))
+      .toEqual([{ t: 'See ' }, { t: 'paper', url: 'https://x.org' }, { t: ' now.' }]);
   });
 });
