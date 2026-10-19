@@ -42,6 +42,7 @@ export const splitExport = (text) =>
   text.split(/^(?=@)/m).filter((e) => e.startsWith('@') && !/^@comment\b/i.test(e)).map((e) => e.trim());
 
 const ACCENT = { "'": '́', '`': '̀', '"': '̈', '^': '̂', '~': '̃', '=': '̄', c: '̧', v: '̌' };
+const DOUBLE_ACUTE = { o: 'ő', u: 'ű', O: 'Ő', U: 'Ű' };
 
 // ponytail: the AASTeX macros ADS emits for the journals we publish in; add one when a new journal appears.
 const JOURNALS = {
@@ -56,6 +57,7 @@ const LETTERS = { o: 'ø', O: 'Ø', ss: 'ß', l: 'ł', aa: 'å', AA: 'Å' };
 const norm = (v) => v
   .replace(/\\([ij])(?![A-Za-z])/g, '$1') // dotless i and j, before the accent that sits on them
   .replace(/\\(ss|aa|AA|o|O|l)(?![A-Za-z])/g, (_, k) => LETTERS[k])
+  .replace(/\\H\s*\{?([ouOU])\}?/g, (_, c) => DOUBLE_ACUTE[c])
   .replace(/\\([`'"^~=])\s*\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\([cv])[ ]?\{?([A-Za-z])\}?/g, (_, a, c) => (c + ACCENT[a]).normalize('NFC'))
   .replace(/\\&/g, '&')
@@ -70,13 +72,13 @@ const splitName = (n) => {
   return { family: family.trim(), initials: initials(rest.join(',')) };
 };
 
-function sameAuthors(a, b) {
+function sameAuthors(a, b, prefix) {
   // ADS cut the list ("and others"): a difference, with the cause in the value
   if (/ and others$/.test(b) && !/ and others$/.test(a)) return [a, b];
   // a literal name (one token, no comma) ignores a leading "The "
   const strip = (n) => (n.includes(',') ? n : n.replace(/^The /, ''));
   const x = a.split(' and ').map(strip), y = b.split(' and ').map(strip);
-  for (let k = 0; k < Math.max(x.length, y.length); k++) {
+  for (let k = 0; k < (prefix ? x.length : Math.max(x.length, y.length)); k++) {
     const p = x[k] && splitName(x[k]), q = y[k] && splitName(y[k]);
     // given names agree when one side's initials begin the other's: "Jeremy" ~ "Jeremy J."
     const same = p && q && p.family === q.family
@@ -105,7 +107,10 @@ export function compareToArchive(ours, archive, { preprint }) {
     if (field === 'pages') { a = a.replace(/[-–—]+/g, '-'); b = b.replace(/[-–—]+/g, '-'); }
     if (field === 'month') { a = a.toLowerCase(); b = b.toLowerCase(); }
     if (field === 'author') {
-      const d = sameAuthors(a, b);
+      // A leading braced literal is the collaboration byline: our list is then the
+      // named authors only, the first of the archive's longer one.
+      const collab = o[field].trimStart().startsWith('{') && !a.split(' and ')[0].includes(',');
+      const d = sameAuthors(a, b, collab);
       if (d) out.push({ field, ours: d[0], theirs: d[1] });
     } else if (a !== b) out.push({ field, ours: a, theirs: b });
   }

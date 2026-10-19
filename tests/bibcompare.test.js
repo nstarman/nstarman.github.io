@@ -81,4 +81,20 @@ describe('compareToArchive', () => {
     expect(compareToArchive(a, b, { preprint: true })).toEqual([]);
     expect(compareToArchive(a, b, { preprint: false }).map((d) => d.field)).toEqual(['doi', 'month']);
   });
+  it('Hungarian double acute matches, braced or not', () => {
+    const ours = '@article{k, author = {Sipőcz, Brigitta}}';
+    for (const n of ['Sip\\H{o}cz', 'Sip{\\H o}cz'])
+      expect(compareToArchive(ours, `@article{k, author = {{${n}}, Brigitta}}`, { preprint: false })).toEqual([]);
+  });
+  describe('collaboration byline', () => {
+    const arch = (names) => `@article{k, author = {{Big Collaboration} and ${names}}}`;
+    const ours = (names) => `@article{k, author = {{The Big Collaboration} and ${names}}}`;
+    const long = '{Aa}, A. and {Bb}, B. and {Cc}, C. and {Dd}, D.';
+    it('named authors are a prefix of the archive list', () =>
+      expect(compareToArchive(ours('Aa, A. and Bb, B.'), arch(long), { preprint: false })).toEqual([]));
+    it('out of order is a difference', () =>
+      expect(compareToArchive(ours('Bb, B. and Aa, A.'), arch(long), { preprint: false })[0].field).toBe('author'));
+    it('without a collaboration, fewer authors is a difference', () =>
+      expect(compareToArchive('@article{k, author = {Aa, A. and Bb, B.}}', `@article{k, author = {${long}}}`, { preprint: false })[0].field).toBe('author'));
+  });
 });
