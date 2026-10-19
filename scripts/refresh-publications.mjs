@@ -13,6 +13,7 @@
 // The token is read from the environment (a repo secret in CI), never stored.
 
 import fs from 'node:fs';
+import { parseBibtex, splitExport } from '../src/lib/bibcompare.js';
 import { readItems } from './lib/items.mjs';
 import {
   adsQuery, changes, usable, arxivAbstract, crossrefAbstract, arxivByTitle,
@@ -28,8 +29,11 @@ if (!token) {
 const UA = 'nstarkman.space publication refresh (mailto:starkman@mit.edu)';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const API = 'https://api.adsabs.harvard.edu/v1'; // the one place to point at SciX
+const SNAPSHOT = 'config/bibtex-reference.json';
+
 async function ads(q) {
-  const url = new URL('https://api.adsabs.harvard.edu/v1/search/query');
+  const url = new URL(`${API}/search/query`);
   url.search = new URLSearchParams({ q, fl: 'bibcode,abstract,citation_count,doi', rows: '1' });
   const res = await fetch(url, { headers: { authorization: `Bearer ${token}` } });
   if (!res.ok) throw new Error(`ADS ${q}: HTTP ${res.status}`);
@@ -62,8 +66,10 @@ async function fallbackAbstract(item) {
 }
 
 let moved = 0;
+const bibcodes = new Set();
 for (const { path, item } of readItems()) {
   if (item.type !== 'publication') continue;
+  if (item.bibcode) bibcodes.add(item.bibcode);
   const q = adsQuery(item);
   if (!q) continue;
 
@@ -72,6 +78,7 @@ for (const { path, item } of readItems()) {
     const doc = await ads(q);
     if (!doc) { console.log(`  not on ADS  ${item.id}`); continue; }
     diff = changes(item, doc);
+    if (diff.bibcode) { bibcodes.delete(item.bibcode); bibcodes.add(diff.bibcode); }
   } catch (e) {
     console.log(`  failed      ${item.id}: ${e.message}`);
     continue;
@@ -88,5 +95,31 @@ for (const { path, item } of readItems()) {
   console.log(`  ${item.id}: ${keys.join(', ')}`);
   if (!check) fs.writeFileSync(path, JSON.stringify({ ...item, ...diff }, null, 2) + '\n');
 }
+// The archive's own BibTeX for every bibcode, kept verbatim as the reference
+// that `npm run test:bibtex` compares our entries with.
+if (bibcodes.size) {
+  try {
+    const res = await fetch(`${API}/export/bibtex`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      // maxauthor 0 = every author; by default ADS cuts a long list to "and others"
+      body: JSON.stringify({ bibcode: [...bibcodes], maxauthor: 0 }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const exported = (await res.json()).export;
+    if (typeof exported !== 'string') throw new Error('no "export" in the response');
+    const snapshot = {};
+    for (const entry of splitExport(exported)) snapshot[parseBibtex(entry).key] = entry;
+    const json = JSON.stringify(Object.fromEntries(Object.entries(snapshot).sort(([a], [b]) => (a < b ? -1 : 1))), null, 2) + '\n';
+    if (!fs.existsSync(SNAPSHOT) || fs.readFileSync(SNAPSHOT, 'utf8') !== json) {
+      moved++;
+      console.log(`  ${SNAPSHOT}: moved`);
+      if (!check) fs.writeFileSync(SNAPSHOT, json);
+    }
+  } catch (e) {
+    console.log(`  failed      bibtex export: ${e.message}`);
+  }
+}
+
 console.log(`\n${moved} publication(s) ${check ? 'would change' : 'updated'}.`);
 if (check && moved) process.exit(1);

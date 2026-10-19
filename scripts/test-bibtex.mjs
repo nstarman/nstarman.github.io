@@ -1,5 +1,8 @@
 // Smoke test for lib/bibtex.js. Reads data/ directly so it runs without Astro.
 import { toBibtex, toBibliography } from '../src/lib/bibtex.js';
+import fs from 'node:fs';
+import { compareToArchive } from '../src/lib/bibcompare.js';
+import { isPreprintBibcode } from './lib/ads.mjs';
 import { readItems } from './lib/items.mjs';
 
 const items = readItems().map((r) => r.item);
@@ -39,6 +42,18 @@ check('bare ampersands in abstracts are escaped',
 check('every author is "Family, Given"',
   pubs.every((p) => (p.authors ?? []).every((a) =>
     a.literal || toBibtex(p).includes(`${a.family}, ${a.given}`))));
+
+// Each paper with a bibcode agrees with ADS's own BibTeX, snapshotted by
+// scripts/refresh-publications.mjs, in every field both carry but the citekey.
+const archive = JSON.parse(fs.readFileSync('config/bibtex-reference.json', 'utf8'));
+for (const p of pubs.filter((i) => i.bibcode)) {
+  const there = p.bibcode in archive;
+  check(`${p.id} is in config/bibtex-reference.json`, there);
+  if (!there) continue;
+  const diffs = compareToArchive(toBibtex(p), archive[p.bibcode], { preprint: isPreprintBibcode(p.bibcode) });
+  check(`${p.id} matches ADS`, diffs.length === 0);
+  for (const d of diffs) console.log(`    ${d.field}: ours "${d.ours}" · ADS "${d.theirs}"`);
+}
 
 console.log(fails ? `\n${fails} failure(s)` : '\nbibtex checks passed');
 process.exit(fails);

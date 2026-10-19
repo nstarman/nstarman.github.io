@@ -2,8 +2,9 @@
 // stray unescaped character breaks someone else's build, not ours.
 
 import { describe, expect, it } from 'vitest';
-import { toBibtex, toBibliography } from '../src/lib/bibtex.js';
+import { citekey, toBibtex, toBibliography } from '../src/lib/bibtex.js';
 import { byType } from '../src/lib/data.js';
+import fixture from './fixtures/citekeys.json';
 
 const pubs = byType('publication');
 const bib = toBibliography(pubs);
@@ -71,6 +72,26 @@ describe('an entry', () => {
   });
 });
 
+describe('year, month and adsurl', () => {
+  it('uses the journal issue date when venue.year is set, never mixing months', () => {
+    const b = toBibtex(entry({ venue: { year: '2021', month: '03' } }));
+    expect(b).toMatch(/year\s+= \{2021\}/);
+    expect(b).toMatch(/month\s+= \{mar\}/);
+    const noMonth = toBibtex(entry({ venue: { year: '2021' } }));
+    expect(noMonth).toContain('{2021}');
+    expect(noMonth).not.toMatch(/month\s+=/);
+  });
+  it('falls back to date.start', () => {
+    const b = toBibtex(entry());
+    expect(b).toContain('= {2024}');
+    expect(b).toContain('= {feb}');
+  });
+  it('writes the ADS url without /abstract', () => {
+    expect(toBibtex(entry({ bibcode: '2022ApJ...935..167A' })))
+      .toContain('= {https://ui.adsabs.harvard.edu/abs/2022ApJ...935..167A}');
+  });
+});
+
 describe('the whole bibliography', () => {
   it('emits one entry per publication', () => {
     expect((bib.match(/^@/gm) ?? []).length).toBe(pubs.length);
@@ -100,4 +121,30 @@ describe('the whole bibliography', () => {
       expect(key.split('{')[1].replace(',', '').trim()).toBeTruthy();
     }
   });
+});
+
+const A = (family, given = 'X') => ({ family, given });
+
+describe('citekey', () => {
+  it('one author: no plus', () =>
+    expect(citekey(entry({ id: 'p', authors: [A('Starkman')] }))).toBe('Starkman:2024:p'));
+  it('two authors: both', () =>
+    expect(citekey(entry({ id: 'p', authors: [A('Starkman'), A('Price-Whelan')] }))).toBe('Starkman+Price-Whelan:2024:p'));
+  it('three or more: first and a plus', () =>
+    expect(citekey(entry({ id: 'p', authors: [A('Li'), A('Lelli'), A('McGaugh')] }))).toBe('Li+:2024:p'));
+  it('collaboration leads, The/Collaboration dropped', () => {
+    expect(citekey(entry({ id: 'p', collaboration: 'The Astropy Collaboration', authors: [A('Price-Whelan'), A('Lim'), A('Earl')] }))).toBe('Astropy+Price-Whelan+:2024:p');
+    expect(citekey(entry({ id: 'p', collaboration: 'Euclid Collaboration', authors: [A('Starkman'), A('Nibauer'), A('Pearson')] }))).toBe('Euclid+Starkman+:2024:p');
+  });
+  it('citeslug replaces the id', () =>
+    expect(citekey(entry({ id: 'stream-members-only', citeslug: 'stream-members' }))).toBe('Starkman:2024:stream-members'));
+  it('family names are ASCII, unspaced', () =>
+    expect(citekey(entry({ id: 'p', authors: [A('van der Pérez'), A("O'Brien")] }))).toBe('vanderPerez+OBrien:2024:p'));
+  it('always matches the BibTeX key pattern', () =>
+    pubs.forEach((p) => expect(citekey(p)).toMatch(/^[A-Za-z][A-Za-z0-9_:+.-]*$/)));
+  it('a published paper keeps its frozen key', () =>
+    pubs.filter((p) => p.bibcode).forEach((p) =>
+      expect(citekey(p), `${p.id}: add or restore "${p.id}": "${citekey(p)}" in tests/fixtures/citekeys.json`).toBe(fixture[p.id])));
+  it('the entry uses it', () =>
+    expect(toBibtex(entry({ id: 'p' }))).toMatch(/^@article\{Starkman:2024:p,/));
 });
