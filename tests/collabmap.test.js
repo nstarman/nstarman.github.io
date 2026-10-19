@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { collaboratorMap, collabHref, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
   from '../src/lib/collabmap.js';
 
+import { mentees } from '../src/lib/mentees.js';
+
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins);
 
@@ -148,8 +150,9 @@ describe('the collaborator map', () => {
   });
 
   it('only includes people who can actually be placed', () => {
+    // A mentee may have nothing placeable yet and is on the map regardless.
     for (const p of people) {
-      expect(p.pins.length).toBeGreaterThan(0);
+      if (!p.mentee) expect(p.pins.length).toBeGreaterThan(0);
       for (const pin of p.pins) {
         expect(pin.start).toBeTruthy();
         expect(Number.isFinite(pin.lat)).toBe(true);
@@ -205,8 +208,42 @@ describe('collaborator order', () => {
 describe('collabHref', () => {
   it('sends a co-author on the map to their entry, and anyone else nowhere', () => {
     const [first] = people;
-    expect(collabHref(first.orcid)).toBe(`/research/?collab=${first.orcid}#collaborators`);
+    expect(collabHref(first.key)).toBe(`/research/?collab=${first.key}#collaborators`);
     expect(collabHref('0000-0000-0000-0000')).toBeNull();
     expect(collabHref(null)).toBeNull();
+  });
+});
+
+describe('mentees on the map', () => {
+  const by = (slug) => people.find((p) => p.mentee?.slug === slug);
+
+  it('has every mentee once, keyed by ORCID or slug', () => {
+    for (const m of mentees()) {
+      expect(people.filter((p) => p.mentee?.slug === m.slug)).toHaveLength(1);
+      expect(by(m.slug).key).toBe(m.person.orcid ?? m.slug);
+    }
+  });
+
+  it('does not duplicate a post the ORCID record already has', () => {
+    const c = by('charlotte-myers');
+    expect(c.pins.filter((p) => p.organization.includes('Massachusetts Institute')).length)
+      .toBe(new Set(c.pins.map((p) => `${p.organization}${p.start}`)).size);
+  });
+
+  it('fills a mentee with no ORCID from their journey', () => {
+    expect(by('amir-abdul').pins.map((p) => p.organization)).toEqual(['Massachusetts Institute of Technology']);
+  });
+
+  it('keeps a mentee with nothing to place, with no pins', () => {
+    const [m] = mentees();
+    const bare = collaboratorMap([{ ...m, slug: 'nobody-here', person: { family: 'Here', given: 'Nobody' }, journey: undefined }]);
+    const n = bare.find((p) => p.mentee?.slug === 'nobody-here');
+    expect(n.pins).toEqual([]);
+    expect(n.key).toBe('nobody-here');
+  });
+
+  it('links a mentee by slug', () => {
+    expect(collabHref('amir-abdul')).toBe('/research/?collab=amir-abdul#collaborators');
+    expect(collabHref('nobody')).toBeNull();
   });
 });

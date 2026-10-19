@@ -13,6 +13,7 @@ import collaborators from '/config/collaborators.json';
 import { locate } from './places.js';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
+import { mentees, menteeName, profileHref, topAchievements, researchSpans } from './mentees.js';
 import { byType, venueUrl, links, assists, primaryLink } from './data.js';
 
 // Re-exported because the map's callers and tests have always reached for them
@@ -71,24 +72,55 @@ export function lastFirst(name) {
 const covers = (post, date) =>
   Boolean(post.start) && post.start <= date && (!post.end || post.end >= date);
 
+const FAR = '9999';
+/** Do two posts' date ranges meet? Open ends run on; partial dates compare as strings. */
+const meets = (a, b) => a.start <= (b.end ?? FAR) && b.start <= (a.end ?? FAR);
+
+/** The posts to put on the map for one person: the ORCID record's, then each
+ *  `journey` post of a mentee whose institution the record has no overlapping
+ *  post for. ORCID wins; the record fills its gaps. */
+function postsOf(orcidPosts, journey = []) {
+  const extra = journey
+    .filter((j) => !orcidPosts.some((o) => o.organization === j.organization && o.start && meets(o, j)))
+    .map((j) => ({ ...j, role: j.role }));
+  return [...orcidPosts, ...extra]
+    .filter((a) => a.start && a.organization && locate(a.organization))
+    // Newest first: what someone is doing now is the more useful fact, and it
+    // is the order every other dated list on this site uses. The trajectory
+    // is a line through the same points either way.
+    .sort((a, b) => b.start.localeCompare(a.start));
+}
+
+/** First sentence of a mentee's research, as spans with item links resolved. */
+const firstSentence = (text) =>
+  text ? researchSpans(text.split(/(?<=[.!?])\s/)[0]) : null;
+
 /**
  * One entry per collaborator who can be put on the map at all: they have at
- * least one dated post at an institution with known coordinates.
+ * least one dated post at an institution with known coordinates. A mentee is
+ * always in, with `pins: []` if nothing of theirs can be placed.
  *
+ * `key` is the ORCID, or a mentee's slug when they have none.
  * `hue` comes from worldmap.js, spread by the golden angle.
  */
-export function collaboratorMap() {
+export function collaboratorMap(menteeList = mentees()) {
   const papers = papersByAuthor();
   const people = [];
+  const bySlug = new Map(menteeList.map((m) => [m.person.orcid ?? m.slug, m]));
 
-  for (const person of collaborators.people) {
-    const posts = person.affiliations
-      .filter((a) => a.start && a.organization && locate(a.organization))
-      // Newest first: what someone is doing now is the more useful fact, and it
-      // is the order every other dated list on this site uses. The trajectory
-      // is a line through the same points either way.
-      .sort((a, b) => b.start.localeCompare(a.start));
-    if (posts.length === 0) continue;
+  const entries = collaborators.people.map((c) => ({
+    orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: bySlug.get(c.orcid),
+  }));
+  for (const m of menteeList) {
+    if (!entries.some((e) => e.m === m)) {
+      entries.push({ orcid: m.person.orcid, name: menteeName(m), affiliations: [], m });
+    }
+  }
+
+  for (const person of entries) {
+    const m = person.m;
+    const posts = postsOf(person.affiliations, m?.journey);
+    if (posts.length === 0 && !m) continue;
 
     const mine = papers.get(person.orcid) ?? [];
     const pins = posts.map((post) => {
@@ -105,12 +137,16 @@ export function collaboratorMap() {
       };
     });
     people.push({
+      key: person.orcid ?? m.slug,
       orcid: person.orcid,
       name: person.name,
       pins,
       // Only papers that landed inside a known post can be pinned; the rest are
       // still collaborations, and saying so beats pretending they do not exist.
       unplacedPapers: mine.filter((p) => !posts.some((post) => covers(post, p.date))),
+      ...(m && {
+        mentee: { slug: m.slug, href: profileHref(m), research: firstSentence(m.research), top: topAchievements(m) },
+      }),
     });
   }
 
@@ -121,9 +157,9 @@ export function collaboratorMap() {
 }
 
 let mapped;
-/** A co-author on the map at /research/, picked there by mappick.js from the
- *  query; null for someone the map has no post for. */
-export function collabHref(orcid) {
-  mapped ??= new Set(collaboratorMap().map((p) => p.orcid));
-  return mapped.has(orcid) ? `/research/?collab=${orcid}#collaborators` : null;
+/** A person on the map at /research/ (by ORCID, or a mentee's slug), picked
+ *  there by mappick.js from the query; null for someone the map has no entry for. */
+export function collabHref(key) {
+  mapped ??= new Set(collaboratorMap().map((p) => p.key));
+  return mapped.has(key) ? `/research/?collab=${key}#collaborators` : null;
 }

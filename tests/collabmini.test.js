@@ -7,7 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { collaboratorMap, lastFirst } from '../src/lib/collabmap.js';
 import { miniMap } from '../src/lib/collabmini.js';
 
+// A mentee with nothing placeable is on the full map but has no dot here.
 const people = collaboratorMap();
+const placed = people.filter((p) => p.pins.length > 0);
 const { entries, dots, trails } = miniMap();
 // Every entry keeps the index of the person it came from; the picker's order
 // is not that index, which is the point of the test below.
@@ -15,13 +17,13 @@ const who = (e) => people[e.c];
 
 describe('the CV gutter map', () => {
   it('keeps one entry per collaborator', () => {
-    expect(entries.length).toBe(people.length);
-    expect(new Set(entries.map((e) => e.c)).size).toBe(people.length);
+    expect(entries.length).toBe(placed.length);
+    expect(new Set(entries.map((e) => e.c)).size).toBe(placed.length);
   });
 
   it('lists them surname-first, in that order', () => {
     expect(entries.map((e) => e.name))
-      .toEqual([...people.map((p) => lastFirst(p.name))].sort((a, b) => a.localeCompare(b)));
+      .toEqual([...placed.map((p) => lastFirst(p.name))].sort((a, b) => a.localeCompare(b)));
   });
 
   it('does not renumber anyone when it sorts them', () => {
