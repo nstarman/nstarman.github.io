@@ -198,10 +198,10 @@
               "unpublished"
             ]
           },
-          "citekey": {
-            "description": "BibTeX key. House format: <FirstAuthor>:<year>:<short> for a sole author, <First>+<Second>:... for two, <First>+:... for three or more, and <Collaboration>+<First>+:... when a collaboration leads the byline. Defaults to `id` if omitted.",
+          "citeslug": {
+            "description": "The citekey's last part, where it is not the id. The key itself is derived — see citekey() in src/lib/bibtex.js and constitution Article VI.",
             "type": "string",
-            "pattern": "^[A-Za-z][A-Za-z0-9_:+.-]*$"
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
           },
           "preliminaryOf": {
             "description": "Id of the full paper this one is an earlier, shorter version of — a workshop or conference proceeding. /publications/ lists it under that paper instead of as an entry of its own; the BibTeX file keeps both. Set it on the proceeding, not on the paper.",

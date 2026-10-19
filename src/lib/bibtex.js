@@ -108,7 +108,22 @@ export function toBibtex(item) {
     .map(([k, value]) => `  ${k.padEnd(width)} = {${value}}`)
     .join(',\n');
 
-  return `@${item.entryType}{${item.citekey ?? item.id},\n${body}\n}`;
+  return `@${item.entryType}{${citekey(item)},\n${body}\n}`;
+}
+
+const ascii = (s) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9-]/g, '');
+
+// The key is derived, never stored: [<Collab>+]<Lead>:<year>:<citeslug ?? id>.
+// <Lead> is one family name, two joined by "+", or the first with a trailing "+".
+// See constitution Article VI.
+export function citekey(item) {
+  const names = item.authors.map((a) => ascii(a.family ?? a.literal ?? ''));
+  const lead = names.length > 2 ? `${names[0]}+` : names.slice(0, 2).join('+');
+  const collab = item.collaboration
+    ? `${ascii(item.collaboration.replace(/^the\s+/i, '').replace(/\s+collaboration$/i, ''))}+`
+    : '';
+  return `${collab}${lead}:${item.date.start.slice(0, 4)}:${item.citeslug ?? item.id}`;
 }
 
 export function toBibliography(items) {
