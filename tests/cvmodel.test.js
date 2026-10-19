@@ -3,6 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { cvModel, rowOf } from '../src/lib/cvmodel.js';
+import { lineTier } from '../src/lib/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 const complete = cvModel('complete');
@@ -187,6 +188,13 @@ describe('mentee achievements', () => {
   it('prints all, oldest first, on the complete CV', () => {
     expect(lines(row('complete', undefined, true)))
       .toEqual(['About M.', 'Talk — Out (2025)', 'Prize — AAS (2026)']);
+  });
+  it('keeps an achievement the builder ticks by its own index', () => {
+    expect(lines(row('complete', (_id, i) => i === 1, true))).toEqual(['Talk — Out (2025)']);
+  });
+  it('tells achievements from complete-only lines, so the builder ticks them', () => {
+    // 1 base line, 1 complete-only, then achievements.
+    expect([0, 1, 2].map((i) => lineTier(i, 1, 2))).toEqual(['base', 'complete', 'achievement']);
   });
   it('is not kept by a builder tick of an earlier line', () => {
     expect(lines(row('complete', (_id, i) => i === 0, true))).toEqual(['About M.']);

@@ -101,3 +101,12 @@ export function achievementLines(item, preset, { complete = false } = {}) {
       return spans(`${what}${where ? ` — ${where}` : ''} (${dateLabel({ date: { start: a.date } })})`);
     });
 }
+
+/**
+ * What kind of line index `i` is on an entry whose lines run: `base` detail
+ * lines, then complete-only ones up to `detailCount`, then achievements. The
+ * builder ticks by this — only the complete-only kind starts unticked on a
+ * preset that does not show it; a marked achievement is printed everywhere.
+ */
+export const lineTier = (i, baseCount, detailCount) =>
+  i < baseCount ? 'base' : i < detailCount ? 'complete' : 'achievement';

@@ -6,6 +6,7 @@ import { dateLabel, authors, venueLine, links, REL_ICON, relKey, authorPosition,
   from '../lib/data.js';
 import LinkIcons from './LinkIcons.astro';
 import Inline from './Inline.astro';
+import { lineTier } from '../lib/inline.js';
 import Byline from './Byline.astro';
 import Venue from './Venue.astro';
 
@@ -14,7 +15,9 @@ import Venue from './Venue.astro';
  * @prop pick           render the builder's tick-boxes
  * @prop picked         whether this entry starts ticked
  * @prop lines          its detail lines, one span array each
- * @prop baseCount      lines from this index on are complete-only (appended last)
+ * @prop baseCount      detail lines from this index on are complete-only (appended last)
+ * @prop detailCount    where the detail lines end; any after are achievements, which
+ *                     print wherever `cvs` marks them and so are never complete-only
  * @prop level          the starting detail level; 'full' starts the lines ticked
  * @prop completeLines  whether the complete-only lines start ticked
  * @prop recipientInline whether the recipient starts on the title line (the preset's say, else the item's)
@@ -22,7 +25,7 @@ import Venue from './Venue.astro';
  *                     names the institution — so this one sets it apart, to
  *                     show only if the section is turned back to separate rows
  */
-const { item, pick = false, picked = true, lines = [], baseCount = lines.length,
+const { item, pick = false, picked = true, lines = [], baseCount = lines.length, detailCount = lines.length,
         level = 'full', completeLines = false, member = false,
         recipientInline = item.recipientInline } = Astro.props;
 
@@ -102,8 +105,8 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
       <span class="sub">
         {pick && (
           <input type="checkbox" class="subbox" data-id={item.id} data-line={i}
-                 data-complete={i >= baseCount ? '' : undefined}
-                 checked={level === 'full' && (i < baseCount || completeLines)}
+                 data-complete={lineTier(i, baseCount, detailCount) === 'complete' ? '' : undefined}
+                 checked={{ base: level === 'full', complete: level === 'full' && completeLines, achievement: true }[lineTier(i, baseCount, detailCount)]}
                  aria-label={`Include this line under ${item.title}`} />
         )}
         <Inline spans={line} />
