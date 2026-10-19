@@ -11,5 +11,26 @@
   },
   "title": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)",
   "details": "Machine Learning Galaxy intrinsic sizes",
-  "student": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)"
+  "student": "Taisiia Karasova (MIT) with Prof. Lina Necib (MIT)",
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)"
+  ],
+  "slug": "taisiia-karasova",
+  "person": {
+    "family": "Karasova",
+    "given": "Taisiia",
+    "level": "undergraduate"
+  },
+  "journey": [
+    {
+      "organization": "Massachusetts Institute of Technology",
+      "city": "Cambridge",
+      "region": "MA",
+      "country": "US",
+      "start": "2025",
+      "end": "2026",
+      "role": "Undergraduate researcher"
+    }
+  ],
+  "photo": "people/taisiia-karasova.webp"
 }

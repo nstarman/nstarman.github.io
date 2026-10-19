@@ -1,0 +1,89 @@
+// Mentees: the mentoring items that are a person, with a profile at /people/<slug>/.
+//
+// A mentee's papers and software are not listed on their record; they are found
+// from the other side, by the `mentee` id on a paper's author. The logic lives in
+// pure functions over arrays so the tests need no data; the wrappers at the
+// bottom hand them the database.
+
+import { byType, resolve, titleOf } from './data.js';
+import { siteHref } from './cards.js';
+import { spans } from './inline.js';
+
+// Partial dates compare correctly as strings: "2026-04" > "2026" > "2025-07",
+// so the more precise date of two sharing a prefix sorts first, newest first.
+const newestFirst = (key) => (a, b) => (key(a) < key(b) ? 1 : key(a) > key(b) ? -1 : 0);
+const byStart = newestFirst((i) => i.date?.start ?? '');
+
+export const menteeName = (m) => `${m.person.given} ${m.person.family}`;
+/** What the collaborator map calls them: their ORCID, else their slug. */
+export const menteeKey = (m) => m.person.orcid ?? m.slug;
+export const profileHref = (m) => `/people/${m.slug}/`;
+// How a level reads in a sentence. A summer associate is not a student — Reem
+// wrote code with me, not research — so the label says what the role was.
+const LEVELS = { undergraduate: 'Undergraduate', graduate: 'Graduate', postbac: 'Postbac', postdoc: 'Postdoc', 'summer-associate': 'Summer associate' };
+export const levelLabel = (m) => LEVELS[m.person.level];
+
+/** The mentoring items that have a `person`, newest first. */
+export const pickMentees = (all) => all.filter((i) => i.type === 'mentoring' && i.person).sort(byStart);
+
+/** Publications with an author who is this mentee, newest first. */
+export const papersOf = (m, pubs) =>
+  pubs.filter((p) => p.authors?.some((a) => a.mentee === m.id)).sort(byStart);
+
+/** The packages that are theirs: each whose own paper (a package `refs` its
+ *  paper) is one of the mentee's, then any they are an author of, each once.
+ *  Not the packages their papers merely used — a paper refs those too, and a
+ *  student who ran galax did not write it. */
+export function softwareOf(m, papers, software) {
+  const ids = new Set(papers.map((p) => p.id));
+  const theirs = software.filter((s) => s.refs?.some((r) => ids.has(r)));
+  const authored = software.filter((s) => s.authors?.some((a) => a.mentee === m.id));
+  return [...new Set([...theirs, ...authored])];
+}
+
+export const sortAchievements = (list) => [...(list ?? [])].sort(newestFirst((a) => a.date));
+
+/** Awards first, then the rest, each newest first, cut to `n`. */
+export function pickTop(list, n = 3) {
+  const sorted = sortAchievements(list);
+  const isAward = (a) => a.kind === 'award';
+  return [...sorted.filter(isAward), ...sorted.filter((a) => !isAward(a))].slice(0, n);
+}
+
+export const achievements = (m) => sortAchievements(m.achievements);
+export const topAchievements = (m, n = 3) => pickTop(m.achievements, n);
+
+export const mentees = () => pickMentees(byType('mentoring'));
+export const menteeById = (id) => mentees().find((m) => m.id === id);
+export const menteeBySlug = (slug) => mentees().find((m) => m.slug === slug);
+export const menteePapers = (m) => papersOf(m, byType('publication'));
+export const menteeSoftware = (m) => softwareOf(m, menteePapers(m), byType('software'));
+
+/** `research` as spans with a link each: a `[](item:id)` is named by the item's
+ *  nickTitle and points at its place on this site, as /research/'s introductions
+ *  name theirs. An id naming no item throws, so a typo fails the build. */
+export const researchSpans = (text, lookup = resolve) =>
+  spans(text).map((s) => {
+    if (!s.item) return s;
+    const p = lookup(s.item);
+    if (!p) throw new Error(`research: [](item:${s.item}) names no item`);
+    return { ...s, t: s.t || titleOf(p, 'nick'), url: siteHref(p) };
+  });
+
+/** The first sentence of resolved spans, so an item link keeps its name. A stop
+ *  is not the end after "et al.", "e.g.", "i.e." or a lone initial like "J.". */
+export function firstSentenceSpans(list) {
+  const text = list.map((s) => s.t).join('');
+  let end = text.length;
+  for (const m of text.matchAll(/[.!?](?=\s|$)/g)) {
+    if (/(?:\bet al|\be\.g|\bi\.e|(?<![A-Za-z])[A-Z])$/.test(text.slice(0, m.index))) continue;
+    end = m.index + 1;
+    break;
+  }
+  let at = 0;
+  return list.flatMap((s) => {
+    const t = s.t.slice(0, Math.max(0, end - at));
+    at += s.t.length;
+    return t ? [{ ...s, t }] : [];
+  });
+}

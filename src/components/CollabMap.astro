@@ -12,6 +12,7 @@ import { collaboratorMap, lastFirst, map } from '../lib/collabmap.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
+const placed = people.filter((p) => p.pins.length > 0).length;
 const trails = people.filter((p) => p.pins.length > 1);
 // "2 papers together, 1 assist" — an assist is a paper of theirs that thanks me.
 const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
@@ -45,7 +46,7 @@ const label = (pin) =>
 
   <div class="cmap-stage">
   <svg viewBox={`0 0 ${map.width} ${map.height}`} role="img"
-       aria-label={`World map: ${pins.length} posts held by ${people.length} collaborators, `
+       aria-label={`World map: ${pins.length} posts held by ${placed} people, `
                  + `on an Equal Earth projection. The same information is listed below.`}>
     <path class="cmap-land" d={map.land} />
     {/* Drawn over the land in the ocean's colour rather than cut out of it:
@@ -54,12 +55,12 @@ const label = (pin) =>
 
     {/* Trajectories first, so pins sit on top of their own lines. */}
     {trails.map((p) => (
-      <polyline class="cmap-trail" data-c={people.indexOf(p)} style={`--h:${p.hue}`}
+      <polyline class="cmap-trail" data-c={people.indexOf(p)} data-mentee={p.mentee ? '' : undefined} style={`--h:${p.hue}`}
                 points={p.pins.map((pin) => `${pin.x.toFixed(2)},${pin.y.toFixed(2)}`).join(' ')} />
     ))}
 
     {pins.map((pin) => (
-      <g class="cmap-pin" data-c={people.indexOf(pin.person)} style={`--h:${pin.person.hue}`}>
+      <g class="cmap-pin" data-c={people.indexOf(pin.person)} data-mentee={pin.person.mentee ? '' : undefined} style={`--h:${pin.person.hue}`}>
         {/* A link to the person's record below, for a reader with no script to
             pick them with; the script's click handler takes over where there is
             one. Out of the tab order: the record's own heading is the link for
@@ -85,6 +86,8 @@ const label = (pin) =>
     <label for="cmap-who" hidden>Show</label>
     <select id="cmap-who" class="cmap-who btn btn--sel" hidden>
       <option value="">Everyone</option>
+      <option value="mentees">Mentees</option>
+      <option disabled>──────────</option>
       {people.map((p, i) => <option value={String(i)}>{lastFirst(p.name)}</option>)}
     </select>
     <span class="cmap-partial"
@@ -95,12 +98,12 @@ const label = (pin) =>
 
   <ol class="cmap-list">
     {people.map((p) => (
-      <li id={`collab-${people.indexOf(p)}`} data-orcid={p.orcid} data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
+      <li id={`collab-${people.indexOf(p)}`} data-key={p.key} data-slug={p.mentee?.slug} data-mentee={p.mentee ? '' : undefined} data-c={people.indexOf(p)} style={`--h:${p.hue}`}>
         {/* Where the record came from, and the way to check it. */}
-        <a class="cmap-orcid" href={`https://orcid.org/${p.orcid}`}
+        {p.orcid && <a class="cmap-orcid" href={`https://orcid.org/${p.orcid}`}
            aria-label={`${p.name} on ORCID`} title={`${p.name} on ORCID — ${p.orcid}`}>
           <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-orcid" /></svg>
-        </a>
+        </a>}
         <h3><a href={`#collab-${people.indexOf(p)}`}>{lastFirst(p.name)}</a></h3>
         <ol hidden>
           {p.pins.map((pin) => (
@@ -120,6 +123,15 @@ const label = (pin) =>
             </li>
           ))}
         </ol>
+        {p.mentee && (
+          <div class="cmap-mentee" hidden>
+            {p.mentee.research && (
+              <p>{p.mentee.research.map((sp) => (sp.url ? <a href={sp.url}>{sp.t}</a> : sp.t))}</p>
+            )}
+            {p.mentee.top.length > 0 && <ul>{p.mentee.top.map((a) => <li>{a.title}</li>)}</ul>}
+            <a href={p.mentee.href}>Full profile →</a>
+          </div>
+        )}
         {p.unplacedPapers.length > 0 && (
           <p class="cmap-note" hidden>
             Also {together(p.unplacedPapers)}, from when their ORCID record names no post.

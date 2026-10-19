@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref, TIER_PRESET,
-  FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS,
+  FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS, studentStamp,
 } from '../src/lib/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 import { file, snippet } from '../src/lib/cardexport.js';
@@ -736,5 +736,25 @@ describe('the stars button', () => {
       expect(cardFacts(i, true).optional, i.id).toEqual([]);
       expect(cardFace(parseName(`${base}-buttons:all`), cardFacts(i, true)).seq.every((x) => x.kept)).toBe(true);
     }
+  });
+});
+
+describe('student stamp', () => {
+  const byId = (id) => items.find((i) => i.id === id);
+  it('links a student with a profile to it', () => {
+    const [s] = studentStamp(byId('pinns-mnras'));
+    expect(s).toMatchObject({ student: 'undergraduate', href: '/people/charlotte-myers/', name: 'Charlotte Myers' });
+  });
+  it('leaves a student with no profile plain', () => {
+    // A made-up paper, so the test holds once every real student has a profile.
+    const paper = { type: 'publication', authors: [
+      { family: 'Student', given: 'A', student: 'graduate' },
+      { family: 'Starkman', given: 'Nathaniel', me: true },
+    ] };
+    expect(studentStamp(paper)).toEqual([{ student: 'graduate', pos: 1 }]);
+  });
+  it('links Sirui Wu, a mentee who was not my student', () => {
+    const [s] = studentStamp(byId('potamides-apj'));
+    expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu' });
   });
 });

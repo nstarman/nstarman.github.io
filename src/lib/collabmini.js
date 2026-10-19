@@ -50,7 +50,7 @@ export function miniMap(ids) {
       .sort(([, a], [, b]) => b.localeCompare(a))
       .map(([id]) => id);
     return { c, name: lastFirst(person.name), places: [...at.values()], papers };
-  }).filter((e) => !ids || e.papers.length > 0);
+  }).filter((e) => e.places.length > 0 && (!ids || e.papers.length > 0));
 
   // Surname first, so the picker reads like an index rather than a list of
   // first names — the same order the CV's own references are scanned in. `c`

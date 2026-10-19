@@ -10,13 +10,79 @@
     "start": "2025-06",
     "end": "2026"
   },
-  "title": "Amir Abdul (Howard)",
-  "details": [
-    "Baryon Modeling in External Galaxies with Stellar Streams",
-    "Leadership Alliance Summer Research Early Identification Program (SR-EIP), MIT Summer Research Program (MSRP)",
-    "Leadership Alliance National Symposium, July 23–25, 2025",
-    "2025 NSBP-NSHP Joint Annual Conference, November 19–23, 2025",
-    "2026 APS Global Physics Summit, March 14–20, 2026"
+  "title": "Amir Abdulgadir (Howard)",
+  "details": "Baryon Modeling in External Galaxies with Stellar Streams",
+  "student": "Amir Abdulgadir (Howard)",
+  "slug": "amir-abdulgadir",
+  "person": {
+    "family": "Abdulgadir",
+    "given": "Amir",
+    "level": "undergraduate"
+  },
+  "journey": [
+    {
+      "organization": "Howard University",
+      "city": "Washington",
+      "region": "DC",
+      "country": "US",
+      "start": "2024",
+      "role": "Undergraduate, Astrophysics"
+    },
+    {
+      "organization": "Massachusetts Institute of Technology",
+      "city": "Cambridge",
+      "region": "MA",
+      "country": "US",
+      "start": "2025-06",
+      "end": "2025-08",
+      "role": "Summer research student"
+    }
   ],
-  "student": "Amir Abdul (Howard)"
+  "achievements": [
+    {
+      "kind": "program",
+      "date": "2025-06",
+      "title": "Leadership Alliance SR-EIP and MIT Summer Research Program",
+      "cvs": [
+        "np",
+        "2page"
+      ],
+      "url": "https://oge.mit.edu/msrp/profiles/amir-abdulgadir/"
+    },
+    {
+      "kind": "talk",
+      "date": "2025-07",
+      "title": "Leadership Alliance National Symposium, July 23–25",
+      "cvs": [
+        "np",
+        "2page"
+      ]
+    },
+    {
+      "kind": "talk",
+      "date": "2025-11",
+      "title": "2025 NSBP-NSHP Joint Annual Conference, November 19–23",
+      "cvs": [
+        "np",
+        "2page"
+      ]
+    },
+    {
+      "kind": "talk",
+      "date": "2026-03-16",
+      "title": "Constraining Dark Matter in External Galaxies Using Stellar Streams",
+      "event": "2026 APS Global Physics Summit, March 14–20",
+      "url": "https://meetings-archive.aps.org/smt/2026/apr-d80/4/",
+      "cvs": [
+        "np",
+        "2page"
+      ]
+    }
+  ],
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)",
+    "Zeineb Mezghanni (MIT)"
+  ],
+  "research": "Amir weighs the dark matter of other galaxies with the stellar streams around them. Working from Euclid images, he finds galaxies with streams, subtracts the host galaxy's light to isolate each stream, and measures its path, width and brightness; together these constrain the host's total mass and shape, and taking away the stars leaves the dark matter.",
+  "photo": "people/amir-abdulgadir.webp"
 }

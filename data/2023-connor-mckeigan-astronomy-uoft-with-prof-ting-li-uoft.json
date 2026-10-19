@@ -11,5 +11,25 @@
   },
   "title": "Connor McKeigan (Astronomy, UofT) with Prof. Ting Li (UofT)",
   "details": "Undergraduate thesis project: “Characterizing the stellar streams of S5”",
-  "student": "Connor McKeigan (Astronomy, UofT) with Prof. Ting Li (UofT)"
+  "student": "Connor McKeigan (Astronomy, UofT) with Prof. Ting Li (UofT)",
+  "coSupervisors": [
+    "Prof. Ting Li (UofT)"
+  ],
+  "slug": "connor-mckeigan",
+  "person": {
+    "family": "McKeigan",
+    "given": "Connor",
+    "level": "undergraduate"
+  },
+  "journey": [
+    {
+      "organization": "University of Toronto",
+      "city": "Toronto",
+      "region": "ON",
+      "country": "CA",
+      "start": "2023",
+      "end": "2025",
+      "role": "Undergraduate thesis student"
+    }
+  ]
 }

@@ -352,7 +352,7 @@ a.card:hover .name{color:var(--accent)}
 .c-stamp, .c-year{letter-spacing:.04em; color:var(--ink-faint)}
 .c-stamp{font-family:var(--mono); font-size:.82em}
 .c-place{font-size:var(--fs-position, 1em); font-weight:var(--fw-position, 400); font-style:var(--fst-position, normal); font-family:var(--ff-position, var(--mono))}
-.c-stu{cursor:help}
+.c-stu{cursor:help} a.c-stu{cursor:pointer}
 .c-py{white-space:nowrap}
 /* "student‡ 1st | 2nd" stays on the buttons' row, on one line. */
 .card[data-stustamp] .c-stamp{white-space:nowrap; font-size:.74em}

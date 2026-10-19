@@ -710,6 +710,11 @@
       "lat": 41.3136,
       "lon": -72.9232,
       "matched": "Yale University, Trumbull Street, Dixwell, New Haven, South Central Connecticut Planning Region, Connecticut, 06511, United States"
+    },
+    "Howard University": {
+      "lat": 38.9221,
+      "lon": -77.0196,
+      "matched": "Howard University, 2400, 6th Street Northwest, Ward 1, Washington, District of Columbia, 20059, United States"
     }
   }
 }

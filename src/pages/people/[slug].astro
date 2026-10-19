@@ -1,0 +1,74 @@
+---
+// A mentee's profile (Layout A): who they are, what we work on, what came of it,
+// and what they have won. Sections with nothing to show are left out.
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import '../../styles/people.css';
+import { PRESET } from '../../lib/cards.js';
+import { collabHref } from '../../lib/collabmap.js';
+import { dateLabel } from '../../lib/data.js';
+import { mentees, menteeKey, menteeBySlug, menteeName, levelLabel, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
+
+export const getStaticPaths = () => mentees().map((m) => ({ params: { slug: m.slug } }));
+
+const m = menteeBySlug(Astro.params.slug);
+const name = menteeName(m);
+const initials = `${m.person.given[0]}${m.person.family[0]}`;
+const level = levelLabel(m);
+const papers = menteePapers(m);
+const software = menteeSoftware(m);
+const ach = achievements(m);
+const KIND = { award: 'Award', talk: 'Talk', poster: 'Poster', press: 'Press', program: 'Program' };
+const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `with ${m.coSupervisors.join(', ')}`]
+  .filter(Boolean).join(' · ');
+---
+<Base title={`${name} — Nathaniel Starkman`} section="/people/">
+  <main>
+    <section>
+      <div class="wrap">
+        <div class="pp-head">
+          {m.photo
+            ? <img class="pp-photo" src={`/${m.photo}`} alt={`Photo of ${name}`} />
+            : <span class="pp-initials" aria-hidden="true">{initials}</span>}
+          <div>
+            <h1>{name}</h1>
+            <p class="pp-meta">{meta}</p>
+            {m.badge && <span class="pp-badge">{m.badge}</span>}
+            <p class="pp-meta"><a href={collabHref(menteeKey(m))}>See their path on the collaborator map →</a></p>
+          </div>
+        </div>
+
+        {m.research && <section class="pp-section">
+          <h2>Our research</h2>
+          <p>{researchSpans(m.research).map((s) => s.url ? <a href={s.url}>{s.t}</a> : s.t)}</p>
+        </section>}
+
+        {(papers.length > 0 || software.length > 0) && <section class="pp-section">
+          <h2>Papers &amp; software together</h2>
+          {papers.length > 0 && <div class="pp-cards">
+            {papers.map((p) => <Card item={p} preset={PRESET.carousel} heading="h3" />)}
+          </div>}
+          {software.length > 0 && <div class="pp-cards">
+            {software.map((s) => <Card item={s} preset={PRESET.softwareMinor} heading="h3" />)}
+          </div>}
+        </section>}
+
+        {ach.length > 0 && <section class="pp-section">
+          <h2>Achievements</h2>
+          <ul class="pp-ach">
+            {ach.map((a) => (
+              <li>
+                <span class="when">{dateLabel({ date: { start: a.date } }, { month: true })}</span>
+                <span class="kind">{KIND[a.kind] ?? a.kind}</span>
+                <span class="what">
+                  {a.url ? <a href={a.url}>{a.title}</a> : a.title}
+                  {(a.event || a.outlet) && <>, {a.event ?? a.outlet}</>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>}
+      </div>
+    </section>
+  </main>
+</Base>

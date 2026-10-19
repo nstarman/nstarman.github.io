@@ -8,6 +8,9 @@
 // Spans, not HTML: the same model feeds the website and the Typst CV, and only
 // one of those understands markup.
 
+import { dateLabel } from './data.js';
+import { sortAchievements } from './mentees.js';
+
 // `[text](https://…)` for the web, and `[text](item:some-id)` to point at
 // another entry on the same CV — the CV cross-references itself (a position
 // citing the grants that funded it) and a bare URL cannot express that.
@@ -81,3 +84,40 @@ export function detailLines(item, { complete = false } = {}) {
     ...(complete ? lines(item.detailsComplete) : []),
   ];
 }
+
+/**
+ * A mentee's marked achievements, one span array per line, oldest first so the
+ * entry reads as a progression. They follow everything `detailLines` returns,
+ * so existing line indexes keep their meaning, and are gated by their own
+ * `cvs` rather than by the section's detail level: a short CV that drops
+ * details can still carry the one achievement worth a line. `complete` shows all.
+ */
+export function achievementLines(item, preset, { complete = false } = {}) {
+  return sortAchievements(item.achievements).reverse()
+    .filter((a) => complete || a.cvs?.includes(preset))
+    .map((a) => {
+      const what = a.url ? `[${a.title}](${a.url})` : a.title;
+      const where = a.event ?? a.outlet;
+      return spans(`${what}${where ? ` — ${where}` : ''} (${dateLabel({ date: { start: a.date } })})`);
+    });
+}
+
+/** Each achievement's `cvs`, in the order `achievementLines` prints them. */
+export const achievementCvs = (item) =>
+  sortAchievements(item.achievements).reverse().map((a) => a.cvs ?? []);
+
+/**
+ * Whether an achievement's line starts ticked when the builder is seeded from
+ * `preset`: the complete CV prints them all, any other only those it is marked for.
+ */
+export const achievementTicked = (cvs, preset, unabridged) =>
+  Boolean(unabridged) || (cvs ?? []).includes(preset);
+
+/**
+ * What kind of line index `i` is on an entry whose lines run: `base` detail
+ * lines, then complete-only ones up to `detailCount`, then achievements. The
+ * builder ticks by this — only the complete-only kind starts unticked on a
+ * preset that does not show it; a marked achievement is printed everywhere.
+ */
+export const lineTier = (i, baseCount, detailCount) =>
+  i < baseCount ? 'base' : i < detailCount ? 'complete' : 'achievement';

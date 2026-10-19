@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "sirui-wu-copenhagen",
+  "type": "mentoring",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2024",
+    "end": "2026"
+  },
+  "title": "Sirui Wu (PhD student of Sarah Pearson, Copenhagen)",
+  "details": [
+    "[Potamides](item:potamides-apj)"
+  ],
+  "student": "Sirui Wu (PhD student of Sarah Pearson, Copenhagen)",
+  "slug": "sirui-wu",
+  "person": {
+    "family": "Wu",
+    "given": "Sirui",
+    "orcid": "0009-0003-4675-3622",
+    "level": "graduate"
+  },
+  "journey": [
+    {
+      "organization": "University of Copenhagen",
+      "city": "Copenhagen",
+      "country": "DK",
+      "start": "2024",
+      "role": "PhD student"
+    }
+  ]
+}

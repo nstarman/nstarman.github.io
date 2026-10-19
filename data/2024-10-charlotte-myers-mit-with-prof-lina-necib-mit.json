@@ -18,5 +18,36 @@
   "student": "Charlotte Myers (MIT) with Prof. Lina Necib (MIT)",
   "refs": [
     "pinns-neurips"
-  ]
+  ],
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)"
+  ],
+  "slug": "charlotte-myers",
+  "person": {
+    "family": "Myers",
+    "given": "Charlotte",
+    "orcid": "0009-0005-9329-8196",
+    "level": "undergraduate"
+  },
+  "badge": "2026 Goldwater Scholar",
+  "achievements": [
+    {
+      "kind": "award",
+      "date": "2026-04",
+      "title": "Barry Goldwater Scholarship",
+      "url": "https://news.mit.edu/2026/three-mit-named-2026-goldwater-scholars-0423",
+      "cvs": [
+        "np",
+        "2page"
+      ]
+    },
+    {
+      "kind": "press",
+      "date": "2026-04",
+      "title": "Three from MIT named 2026 Goldwater Scholars",
+      "outlet": "MIT News",
+      "url": "https://news.mit.edu/2026/three-mit-named-2026-goldwater-scholars-0423"
+    }
+  ],
+  "photo": "people/charlotte-myers.webp"
 }

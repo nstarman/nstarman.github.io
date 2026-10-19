@@ -11,7 +11,7 @@
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
 import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref, paperHref, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
+import { studentStamp, cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref, paperHref, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
 import { parseName, cardFace } from '../lib/cardname.js';
 import { ordinal, plain } from '../lib/inline.js';
 import LinkIcon from './LinkIcon.astro';
@@ -69,7 +69,7 @@ const place = pos && (pos <= 3 || item.authorPosition != null ? ordinal(pos) : '
 // author order: "student‡ 1st | 2nd" — they were first and I second.
 const level = { undergraduate: 'Undergraduate', graduate: 'Graduate' };
 const mark = { undergraduate: '†', graduate: '‡' };
-const students = item.type === 'publication' ? (item.authors ?? []).flatMap((a, i) => (a.student ? [{ student: a.student, pos: i + 1 }] : [])) : [];
+const students = studentStamp(item);
 const stamp = [...students, ...(place ? [{ me: true, pos }] : [])].sort((x, y) => x.pos - y.pos);
 // A paper's byline, at the lengths the authors axis offers: short is the first
 // three and "et al." — two at minor type, where three wrap — and full is up to
@@ -190,9 +190,13 @@ const contextLabel = topic && `${topic[1]} research highlights`;
         </ul>
       );
       const context = (extra) => <a class="c-context" href={`/research/#hl-topic-${topic[0]}`} aria-label={contextLabel} title={contextLabel} {...extra}>Context&nbsp;<span class="c-chev">›</span></a>;
-      const stampBits = () => stamp.map((x, i) => <span class={x.me ? 'c-ent c-ent--me' : 'c-ent'}>{i > 0 && <span class="c-stusep"> | </span>}{x.me
-        ? <span class="c-place">{place}</span>
-        : <span class={`c-stu stu--${x.student}`} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>student<sup>{mark[x.student]}</sup> {ordinal(x.pos)}</span>}</span>);
+      const stuTag = (x) => (x.href ? 'a' : 'span');
+      const stampBits = () => stamp.map((x, i) => {
+        const Stu = stuTag(x);
+        return <span class={x.me ? 'c-ent c-ent--me' : 'c-ent'}>{i > 0 && <span class="c-stusep"> | </span>}{x.me
+          ? <span class="c-place">{place}</span>
+          : <Stu class={`c-stu stu--${x.student}`} href={x.href} aria-label={x.href ? `${x.name} — student profile (${ordinal(x.pos)} author)` : undefined} title={`${level[x.student]} student I supervised or advised — ${ordinal(x.pos)} author`}>student<sup>{mark[x.student]}</sup> {ordinal(x.pos)}</Stu>}</span>;
+      });
       const part = (k) => {
         const strip = face.strip[k] ? { 'data-strip': face.strip[k].area, 'data-across': face.strip[k].h } : {};
         const cross = { 'data-cross': face.cross[k], ...strip };

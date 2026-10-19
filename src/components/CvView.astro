@@ -6,7 +6,7 @@ import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
 import { softwarePapers, positionStops, institutionGroups, groupedByDefault, groupDate, groupTitle, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
-import { detailLines } from '../lib/inline.js';
+import { detailLines, achievementLines, achievementCvs } from '../lib/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
 import Inline from './Inline.astro';
@@ -31,7 +31,7 @@ const posStops = (section) => positionStops(section.items).map((s2) => s2.n);
 // point — a list of bare titles is not the CV you are about to compile.
 // `picked` is the starting selection, so the server renders the right ticks
 // rather than the client unticking 155 boxes after paint.
-const { cv, pick = false, picked = null, level = 'full', completeLines = cv.includeAll } = Astro.props;
+const { cv, pick = false, picked = null, level = 'full', startPreset = null, completeLines = cv.includeAll } = Astro.props;
 // Roles at one institution as the one row the CV reads: the roles joined, the
 // dates spanning them.
 const merged = (list) => {
@@ -41,11 +41,19 @@ const merged = (list) => {
 const isPicked = (id) => !picked || picked.has(id);
 // Elaboration is a list of lines, and in the builder each one is its own
 // choice — inclusion is a tick, not a level.
-const detail = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []);
+// A mentee's marked achievements follow them, gated by their own `cvs` rather
+// than the detail level, exactly as the PDF model has them.
+const detail = (i) => [
+  ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []),
+  ...achievementLines(i, cv.name, { complete: cv.includeAll }),
+];
 // Which of those lines only the complete CV shows. They are appended last, so
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.
 const baseLines = (i) => detailLines(i).length;
+// Where the detail lines end and the achievements, which print wherever their
+// own `cvs` marks them, begin.
+const detailCount = (i) => (cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }).length : 0);
 // The section's own page, named by its icon rather than by the heading two
 // inches to its left repeated in full. A page with no icon keeps the word, so
 // adding one to config/presets.json cannot produce a nameless arrow.
@@ -216,8 +224,8 @@ const mapFor = (s) => {
       <div class="timeline">
         {(s.cluster === 'institution' ? institutionGroups(s.items, pick ? () => true : undefined) : s.items.map((item) => ({ item }))).map((g) => g.item ? (
           <CvTimelineItem item={g.item} pick={pick} picked={isPicked(g.item.id)}
-                          lines={detail(g.item)} baseCount={baseLines(g.item)}
-                          level={level} completeLines={completeLines}
+                          lines={detail(g.item)} baseCount={baseLines(g.item)} detailCount={detailCount(g.item)} achievementCvs={achievementCvs(g.item)}
+                          level={level} startPreset={startPreset} completeLines={completeLines}
                           recipientInline={cv.recipientInline || g.item.recipientInline} />
         ) : pick ? (
           <div class:list={['tlgroup', { 'tlgroup--sep': !groupedByDefault(g.items) }]}>
@@ -248,15 +256,15 @@ const mapFor = (s) => {
             </div>
             {g.items.map((item) => (
               <CvTimelineItem item={item} member pick={pick} picked={isPicked(item.id)}
-                              lines={detail(item)} baseCount={baseLines(item)}
-                              level={level} completeLines={completeLines}
+                              lines={detail(item)} baseCount={baseLines(item)} detailCount={detailCount(item)} achievementCvs={achievementCvs(item)}
+                              level={level} startPreset={startPreset} completeLines={completeLines}
                               recipientInline={cv.recipientInline || item.recipientInline} />
             ))}
           </div>
         ) : (
           <CvTimelineItem item={merged(g.items)} pick={false}
-                          lines={g.items.flatMap(detail)} baseCount={g.items.reduce((n, i) => n + baseLines(i), 0)}
-                          level={level} completeLines={completeLines}
+                          lines={g.items.flatMap(detail)}
+                          level={level} startPreset={startPreset} completeLines={completeLines}
                           recipientInline={cv.recipientInline} />
         ))}
       </div>

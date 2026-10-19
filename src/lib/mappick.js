@@ -21,7 +21,8 @@ function wire(fig) {
   const list = fig.querySelector('.cmap-list');
 
   const show = (only) => {
-    const mine = (el) => only === '' || el.dataset.c === only;
+    const mine = (el) =>
+      only === '' || (only === 'mentees' ? 'mentee' in el.dataset : el.dataset.c === only);
     for (const el of all('.cmap-pin, .cmap-trail')) el.style.display = mine(el) ? '' : 'none';
     // Showing everything means the map, and only the map: a roster of thirty
     // entries under it is the wall of text the picker exists to avoid.
@@ -37,6 +38,8 @@ function wire(fig) {
         const open = only !== '' && mine(li);
         if (detail) detail.hidden = !open;
         if (note) note.hidden = !open;
+        const mentee = li.querySelector('.cmap-mentee');
+        if (mentee) mentee.hidden = !open;
       }
     }
     fig.dataset.only = only;
@@ -66,10 +69,10 @@ function wire(fig) {
   const unmark = () => { for (const li of all('.cmap-list > li.is-arrived')) li.classList.remove('is-arrived'); };
   pick.addEventListener('change', () => { unmark(); show(pick.value); });
 
-  // A byline links to /research/?collab=<orcid>#collaborators: the fragment
+  // A byline links to /research/?collab=<orcid or slug>#collaborators: the fragment
   // brings the map into view, and this picks that person on it.
   const asked = new URLSearchParams(location.search).get('collab');
-  const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.orcid === asked);
+  const li = asked && [...(list?.children ?? [])].find((el) => el.dataset.key === asked || el.dataset.slug === asked);
   pick.value = li ? li.dataset.c : '';
   show(pick.value);
   li?.classList.add('is-arrived');
