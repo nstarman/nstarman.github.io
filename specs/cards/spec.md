@@ -63,9 +63,23 @@ rather than a card and is never exported.
   their position; where the author names a mentee (`authors[].mentee`) it links
   to their profile, with an aria-label naming them. Under `students:photo` a
   mentee with a `photo` is drawn as that photo, the word and its mark hidden;
-  `data-stuphoto` from `cardFace` alone decides it. *Enforced:*
-  `tests/cards.test.js` ("the students extra", "student stamp"),
-  `tests/cardbuilder.test.js`. Specified in `specs/001-student-photo-stamp/`.
+  `data-stuphoto` from `cardFace` alone decides it. The photo is a circle three
+  quarters of a button high, ringed in their level's colour, with `alt=""`
+  since the link's aria-label names them; a mentee without a photo keeps the
+  word. The `carousel` preset alone uses `students:photo`; an embed's default
+  card does not. The Card Builder offers word or photo beside the students
+  extra, enabled only with it ticked, and a loaded name round-trips. The SVG,
+  PNG and PDF downloads draw the circle with no code of their own for it.
+  *Enforced:* `tests/cards.test.js` ("the students extra", "student stamp"),
+  `tests/cardbuilder.test.js` ("carries the students' photo face").
+- **FR-010** My position, the year and the context link, placed with buttons
+  that sit under the words or at the bottom, default up and down to the middle
+  of the buttons' row (`placeOf`, `src/lib/cardname.js`) — of their whole box
+  where they wrap to two rows — so the default is written nowhere; `:bottom`
+  names the row's foot. Buttons in a side area keep that area's own default.
+  On a card with no buttons, a student's photo does not make its line taller.
+  *Enforced:* `tests/cards.test.js` ("place a part with the buttons, at the end
+  away from them left out").
 
 ## Key Entities
 
