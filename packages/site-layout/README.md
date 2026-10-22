@@ -36,6 +36,8 @@ import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 | `section` | the page's path | the nav entry marked current, e.g. `/tools/` |
 | `repo` | `nstarman/nstarman.github.io` | the repository "Last updated" links to |
 
+`site` is required: the layout writes the canonical URL from it.
+
 Every link the layout writes is site-absolute (`/research/`), so under your `base` it still
 reaches nstarkman.space. The favicon and fonts are the site's, loaded from it and from Google Fonts.
 

@@ -40,12 +40,19 @@ jobs:
 
       # The first version was published by hand, before npm could trust this
       # workflow; its tag then finds it there. npm versions never change.
+      # A fix to an older release (a backport) must not take `latest` from a
+      # newer one, so it is published under its own dist-tag.
       - name: Publish
         working-directory: packages/site-layout
         run: |
           version=$(node -p "require('./package.json').version")
           if npm view "@nstarkman/site-layout@$version" version >/dev/null 2>&1; then
             echo "::notice::@nstarkman/site-layout@$version is already on npm."
+            exit 0
+          fi
+          latest=$(npm view @nstarkman/site-layout dist-tags.latest 2>/dev/null || true)
+          if [ -n "$latest" ] && node -e "process.exit(require('semver').lt(process.argv[1], process.argv[2]) ? 0 : 1)" "$version" "$latest"; then
+            npm publish --provenance --access public --tag "backport-${version%%.*}"
           else
             npm publish --provenance --access public
           fi

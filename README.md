@@ -20,7 +20,8 @@ data/lists/      bare enumerations (peer review) as plain arrays
 config/          things that are configuration rather than items: the CV presets,
                  the person, and the generated contributions list
 schema/          the item JSON Schema, plus invalid fixtures the tests assert on
-src/             the Astro site; src/styles/ is the stylesheet, split by page
+src/             the Astro site; src/styles/ holds the pages' own stylesheets
+packages/        site-layout/, the layout and site stylesheet, published to npm
 cv/              the Typst CV template — cv.typ, lib/ (the palette and the
                  styles), and the portrait and QR it draws
 tests/           vitest suites over src/lib and the generated data

@@ -2,7 +2,7 @@
   "name": "nstarkman-space",
   "version": "0.0.0",
   "private": true,
-  "description": "nstarkman.space \u2014 website, CV database, and the CV builder.",
+  "description": "nstarkman.space — website, CV database, and the CV builder.",
   "type": "module",
   "workspaces": [
     "packages/*"
