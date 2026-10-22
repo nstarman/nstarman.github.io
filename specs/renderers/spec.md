@@ -1,11 +1,11 @@
 # Renderers
 
-**Covers**: `src/pages/` (but `embed/`, `cards/` and `webdev/card.astro`), `src/layouts/Base.astro`,
+**Covers**: `src/pages/` (but `embed/`, `cards/` and `webdev/card.astro`), `packages/site-layout/`,
 `src/lib/data.js`, `src/lib/confmap.js`, `src/lib/collabmap.js`, `src/lib/worldmap.js`,
 `src/lib/places.js`, `src/lib/mentees.js`, `src/lib/bibtex.js`, `src/lib/bibcompare.js`,
 `src/lib/typstcompile.js`, `cv/`, `scripts/publish-data.mjs`, `scripts/build-cv-pdfs.sh`,
 `scripts/test-a11y.mjs`, `scripts/test-links.mjs`, `scripts/test-bibtex.mjs`, `package.json`
-scripts, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`
+scripts, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`, `.github/workflows/release-site-layout.yml`
 **Status**: Current — describes the system as it is (constitution, Article X).
 
 ## Scope
@@ -152,12 +152,19 @@ snapshots (`specs/refresh/spec.md`).
 
 ### Hosted-sites layout
 
-- **FR-020** `Base.astro` is also the layout of sites at `nstarkman.space/<repo>/`, imported
-  from a submodule. It imports only `../styles/global.css` and `../components/IconSprite.astro`;
-  IconSprite imports nothing, and `global.css` has no `@import` or `url(`. Its hrefs are
-  site-absolute. It takes `title`, `description`, `section` (the nav entry to mark) and `repo`
-  (default `nstarman/nstarman.github.io`), which the footer's "Last updated" links to at
-  `https://github.com/<repo>`. *Enforced:* `tests/base-hosted.test.js`.
+- **FR-020** The layout, `SiteLayout.astro`, with the site stylesheet `site.css` and
+  `IconSprite.astro`, is the npm package `@nstarkman/site-layout` in `packages/site-layout/`. This
+  site uses it from there (an npm workspace); sites at `nstarkman.space/<repo>/` install a pinned
+  release. It imports only `./site.css` and `./IconSprite.astro`; IconSprite imports nothing, and
+  `site.css` has no `@import` or `url(`. Its hrefs are site-absolute, so under a hosted site's `base`
+  they still reach this site. It takes `title`, `description`, `section` (the nav entry to mark) and
+  `repo` (default `nstarman/nstarman.github.io`), which the footer's "Last updated" links to at
+  `https://github.com/<repo>`. The package contains exactly those three files, `README.md`,
+  `CHANGELOG.md`, `LICENSE` (MIT) and `package.json`. Versions are `YYYYMMDD.0.N` (`N` counts fixes),
+  each with a `CHANGELOG.md` section; a tag `site-layout-v<version>` publishes it to npm with trusted
+  publishing and provenance, no token, refusing a tag that differs from the version. *Enforced:*
+  `tests/site-layout.test.js` (imports, exports, packed files, version and changelog, and a fixture
+  site built under `base: '/demo'`); `.github/workflows/release-site-layout.yml`.
 - **FR-021** A hosted repo never takes a top-level path this site uses (Article III; see
   *Reference*). *Enforced:* review — no test lists the paths.
 

@@ -1,6 +1,6 @@
 ---
 // Everyone I have mentored who has a profile.
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import '../../styles/people.css';
 import { dateLabel } from '../../lib/data.js';
 import { mentees, menteeName, levelLabel, profileHref, researchSpans, firstSentenceSpans } from '../../lib/mentees.js';
@@ -8,7 +8,7 @@ import { mentees, menteeName, levelLabel, profileHref, researchSpans, firstSente
 // The first sentence of the research text, as plain words.
 const first = (m) => firstSentenceSpans(researchSpans(m.research)).map((s) => s.t).join('');
 ---
-<Base title="People — Nathaniel Starkman" section="/people/">
+<SiteLayout title="People — Nathaniel Starkman" section="/people/">
   <main>
     <section>
       <div class="wrap pp-index">
@@ -32,4 +32,4 @@ const first = (m) => firstSentenceSpans(researchSpans(m.research)).map((s) => s.
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>

@@ -20,7 +20,8 @@ data/lists/      bare enumerations (peer review) as plain arrays
 config/          things that are configuration rather than items: the CV presets,
                  the person, and the generated contributions list
 schema/          the item JSON Schema, plus invalid fixtures the tests assert on
-src/             the Astro site; src/styles/ is the stylesheet, split by page
+src/             the Astro site; src/styles/ holds the pages' own stylesheets
+packages/        site-layout/, the layout and site stylesheet, published to npm
 cv/              the Typst CV template — cv.typ, lib/ (the palette and the
                  styles), and the portrait and QR it draws
 tests/           vitest suites over src/lib and the generated data
@@ -62,18 +63,18 @@ can use: the home page carries no CV and no map, and the CV carries no map from
 
 | file | imported by | what is in it |
 |---|---|---|
-| [`src/styles/global.css`](src/styles/global.css) | `src/layouts/Base.astro`, so every page | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, the Embed Builder's pill rows, an item as the site renders it, the cards, and the CV pieces other pages reuse (below) |
+| [`packages/site-layout/site.css`](packages/site-layout/site.css) | `SiteLayout.astro` (the [`@nstarkman/site-layout`](packages/site-layout/README.md) package), so every page | the site: the palette and the type stack, the page frame, nav and footer, the buttons and marks every page uses, the Embed Builder's pill rows, an item as the site renders it, the cards, and the CV pieces other pages reuse (below) |
 | [`src/styles/map.css`](src/styles/map.css) | `CollabMap.astro`, `ConfMap.astro` | the two world maps on `/research/` |
 | [`src/styles/cv/page.css`](src/styles/cv/page.css) | `CvView.astro` | the CV as `/cv/` and `/cv/<preset>/` render it — the ruled headings, the sticky bar, the length slider, the source marks |
 | [`src/styles/cv/minimap.css`](src/styles/cv/minimap.css) | `CvView.astro` | the collaborator and conference maps in the CV's right margin, and the tint on a row that answers what was picked in one — a paper written with that person, a talk given in that place |
 | [`src/styles/cv/builder.css`](src/styles/cv/builder.css) | `src/pages/webdev/cv.astro` | what `/webdev/cv/` adds: a tick box on every entry and every elaboration line, the per-section selectors, the compile controls |
 
-Order is the cascade: `Base.astro` loads `global.css` before any page or
+Order is the cascade: `SiteLayout.astro` loads `site.css` before any page or
 component adds its own, so the site comes first and the CV layers on top of it.
 
 The test for whether a rule belongs in `cv/` is whether anything outside `/cv/`
 renders it, not whether the CV happens to use it. A dated row — `.tl` — stays in
-`global.css` even though the CV is full of them, because the home page's
+`site.css` even though the CV is full of them, because the home page's
 Background section is built from the same rows; so do its date gutter and
 detail links, the contents rail (which `/publications/` reuses for years), and
 the mini software cards (`/software/`'s long tail). Only the variants the CV

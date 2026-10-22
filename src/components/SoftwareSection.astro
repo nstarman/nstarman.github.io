@@ -40,7 +40,7 @@ const boxes = (items) => {
   return out;
 };
 // Whether box i is a box at each count of columns the area's grid can have —
-// 2 and 3 (one column puts every major on its own row) — as global.css's
+// 2 and 3 (one column puts every major on its own row) — as site.css's
 // container queries name them: only where it shares a row with a major card,
 // so in the last major row's free places. Elsewhere its cards run on, across.
 const boxAt = (majors, i) => [2, 3].filter((c) => i < Math.ceil(majors / c) * c - majors).join(' ') || undefined;

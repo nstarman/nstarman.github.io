@@ -202,7 +202,7 @@ lays one out — a second implementation of the CSS, for the `softwareFlagship` 
 presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files, shaped by HarfBuzz as Chrome shapes it
 (`src/lib/textmeasure.js`) and handing the same model `cardpdf.js` measures to `cardsvg.js`. It throws
 on any name that asks for more than it draws. `tests/cardlayout.test.js` keeps it in step: its
-colours, steps and formulas are read from `global.css`; it must reproduce what the browser measured
+colours, steps and formulas are read from `site.css` (`packages/site-layout/`); it must reproduce what the browser measured
 for every such card (`tests/fixtures/software-cards.json`); and that measurement is stamped with a hash of the
 card's CSS and `Card.astro` (`scripts/lib/cardsync.mjs`). **When that hash test fails, the card's CSS
 has changed:** run `node scripts/record-card-layouts.mjs` (needs `npm i --no-save playwright` and a

@@ -1,16 +1,16 @@
 ---
 // The site's stylesheet. The CV's and the maps' own sheets are imported by the
 // components that render them, after this one — see the README.
-import '../styles/global.css';
-import IconSprite from '../components/IconSprite.astro';
+import './site.css';
+import IconSprite from './IconSprite.astro';
 
-// Base is also the layout of the sites hosted in repos of their own and
-// published under this domain, at /<repo>/, which import it from a submodule
-// of this repo. So it imports only its stylesheet and icons — a test holds it
-// to that — and every href is site-absolute, so that under such a site's
-// `base`, /research/ still reaches this one. Its pages pass `section`, the nav
-// entry they belong to ('/software/'), and `repo`, whose commits "Last
-// updated" links to.
+// SiteLayout is also the layout of the sites hosted in repos of their own and
+// published under this domain, at /<repo>/, which install it as the npm
+// package @nstarkman/site-layout. So it imports only its stylesheet and icons
+// — a test holds it to that — and every href is site-absolute, so that under
+// such a site's `base`, /research/ still reaches this one. Its pages pass
+// `section`, the nav entry they belong to ('/software/'), and `repo`, whose
+// commits "Last updated" links to.
 const {
   title,
   description = 'Nathaniel Starkman — Brinson Prize Fellow at the MIT Kavli Institute.',

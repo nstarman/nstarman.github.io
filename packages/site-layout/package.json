@@ -1,0 +1,28 @@
+{
+  "name": "@nstarkman/site-layout",
+  "version": "20261022.0.0",
+  "description": "The nstarkman.space page layout, for sites hosted at nstarkman.space/<repo>/.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Nathaniel Starkman",
+  "homepage": "https://nstarkman.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nstarman/nstarman.github.io.git",
+    "directory": "packages/site-layout"
+  },
+  "keywords": ["astro-component"],
+  "exports": {
+    "./SiteLayout.astro": "./SiteLayout.astro",
+    "./IconSprite.astro": "./IconSprite.astro",
+    "./site.css": "./site.css"
+  },
+  "files": ["SiteLayout.astro", "IconSprite.astro", "site.css", "CHANGELOG.md"],
+  "peerDependencies": {
+    "astro": "^7"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

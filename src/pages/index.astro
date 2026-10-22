@@ -1,6 +1,6 @@
 ---
 import { PRESET } from '../lib/cards.js';
-import Base from '../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import Card from '../components/Card.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, featured, dateLabel, institutionGroups, groupDate } from '../lib/data.js';
@@ -21,7 +21,7 @@ const background = [...byType('position'), ...byType('education')]
 const rows = institutionGroups(background);
 
 ---
-<Base title="Nathaniel Starkman">
+<SiteLayout title="Nathaniel Starkman">
   <header>
     <canvas id="stream" aria-hidden="true"></canvas>
     <div class="wrap">
@@ -171,4 +171,4 @@ const rows = institutionGroups(background);
       matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
     }
   </script>
-</Base>
+</SiteLayout>

@@ -90,7 +90,7 @@ export const typedPx = (f, d, stepPx) => {
 
 /** The preset widths: the five steps' widths for a box no wider than it is
  *  high (a 320px one reads as standard), wider for a wider box — by its
- *  width over its height, held between 1 and 2, as global.css has it. */
+ *  width over its height, held between 1 and 2, as site.css has it. */
 export const stretch = (heightSet, width, height) => (heightSet ? Math.min(2, Math.max(1, (+width || 320) / height)) : 1);
 export const presetWidths = (s) => [200, 260, 320, 400, 520].map((w) => Math.round((w * s) / 10) * 10);
 /** A shape, "4x5", as the height it gives a width. */

@@ -1,12 +1,12 @@
 ---
-import Base from '../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, softwarePapers } from '../lib/data.js';
 
 const all = byType('software');
 const withPaper = all.filter((s) => softwarePapers(s).length).length;
 ---
-<Base title="Software — Nathaniel Starkman">
+<SiteLayout title="Software — Nathaniel Starkman">
   <main>
     <section>
       <div class="wrap">
@@ -37,4 +37,4 @@ const withPaper = all.filter((s) => softwarePapers(s).length).length;
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>

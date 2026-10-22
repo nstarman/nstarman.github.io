@@ -1,0 +1,58 @@
+name: Release site-layout
+
+# Publishes packages/site-layout to npm as @nstarkman/site-layout when a tag
+# site-layout-v<version> is pushed. npm trusts this workflow (trusted
+# publishing, configured on npmjs.com), so there is no npm token; the package
+# carries provenance. Versions are YYYYMMDD.0.N — see AGENTS.md, "Sites hosted
+# in their own repos".
+
+on:
+  push:
+    tags: ["site-layout-v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Trusted publishing needs npm 11.5.1 or newer; Node 24 ships it.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+      - run: npm ci
+
+      - name: The tag names the package's version
+        run: |
+          version=$(node -p "require('./packages/site-layout/package.json').version")
+          if [ "${GITHUB_REF_NAME#site-layout-v}" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match packages/site-layout version $version."
+            exit 1
+          fi
+
+      # the package's contract (tests/site-layout.test.js) and the rest
+      - run: npm run test:unit
+
+      # The first version was published by hand, before npm could trust this
+      # workflow; its tag then finds it there. npm versions never change.
+      # A fix to an older release (a backport) must not take `latest` from a
+      # newer one, so it is published under its own dist-tag.
+      - name: Publish
+        working-directory: packages/site-layout
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "@nstarkman/site-layout@$version" version >/dev/null 2>&1; then
+            echo "::notice::@nstarkman/site-layout@$version is already on npm."
+            exit 0
+          fi
+          latest=$(npm view @nstarkman/site-layout dist-tags.latest 2>/dev/null || true)
+          if [ -n "$latest" ] && node -e "process.exit(require('semver').lt(process.argv[1], process.argv[2]) ? 0 : 1)" "$version" "$latest"; then
+            npm publish --provenance --access public --tag "backport-${version%%.*}"
+          else
+            npm publish --provenance --access public
+          fi

@@ -1,7 +1,7 @@
 ---
 // One route per preset. A static build prerenders a single HTML file per route,
 // so the switcher cannot be a ?query — it has to be real URLs.
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import CvView from '../../components/CvView.astro';
 import { resolve, presetNames, preset } from '../../lib/presets.js';
 
@@ -13,6 +13,6 @@ export function getStaticPaths() {
 
 const cv = resolve(Astro.params.preset);
 ---
-<Base title={`${preset(cv.name).label} — Nathaniel Starkman`}>
+<SiteLayout title={`${preset(cv.name).label} — Nathaniel Starkman`}>
   <main><section><div class="wrap"><CvView cv={cv} /></div></section></main>
-</Base>
+</SiteLayout>

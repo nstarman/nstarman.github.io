@@ -46,7 +46,7 @@ export const CARD_WIDE = 2 * CARD_SVG_WIDTH + 8;
 /** A preset's name at a set width in px, in place of filling its column. */
 export const atWidth = (slug, width) => slug.replace(/^size:fill:/, `size:${width}:`);
 
-/** The steps in px, as global.css has them — a test holds the two to half
+/** The steps in px, as site.css has them — a test holds the two to half
  *  a pixel — for the settings that can be typed in px: the text and title
  *  sizes, padding (the top's; the sides are a little wider), corners and
  *  buttons. The Card Builder labels their stops with these, not the steps'
@@ -59,7 +59,7 @@ export const STEP_PX = {
   corners: { minor: 10, compact: 12, standard: 16, feature: 18, display: 22, min: 0, max: 64, what: 'The corner radius, in pixels' },
   buttons: { minor: 21, compact: 23, standard: 26, feature: 30, display: 35, min: 12, max: 64, what: 'The link buttons, in pixels; the icon is half' },
 };
-/** The frame's steps in px, look:frame=<step>, as global.css has them: the
+/** The frame's steps in px, look:frame=<step>, as site.css has them: the
  *  builder shows a step as its px, the box having no steps of its own. */
 export const FRAME_PX = { minor: 3, compact: 4, standard: 5, feature: 8, display: 12 };
 

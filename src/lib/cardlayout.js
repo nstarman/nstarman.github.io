@@ -20,7 +20,7 @@
 // is why those two things are done here, and why the numbers come out where
 // the browser put them rather than near them.
 
-import sprite from '../components/IconSprite.astro?raw';
+import sprite from '@nstarkman/site-layout/IconSprite.astro?raw';
 import { ownLink, cardLinks, cardText, parseName, SITE_PRESETS, TIER_PRESET } from './cards.js';
 import { REL_ICON, relKey } from './data.js';
 
@@ -32,14 +32,14 @@ export const BUTTON_MIN = 24;
  *  site is drawn at where the viewport has not scaled it. */
 export const REM = 16;
 
-/** The site's colours, from the tokens on :root in global.css — a test reads
+/** The site's colours, from the tokens on :root in site.css — a test reads
  *  them from there and holds these to them. [light, dark]. */
 export const TOKENS = {
   ground: ['#FFFFFF', '#0B0E14'], surface: ['#F5F7FA', '#131923'], ink: ['#12161C', '#E5E9F0'],
   mute: ['#5A6472', '#8B96A8'], ruleStrong: ['#CFD6E0', '#313B4B'], accent: ['#2A5DA8', '#84AEEC'],
 };
 
-/** The look the lead preset names, look:feature, as global.css has it, in rem
+/** The look the lead preset names, look:feature, as site.css has it, in rem
  *  unless noted — a test reads the stylesheet and holds this to it. The
  *  headline preset names none: it has the formulas of a card of set width. */
 export const FEATURE = { fs: 1, pad: [1.2, 1.35, 1.25], rad: 18, buttons: [1.9, 0.94] }; // rad in px

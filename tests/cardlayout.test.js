@@ -22,7 +22,7 @@ import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth, parseNam
 import { items } from '../src/lib/data.js';
 import { syncKey, cardRules } from '../scripts/lib/cardsync.mjs';
 
-const css = fs.readFileSync('src/styles/global.css', 'utf8');
+const css = fs.readFileSync('packages/site-layout/site.css', 'utf8');
 // The recording keeps each icon's markup once, by number: put it back in the ops.
 const raw = JSON.parse(fs.readFileSync('tests/fixtures/software-cards.json', 'utf8'));
 const fixture = { ...raw, cards: raw.cards.map((c) => ({ ...c, cases: c.cases.map((k) => ({ ...k, model: { ...k.model, ops: k.model.ops.map((o) => (typeof o.svg === 'number' ? { ...o, svg: raw.svgs[o.svg] } : o)) } })) })) };
