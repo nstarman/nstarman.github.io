@@ -2,7 +2,7 @@
 // /tools/ — the things built rather than shown: the site's own, on the
 // database (Web Dev, at /webdev/), and those in repos of their own. Out of the
 // nav on purpose: reached from the footer.
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 // Agent Skills come from nstarman/skills' index.json via scripts/collect-skills.mjs: every skill it
 // registers, including those that live in other repositories (`from`).
 import skillCards from '/config/skills.json';
@@ -59,7 +59,7 @@ const groups = [
   },
 ];
 ---
-<Base title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database, for writing code and papers, and agent skills.">
+<SiteLayout title="Tools — Nathaniel Starkman" description="Tools built on the nstarkman.space database, for writing code and papers, and agent skills.">
   <main>
     {groups.map((g) => (
       <section id={g.id}>
@@ -80,7 +80,7 @@ const groups = [
       </section>
     ))}
   </main>
-</Base>
+</SiteLayout>
 
 <style>
   /* A skill that lives in another repository says where; the card links there. */

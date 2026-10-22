@@ -1,6 +1,6 @@
 ---
 import fs from 'node:fs';
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
 import CvToc from '../../components/CvToc.astro';
@@ -52,7 +52,7 @@ const builderData = {
   styleFonts: Object.fromEntries(Object.entries(CV_STYLES).map(([n, st]) => [n, (st.fonts ?? []).map((f) => `/fonts/${f}`)])),
 };
 ---
-<Base title="CV Builder — Nathaniel Starkman">
+<SiteLayout title="CV Builder — Nathaniel Starkman">
   <main>
     <section>
       <div class="wrap">
@@ -736,4 +736,4 @@ const builderData = {
     // A browser may restore the menu to another style on reload.
     syncHeading();
   </script>
-</Base>
+</SiteLayout>

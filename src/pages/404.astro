@@ -3,9 +3,9 @@
 // generic page, and Cloudflare Pages — which previews run on — answers every
 // unknown path with the homepage at 200 unless this file exists, so without it
 // a broken link in a pull request looks like a working one.
-import Base from '../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 ---
-<Base title="Not found — Nathaniel Starkman" description="That page does not exist.">
+<SiteLayout title="Not found — Nathaniel Starkman" description="That page does not exist.">
   <main>
     <section>
       <div class="wrap">
@@ -16,4 +16,4 @@ import Base from '../layouts/Base.astro';
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>

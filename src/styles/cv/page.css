@@ -7,7 +7,7 @@
  *
  * Loaded by CvView.astro, so only the CV pages ship it. A dated row — .tl —
  * is not in here: the home page's Background section is built from the same
- * rows, so the row, its date gutter and its detail links belong to global.css,
+ * rows, so the row, its date gutter and its detail links belong to site.css,
  * as do the contents rail (which /publications/ reuses) and the mini software
  * cards. Only what the CV alone has is below.
  */
@@ -48,7 +48,7 @@
 }
 
 /* The institution's own site sits in the date gutter, under the years (the
-   gutter itself is in global.css). */
+   gutter itself is in site.css). */
 .gutterlinks{display:flex; flex-wrap:wrap; gap:.3rem}
 .homelink{
   display:inline-flex; width:1.2rem; height:1.2rem; align-items:center;

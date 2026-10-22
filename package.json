@@ -2,8 +2,11 @@
   "name": "nstarkman-space",
   "version": "0.0.0",
   "private": true,
-  "description": "nstarkman.space — website, CV database, and the CV builder.",
+  "description": "nstarkman.space \u2014 website, CV database, and the CV builder.",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "predev": "node scripts/publish-data.mjs && node scripts/gzip-compiler.mjs",
     "dev": "astro dev",
@@ -32,6 +35,7 @@
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
+    "@nstarkman/site-layout": "*",
     "astro": "^7.3.5"
   }
 }

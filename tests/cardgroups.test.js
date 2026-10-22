@@ -136,7 +136,7 @@ describe('what a name with groups makes of a card', () => {
 });
 
 describe('the stylesheet has a rule for what a name with groups sets', () => {
-  const css = fs.readFileSync('src/styles/global.css', 'utf8');
+  const css = fs.readFileSync('packages/site-layout/site.css', 'utf8');
   it('every area a group can have its own box in, and each way a group is placed', () => {
     for (const a of ['left', 'right', 'center', 'bottom']) {
       expect(css, a).toContain(`> .c-xfoot[data-at="${a}"]{grid-area:`);

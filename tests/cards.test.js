@@ -675,9 +675,9 @@ describe('the Card Builder\'s snippets', () => {
 });
 
 describe('the Card Builder\'s steps in px', () => {
-  // A length in global.css as px at the root's 16px: .72rem, calc(.72rem *
+  // A length in site.css as px at the root's 16px: .72rem, calc(.72rem *
   // 1.08), 10px.
-  const css = fs.readFileSync('src/styles/global.css', 'utf8');
+  const css = fs.readFileSync('packages/site-layout/site.css', 'utf8');
   const px = (v) => {
     const m = /^calc\(([\d.]+)rem \* ([\d.]+)\)$/.exec(v);
     return m ? +m[1] * +m[2] * 16 : v.endsWith('rem') ? parseFloat(v) * 16 : parseFloat(v);

@@ -1,6 +1,6 @@
 ---
 import { PRESET, embedHref as mainHref, siteHref } from '../lib/cards.js';
-import Base from '../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import CollabMap from '../components/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
 import Card from '../components/Card.astro';
@@ -31,7 +31,7 @@ const inlineCard = (s) => {
   return { name, href: p.highlight ? `#${anchor(p.id)}` : mainHref(p) };
 };
 ---
-<Base title="Research — Nathaniel Starkman">
+<SiteLayout title="Research — Nathaniel Starkman">
   <main>
     <section>
       <div class="wrap">
@@ -80,7 +80,7 @@ const inlineCard = (s) => {
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>
 
 <script>
   // Prev/next scroll a carousel by one card. Hidden when everything fits;

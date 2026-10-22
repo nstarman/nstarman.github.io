@@ -1,6 +1,6 @@
 ---
 import { PRESET } from '../lib/cards.js';
-import Base from '../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import Publication from '../components/Publication.astro';
 import Card from '../components/Card.astro';
 import { byType, positionStops, year, assists, assistItem } from '../lib/data.js';
@@ -50,7 +50,7 @@ const topicCss = [...tagSets].map((set) => {
 const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
 
 ---
-<Base title="Publications — Nathaniel Starkman">
+<SiteLayout title="Publications — Nathaniel Starkman">
   <main>
     {/* Year rail: styled by .cvtoc (shared with the CV) — a left rail on wide screens, a strip under the nav below. */}
     <nav class="cvtoc" aria-label="Publications by year">
@@ -135,7 +135,7 @@ const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.local
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>
 
 <style is:global set:html={topicCss}></style>
 

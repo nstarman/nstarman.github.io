@@ -1,7 +1,7 @@
 ---
 // A mentee's profile (Layout A): who they are, what we work on, what came of it,
 // and what they have won. Sections with nothing to show are left out.
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import Card from '../../components/Card.astro';
 import '../../styles/people.css';
 import { PRESET } from '../../lib/cards.js';
@@ -22,7 +22,7 @@ const KIND = { award: 'Award', talk: 'Talk', poster: 'Poster', press: 'Press', p
 const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `with ${m.coSupervisors.join(', ')}`]
   .filter(Boolean).join(' · ');
 ---
-<Base title={`${name} — Nathaniel Starkman`} section="/people/">
+<SiteLayout title={`${name} — Nathaniel Starkman`} section="/people/">
   <main>
     <section>
       <div class="wrap">
@@ -71,4 +71,4 @@ const meta = [level, m.institution, dateLabel(m), m.coSupervisors?.length && `wi
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>

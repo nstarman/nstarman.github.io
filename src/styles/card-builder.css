@@ -120,7 +120,7 @@ label.eb-key--check{cursor:pointer}
 /* Outlined, not filled: the cards are grey, and a grey stage would blur into them. */
 .eb-preview{padding:1rem; border-radius:12px; border:1px dashed var(--rule-strong); overflow-x:auto}
 /* The stage takes the theme the card is drawn in — the site's grounds,
-   from global.css — so a dark card sits on dark, whatever the page is. */
+   from site.css — so a dark card sits on dark, whatever the page is. */
 .eb-preview[data-theme="dark"]{background:#0B0E14}
 .eb-preview[data-theme="light"]{background:#FFFFFF}
 /* The stage can be dragged taller, for room under the card; one that fills

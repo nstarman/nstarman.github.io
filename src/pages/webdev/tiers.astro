@@ -1,7 +1,7 @@
 ---
 // /webdev/tiers/ — every package by its `tier`, in the order /software/ draws
 // them: a check on the data, not a page to show.
-import Base from '../../layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import { byType } from '../../lib/data.js';
 
 const TIERS = [
@@ -18,7 +18,7 @@ const inTier = (tier) => {
     : s.sort((a, b) => a.title.localeCompare(b.title));
 };
 ---
-<Base title="Software Tiers — Nathaniel Starkman" description="Each package on nstarkman.space and the tier it is listed in.">
+<SiteLayout title="Software Tiers — Nathaniel Starkman" description="Each package on nstarkman.space and the tier it is listed in.">
   <main>
     <section>
       <div class="wrap">
@@ -45,7 +45,7 @@ const inTier = (tier) => {
       </div>
     </section>
   </main>
-</Base>
+</SiteLayout>
 
 <style>
   .tierlist { margin: 0 0 1.5em; padding-left: 1.5em; }
