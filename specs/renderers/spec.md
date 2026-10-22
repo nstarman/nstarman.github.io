@@ -83,7 +83,9 @@ snapshots (`specs/refresh/spec.md`).
   `test:links` once the PDFs are built.
 - **FR-010** `/tools/` lists the Web Dev tools (`/webdev/cv/`, `/webdev/card/`,
   `/webdev/tiers/`) and tools in their own repos; it is linked from the footer, not the nav.
-  Its Agent Skills cards are `config/skills.json` (see `specs/refresh/spec.md`, FR-023).
+  Its Agent Skills cards are `config/skills.json` (see `specs/refresh/spec.md`, FR-023); a skill that
+  lives in another repository says "from <owner/repo>" under its text, and a line above the cards
+  links to the install instructions in nstarman/skills' README.
   `/webdev/cv/` renders the `complete` CV with a checkbox per entry and line, seeded from `np`,
   and compiles a PDF in the browser through `src/lib/typstcompile.js` (typst.ts, `cv/**/*.typ`
   globbed, the compiler wasm gzipped by `scripts/gzip-compiler.mjs` into `src/generated/`).

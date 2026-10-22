@@ -3,7 +3,8 @@
 // database (Web Dev, at /webdev/), and those in repos of their own. Out of the
 // nav on purpose: reached from the footer.
 import Base from '../../layouts/Base.astro';
-// Agent Skills come from nstarman/skills via scripts/collect-skills.mjs.
+// Agent Skills come from nstarman/skills' index.json via scripts/collect-skills.mjs: every skill it
+// registers, including those that live in other repositories (`from`).
 import skillCards from '/config/skills.json';
 
 const groups = [
@@ -53,7 +54,8 @@ const groups = [
   {
     id: 'agent-skills',
     name: 'Agent Skills',
-    tools: skillCards.skills.map((s) => ({ href: s.href, name: s.name, text: s.description })),
+    note: { text: 'Install any of them in Claude Code or claude.ai:', link: 'how', href: 'https://github.com/nstarman/skills#installing' },
+    tools: skillCards.skills.map((s) => ({ href: s.href, name: s.name, text: s.description, from: s.from })),
   },
 ];
 ---
@@ -63,12 +65,14 @@ const groups = [
       <section id={g.id}>
         <div class="wrap">
           <div class="h2row"><h2>{g.name}</h2></div>
+          {g.note && <p class="gnote">{g.note.text} <a href={g.note.href}>{g.note.link}</a>.</p>}
           <div class="soft">
             {g.tools.map((t) => (
               /* The whole card is the link: it is the only thing to do with it. */
               <a class="card toolcard" href={t.href}>
                 <span class="name">{t.name}</span>
                 <p>{t.text}</p>
+                {t.from && <span class="from">from {t.from}</span>}
               </a>
             ))}
           </div>
@@ -77,3 +81,9 @@ const groups = [
     ))}
   </main>
 </Base>
+
+<style>
+  /* A skill that lives in another repository says where; the card links there. */
+  .toolcard .from{font-family:var(--mono); font-size:.75rem; color:var(--ink-mute); margin-top:.35rem}
+  .gnote{margin:-.4rem 0 .9rem; font-size:.88rem; color:var(--ink-mute)}
+</style>

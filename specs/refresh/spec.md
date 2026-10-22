@@ -2,7 +2,7 @@
 
 **Covers**: `.github/workflows/refresh-*.yml`, `.github/workflows/card-layout-fuzz.yml`,
 `.github/workflows/milestone-prs.yml`, `scripts/refresh-publications.mjs`,
-`scripts/collect-stars.mjs`, `scripts/collect-skills.mjs`, `scripts/collect-contributions.mjs`,
+`scripts/collect-stars.mjs`, `scripts/collect-skills.mjs`, `scripts/skills-index.mjs`, `scripts/collect-contributions.mjs`,
 `scripts/collect-collaborators.mjs`, `scripts/collect-acknowledgements.mjs`,
 `scripts/scrape-astropy-voting-members.mjs`, `scripts/scrape-astropy-team-history.mjs`,
 `scripts/sync-software-figures.mjs`, `scripts/fetch-affiliations.mjs`,
@@ -181,13 +181,16 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   light, plus dark at 400 and 808, and `syncKey` from `scripts/lib/cardsync.mjs`
   (a hash of the card rules of `global.css` and `Card.astro`). *Enforced:*
   `tests/cardlayout.test.js` (see `specs/cards/spec.md`).
-- **FR-023** `scripts/collect-skills.mjs` writes `config/skills.json`: for
-  each top-level folder of `nstarman/skills` (on `main`, or `SKILLS_REF`) that
-  holds a `SKILL.md`, its `card.json`'s `name` and `description` and an `href`
-  to that folder on `main`, sorted by folder. A skill without `card.json`, or a
-  card that is not exactly two non-empty strings `name` and `description`,
-  throws and writes nothing. The card format is that repo's `AGENTS.md`.
-  *Enforced:* review.
+- **FR-023** `scripts/collect-skills.mjs` writes `config/skills.json` from
+  `nstarman/skills`' generated `index.json` (on `main`, or `SKILLS_REF`): every
+  skill that repo registers, kept there or living in another repository, in
+  the index's order (by name), as `name`, `description` and `href` (the
+  skill's folder where it lives, at its ref), plus `from` — the home
+  repository — for a skill whose `origin` is `external`. `scripts/skills-index.mjs`
+  does the mapping and throws, so nothing is written, on a schema other than 1,
+  an empty list, a missing or empty field, an unknown `origin`, a non-GitHub
+  link or a duplicate name. The index's contract is that repo's `AGENTS.md`
+  ("How it reaches the website"). *Enforced:* `tests/skills.test.js`.
 
 ## Key Entities
 
