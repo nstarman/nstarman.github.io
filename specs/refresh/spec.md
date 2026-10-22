@@ -179,7 +179,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   dev server) writes `tests/fixtures/software-cards.json`: each `flagship` and
   `major` package's card measured at widths 200, 280, 400, 640 and 808 px,
   light, plus dark at 400 and 808, and `syncKey` from `scripts/lib/cardsync.mjs`
-  (a hash of the card rules of `global.css` and `Card.astro`). *Enforced:*
+  (a hash of the card rules of `site.css` and `Card.astro`). *Enforced:*
   `tests/cardlayout.test.js` (see `specs/cards/spec.md`).
 - **FR-023** `scripts/collect-skills.mjs` writes `config/skills.json` from
   `nstarman/skills`' generated `index.json` (on `main`, or `SKILLS_REF`): every

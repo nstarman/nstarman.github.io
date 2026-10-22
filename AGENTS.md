@@ -244,39 +244,49 @@ must not take the name of a path here: `webdev`, `cv`, `embed`, `cards`,
 `research`, `people`, `publications`, `software`, `tools`, `records`, `files`,
 `fonts`, `highlights`.
 
-Such a repo looks like this site by using its layout. It adds this repo as a
-git submodule at `site/` — shallow, and checked out to the three files it
-uses, so it carries one commit of about 4 MB rather than the whole site:
+Such a repo looks like this site by using its layout, the npm package
+[`@nstarkman/site-layout`](packages/site-layout/README.md), pinned to a release:
 
 ```bash
-git submodule add --depth 1 https://github.com/nstarman/nstarman.github.io site
-git config -f .gitmodules submodule.site.shallow true
-git -C site sparse-checkout set --no-cone \
-  /src/layouts/Base.astro /src/components/IconSprite.astro /src/styles/global.css
+npm install --save-exact @nstarkman/site-layout@<version>
 ```
 
-`shallow` is committed, in `.gitmodules`; the sparse checkout is not, so a
-fresh clone repeats that last line after `git clone --recurse-submodules`.
-CI needs neither: `actions/checkout` with `submodules: true` fetches one
-commit already, and the build reads only those three files.
-
-Its pages wrap themselves in `Base.astro`:
+Its pages wrap themselves in `SiteLayout`:
 
 ```astro
 ---
-import Base from '../../site/src/layouts/Base.astro';
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 ---
-<Base title="Skills — Nathaniel Starkman" section="/software/" repo="nstarman/skills">
+<SiteLayout title="Skills — Nathaniel Starkman" section="/software/" repo="nstarman/skills">
   <main>…</main>
-</Base>
+</SiteLayout>
 ```
 
 `section` marks its nav entry; `repo` is where "Last updated" links. Its
 `astro.config.mjs` sets `site: 'https://nstarkman.space'` and `base: '/<repo>'`.
-Dependabot (`package-ecosystem: gitsubmodule`) proposes each change to this
-site's design as a pull request there. `Base.astro` imports only its stylesheet
-and icons and links site-absolute, so it works from the submodule;
-`tests/base-hosted.test.js` holds it to that.
+Dependabot (`package-ecosystem: npm`) proposes each new release as a pull
+request there. The layout imports only its stylesheet and icons and links
+site-absolute, so it works under any `base`; `tests/site-layout.test.js` holds
+it to that and builds a fixture site at `/demo/` with it.
+
+### Releasing the layout
+
+The package is `packages/site-layout/`, and this site uses it from there (an
+npm workspace), so a change shows here at once and ships in the next release.
+Versions are dates, `YYYYMMDD.0.N` — npm takes only three numbers — with `N`
+counting fixes to that date's release. To release: set `version` in
+`packages/site-layout/package.json`, add its section to `CHANGELOG.md` (with a
+migration note if anything is removed or renamed), merge, then tag the merge
+commit `site-layout-v<version>` and push the tag. `release-site-layout.yml`
+checks the tag against the version, runs the unit tests and publishes with npm
+trusted publishing — no token. A fix to an older release is made on
+`versions/site-layout-v<YYYYMMDD>.x`, cut from its tag when first needed, and
+backported to every release that has the bug.
+
+The first version was published by hand (`npm publish --access public` from
+`packages/site-layout`, as `nstarkman` on npm), since npm can trust a workflow
+only for a package that exists; the workflow skips a version already on npm,
+so that version's tag passes.
 
 It is found from here as any software is: a `software` item in `data/`, its
 page linked with an absolute `https://nstarkman.space/<repo>/` URL — a
