@@ -5,7 +5,7 @@
 ```json
 {
   "name": "@nstarkman/site-layout",
-  "version": "2026.1022.0",
+  "version": "20261022.0.0",
   "description": "The nstarkman.space page layout, for sites hosted at nstarkman.space/<repo>/.",
   "type": "module",
   "license": "MIT",

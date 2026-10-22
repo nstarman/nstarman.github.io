@@ -99,7 +99,7 @@ page with the layout, and its nav links reach `nstarkman.space/research/` etc.
   import nothing, the stylesheet has no `@import` or `url(`, and every link is site-absolute.
 - **FR-004**: The layout's properties stay `title`, `description`, `section`, `repo` with today's
   meanings and defaults.
-- **FR-005**: Releases MUST be date-versioned in a semver-valid form (`YYYY.MMDD.N`, research R6), tagged `site-layout-v<version>`,
+- **FR-005**: Releases MUST be date-versioned in a semver-valid form (`YYYYMMDD.0.N`, research R6), tagged `site-layout-v<version>`,
   and published publicly to npm by a workflow using trusted publishing with provenance — no stored
   npm token — refusing a tag that does not match the package version.
 - **FR-006**: The package MUST have a changelog; a breaking change carries a migration note.

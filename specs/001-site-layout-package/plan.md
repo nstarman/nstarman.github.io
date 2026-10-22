@@ -9,7 +9,7 @@
 Move the layout (`src/layouts/Base.astro` → `SiteLayout.astro`), the site stylesheet
 (`src/styles/global.css` → `site.css`) and the icon sprite into `packages/site-layout/`, the npm
 package `@nstarkman/site-layout`. The website consumes it through an npm workspace, so the files it
-renders are the files that ship. A tag `site-layout-v<date>` publishes it to npm with trusted
+renders are the files that ship. A tag `site-layout-v<YYYYMMDD.0.N>` publishes it to npm with trusted
 publishing (OIDC + provenance); the first version is published once by hand ([research](research.md) R1).
 
 ## Technical Context

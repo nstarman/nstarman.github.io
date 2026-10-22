@@ -28,8 +28,8 @@ packages/site-layout/
 
 ## Releasing
 
-- Date versions per the author's policy, in npm's semver form `YYYY.MMDD.N` (research R6); fixes
-  bump N, from `versions/site-layout-v<YYYY.MMDD>.x` branches created on demand; every fix backported
+- Date versions per the author's policy, in npm's semver form `YYYYMMDD.0.N` (research R6); fixes
+  bump N, from `versions/site-layout-v<YYYYMMDD>.x` branches created on demand; every fix backported
   to every released version that has it.
 - Tag `site-layout-v<version>` → `.github/workflows/release-site-layout.yml`: checks tag = package
   version, runs the package checks, `npm pack --dry-run` file-list check, then

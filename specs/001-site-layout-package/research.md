@@ -49,10 +49,11 @@
 - **Problem**: the author's tags are `vYYYY.MM.DD` with fixes `vYYYY.MM.DD.N`. npm versions must be
   semver: three numbers, no leading zeros, and a `-N` suffix is a prerelease that sorts *before* its
   release. So `2026.10.22.1` and `2026.01.05` are invalid on npm.
-- **Decision (recommended, pending the author)**: npm version **`YYYY.MMDD.N`** — `2026.1022.0`, its
-  fixes `2026.1022.1`, `2026.1022.2`; January 5 is `2026.105.0`. The tag carries the same string:
-  `site-layout-v2026.1022.0`. Valid semver, sorts by date, fixes sort after their release and before
-  the next date.
-- **Alternatives**: `YYYY.M.D` with fixes as `-N` prereleases (rejected: a fix sorts before the
-  release it fixes, and `npm install` skips prereleases); tags in the usual `site-layout-v2026.10.22.1`
-  form mapped to a different npm string (rejected: two names for one release).
+- **Decision (author, 2026-10-22)**: **`YYYYMMDD.0.N`** — `20261022.0.0`, its fixes `20261022.0.1`,
+  `20261022.0.2`. The tag is `site-layout-v<version>`, e.g. `site-layout-v20261022.0.0`.
+- **Rationale**: fixed length; valid semver (checked with `semver`: valid, sorts by date, fixes after
+  their release and before the next date). Each date is a new major, which is honest for date
+  versioning (no compatibility promise across releases): `^20261022.0.0` takes that release's fixes
+  and never a later release; Dependabot proposes the next one.
+- **Alternatives**: `YYYY.MMDD.N` (variable length; `^` would take a whole year of releases);
+  `YYYY.M.D` with `-N` fixes (a fix sorts before its release and is skipped on install).
