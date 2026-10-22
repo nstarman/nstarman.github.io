@@ -1,7 +1,7 @@
 name: Refresh skills
 
-# The Agent Skills section of /tools/ reads config/skills.json, a snapshot of the
-# card.json beside each skill in nstarman/skills. This takes a new one once a
+# The Agent Skills section of /tools/ reads config/skills.json, a snapshot of
+# nstarman/skills' index.json (every skill it registers, wherever it lives). This takes a new one once a
 # week and opens a pull request, so a card on the site is reviewed like any
 # other change. It never pushes to the default branch.
 
