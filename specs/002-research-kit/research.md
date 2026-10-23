@@ -61,3 +61,20 @@
 - **Decision**: card CSS stays in `site.css` (paper sites already load it; moving it would change the site
   stylesheet's contract and the card hash in `cardsync`). `map.css` moves into `collaborator-map` with the
   component.
+
+## R8 What goes where (found while writing tasks)
+
+- **Finding**: `Byline.astro` (in the card) imports `collabHref` from `collabmap.js`; `mentees.js` and
+  `cards.js` import each other; `inline.js` imports `data.js` and `mentees.js`.
+- **Decision**: split by kind, not by file —
+  - **data-resolver** (everything computed from data): `data.js`'s functions, `mentees.js`, `places.js`,
+    `inline.js`, `bibtex.js`, the URL helpers (`siteHref`, `adsHref`, …), and the data half of
+    `collabmap.js` (`collaboratorMap` entries, `collabHref`, `lastFirst`, `meets`, `postsOf`). Each module
+    becomes `make<Name>(store)` inside `createStore`, so the store object exposes the same names the
+    files export today.
+  - **card-builder** (drawing): `Card`, `Publication`, `Byline`, `Venue`, `VenueBits`, `ButtonList`,
+    `LinkIcon(s)`, `SoftwareRow`, `Inline`, `cardname.js`, `cards.js`'s presets and card logic, `maths.js`
+    (temml) — importing data only from `@nstarkman/research-store`.
+  - **collaborator-map** (drawing): `CollabMap.astro`, `worldmap.js` and the world outline, `map.css`.
+- The website's `src/lib/{data,mentees,places,inline,bibtex,collabmap}.js` become thin re-exports of the
+  store, so their importers and tests keep their paths.
