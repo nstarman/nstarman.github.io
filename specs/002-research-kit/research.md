@@ -52,8 +52,7 @@
   three at exactly that version; tag `research-kit-v<version>` → `release-research-kit.yml` publishes
   data-resolver, card-builder, collaborator-map, research-kit in that order with trusted publishing,
   skipping versions already on npm (the site-layout workflow's pattern). First versions by hand.
-- `card-builder` and `collaborator-map` depend on `@nstarkman/site-layout`'s stylesheet tokens only through
-  the page; they import their own CSS (moved: the card's rules stay in `site.css`? see R7).
+- `card-builder` styles come from the page's `site.css` (`@nstarkman/site-layout`), see R7.
 
 ## R7 Where the card's and map's CSS live
 
