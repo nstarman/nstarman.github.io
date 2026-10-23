@@ -523,7 +523,11 @@ describe('presets', () => {
 
   it('are exactly the cards the website renders', () => {
     const used = usedPresets();
-    usedPresets('packages/card-builder/src', used); // Publication.astro draws the research entry's card
+    // The card package's own components (Publication draws a paper's highlight,
+    // paperHighlight here and paperSite on a paper's site) name presets in code.
+    for (const f of fs.readdirSync('packages/card-builder/src').filter((n) => n.endsWith('.astro'))) {
+      for (const m of fs.readFileSync(`packages/card-builder/src/${f}`, 'utf8').matchAll(/PRESET\.(\w+)/g)) used.keys.add(m[1]);
+    }
     expect([...used.written]).toEqual([]);
     // The README's images (src/pages/cards/) draw the tier presets, which no page need name.
     expect([...new Set([...used.keys, ...Object.values(TIER_PRESET)])].sort()).toEqual(Object.keys(PRESET).sort());

@@ -10,7 +10,9 @@ import Venue from './Venue.astro';
 import Card from './Card.astro';
 import SoftwareRow from './SoftwareRow.astro';
 
-const { item, maxAuthors = 8, abstract = false, earlier = [], anchor } = Astro.props;
+// `card`: the preset key of the highlight's card — a paper site (syw-site) draws `paperSite`.
+const { item, maxAuthors = 8, abstract = false, earlier = [], anchor, card = 'paperHighlight' } = Astro.props;
+const cardPreset = card === 'paperSite' ? PRESET.paperSite : PRESET.paperHighlight;
 
 const { shown, etal, collaboration } = authors(item, maxAuthors);
 const venue = venueLine(item);
@@ -52,7 +54,7 @@ const more = abstract && (item.abstract || bib);
         already is the way into the paper — in the lighter tint, with the way
         to its topic on /research/. */}
     {abstract && item.highlight && (
-      <Card item={item} preset={PRESET.paperHighlight}
+      <Card item={item} preset={cardPreset}
             id={`hl-${item.id}`} />
     )}
 
