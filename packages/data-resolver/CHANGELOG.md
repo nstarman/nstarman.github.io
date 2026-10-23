@@ -3,6 +3,13 @@
 Versions are dates, `YYYYMMDD.0.N`; the four research-kit packages are released together at one
 version. A breaking change says how to migrate.
 
+## 20261023.0.1
+
+### Fixed
+
+- `collect()` put the co-authors of every item it reached on the paper's collaborator map — its
+  packages' papers' too; it now puts only the paper's own co-authors.
+
 ## 20261023.0.0
 
 First release.

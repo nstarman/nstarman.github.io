@@ -53,7 +53,8 @@ export async function collect(id, reader, { card } = {}) {
 
   const config = Object.fromEntries(await Promise.all(CONFIG.map(async (k) => [k, JSON.parse(await reader.read(`config/${k}.json`))])));
   const all = [...items.values()];
-  const orcids = new Set(all.flatMap((i) => (i.authors ?? []).map((a) => a.orcid)).filter(Boolean));
+  // The map is the paper's own co-authors: not those of the papers it reaches (its packages').
+  const orcids = new Set((root.authors ?? []).map((a) => a.orcid).filter(Boolean));
   const people = config.collaborators.people.filter((p) => orcids.has(p.orcid));
   const orgs = new Set([
     ...people.flatMap((p) => p.affiliations.map((a) => a.organization)),
