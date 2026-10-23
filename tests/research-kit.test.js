@@ -54,6 +54,14 @@ describe('collect', () => {
     }
   });
 
+  it('fails on a read that fails, rather than leaving a file out', async () => {
+    const reader = fromDisk('.');
+    const flaky = { ...reader, read: async (p) => { if (p.startsWith('cards/')) throw new Error('GET …: 403'); return reader.read(p); } };
+    await expect(collect('potamides-apj', flaky)).rejects.toThrow(/403/);
+    const github403 = fromGitHub({ repo: 'nstarman/nstarman.github.io', fetch: async (url) => (url.includes('/cards/') ? { ok: false, status: 403 } : fakeFetch(url)) });
+    await expect(collect('potamides-apj', github403)).rejects.toThrow(/403/);
+  });
+
   it('fails naming a missing file and what referred to it', async () => {
     const reader = fromDisk('.');
     const index = await reader.index();
@@ -75,6 +83,10 @@ describe('cards/<id>.json', () => {
       expect(site.resolve(f.replace(/\.json$/, '')), `${f}: no such item`).toBeTruthy();
     }
     expect(PRESET).toHaveProperty('paperSite');
+    // The schema itself, whether or not cards/ has files yet.
+    expect(validate({ preset: 'paperSite' })).toBe(true);
+    expect(validate({ preset: 'paperSite', title: 'a fact' })).toBe(false);
+    expect(validate({})).toBe(false);
   });
 
   it('a card choice reaches the snapshot', async () => {
@@ -92,7 +104,10 @@ describe('a paper’s grants', () => {
     const withGrant = { ...reader, read: async (p) => (p.endsWith('-stream-convexity-spatial.json') ? JSON.stringify(paper) : reader.read(p)) };
     const s = await collect('stream-convexity-spatial', withGrant);
     expect(s.items.map((i) => i.id)).toContain(grant.id);
-    expect(site.softwareUsed([paper]).map((x) => x.id)).toEqual(site.softwareUsed([site.resolve('stream-convexity-spatial')]).map((x) => x.id));
+    const store = createStore(s);
+    const theirs = store.resolve('stream-convexity-spatial');
+    expect(store.softwareUsed([theirs]).map((x) => x.id)).toEqual(site.softwareUsed([site.resolve('stream-convexity-spatial')]).map((x) => x.id));
+    expect(store.authors(theirs)).toEqual(site.authors(site.resolve('stream-convexity-spatial')));
   });
 });
 

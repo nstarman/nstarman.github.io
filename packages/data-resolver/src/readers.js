@@ -8,6 +8,9 @@ const indexOf = (paths) => new Map(paths.flatMap((p) => {
   return m ? [[m[2], p]] : [];
 }));
 
+/** A file that is not there, told apart from a read that failed. */
+const notFound = (path) => Object.assign(new Error(`${path}: not found`), { notFound: true });
+
 /** The repository checked out at `root`. */
 export function fromDisk(root) {
   return {
@@ -18,7 +21,11 @@ export function fromDisk(root) {
     },
     async read(path) {
       const fs = await import('node:fs');
-      return fs.readFileSync(`${root}/${path}`, 'utf8');
+      try {
+        return fs.readFileSync(`${root}/${path}`, 'utf8');
+      } catch (e) {
+        throw e.code === 'ENOENT' ? notFound(path) : e;
+      }
     },
   };
 }
@@ -27,8 +34,9 @@ export function fromDisk(root) {
  *  raw files from the commit it resolved to, so every file is of one commit. */
 export function fromGitHub({ repo, ref = 'main', fetch = globalThis.fetch }) {
   let sha;
-  const get = async (url, as) => {
+  const get = async (url, as, path) => {
     const r = await fetch(url);
+    if (r.status === 404 && path) throw notFound(path);
     if (!r.ok) throw new Error(`GET ${url}: ${r.status}`);
     return as === 'json' ? r.json() : r.text();
   };
@@ -42,7 +50,7 @@ export function fromGitHub({ repo, ref = 'main', fetch = globalThis.fetch }) {
       return indexOf(tree.tree.map((t) => t.path));
     },
     async read(path) {
-      return get(`https://raw.githubusercontent.com/${repo}/${sha ?? ref}/${path}`);
+      return get(`https://raw.githubusercontent.com/${repo}/${sha ?? ref}/${path}`, 'text', path);
     },
   };
 }

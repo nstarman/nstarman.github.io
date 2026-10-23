@@ -179,7 +179,8 @@ snapshots (`specs/refresh/spec.md`).
   exactly its version and re-exports their entry points. This site imports them from
   `packages/` (npm workspace). Their components read data only from `@nstarkman/research-store`, which
   the consumer aliases to a module exporting a store's names (here `src/lib/data.js`) and loads
-  through Vite (`ssr.noExternal: [/^@nstarkman\//]`). The data modules the card and map read —
+  through Vite in dev and build (`ssr.noExternal` and, Astro 7 prerendering in its own environment,
+  `environments.prerender.resolve.noExternal`, both `[/^@nstarkman\//]`). The data modules the card and map read —
   `mentees`, `places`, `inline`, `bibtex`, `urls` (`siteHref`) — are in `data-resolver`;
   `card-builder` depends on `collaborator-map` too, for the byline's links to a co-author on the map.
   *Enforced:* `tests/research-kit.test.js` (one version, exact dependencies, changelog sections);

@@ -13,8 +13,9 @@ async function readCard(reader, id) {
   let text;
   try {
     text = await reader.read(`cards/${id}.json`);
-  } catch {
-    return null; // none: the default
+  } catch (e) {
+    if (e.notFound) return null; // none: the default
+    throw e; // a failed read is not "no card"
   }
   const { $schema, ...card } = JSON.parse(text);
   return card;
@@ -45,7 +46,7 @@ export async function collect(id, reader, { card } = {}) {
   for (const ref of root.refs ?? []) {
     const r = await get(ref, id);
     // A package's own papers: its card's paper buttons and how to cite it.
-    if (r.type === 'software') for (const p of r.refs ?? []) await get(p, ref).catch(() => null);
+    if (r.type === 'software') for (const p of r.refs ?? []) await get(p, ref);
   }
   // My students among its authors, for their marks and profile links.
   for (const a of root.authors ?? []) if (a.mentee) await get(a.mentee, id);

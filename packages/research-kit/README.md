@@ -26,13 +26,15 @@ and build offline.
 ## The store the components read
 
 The components import `@nstarkman/research-store`. Point it at a module that builds the store and
-exports its names, and let Vite load the packages:
+exports its names, and let Vite load the packages — in dev and in the build — or Node loads them and
+cannot find the store:
 
 ```js
 // astro.config.mjs
 vite: {
   resolve: { alias: { '@nstarkman/research-store': fileURLToPath(new URL('./src/store.js', import.meta.url)) } },
-  ssr: { noExternal: [/^@nstarkman\//] },
+  ssr: { noExternal: [/^@nstarkman\//] },                                        // dev
+  environments: { prerender: { resolve: { noExternal: [/^@nstarkman\//] } } },  // build (Astro 7)
 }
 ```
 

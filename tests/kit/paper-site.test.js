@@ -1,18 +1,34 @@
-// A paper's site with only @nstarkman/research-kit and a snapshot draws a paper's
+// A paper's site with only @nstarkman/research-kit — the packed tarballs — and a snapshot draws a paper's
 // entry exactly as /publications/ does (SC-003). Builds a fixture site offline, and
 // reads the site's own build: `npm run test:kit` runs after `npm run build`.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { collect } from '@nstarkman/data-resolver/collect.js';
 import { fromDisk } from '@nstarkman/data-resolver/readers.js';
 import { createStore } from '@nstarkman/data-resolver/store.js';
 
 const ID = 'stream-convexity-rate'; // submitted, with a highlight: on /publications/
 const out = fs.mkdtempSync(join(tmpdir(), 'paper-site-'));
-afterAll(() => fs.rmSync(out, { recursive: true, force: true }) || fs.rmSync(`${out}-cache`, { recursive: true, force: true }));
+// The packages as npm would install them: each packed, then unpacked as a real
+// directory in the fixture's own node_modules (nearer than the workspace's links),
+// so the files that ship, and Vite's handling of a real dependency, are what is tested.
+const MODULES = 'tests/fixtures/paper-site/node_modules/@nstarkman';
+beforeAll(() => {
+  fs.rmSync(MODULES, { recursive: true, force: true });
+  for (const name of ['data-resolver', 'card-builder', 'collaborator-map', 'research-kit']) {
+    const [{ filename }] = JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', out], { cwd: `packages/${name}`, encoding: 'utf8' }));
+    fs.mkdirSync(`${MODULES}/${name}`, { recursive: true });
+    execFileSync('tar', ['-xzf', join(out, filename), '-C', `${MODULES}/${name}`, '--strip-components=1']);
+  }
+});
+afterAll(() => {
+  fs.rmSync('tests/fixtures/paper-site/node_modules', { recursive: true, force: true });
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.rmSync(`${out}-cache`, { recursive: true, force: true });
+});
 
 const article = (html, id) => {
   const at = html.indexOf(`id="pub-${id}"`);

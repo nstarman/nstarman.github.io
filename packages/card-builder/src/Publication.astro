@@ -12,7 +12,10 @@ import SoftwareRow from './SoftwareRow.astro';
 
 // `card`: the preset key of the highlight's card — a paper site (syw-site) draws `paperSite`.
 const { item, maxAuthors = 8, abstract = false, earlier = [], anchor, card = 'paperHighlight' } = Astro.props;
-const cardPreset = card === 'paperSite' ? PRESET.paperSite : PRESET.paperHighlight;
+// The website draws PRESET.paperHighlight; a paper's site PRESET.paperSite, or the
+// SITE_PRESETS key its cards/<id>.json names.
+const cardPreset = PRESET[card];
+if (!cardPreset) throw new Error(`Publication: "${card}" is not a SITE_PRESETS key`);
 
 const { shown, etal, collaboration } = authors(item, maxAuthors);
 const venue = venueLine(item);

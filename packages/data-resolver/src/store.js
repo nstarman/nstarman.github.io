@@ -23,7 +23,9 @@ export const sortItems = (items) => [...items].sort(byDateDesc);
  * @param data.config the config/ snapshots the functions read: collaborators,
  *   acknowledgements, journals, stars (and places, for places.js)
  */
-export function createStore({ items, lists = new Map(), config }) {
+export function createStore({ items: given, lists = new Map(), config }) {
+  // Newest first, as every list has them (a no-op for the website's, already sorted).
+  const items = sortItems(given);
   const { collaborators, acknowledgements, journals } = config;
 
   const byId = new Map(items.map((i) => [i.id, i]));
