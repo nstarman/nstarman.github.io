@@ -3,7 +3,8 @@
 //
 // It hashes the card's CSS — every rule of packages/site-layout/site.css that names a
 // card, its parts or its link buttons, and the tokens on :root — and the
-// markup of Card.astro, ignoring comments and whitespace. tests/cardlayout.test.js
+// markup of Card.astro, ignoring comments, whitespace and its import lines (where
+// its modules live is not what draws it). tests/cardlayout.test.js
 // compares it with the one recorded beside the browser's measurements
 // (tests/fixtures/software-cards.json); when they differ the card has changed
 // and scripts/record-card-layouts.mjs re-measures it, so the renderer is
@@ -31,6 +32,6 @@ export function cardRules(css) {
 
 export function syncKey(root = '.') {
   const css = fs.readFileSync(`${root}/packages/site-layout/site.css`, 'utf8');
-  const markup = squash(fs.readFileSync(`${root}/src/components/Card.astro`, 'utf8'));
+  const markup = squash(fs.readFileSync(`${root}/packages/card-builder/src/Card.astro`, 'utf8').replace(/^import .*$/gm, ''));
   return crypto.createHash('sha1').update(cardRules(css).join('\n')).update('\n--\n').update(markup).digest('hex').slice(0, 12);
 }

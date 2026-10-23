@@ -11,8 +11,8 @@
 // Geometry is resolved here rather than in the component, so the page renders
 // plain numbers and the maths is testable without a DOM.
 
-import { locate } from './places.js';
-import { map, toXY, spread, hueFor } from './worldmap.js';
+import { locate } from '@nstarkman/data-resolver/places.js';
+import { map, toXY, spread, hueFor } from '@nstarkman/collaborator-map/worldmap.js';
 import { byType, dateLabel, links } from './data.js';
 
 export { map };

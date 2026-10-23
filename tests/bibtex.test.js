@@ -2,7 +2,7 @@
 // stray unescaped character breaks someone else's build, not ours.
 
 import { describe, expect, it } from 'vitest';
-import { citekey, toBibtex, toBibliography } from '../src/lib/bibtex.js';
+import { citekey, toBibtex, toBibliography } from '@nstarkman/data-resolver/bibtex.js';
 import { byType } from '../src/lib/data.js';
 import fixture from './fixtures/citekeys.json';
 

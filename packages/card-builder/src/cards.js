@@ -1,9 +1,11 @@
 // Which cards exist, and what the website uses. A card's name — its spec — is
 // src/lib/cardname.js; this adds what needs the database: the website's
 // presets, an item's default card, and its links and extras.
-import starCounts from '/config/stars.json';
-import { menteeById, menteeName, profileHref } from './mentees.js';
-import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from './data.js';
+import { menteeById, menteeName, profileHref } from '@nstarkman/data-resolver/mentees.js';
+import { siteHref } from '@nstarkman/data-resolver/urls.js';
+
+export { siteHref };
+import { config, links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from '@nstarkman/research-store';
 
 export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
 
@@ -107,7 +109,7 @@ export const STARS_MIN = 40;
  *  Card Builder — where `every` asks for every link a card could show.
  *  config/stars.json is refreshed monthly, so the number is a month old at worst. */
 function starLink(item, every) {
-  const n = item.repo && starCounts.stars[item.repo];
+  const n = item.repo && config.stars.stars[item.repo];
   if (n == null || (n < STARS_MIN && !every)) return [];
   return [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers`, ...(n < STARS_MIN && { optional: true }) }];
 }
@@ -163,12 +165,6 @@ export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/
 /** title:…:journal — where it was published: the journal's own page, or its
  *  DOI, once it is out. */
 export const journalHref = (item) => (item.type === 'publication' ? venueUrl(item) : null);
-
-/** Where it links with title:…:site — the item's entry on this site, where
- *  it has one: a paper on /publications/ (an in-prep one is not listed), a
- *  package on /software/, a synthesis on /research/. */
-export const siteHref = (item) => (item.type === 'publication' ? (item.status !== 'in-prep' ? `/publications/#pub-${item.id}` : null)
-  : item.type === 'software' ? `/software/#sw-${item.id}` : item.type === 'highlight' ? `/research/#hl-${item.id}` : null);
 
 /** Where a click on an exported image of the card should go, and a
  *  research card's title: the paper, else its first link. */

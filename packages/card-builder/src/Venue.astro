@@ -2,7 +2,7 @@
 // "The Astrophysical Journal 979, 155", linked to the article where it has one
 // — unless link is false, when the link keeps its address, as data-href, for
 // the embed to give back; short, "ApJ 979, 155".
-import { venueLine, venueUrl } from '../lib/data.js';
+import { venueLine, venueUrl } from '@nstarkman/research-store';
 
 const { item, short = false, link = true } = Astro.props;
 const venue = venueLine(item, { short });

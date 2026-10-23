@@ -1,10 +1,10 @@
 // The mentee helpers, on items built here rather than on the database.
 
 import { describe, expect, it } from 'vitest';
-import { spans } from '../src/lib/inline.js';
+import { spans } from '@nstarkman/data-resolver/inline.js';
 import {
   menteeName, levelLabel, papersOf, pickMentees, pickTop, profileHref, softwareOf, sortAchievements, researchSpans, firstSentenceSpans,
-} from '../src/lib/mentees.js';
+} from '@nstarkman/data-resolver/mentees.js';
 
 const dates = (list) => list.map((a) => a.date);
 

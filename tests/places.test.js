@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import data from '../config/places.json';
-import { locate } from '../src/lib/places.js';
+import { locate } from '@nstarkman/data-resolver/places.js';
 
 const entries = Object.entries(data.places);
 

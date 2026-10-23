@@ -14,7 +14,7 @@
 //   tune(keys), render()  bring up a part's settings; redraw from the controls
 //   setRadio, sideKind, showGap, stackedIn, moveButton, moveKey   control helpers
 
-import { DIALS, FACES, SPACE_TRACKS, parseName, placeOf } from '../cardname.js';
+import { DIALS, FACES, SPACE_TRACKS, parseName, placeOf } from '@nstarkman/card-builder/cardname.js';
 import { query, snippet, esc, themes } from '../cardexport.js';
 import {
   A2V, CELL, SMALL, V2A, boxHeight, canTune, clampInt, controlOps, defaultsOf, figWidth, fitName, hiddenKeys, namesN, presetWidths, readSpec, shapeHeight, shownKeys,

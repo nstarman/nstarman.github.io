@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, plural, ordinal, achievementCvs, achievementTicked } from '../src/lib/inline.js';
+import { spans, plain, lines, detailLines, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 describe('spans', () => {

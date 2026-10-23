@@ -9,7 +9,7 @@
 // as hostile — wrong shape, wrong types, absurd sizes — and fails with a
 // sentence a person can act on rather than a TypeError from three frames down.
 
-import { plural } from './inline.js';
+import { plural } from '@nstarkman/data-resolver/inline.js';
 import { readSavedSpacing } from './cvspacing.js';
 
 export const FORMAT = 'starkman-cv-selection';

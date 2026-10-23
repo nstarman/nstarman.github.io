@@ -8,7 +8,7 @@
 import person from '/config/person.json';
 import { resolve } from './presets.js';
 import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
-import { spans, detailLines, achievementLines } from './inline.js';
+import { spans, detailLines, achievementLines } from '@nstarkman/data-resolver/inline.js';
 
 /**
  * The groups a section can break into, in the order a CV reads them: newest

@@ -3,7 +3,7 @@
 // side (overlay, gestures, export) is checked in the browser.
 
 import { describe, expect, it } from 'vitest';
-import { BUILDER_DEFAULT, CARD_TYPES, FIXED_MAX, FIXED_MIN, FIXED_MIN_HEIGHT, FRAME_PX, SITE_PRESETS, STEP_PX, parseName } from '../src/lib/cards.js';
+import { BUILDER_DEFAULT, CARD_TYPES, FIXED_MAX, FIXED_MIN, FIXED_MIN_HEIGHT, FRAME_PX, SITE_PRESETS, STEP_PX, parseName } from '@nstarkman/card-builder/cards.js';
 import { items } from '../src/lib/data.js';
 import { itemFacts, linkPlace } from '../src/lib/cardbuilder/facts.js';
 import { between, cellGrid, named, partZones, sum, venueDrops } from '../src/lib/cardbuilder/geometry.js';

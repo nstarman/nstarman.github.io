@@ -2,12 +2,12 @@
 // A mentee's profile (Layout A): who they are, what we work on, what came of it,
 // and what they have won. Sections with nothing to show are left out.
 import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
-import Card from '../../components/Card.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
 import '../../styles/people.css';
-import { PRESET } from '../../lib/cards.js';
-import { collabHref } from '../../lib/collabmap.js';
+import { PRESET } from '@nstarkman/card-builder/cards.js';
+import { collabHref } from '@nstarkman/collaborator-map/collabmap.js';
 import { dateLabel } from '../../lib/data.js';
-import { mentees, menteeKey, menteeBySlug, menteeName, levelLabel, menteePapers, menteeSoftware, achievements, researchSpans } from '../../lib/mentees.js';
+import { mentees, menteeKey, menteeBySlug, menteeName, levelLabel, menteePapers, menteeSoftware, achievements, researchSpans } from '@nstarkman/data-resolver/mentees.js';
 
 export const getStaticPaths = () => mentees().map((m) => ({ params: { slug: m.slug } }));
 

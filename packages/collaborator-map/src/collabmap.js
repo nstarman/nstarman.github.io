@@ -9,12 +9,11 @@
 // plain numbers and the maths is testable without a DOM. The projection itself
 // lives in worldmap.js, shared with the conference map.
 
-import collaborators from '/config/collaborators.json';
-import { locate } from './places.js';
+import { locate } from '@nstarkman/data-resolver/places.js';
 import { map, project, toXY, spread, hueFor, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT }
   from './worldmap.js';
-import { mentees, menteeKey, menteeName, profileHref, topAchievements, researchSpans, firstSentenceSpans } from './mentees.js';
-import { byType, venueUrl, links, assists, primaryLink } from './data.js';
+import { mentees, menteeKey, menteeName, profileHref, topAchievements, researchSpans, firstSentenceSpans } from '@nstarkman/data-resolver/mentees.js';
+import { byType, venueUrl, links, assists, primaryLink, config } from '@nstarkman/research-store';
 
 // Re-exported because the map's callers and tests have always reached for them
 // here, and where the maths lives is not their concern.
@@ -109,7 +108,7 @@ export function collaboratorMap(menteeList = mentees()) {
   const people = [];
   const byKey = new Map(menteeList.map((m) => [menteeKey(m), m]));
 
-  const entries = collaborators.people.map((c) => ({
+  const entries = config.collaborators.people.map((c) => ({
     orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: byKey.get(c.orcid),
   }));
   for (const m of menteeList) {

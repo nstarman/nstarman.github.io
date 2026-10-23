@@ -21,7 +21,7 @@
 // the browser put them rather than near them.
 
 import sprite from '@nstarkman/site-layout/IconSprite.astro?raw';
-import { ownLink, cardLinks, cardText, parseName, SITE_PRESETS, TIER_PRESET } from './cards.js';
+import { ownLink, cardLinks, cardText, parseName, SITE_PRESETS, TIER_PRESET } from '@nstarkman/card-builder/cards.js';
 import { REL_ICON, relKey } from './data.js';
 
 /** A button is never smaller than this: .iconbtn has min-width and min-height

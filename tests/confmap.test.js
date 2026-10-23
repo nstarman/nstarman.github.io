@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { conferenceMap, radius, ONLINE, ONLINE_AT, map } from '../src/lib/confmap.js';
-import { toXY, KM_PER_UNIT, MAX_DRIFT_MILES } from '../src/lib/worldmap.js';
+import { toXY, KM_PER_UNIT, MAX_DRIFT_MILES } from '@nstarkman/collaborator-map/worldmap.js';
 import { byType } from '../src/lib/data.js';
 import { readFileSync } from 'node:fs';
 

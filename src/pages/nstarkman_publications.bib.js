@@ -1,5 +1,5 @@
 import { items } from '../lib/data.js';
-import { toBibliography } from '../lib/bibtex.js';
+import { toBibliography } from '@nstarkman/data-resolver/bibtex.js';
 
 // Served at /nstarkman_publications.bib so the .bib is a first-class artefact
 // of the database rather than something exported by hand. Named rather than

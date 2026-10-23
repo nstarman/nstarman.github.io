@@ -3,7 +3,7 @@
 import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
 import '../../styles/people.css';
 import { dateLabel } from '../../lib/data.js';
-import { mentees, menteeName, levelLabel, profileHref, researchSpans, firstSentenceSpans } from '../../lib/mentees.js';
+import { mentees, menteeName, levelLabel, profileHref, researchSpans, firstSentenceSpans } from '@nstarkman/data-resolver/mentees.js';
 
 // The first sentence of the research text, as plain words.
 const first = (m) => firstSentenceSpans(researchSpans(m.research)).map((s) => s.t).join('');

@@ -17,7 +17,7 @@
 // `allLinks` the link keys the form lists, `limits` { fixedMin, fixedMax,
 // fixedMinHeight, stepPx }.
 
-import { AUTHORS_MAX, DIALS, FACES, formatName, parseName, placeOf } from '../cardname.js';
+import { AUTHORS_MAX, DIALS, FACES, formatName, parseName, placeOf } from '@nstarkman/card-builder/cardname.js';
 
 /** A whole number typed, held between lo and hi. */
 export const clampInt = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(+v || 0)));

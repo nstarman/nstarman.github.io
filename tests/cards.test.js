@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref, TIER_PRESET,
   FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS, studentStamp,
-} from '../src/lib/cards.js';
+} from '@nstarkman/card-builder/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 import { file, snippet } from '../src/lib/cardexport.js';
 
@@ -523,6 +523,7 @@ describe('presets', () => {
 
   it('are exactly the cards the website renders', () => {
     const used = usedPresets();
+    usedPresets('packages/card-builder/src', used); // Publication.astro draws the research entry's card
     expect([...used.written]).toEqual([]);
     // The README's images (src/pages/cards/) draw the tier presets, which no page need name.
     expect([...new Set([...used.keys, ...Object.values(TIER_PRESET)])].sort()).toEqual(Object.keys(PRESET).sort());

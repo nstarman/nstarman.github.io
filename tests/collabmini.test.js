@@ -4,7 +4,7 @@
 // say so.
 
 import { describe, it, expect } from 'vitest';
-import { collaboratorMap, lastFirst } from '../src/lib/collabmap.js';
+import { collaboratorMap, lastFirst } from '@nstarkman/collaborator-map/collabmap.js';
 import { miniMap } from '../src/lib/collabmini.js';
 
 // A mentee with nothing placeable is on the full map but has no dot here.

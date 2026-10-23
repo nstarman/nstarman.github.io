@@ -3,12 +3,12 @@
 
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { parseName, formatName, cardFace, placeOf } from '../src/lib/cardname.js';
-import { cardFacts, CARD_TYPES } from '../src/lib/cards.js';
+import { parseName, formatName, cardFace, placeOf } from '@nstarkman/card-builder/cardname.js';
+import { cardFacts, CARD_TYPES } from '@nstarkman/card-builder/cards.js';
 import { items } from '../src/lib/data.js';
 import { itemFacts } from '../src/lib/cardbuilder/facts.js';
 import { controlOps, readSpec, fitName, mainLinks, claimed, regroup, otherArea, newGroup, FIRST_ONLY } from '../src/lib/cardbuilder/model.js';
-import { FRAME_PX, STEP_PX } from '../src/lib/cards.js';
+import { FRAME_PX, STEP_PX } from '@nstarkman/card-builder/cards.js';
 
 const B = 'size:fill:fit-figure:none-title:full:whole:link-authors:none-text:details-extras:none';
 const group = (n) => parseName(`${B}-${n}`);
@@ -148,7 +148,7 @@ describe('the stylesheet has a rule for what a name with groups sets', () => {
   });
 
   it('and every attribute the component writes for a group is one the stylesheet reads', () => {
-    const list = fs.readFileSync('src/components/ButtonList.astro', 'utf8');
+    const list = fs.readFileSync('packages/card-builder/src/ButtonList.astro', 'utf8');
     for (const attr of list.match(/data-[a-z]+(?==)/g)) expect(css, attr).toContain(attr);
   });
 });

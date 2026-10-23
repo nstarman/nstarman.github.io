@@ -12,7 +12,7 @@ import fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 import { BUTTON_MIN, lengths, softwareModel, wrap } from '../src/lib/cardlayout.js';
 import { measure } from '../src/lib/textmeasure.js';
-import { SITE_PRESETS, TIER_PRESET, atWidth, parseName } from '../src/lib/cards.js';
+import { SITE_PRESETS, TIER_PRESET, atWidth, parseName } from '@nstarkman/card-builder/cards.js';
 
 const numRuns = +(process.env.FC_RUNS ?? 100);
 const seed = process.env.FC_SEED ? +process.env.FC_SEED : undefined;

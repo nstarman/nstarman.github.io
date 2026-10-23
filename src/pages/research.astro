@@ -1,12 +1,12 @@
 ---
-import { PRESET, embedHref as mainHref, siteHref } from '../lib/cards.js';
+import { PRESET, embedHref as mainHref, siteHref } from '@nstarkman/card-builder/cards.js';
 import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
-import CollabMap from '../components/CollabMap.astro';
+import CollabMap from '@nstarkman/collaborator-map/CollabMap.astro';
 import ConfMap from '../components/ConfMap.astro';
-import Card from '../components/Card.astro';
-import SoftwareRow from '../components/SoftwareRow.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
+import SoftwareRow from '@nstarkman/card-builder/SoftwareRow.astro';
 import { byType, resolve, softwareUsed, titleOf, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { spans } from '../lib/inline.js';
+import { spans } from '@nstarkman/data-resolver/inline.js';
 
 // Syntheses lead, then each paper's own card; newest first within each.
 const papers = byType('publication').filter((p) => p.highlight);

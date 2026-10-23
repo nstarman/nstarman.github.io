@@ -6,7 +6,7 @@
 // Both take the preview's iframe and `b`, the builder (see builder.js): its
 // form, state and the few methods they call back.
 
-import { FACES } from '../cardname.js';
+import { FACES } from '@nstarkman/card-builder/cardname.js';
 import { clampInt } from './model.js';
 import { COL_OF, COL_TRACKS, ROW_SLOTS, ROW_TRACKS, COL_NAMES, GRID_COLS, GRID_ROWS, between, named, sum } from './geometry.js';
 import { FACE_Q, drag, shownIn } from './dom.js';
