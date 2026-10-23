@@ -51,6 +51,9 @@ function subject(item) {
     case 'education':
     case 'position':
       return plain([item.role, item.institution].filter(Boolean).join(', '));
+    // A team grant says what my part was — "Co-Investigator, STScI".
+    case 'grant':
+      return plain([item.role, item.funder].filter(Boolean).join(', '));
     default:
       return plain(item.institution ?? item.organization ?? item.outlet ?? item.funder ?? '');
   }
