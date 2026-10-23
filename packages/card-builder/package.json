@@ -25,6 +25,7 @@
     "astro": "^7"
   },
   "dependencies": {
+    "@nstarkman/collaborator-map": "20261023.0.0",
     "@nstarkman/data-resolver": "20261023.0.0",
     "temml": "^0.13.5"
   },

@@ -6,6 +6,8 @@ import { getViteConfig } from 'astro/config';
 export default getViteConfig({
   test: {
     include: ['tests/**/*.test.js'],
+    // tests/kit/ reads the built site: npm run test:kit, after the build.
+    exclude: process.env.VITEST_KIT ? [] : ['tests/kit/**'],
     environment: 'node',
   },
 });

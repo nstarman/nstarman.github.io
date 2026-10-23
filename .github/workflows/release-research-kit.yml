@@ -1,0 +1,60 @@
+name: Release research-kit
+
+# Publishes the four research-kit packages — @nstarkman/data-resolver,
+# card-builder, collaborator-map and research-kit, one version — to npm when a
+# tag research-kit-v<version> is pushed. npm trusts this workflow (trusted
+# publishing, configured per package on npmjs.com), so there is no npm token;
+# each package carries provenance. Versions are YYYYMMDD.0.N — see AGENTS.md.
+
+on:
+  push:
+    tags: ["research-kit-v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Trusted publishing needs npm 11.5.1 or newer; Node 24 ships it.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+      - run: npm ci
+
+      - name: The tag names every package's version
+        run: |
+          want="${GITHUB_REF_NAME#research-kit-v}"
+          for p in data-resolver card-builder collaborator-map research-kit; do
+            v=$(node -p "require('./packages/$p/package.json').version")
+            if [ "$v" != "$want" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match packages/$p version $v."
+              exit 1
+            fi
+          done
+
+      - run: npm run test:unit
+
+      # In dependency order. A version already on npm (the first, published by
+      # hand before npm could trust this workflow) is left as it is.
+      - name: Publish
+        run: |
+          for p in data-resolver collaborator-map card-builder research-kit; do
+            v=$(node -p "require('./packages/$p/package.json').version")
+            if npm view "@nstarkman/$p@$v" version >/dev/null 2>&1; then
+              echo "::notice::@nstarkman/$p@$v is already on npm."
+            else
+              # A fix to an older release (a backport) must not take `latest` from a newer one.
+              latest=$(npm view "@nstarkman/$p" dist-tags.latest 2>/dev/null || true)
+              tag=()
+              if [ -n "$latest" ] && node -e "process.exit(require('semver').lt(process.argv[1], process.argv[2]) ? 0 : 1)" "$v" "$latest"; then
+                tag=(--tag "backport-${v%%.*}")
+              fi
+              (cd "packages/$p" && npm publish --provenance --access public "${tag[@]}")
+            fi
+          done

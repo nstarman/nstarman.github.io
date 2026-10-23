@@ -12,7 +12,6 @@
     "directory": "packages/data-resolver"
   },
   "exports": {
-    ".": "./src/index.js",
     "./*": "./src/*"
   },
   "files": [

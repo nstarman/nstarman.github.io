@@ -95,3 +95,19 @@ describe('a paper’s grants', () => {
     expect(site.softwareUsed([paper]).map((x) => x.id)).toEqual(site.softwareUsed([site.resolve('stream-convexity-spatial')]).map((x) => x.id));
   });
 });
+
+describe('the kit', () => {
+  const pkg = (n) => JSON.parse(fs.readFileSync(`packages/${n}/package.json`, 'utf8'));
+  const KIT = ['data-resolver', 'card-builder', 'collaborator-map', 'research-kit'];
+  it('is one version, its packages depending on each other at exactly it', () => {
+    const v = pkg('research-kit').version;
+    expect(v).toMatch(/^\d{8}\.0\.\d+$/);
+    for (const n of KIT) {
+      expect(pkg(n).version, n).toBe(v);
+      for (const [dep, want] of Object.entries(pkg(n).dependencies ?? {})) {
+        if (dep.startsWith('@nstarkman/')) expect(want, `${n} → ${dep}`).toBe(v);
+      }
+      expect(fs.readFileSync(`packages/${n}/CHANGELOG.md`, 'utf8'), n).toContain(`\n## ${v}\n`);
+    }
+  });
+});

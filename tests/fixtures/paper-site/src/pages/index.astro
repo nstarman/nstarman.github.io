@@ -1,0 +1,9 @@
+---
+import Publication from '@nstarkman/research-kit/Publication.astro';
+import { resolve } from '@nstarkman/research-store';
+
+const item = resolve(process.env.PAPER_SITE_ITEM);
+---
+<main>
+  <Publication item={item} abstract card={process.env.PAPER_SITE_CARD} />
+</main>
