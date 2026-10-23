@@ -1,0 +1,26 @@
+{
+  "name": "@nstarkman/data-resolver",
+  "version": "20261023.0.0",
+  "description": "The nstarkman.space data layer as a store, and the collector a paper site snapshots from.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Nathaniel Starkman",
+  "homepage": "https://nstarkman.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nstarman/nstarman.github.io.git",
+    "directory": "packages/data-resolver"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*"
+  },
+  "files": [
+    "src",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -35,6 +35,10 @@
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
+    "@nstarkman/card-builder": "*",
+    "@nstarkman/collaborator-map": "*",
+    "@nstarkman/data-resolver": "*",
+    "@nstarkman/research-kit": "*",
     "@nstarkman/site-layout": "*",
     "astro": "^7.3.5"
   }
