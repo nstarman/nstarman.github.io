@@ -28,7 +28,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   `config/skills.json`, `config/contributions.json`, `config/collaborators.json`,
   `config/acknowledgements.json`, `config/astropy-voting-members.json`,
   `config/astropy-team-history.json`, `config/places.json`,
-  `config/bibtex-reference.json`, `src/assets/world-equal-earth.json`,
+  `config/bibtex-reference.json`, `packages/collaborator-map/src/world-equal-earth.json`,
   `public/highlights/*` with `highlight.source.sha`, and the publication fields
   `abstract`, `bibcode`, `doi`, `citations` and author `affiliation` in `data/`.
   The site imports them (`src/lib/data.js`, `collabmap.js`, `places.js`,
@@ -171,10 +171,10 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   so the file's formatting is kept. `--dry-run` writes nothing. *Enforced:*
   review.
 - **FR-021** `scripts/build-worldmap.mjs` writes
-  `src/assets/world-equal-earth.json` from Natural Earth 110m land and lakes,
+  `packages/collaborator-map/src/world-equal-earth.json` from Natural Earth 110m land and lakes,
   projected to Equal Earth, 1000 units wide, simplified (Douglas–Peucker 0.7
   land, 0.25 lakes). *Enforced:* review; `tests/confmap.test.js` reads it
-  through `src/lib/worldmap.js`.
+  through `packages/collaborator-map/src/worldmap.js`.
 - **FR-022** `scripts/record-card-layouts.mjs [site]` (needs Playwright and a
   dev server) writes `tests/fixtures/software-cards.json`: each `flagship` and
   `major` package's card measured at widths 200, 280, 400, 640 and 808 px,

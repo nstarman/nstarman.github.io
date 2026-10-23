@@ -1,6 +1,6 @@
 # Cards
 
-**Covers**: `src/components/Card.astro`, `src/lib/cardname.js`, `src/lib/cards.js`,
+**Covers**: `packages/card-builder/` (published as `@nstarkman/card-builder`, see `specs/renderers/spec.md` FR-025), `cards/`, `schema/card.schema.json`, `packages/card-builder/src/Card.astro`, `packages/card-builder/src/cardname.js`, `packages/card-builder/src/cards.js`,
 `src/lib/cardlayout.js`, `src/lib/cardpdf.js`, `src/lib/cardsvg.js`,
 `src/lib/card.typ`, `src/lib/cardbuilder/`, `src/pages/embed/`,
 `src/pages/cards/`, `src/pages/webdev/card.astro`
@@ -17,7 +17,7 @@ rather than a card and is never exported.
 
 ## Requirements
 
-- **FR-001** Every card is `src/components/Card.astro` given a **name**: a string
+- **FR-001** Every card is `packages/card-builder/src/Card.astro` given a **name**: a string
   of `key:value[:subvalue]` parts joined by `-`, in the grammar under
   *Reference*. The name is the card's whole spec. *Enforced:* `tests/cards.test.js`
   ("card names").
@@ -26,19 +26,27 @@ rather than a card and is never exported.
   the optional parts left out. `parseName(formatName(x))` round-trips every value
   of every axis. Lists inside a part are comma-separated, never `+`. *Enforced:*
   `tests/cards.test.js`.
-- **FR-003** `cardFace` (`src/lib/cardname.js`) is the one interpreter of a name:
+- **FR-003** `cardFace` (`packages/card-builder/src/cardname.js`) is the one interpreter of a name:
   every data attribute and custom property the stylesheet reads, and the
   buttons' list in its order, come from it, given the facts `cardFacts`
-  (`src/lib/cards.js`) gathers. `Card.astro` and the embed page both draw from
+  (`packages/card-builder/src/cards.js`) gathers. `Card.astro` and the embed page both draw from
   it. A new axis is a new key there. *Enforced:* `tests/cards.test.js`,
   `tests/cardgroups.test.js`.
 - **FR-004** The website uses only the presets in `SITE_PRESETS`
-  (`src/lib/cards.js`), each named on a page by its key —
+  (`packages/card-builder/src/cards.js`), each named on a page by its key —
   `<Card preset={PRESET.<key>} …>` — never written out. The keys the pages use,
-  plus `TIER_PRESET`'s, are exactly `SITE_PRESETS`'s keys. A card never gets a
+  plus `TIER_PRESET`'s and those the card package's own components name in code
+  (`Publication` draws a paper's highlight card as `paperHighlight` here and `paperSite` on a
+  paper's site), are exactly `SITE_PRESETS`'s keys. A card never gets a
   class of its own for a look: a new look is a new preset. *Enforced:* the
   "presets are exactly the cards the website renders" test in
   `tests/cards.test.js`; review for "never a class of its own".
+- **FR-004a** A paper's own site (syw-site) draws `Publication` with `card="paperSite"`: the
+  research entry's highlight card without the context link (the site is its context). Card choices
+  for an item live in `cards/<id>.json` — a `SITE_PRESETS` key (`preset`) and nothing else; facts stay
+  in `data/` — validated by `schema/card.schema.json`; an item without one gets `paperSite`.
+  *Enforced:* `tests/research-kit.test.js` (every `cards/*.json` valid, naming an existing key and
+  item; a choice reaches the snapshot); `tests/kit/paper-site.test.js`.
 - **FR-005** Each publication, synthesis (`type: "highlight"`) and package has an
   embed page at `/embed/<id>/`, which renders every part and lets
   `?card=<name>` and `?theme=light|dark` choose which show, so one static page
@@ -74,7 +82,7 @@ rather than a card and is never exported.
   `tests/cardbuilder.test.js` ("carries the students' photo face").
 - **FR-010** My position and my students' stamp, the year and the context
   link, placed with buttons that sit under the words or at the bottom, default
-  up and down to the middle of the buttons' row (`placeOf`, `src/lib/cardname.js`) — of their whole box
+  up and down to the middle of the buttons' row (`placeOf`, `packages/card-builder/src/cardname.js`) — of their whole box
   where they wrap to two rows — so the default is written nowhere; `:bottom`
   names the row's foot. Buttons in a side area keep that area's own default.
   On a card with no buttons, a student's photo does not make its line taller.
@@ -103,9 +111,9 @@ rather than a card and is never exported.
 ## Reference
 
 Every card on the site — the software tiers, the research carousels, a
-proceeding under its paper, the Assists, the home page's papers, the CV's software — is `src/components/Card.astro`,
+proceeding under its paper, the Assists, the home page's papers, the CV's software — is `packages/card-builder/src/Card.astro`,
 given a **preset**. A preset's name is its spec: `key:value[:subvalue]` parts
-joined by `-` (`src/lib/cardname.js`) — its size, where its figure and buttons sit, what it
+joined by `-` (`packages/card-builder/src/cardname.js`) — its size, where its figure and buttons sit, what it
 shows, then its look.
 
 ```
@@ -142,14 +150,14 @@ Parts may come in any order, and `figure`, `title`, `area`, `authors`, `extras`,
 Lists are comma-separated — a `+` would read as a space in a URL query.
 
 The website's cards fill their width — a grid sets it — and fit their content, and it uses only
-the presets in `SITE_PRESETS` (`src/lib/cards.js`), each named by its key —
+the presets in `SITE_PRESETS` (`packages/card-builder/src/cards.js`), each named by its key —
 `<Card preset={PRESET.softwareFlagship} …>` — never written out, and a test holds
 the pages to the keys. Never give a card a class of its own for a
 look: a new look is a new preset, and so is available everywhere at once.
 
 What a name makes of an item — every data attribute and custom property the
 stylesheet reads, and the buttons' list in its order — is `cardFace` in
-`src/lib/cardname.js`, given the facts `cardFacts` (`src/lib/cards.js`)
+`packages/card-builder/src/cardname.js`, given the facts `cardFacts` (`packages/card-builder/src/cards.js`)
 gathers. `Card.astro` draws from it, and the embed page runs the same source,
 so a card and its embed cannot disagree; a new axis is a new key there.
 

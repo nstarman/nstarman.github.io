@@ -1,11 +1,12 @@
 # Renderers
 
 **Covers**: `src/pages/` (but `embed/`, `cards/` and `webdev/card.astro`), `packages/site-layout/`,
-`src/lib/data.js`, `src/lib/confmap.js`, `src/lib/collabmap.js`, `src/lib/worldmap.js`,
-`src/lib/places.js`, `src/lib/mentees.js`, `src/lib/bibtex.js`, `src/lib/bibcompare.js`,
+`packages/data-resolver/`, `packages/collaborator-map/`, `packages/research-kit/`, `src/lib/data.js`, `src/lib/confmap.js`, `packages/collaborator-map/src/collabmap.js`, `packages/collaborator-map/src/worldmap.js`,
+`packages/data-resolver/src/places.js`, `packages/data-resolver/src/mentees.js`, `packages/data-resolver/src/bibtex.js`, `src/lib/bibcompare.js`,
 `src/lib/typstcompile.js`, `cv/`, `scripts/publish-data.mjs`, `scripts/build-cv-pdfs.sh`,
 `scripts/test-a11y.mjs`, `scripts/test-links.mjs`, `scripts/test-bibtex.mjs`, `package.json`
-scripts, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`, `.github/workflows/release-site-layout.yml`
+scripts, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`, `.github/workflows/release-site-layout.yml`,
+`.github/workflows/release-research-kit.yml`
 **Status**: Current — describes the system as it is (constitution, Article X).
 
 ## Scope
@@ -23,12 +24,16 @@ snapshots (`specs/refresh/spec.md`).
 
 - **FR-001** `src/lib/data.js` is the one loader: it reads `data/*.json` through Vite's
   `import.meta.glob` (inlined at build) and `data/lists/*.json` into `lists`, and throws on any
-  file not named `<date.start>-<id>.json`. `items` sorts newest first by `date.start` as a
+  file not named `<date.start>-<id>.json`. It builds the **store** —
+  `createStore({ items, lists, config })` of `@nstarkman/data-resolver`
+  (`packages/data-resolver/src/store.js`) over the items and the `config/` snapshots — and
+  exports every name of it, so the site's modules import from `data.js` as they always have, and
+  the card and map packages import the same module as `@nstarkman/research-store` (FR-025). `items` sorts newest first by `date.start` as a
   string, with `status: "in-prep"` ahead of everything. Plain-node scripts read the same files
   through `scripts/lib/items.mjs`. *Enforced:* `tests/data.test.js` ("sorts newest first, with
   work in preparation ahead of it"); importing the loader in `tests/integrity.test.js` is the
   filename check.
-- **FR-002** Display derivations live in `data.js` and nowhere else: `displayName` ("N.
+- **FR-002** Display derivations live in the store (`store.js`, re-exported by `data.js`) and nowhere else: `displayName` ("N.
   Starkman"), `authors()` (truncation that elides to the owner — "J. Nibauer, …, N. Starkman, et
   al." — never past the owner), `authorPosition` (index of the `me` author; `collaboration` takes no
   slot; `authorPosition` overrides), `dateLabel` ("2024 –", "2018 – 2024", "In Prep" for
@@ -111,7 +116,7 @@ snapshots (`specs/refresh/spec.md`).
   People sort by surname. `collabHref(key)` is `/research/?collab=<key>#collaborators`, or null
   for someone not on the map. *Enforced:* `tests/collabmap.test.js`.
 - **FR-014** Both maps project with Equal Earth (`worldmap.js`) onto a committed outline
-  (`src/assets/world-equal-earth.json`), inline SVG with no tiles, separate coincident pins with
+  (`packages/collaborator-map/src/world-equal-earth.json`), inline SVG with no tiles, separate coincident pins with
   `spread`, and colour by `hueFor` (golden angle). *Enforced:* `tests/collabmap.test.js`
   ("the Equal Earth projection", "agrees with the published formula").
 
@@ -165,20 +170,49 @@ snapshots (`specs/refresh/spec.md`).
   publishing and provenance, no token, refusing a tag that differs from the version. *Enforced:*
   `tests/site-layout.test.js` (imports, exports, packed files, version and changelog, and a fixture
   site built under `base: '/demo'`); `.github/workflows/release-site-layout.yml`.
+- **FR-025** A paper's own site (syw-site) draws the paper's entry, card and collaborator map with this
+  site's own code through four packages released together at one version, `YYYYMMDD.0.N`:
+  `@nstarkman/data-resolver` (the store; `collect`; readers), `@nstarkman/card-builder` (`Card`,
+  `Publication` and the parts they draw with, the card-name interpreter and `SITE_PRESETS`, `maths`),
+  `@nstarkman/collaborator-map` (`CollabMap`, its geometry, the conference maps' shared `worldmap`,
+  `mappick`, `mapzoom` and `map.css`), and `@nstarkman/research-kit`, which depends on the three at
+  exactly its version and re-exports their entry points. This site imports them from
+  `packages/` (npm workspace). Their components read data only from `@nstarkman/research-store`, which
+  the consumer aliases to a module exporting a store's names (here `src/lib/data.js`) and loads
+  through Vite (`ssr.noExternal: [/^@nstarkman\//]`). The data modules the card and map read —
+  `mentees`, `places`, `inline`, `bibtex`, `urls` (`siteHref`) — are in `data-resolver`;
+  `card-builder` depends on `collaborator-map` too, for the byline's links to a co-author on the map.
+  *Enforced:* `tests/research-kit.test.js` (one version, exact dependencies, changelog sections);
+  `tests/kit/paper-site.test.js` (FR-026).
+- **FR-026** `collect(id, reader)` returns a paper's **snapshot** (schema 1): the item and the items
+  reached from it — its `refs` (software and each package's own papers, grants, highlights) and the
+  mentees on its authors — as they are in `data/` without `internal`, the `config/` slices they use
+  (collaborators who are its co-authors, the places they need, its journals, its packages' stars), the
+  `cards/<id>.json` choice (default `paperSite`), and `source` (repository, ref, commit). `fromDisk(root)`
+  and `fromGitHub({ repo, ref })` (one tree listing, then raw files of that commit) read the same files.
+  A store built from a snapshot gives the site's own answers for the item. *Enforced:*
+  `tests/research-kit.test.js` (every card item: disk ≡ GitHub; snapshot store ≡ site store; a missing
+  file named with what referred to it); `tests/kit/paper-site.test.js` (a fixture site with only
+  research-kit and a snapshot draws `stream-convexity-rate`'s entry exactly as `/publications/` does,
+  and `paperSite` without the context link).
+- **FR-027** A tag `research-kit-v<version>` publishes the four packages, in dependency order, with
+  trusted publishing and provenance and no token, refusing a tag that differs from any package's
+  version and skipping a version already on npm; a backport is published under `backport-<date>` so
+  `latest` stays the newest. *Enforced:* `.github/workflows/release-research-kit.yml`.
 - **FR-021** A hosted repo never takes a top-level path this site uses (Article III; see
   *Reference*). *Enforced:* review — no test lists the paths.
 
 ### Gates
 
-- **FR-022** `npm test` runs `test:unit` (all of `tests/**/*.test.js`, which includes
-  `test:schema`'s two files), `test:bibtex`, `build`, `test:a11y`, `test:links`, stopping at the
-  first failure. `test:a11y` fails on any `<a>` without `href`, or `<a>`, `<button>` or `<h1–6>`
+- **FR-022** `npm test` runs `test:unit` (all of `tests/**/*.test.js` but `tests/kit/`, which includes
+  `test:schema`'s two files), `test:bibtex`, `build`, `test:kit` (`tests/kit/`, which compares with the
+  build), `test:a11y`, `test:links`, stopping at the first failure. `test:a11y` fails on any `<a>` without `href`, or `<a>`, `<button>` or `<h1–6>`
   in `dist/` without an accessible name (text, `aria-label`, `aria-labelledby`, `img alt`, `svg
   title`; `title` alone fails). `test:links` fails on a site-absolute href, cross-page or in-page
   anchor that does not resolve in `dist/`, a duplicate `id` on a page, or a page or entry anchor
   `/embed/index.json` names that is missing. *Enforced:* `package.json`; the scripts.
 - **FR-023** CI (`ci.yml`, every pull request and push to `main`) runs, in order: "Design notes
-  stay on their branch", `test:unit`, `test:schema` and `test:bibtex`, `build`, `test:a11y`,
+  stay on their branch", `test:unit`, `test:schema` and `test:bibtex`, `build`, `test:kit`, `test:a11y`,
   `build:pdf`, `test:links` (after the PDFs, so their links are checked), then uploads `dist/`.
   On a pull request, `preview` deploys that artifact to Cloudflare Pages (without `CNAME` and
   files over 25 MiB) and comments the URL; with no secrets it passes without deploying. **CI

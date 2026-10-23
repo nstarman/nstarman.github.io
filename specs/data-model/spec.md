@@ -1,7 +1,7 @@
 # Data model
 
 **Covers**: `data/`, `data/lists/`, `schema/item.schema.json`, `schema/list.schema.json`,
-`schema/invalid/`, `src/lib/data.js` (the loader), `src/lib/mentees.js`,
+`schema/invalid/`, `src/lib/data.js` (the loader; the store is `packages/data-resolver/src/store.js`), `packages/data-resolver/src/mentees.js`,
 `config/places.json`, `config/journals.json`
 **Status**: Current — describes the system as it is (constitution, Article X).
 
@@ -65,8 +65,10 @@ fetched fields (`specs/refresh/spec.md`).
   *Enforced:* the schema (`unknown-link-rel.json`); review for the renderers.
 - **FR-011** `refs` are bare ids of other items, and every one resolves. A media
   entry refs the paper it covered; a talk the paper it presented; a paper the
-  packages of mine it used, its main package first; a package its own paper.
-  *Enforced:* `tests/integrity.test.js` ("resolves every ref").
+  packages of mine it used, its main package first, and the `grant`s that funded it
+  (a paper's site lists them as its funding; nothing here changes for them); a package
+  its own paper. *Enforced:* `tests/integrity.test.js` ("resolves every ref");
+  `tests/research-kit.test.js` (a paper's grants).
 - **FR-012** Prose fields may link another item as `[text](item:<id>)`, and every
   such target resolves. *Enforced:* `tests/integrity.test.js` ("resolves every
   [text](item:id) cross-link").

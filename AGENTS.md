@@ -162,7 +162,7 @@ npm run validate     # every data file against the schema — the quick one
 npm test             # everything CI runs, below
 ```
 
-`npm test` is six gates (`test:schema`'s files run inside `test:unit`), and CI runs all of them on **every** pull request
+`npm test` is seven gates (`test:schema`'s files run inside `test:unit`), and CI runs all of them on **every** pull request
 whatever it touched:
 
 | | |
@@ -171,6 +171,7 @@ whatever it touched:
 | `test:schema` | the schema, `<date.start>-<id>.json` filenames, refs, cross-links, and the bad fixtures still being rejected |
 | `test:bibtex` | one entry per publication, braces balanced, maths in abstracts intact, each paper with a `bibcode` compared field by field against the ADS export in `config/bibtex-reference.json` |
 | `build` | the site compiles |
+| `test:kit` | a paper site built from a snapshot with only `@nstarkman/research-kit` draws an entry as `/publications/` does |
 | `test:a11y` | every heading and link has an accessible name |
 | `test:links` | every internal href, anchor and asset in `dist/` resolves |
 
@@ -287,6 +288,28 @@ The first version was published by hand (`npm publish --access public` from
 `packages/site-layout`, as `nstarkman` on npm), since npm can trust a workflow
 only for a package that exists; the workflow skips a version already on npm,
 so that version's tag passes.
+
+### A paper's own site: research-kit
+
+A paper's site (made with [syw-site](https://github.com/nstarman/syw-site)) opens with the paper's
+entry as `/publications/` draws it — without the context link — and shows its co-authors on a
+collaborator map, its grants and its software. It draws them with this site's own code, from
+`@nstarkman/research-kit`: four packages in `packages/` released together at one version —
+`data-resolver` (the store `src/lib/data.js` builds, `collect`, readers), `card-builder` (`Card`,
+`Publication`, the card-name interpreter, `SITE_PRESETS`), `collaborator-map` (`CollabMap`, the map
+geometry), and `research-kit`, which re-exports them. Their components read data from
+`@nstarkman/research-store`, which `astro.config.mjs` points at `src/lib/data.js`; a paper site points
+it at a store built from its snapshot (`collect(id, fromGitHub(…))`: the item, what its `refs` reach,
+the `config/` slices they use). Never import `src/lib/data.js` from a package.
+
+For a paper's site: list its grants in the paper's `refs` (its funding), and put a card choice — a
+`SITE_PRESETS` key, nothing else — in `cards/<id>.json` only if it should not be `paperSite`.
+
+**Releasing the kit**: the four `package.json`s share one version, `YYYYMMDD.0.N`, each with a
+`CHANGELOG.md` section (a test holds them together). Merge, tag the merge commit
+`research-kit-v<version>` and push; `release-research-kit.yml` publishes all four, in dependency order,
+with trusted publishing. Fixes are backported on `versions/research-kit-v<YYYYMMDD>.x`, like the layout's.
+The first version of each was published by hand, as for the layout.
 
 It is found from here as any software is: a `software` item in `data/`, its
 page linked with an absolute `https://nstarkman.space/<repo>/` URL — a
