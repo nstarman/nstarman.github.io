@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { cvModel, rowOf } from '../src/lib/cvmodel.js';
-import { lineTier } from '../src/lib/inline.js';
+import { lineTier } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 const complete = cvModel('complete');

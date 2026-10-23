@@ -1,5 +1,5 @@
 // Smoke test for lib/bibtex.js. Reads data/ directly so it runs without Astro.
-import { toBibtex, toBibliography } from '../src/lib/bibtex.js';
+import { toBibtex, toBibliography } from '@nstarkman/data-resolver/bibtex.js';
 import fs from 'node:fs';
 import { compareToArchive } from '../src/lib/bibcompare.js';
 import { isPreprintBibcode } from './lib/ads.mjs';

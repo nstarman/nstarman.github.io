@@ -16,18 +16,20 @@
     "validate": "node scripts/validate.mjs schema/item.schema.json \"data/*.json\"",
     "test:schema": "vitest run tests/schema.test.js tests/integrity.test.js",
     "test:bibtex": "node scripts/test-bibtex.mjs",
-    "test": "npm run test:unit && npm run test:bibtex && npm run build && npm run test:a11y && npm run test:links",
+    "test": "npm run test:unit && npm run test:bibtex && npm run build && npm run test:kit && npm run test:a11y && npm run test:links",
     "build:pdf": "bash scripts/build-cv-pdfs.sh",
     "build:all": "npm run build && npm run build:pdf",
     "test:a11y": "node scripts/test-a11y.mjs",
     "test:unit": "vitest run",
-    "test:links": "node scripts/test-links.mjs"
+    "test:links": "node scripts/test-links.mjs",
+    "test:kit": "VITEST_KIT=1 vitest run tests/kit"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
     "fast-check": "^4.10.2",
     "harfbuzzjs": "^1.6.3",
     "playwright": "^1.63.0",
+    "semver": "7.8.5",
     "sharp": "^0.35.5",
     "temml": "^0.13.5",
     "vitest": "^5.0.2"
@@ -35,6 +37,10 @@
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
+    "@nstarkman/card-builder": "*",
+    "@nstarkman/collaborator-map": "*",
+    "@nstarkman/data-resolver": "*",
+    "@nstarkman/research-kit": "*",
     "@nstarkman/site-layout": "*",
     "astro": "^7.3.5"
   }

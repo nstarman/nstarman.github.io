@@ -10,10 +10,10 @@
 // so this applies it before the first paint; with no query it shows the
 // item's default card. A name it cannot read leaves that default in place.
 import Embed from '../../layouts/Embed.astro';
-import Card from '../../components/Card.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
 import { items } from '../../lib/data.js';
-import { CARD_TYPES, defaultSlug, cardFacts } from '../../lib/cards.js';
-import { parseName, placeOf, cardFace } from '../../lib/cardname.js';
+import { CARD_TYPES, defaultSlug, cardFacts } from '@nstarkman/card-builder/cards.js';
+import { parseName, placeOf, cardFace } from '@nstarkman/card-builder/cardname.js';
 
 export const getStaticPaths = () =>
   items.filter((i) => CARD_TYPES.includes(i.type)).map((item) => ({ params: { id: item.id }, props: { item } }));

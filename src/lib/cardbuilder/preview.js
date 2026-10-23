@@ -8,7 +8,7 @@
 // (see builder.js) — its form, state and the few methods these call back.
 
 import previewCss from '../../styles/card-builder-preview.css?raw';
-import { FIGURE_SLOTS } from '../cardname.js';
+import { FIGURE_SLOTS } from '@nstarkman/card-builder/cardname.js';
 import { inBox } from './model.js';
 import { cellGrid, partZones, venueDrops } from './geometry.js';
 import { drag, shownIn } from './dom.js';

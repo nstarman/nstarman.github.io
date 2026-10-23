@@ -1,9 +1,11 @@
 // Which cards exist, and what the website uses. A card's name — its spec — is
 // src/lib/cardname.js; this adds what needs the database: the website's
 // presets, an item's default card, and its links and extras.
-import starCounts from '/config/stars.json';
-import { menteeById, menteeName, profileHref } from './mentees.js';
-import { links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from './data.js';
+import { menteeById, menteeName, profileHref } from '@nstarkman/data-resolver/mentees.js';
+import { siteHref } from '@nstarkman/data-resolver/urls.js';
+
+export { siteHref };
+import { config, links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from '@nstarkman/research-store';
 
 export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
 
@@ -23,6 +25,9 @@ export const SITE_PRESETS = [
   { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-students:photo-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
   // Its figure is no link: on /publications/ that would be to itself.
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
+  // A paper's own site (syw-site, at nstarkman.space/<repo>/) opens with its entry as
+  // /publications/ draws it, but without the context link: the site is its context.
+  { key: 'paperSite', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:none-buttons:none-look:background=light', where: 'Paper sites — the paper’s highlight, under its entry' },
   { key: 'assist', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
   // A row of a list, not a box: no tint and no padding, its link the paper's.
   { key: 'home', slug: 'size:fill:fit-figure:none-title:full:split:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
@@ -107,7 +112,7 @@ export const STARS_MIN = 40;
  *  Card Builder — where `every` asks for every link a card could show.
  *  config/stars.json is refreshed monthly, so the number is a month old at worst. */
 function starLink(item, every) {
-  const n = item.repo && starCounts.stars[item.repo];
+  const n = item.repo && config.stars.stars[item.repo];
   if (n == null || (n < STARS_MIN && !every)) return [];
   return [{ rel: 'stars', label: `${starLabel(n)} stars`, count: starLabel(n), url: `https://github.com/${item.repo}/stargazers`, ...(n < STARS_MIN && { optional: true }) }];
 }
@@ -163,12 +168,6 @@ export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/
 /** title:…:journal — where it was published: the journal's own page, or its
  *  DOI, once it is out. */
 export const journalHref = (item) => (item.type === 'publication' ? venueUrl(item) : null);
-
-/** Where it links with title:…:site — the item's entry on this site, where
- *  it has one: a paper on /publications/ (an in-prep one is not listed), a
- *  package on /software/, a synthesis on /research/. */
-export const siteHref = (item) => (item.type === 'publication' ? (item.status !== 'in-prep' ? `/publications/#pub-${item.id}` : null)
-  : item.type === 'software' ? `/software/#sw-${item.id}` : item.type === 'highlight' ? `/research/#hl-${item.id}` : null);
 
 /** Where a click on an exported image of the card should go, and a
  *  research card's title: the paper, else its first link. */

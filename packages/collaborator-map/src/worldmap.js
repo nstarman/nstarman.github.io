@@ -8,7 +8,7 @@
 // Inline SVG on a committed Equal Earth outline — no tiles, so no third party
 // sees a visitor's viewport, and the whole thing works offline.
 
-import world from '../assets/world-equal-earth.json';
+import world from './world-equal-earth.json';
 
 export const map = {
   width: world.width, height: world.height,

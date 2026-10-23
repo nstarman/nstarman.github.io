@@ -1,0 +1,34 @@
+{
+  "name": "@nstarkman/collaborator-map",
+  "version": "20261023.0.0",
+  "description": "The nstarkman.space collaborator map, drawn from a research store.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Nathaniel Starkman",
+  "homepage": "https://nstarkman.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nstarman/nstarman.github.io.git",
+    "directory": "packages/collaborator-map"
+  },
+  "keywords": [
+    "astro-component"
+  ],
+  "exports": {
+    "./*": "./src/*"
+  },
+  "files": [
+    "src",
+    "CHANGELOG.md"
+  ],
+  "peerDependencies": {
+    "astro": "^7"
+  },
+  "dependencies": {
+    "@nstarkman/data-resolver": "20261023.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

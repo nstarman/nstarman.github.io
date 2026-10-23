@@ -5,10 +5,10 @@
 // SAO and the CfA — is written `{ "sameAs": "<other name>" }` instead of
 // repeating coordinates, so the two can never drift apart.
 
-import data from '/config/places.json';
+import { config } from '@nstarkman/research-store';
 
 /** `{ lat, lon }` for a place name, or undefined when it is not placed. */
 export function locate(name) {
-  const p = data.places[name];
-  return p?.sameAs ? data.places[p.sameAs] : p;
+  const p = config.places.places[name];
+  return p?.sameAs ? config.places.places[p.sameAs] : p;
 }

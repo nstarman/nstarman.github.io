@@ -2,7 +2,7 @@
 // Prose with its [text](url) links as links — the HTML half of lib/inline.js.
 // Pass `spans` already split, or `text` (and `base`, for `item:` targets) to
 // split here.
-import { spans as split } from '../lib/inline.js';
+import { spans as split } from '@nstarkman/data-resolver/inline.js';
 
 const { spans, text, base = '' } = Astro.props;
 const parts = spans ?? split(text, base);

@@ -10,10 +10,10 @@
 //
 // Slots: `corner` goes first in the card (the CV's source mark), `name` before
 // the title (the CV builder's tick box).
-import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, HIGHLIGHT_TOPICS } from '../lib/data.js';
-import { studentStamp, cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref, paperHref, hasContext, titleStatus, AUTHORS_MAX } from '../lib/cards.js';
-import { parseName, cardFace } from '../lib/cardname.js';
-import { ordinal, plain } from '../lib/inline.js';
+import { authors, year, links, resolve, authorPosition, softwarePapers, titleOf, splitTitle, HIGHLIGHT_TOPICS } from '@nstarkman/research-store';
+import { studentStamp, cardLinks, cardText, cardFacts, ownLink, siteHref, adsHref, journalHref, paperHref, hasContext, titleStatus, AUTHORS_MAX } from './cards.js';
+import { parseName, cardFace } from './cardname.js';
+import { ordinal, plain } from '@nstarkman/data-resolver/inline.js';
 import LinkIcon from './LinkIcon.astro';
 import ButtonList from './ButtonList.astro';
 import Inline from './Inline.astro';

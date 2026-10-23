@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nstarkman.space/schema/card.schema.json",
+  "title": "A card choice: what data/ does not say about how an item's card is drawn elsewhere",
+  "description": "cards/<id>.json, read by @nstarkman/data-resolver's collect() for a paper site. Facts never go here — they are in data/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["preset"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "preset": { "type": "string", "description": "A SITE_PRESETS key (packages/card-builder/src/cards.js)." }
+  }
+}

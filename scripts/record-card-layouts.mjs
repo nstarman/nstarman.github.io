@@ -37,13 +37,13 @@ for (const { id } of tiers) {
       // applies it before the first paint.
       const slug = await page.evaluate(async ({ id, width }) => {
         const { items } = await import('/src/lib/data.js');
-        const { SITE_PRESETS, TIER_PRESET, atWidth } = await import('/src/lib/cards.js');
+        const { SITE_PRESETS, TIER_PRESET, atWidth } = await import('/packages/card-builder/src/cards.js');
         return atWidth(SITE_PRESETS.find((p) => p.key === TIER_PRESET[items.find((i) => i.id === id).tier]).slug, width);
       }, { id, width });
       await page.goto(`${site}/embed/${id}/?card=${encodeURIComponent(slug)}&theme=${theme}`, { waitUntil: 'networkidle' });
       const r = await page.evaluate(async ({ id, slug }) => {
         const { items } = await import('/src/lib/data.js');
-        const { parseName, cardFace, cardFacts } = await import('/src/lib/cards.js');
+        const { parseName, cardFace, cardFacts } = await import('/packages/card-builder/src/cards.js');
         const { softwareInput } = await import('/src/lib/cardlayout.js');
         const { measureCard } = await import('/src/lib/cardpdf.js');
         const item = items.find((i) => i.id === id);

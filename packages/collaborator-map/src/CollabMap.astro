@@ -7,8 +7,8 @@
 // The list underneath is not a fallback: it is the same data in the form a
 // screen reader, a keyboard, or a small phone can actually use, and it is where
 // the paper titles live in full.
-import '../styles/map.css';
-import { collaboratorMap, lastFirst, map } from '../lib/collabmap.js';
+import './map.css';
+import { collaboratorMap, lastFirst, map } from './collabmap.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins.map((pin) => ({ ...pin, person: p })));
@@ -143,8 +143,8 @@ const label = (pin) =>
 </figure>
 
 <script>
-  import { wireAll } from '../lib/mappick.js';
-  import { wireZoom } from '../lib/mapzoom.js';
+  import { wireAll } from './mappick.js';
+  import { wireZoom } from './mapzoom.js';
   wireAll();
   wireZoom();
 </script>

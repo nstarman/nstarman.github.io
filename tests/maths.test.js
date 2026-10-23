@@ -3,7 +3,7 @@
 // abstracts are pasted from ADS, which is where the undelimited kind comes from.
 
 import { describe, expect, it } from 'vitest';
-import { mathParts } from '../src/lib/maths.js';
+import { mathParts } from '@nstarkman/card-builder/maths.js';
 import { byType } from '../src/lib/data.js';
 
 const text = (parts) => parts.map((p) => (p.maths ? '⟨maths⟩' : p.text)).join('');

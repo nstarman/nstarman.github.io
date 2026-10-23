@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_ZOOM, inView, viewFor, zoomAbout } from '../src/lib/mapzoom.js';
+import { MAX_ZOOM, inView, viewFor, zoomAbout } from '@nstarkman/collaborator-map/mapzoom.js';
 
 const W = 1000;
 const H = 500;

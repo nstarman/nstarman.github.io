@@ -10,9 +10,9 @@
 // the page then renders plain numbers, and the arithmetic is testable without
 // a DOM.
 
-import { collaboratorMap, lastFirst } from './collabmap.js';
+import { collaboratorMap, lastFirst } from '@nstarkman/collaborator-map/collabmap.js';
 
-export { map } from './collabmap.js';
+export { map } from '@nstarkman/collaborator-map/collabmap.js';
 
 /** One dot per place per person, one trail per person who moved, and the paper
  *  ids each person shares with me — the three things the gutter map draws.

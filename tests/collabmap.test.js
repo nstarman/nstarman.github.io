@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { collaboratorMap, collabHref, postsOf, meets, lastFirst, project, toXY, map, MAX_PIN_DRIFT, KM_PER_UNIT, MAX_DRIFT_MILES }
-  from '../src/lib/collabmap.js';
+  from '@nstarkman/collaborator-map/collabmap.js';
 
 import places from '../config/places.json';
-import { mentees, menteeKey } from '../src/lib/mentees.js';
+import { mentees, menteeKey } from '@nstarkman/data-resolver/mentees.js';
 
 const people = collaboratorMap();
 const pins = people.flatMap((p) => p.pins);

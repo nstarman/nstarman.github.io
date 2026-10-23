@@ -1,11 +1,11 @@
 ---
-import { PRESET } from '../lib/cards.js';
+import { PRESET } from '@nstarkman/card-builder/cards.js';
 import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
-import Card from '../components/Card.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
 import SoftwareSection from '../components/SoftwareSection.astro';
 import { byType, featured, dateLabel, institutionGroups, groupDate } from '../lib/data.js';
-import { lines as longLines } from '../lib/inline.js';
-import Inline from '../components/Inline.astro';
+import { lines as longLines } from '@nstarkman/data-resolver/inline.js';
+import Inline from '@nstarkman/card-builder/Inline.astro';
 import portrait from '../../cv/assets/portrait.jpg';
 import person from '/config/person.json';
 

@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import { items } from '../src/lib/data.js';
-import { locate } from '../src/lib/places.js';
+import { locate } from '@nstarkman/data-resolver/places.js';
 
 const ids = new Set(items.map((i) => i.id));
 

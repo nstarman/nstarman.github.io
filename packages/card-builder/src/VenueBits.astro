@@ -4,8 +4,8 @@
 // yet is placed by its arXiv number, as on /publications/. The card sets
 // them on their own line and again after the authors, and shows one.
 import Venue from './Venue.astro';
-import { venueLine, year } from '../lib/data.js';
-import { hasStatus } from '../lib/cards.js';
+import { venueLine, year } from '@nstarkman/research-store';
+import { hasStatus } from './cards.js';
 
 const { item, link = true } = Astro.props;
 ---

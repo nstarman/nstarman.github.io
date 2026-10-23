@@ -97,7 +97,7 @@ fs.writeFileSync(OUT, `${JSON.stringify({
     + 'thought it found — check it before trusting a pin. Safe to correct by hand: the '
     + 'script only fills in what is missing. '
     + 'A name that is the same campus as another is `{ "sameAs": "<other name>" }` rather than a '
-    + 'second copy of the coordinates; read places through src/lib/places.js. Keep one entry per '
+    + 'second copy of the coordinates; read places through packages/data-resolver/src/places.js. Keep one entry per '
     + 'campus: tests/places.test.js fails on two entries with the same coordinates.',
   source: 'https://nominatim.openstreetmap.org (ODbL)',
   places: Object.fromEntries(Object.entries(places).sort(([a], [b]) => a.localeCompare(b))),

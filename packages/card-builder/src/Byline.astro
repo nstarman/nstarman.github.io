@@ -8,7 +8,7 @@
 // unlinked, as a card does, keeping each one's two links in data-orcid and
 // data-site for the embed page; links="orcid" links each to their ORCID
 // alone, links="site" to their entry on the collaborator map alone.
-import { collabHref } from '../lib/collabmap.js';
+import { collabHref } from '@nstarkman/collaborator-map/collabmap.js';
 
 const { shown, links = true } = Astro.props;
 const href = (a) => (links === 'orcid' ? a.url : links === 'site' ? collabHref(a.orcid) : links ? collabHref(a.orcid) ?? a.url : null);

@@ -4,7 +4,7 @@
 import { items } from '../../lib/data.js';
 import {
   LOOKS, DIALS, PAPER_TO, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TEXTS, TITLES, AUTHORS, AUTHORS_MAX, FACES, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, SITE_PRESETS, CARD_TYPES, defaultSlug, hasFigure, linkKeys, embedHref, siteHref,
-} from '../../lib/cards.js';
+} from '@nstarkman/card-builder/cards.js';
 
 export function GET({ site }) {
   const abs = (p) => new URL(p, site).href;

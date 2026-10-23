@@ -1,18 +1,18 @@
 ---
 // Renders a resolved preset. Shared by /cv/ and /cv/<preset>/ so the two can
 // never drift.
-import { PRESET } from '../lib/cards.js';
+import { PRESET } from '@nstarkman/card-builder/cards.js';
 import '../styles/cv/page.css';
 import '../styles/cv/minimap.css';
 import CvHeader from './CvHeader.astro';
 import { softwarePapers, positionStops, institutionGroups, groupedByDefault, groupDate, groupTitle, links, REL_ICON, relKey, dateLabel } from '../lib/data.js';
-import { detailLines, achievementLines, achievementCvs } from '../lib/inline.js';
+import { detailLines, achievementLines, achievementCvs } from '@nstarkman/data-resolver/inline.js';
 import CollabMini from './CollabMini.astro';
 import ConfMini from './ConfMini.astro';
-import Inline from './Inline.astro';
+import Inline from '@nstarkman/card-builder/Inline.astro';
 import CvToc from './CvToc.astro';
 import CvTimelineItem from './CvTimelineItem.astro';
-import Card from './Card.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
 import CvFmtRow from './CvFmtRow.astro';
 
 // Worth offering only when it splits the section: if every package has a

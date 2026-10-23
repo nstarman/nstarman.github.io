@@ -1,7 +1,7 @@
 // The Card Builder's saved settings: the card's name, the theme and the
 // format — never the item — as JSON, to keep or to load onto another item.
 
-import { formatName, parseName } from '../cardname.js';
+import { formatName, parseName } from '@nstarkman/card-builder/cardname.js';
 
 export const THEMES = ['auto', 'light', 'dark'];
 export const FORMATS = ['iframe', 'html', 'markdown', 'png', 'pdf', 'svg'];

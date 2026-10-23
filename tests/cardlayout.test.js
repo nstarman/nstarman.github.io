@@ -18,7 +18,7 @@ import { BUTTON_MIN, REM, FEATURE, TOKENS, lengths, lineBox, lineHeight, chromeS
 import { measure } from '../src/lib/textmeasure.js';
 import { modelToSvg } from '../src/lib/cardsvg.js';
 import { softwareCards, THEMES, drawCard, cardFile } from '../src/lib/softwarecards.js';
-import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth, parseName, cardFace, cardFacts, cardLinks, linkKeys, LOOKS } from '../src/lib/cards.js';
+import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth, parseName, cardFace, cardFacts, cardLinks, linkKeys, LOOKS } from '@nstarkman/card-builder/cards.js';
 import { items } from '../src/lib/data.js';
 import { syncKey, cardRules } from '../scripts/lib/cardsync.mjs';
 

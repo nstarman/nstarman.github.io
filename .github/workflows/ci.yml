@@ -61,6 +61,11 @@ jobs:
       - name: Build the site
         run: npm run build
 
+      # a paper site built from a snapshot with only @nstarkman/research-kit draws
+      # an entry as /publications/ does — so it compares with this build
+      - name: research-kit
+        run: npm run test:kit
+
       # every heading and link on every page has an accessible name
       - name: Accessibility
         run: npm run test:a11y

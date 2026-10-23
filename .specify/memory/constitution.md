@@ -93,7 +93,7 @@ network service" — no check exists.
 
 ### IX. Gates are mandatory
 
-The six `npm test` gates and the CV page counts pass; **CI Pass** is required
+The `npm test` gates (`specs/renderers/spec.md`, FR-022) and the CV page counts pass; **CI Pass** is required
 to merge; one item per data PR; non-trivial logic leaves a test.
 
 *Enforced:* `.github/workflows/ci.yml` and the repository ruleset requiring
@@ -125,4 +125,4 @@ is not used to amend it, since it rewrites from Spec Kit's template and its own
 versioning rule. The footer records the version, ratification date and the
 pinned Spec Kit tag.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19 | **Spec Kit**: v1.1.0
+**Version**: 2.0.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-23 | **Spec Kit**: v1.1.0

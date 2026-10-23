@@ -5,8 +5,8 @@
 // pure functions over arrays so the tests need no data; the wrappers at the
 // bottom hand them the database.
 
-import { byType, resolve, titleOf } from './data.js';
-import { siteHref } from './cards.js';
+import { byType, resolve, titleOf } from '@nstarkman/research-store';
+import { siteHref } from './urls.js';
 import { spans } from './inline.js';
 
 // Partial dates compare correctly as strings: "2026-04" > "2026" > "2025-07",

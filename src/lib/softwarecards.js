@@ -3,7 +3,7 @@
 // tests, so the list and the drawing are written once. Node only (it
 // measures text from the font files).
 import { items } from './data.js';
-import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth } from './cards.js';
+import { SITE_PRESETS, TIER_PRESET, CARD_SVG_WIDTH, CARD_WIDE, atWidth } from '@nstarkman/card-builder/cards.js';
 import { softwareInput, softwareModel } from './cardlayout.js';
 import { modelToSvg } from './cardsvg.js';
 import { measure } from './textmeasure.js';

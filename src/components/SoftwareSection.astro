@@ -2,11 +2,11 @@
 // /software/ is in areas — SOFTWARE_GROUPS, each with its introduction — and
 // within an area, tiers: the lead package, the headliners as cards, then the
 // rest and the utilities ever smaller. Area and tier both come from the data.
-import { PRESET } from '../lib/cards.js';
+import { PRESET } from '@nstarkman/card-builder/cards.js';
 import { byType, softwarePapers, SOFTWARE_GROUPS } from '../lib/data.js';
-import { spans } from '../lib/inline.js';
+import { spans } from '@nstarkman/data-resolver/inline.js';
 import contributions from '/config/contributions.json';
-import Card from './Card.astro';
+import Card from '@nstarkman/card-builder/Card.astro';
 
 // The landing page shows the lead and the headliners only, with no areas;
 // the rest is what "All software →" is for.

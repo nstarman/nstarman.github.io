@@ -8,7 +8,7 @@
 // Spans, not HTML: the same model feeds the website and the Typst CV, and only
 // one of those understands markup.
 
-import { dateLabel } from './data.js';
+import { dateLabel } from '@nstarkman/research-store';
 import { sortAchievements } from './mentees.js';
 
 // `[text](https://…)` for the web, and `[text](item:some-id)` to point at
