@@ -13,11 +13,12 @@
   "title": "Charlotte Myers (MIT) with Prof. Lina Necib (MIT)",
   "details": [
     "Physics-Informed Neural Networks for Modeling Galactic Gravitational Potentials",
-    "[NeurIPS Workshop Paper](item:pinns-neurips)"
+    "First-author papers: a [NeurIPS workshop paper](item:pinns-neurips) and a [paper submitted to The Astrophysical Journal](item:pinns-mnras)"
   ],
   "student": "Charlotte Myers (MIT) with Prof. Lina Necib (MIT)",
   "refs": [
-    "pinns-neurips"
+    "pinns-neurips",
+    "pinns-mnras"
   ],
   "coSupervisors": [
     "Prof. Lina Necib (MIT)"
