@@ -202,6 +202,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       columns: s.columns,
       detail: s.detail,
       dropped: s.dropped,
+      tally: s.tally ?? null,
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
       // Submitted / Accepted / Published, as the LaTeX CV does.

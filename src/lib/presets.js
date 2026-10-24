@@ -20,8 +20,9 @@ import { items, lists } from './data.js';
 const SERVICES = person.profiles.map((p) => (p.service ?? p.label).toLowerCase());
 export const CARD_PARTS = ['portrait', 'address', 'email', 'website', ...SERVICES, 'qr'];
 /** The card's links in the order they print, "/" breaking the line: the email
- *  and the website sharing one and the profiles the next. */
-export const cardOrder = () => ['email', 'website', '/', ...SERVICES];
+ *  and the website sharing one and the profiles the next — or, on US Letter,
+ *  the email and the website a line each, since at 12pt they do not fit one. */
+export const cardOrder = (letter) => ['email', ...(letter ? ['/'] : []), 'website', '/', ...SERVICES];
 
 const asArray = (v) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);
 
@@ -68,7 +69,25 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [], location = {} } = {}) {
+/**
+ * A publication list's headline numbers, for a section with `"tally": true`:
+ * how many papers, how many still submitted, how many I wrote first, and how
+ * many a student I supervised led. No h-index: the records' citations count
+ * only what ADS finds, and any one h-index reads low against another source's.
+ * Counted from the records rather than typed, so it cannot fall behind the
+ * list beneath it.
+ */
+export function tally(pubs) {
+  const lead = (p) => p.authors?.[0] ?? {};
+  return {
+    total: pubs.length,
+    submitted: pubs.filter((p) => p.status === 'submitted').length,
+    first: pubs.filter((p) => lead(p).me).length,
+    student: pubs.filter((p) => lead(p).mentee).length,
+  };
+}
+
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {} } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -149,6 +168,8 @@ export function resolve(name, only, { prefix = {}, order = [], location = {} } =
       page: section.page ?? null,
       items: picked,
       dropped, // surfaced rather than silently truncated
+      // The builder's say, by section id, before the preset's.
+      tally: (tallied[section.id] ?? section.tally) ? tally(picked) : null,
     };
   });
 
@@ -156,9 +177,10 @@ export function resolve(name, only, { prefix = {}, order = [], location = {} } =
     name,
     label: spec.label,
     detail: spec.detail,
-    // What the PDF's card shows, part by part.
+    // What the PDF's card shows, part by part. Its links' order only where the
+    // preset sets one: otherwise the template's, which follows the page.
     card: { ...Object.fromEntries(CARD_PARTS.map((k) => [k, spec.card?.[k] ?? true])),
-            order: spec.card?.order ?? cardOrder() },
+            ...(spec.card?.order ? { order: spec.card.order } : {}) },
     // The CV that takes every item is also the one that says every line, so it
     // is what `detailsComplete` keys off. Read from the spec rather than by
     // comparing the name to "complete", so a renderer never hard-codes which

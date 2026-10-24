@@ -176,6 +176,14 @@ describe('tolerating the merely odd', () => {
     expect(back).toEqual({ education: false });
   });
 
+  it('carries the page format and the tallied lists through a round trip', () => {
+    const back = decode(JSON.stringify(encode({ items: [], page: 'letter', tally: { publications: true, x: 'yes' } })));
+    expect(back.page).toBe('letter');
+    expect(back.tally).toEqual({ publications: true });
+    const none = decode(JSON.stringify(encode({ items: [] })));
+    expect([none.page, none.tally]).toEqual([null, {}]);
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

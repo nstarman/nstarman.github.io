@@ -41,9 +41,13 @@ const builderData = {
   // links in their usual order, for a selection that does not say.
   card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
   cardOrder: cardOrder(),
+  // On US Letter the email and the website take a line each.
+  cardOrderLetter: cardOrder(true),
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
+  // And which of its publication lists open with a tally.
+  tally: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, Boolean(s.tally)]))])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -102,6 +106,13 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
+          {/* The page shape, apart from the look: the style's own, or US Letter
+              with inch margins, nothing under 12pt and every page numbered. */}
+          <label class="bl" for="format">Page</label>
+          <select class="btn btn--sel" id="format">
+            <option value="">Style's own</option>
+            <option value="letter">US Letter, 12pt</option>
+          </select>
           <button class="btn btn--go" type="button" id="build"
                   title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -140,7 +151,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -161,14 +172,17 @@ const builderData = {
         order: [...document.querySelectorAll('#card-order [data-key]')].map((e) => e.dataset.key),
       };
     };
+    /** The links' usual order for the page: on US Letter the email and the
+     *  website a line each. */
+    const usualOrder = () => ($('format').value === 'letter' ? CARD_ORDER_LETTER : CARD_ORDER);
     /** Set the controls to a card; a part it does not name is on, and without
-     *  an order the links take their usual one. */
+     *  an order the links take their usual one for the page. */
     const setCard = (card = {}) => {
       const at = (k) => card[k] ?? true;
       for (const b of cardBoxes()) b.checked = Boolean(at(b.value));
       for (const b of markBoxes('icon')) b.checked = at(b.value) !== false && at(b.value) !== 'text';
       for (const b of markBoxes('text')) b.checked = at(b.value) !== false && at(b.value) !== 'icon';
-      $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? CARD_ORDER }));
+      $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? usualOrder() }));
     };
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
@@ -283,6 +297,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:')) { retire('Places changed — compile again.'); return; }
+      if (t.name?.startsWith('tally:')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -403,9 +418,11 @@ const builderData = {
         }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
-        // Its card, and where its entries print their place.
+        // Its card, and where its entries print their place. Not the page: that
+        // is the Page menu's, as the style is the Style menu's.
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
+        setTally(TALLY[t.dataset.preset]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -516,6 +533,12 @@ const builderData = {
     const currentLocation = () => Object.fromEntries(locationBoxes()
       .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
     const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
+    // Whether each publication list opens with its tally.
+    const tallyBoxes = () => [...document.querySelectorAll('[data-tally-of]')];
+    /** Section id → true, for the publication lists that open with a tally. */
+    const currentTally = () => Object.fromEntries(tallyBoxes()
+      .filter((b) => b.checked).map((b) => [b.dataset.tallyOf, true]));
+    const setTally = (t = {}) => { for (const b of tallyBoxes()) b.checked = t[b.dataset.tallyOf] ?? false; };
     /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
       .filter((g) => g.checked)
@@ -618,7 +641,8 @@ const builderData = {
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          group: currentGroup(), card: currentCard(), location: currentLocation(), site: SITE });
+                          group: currentGroup(), card: currentCard(), location: currentLocation(),
+                          page: $('format').value || null, tally: currentTally(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -662,6 +686,11 @@ const builderData = {
       for (const g of columnGroups()) setColumns(g, sel.columns[g.dataset.columnsOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
       setOrder(sel.order.length ? sel.order : FIRST_ORDER);
+      // The page format first, as the card's usual order follows it; and the
+      // publication lists that open with a tally. A format this page does not
+      // offer is the style's own.
+      $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
+      setTally(sel.tally);
       // The card the file was saved with, or, from a file saved before the
       // card, the card as it comes.
       setCard(sel.card ?? {});
@@ -737,6 +766,15 @@ const builderData = {
       syncHeading();
       retire('Style changed — compile again.');
     });
+    $('format').addEventListener('change', () => {
+      // Links still in the other page's usual order take this page's; an order
+      // someone set stays as they set it.
+      const was = $('format').value === 'letter' ? CARD_ORDER : CARD_ORDER_LETTER;
+      if (currentCard().order.join() === was.join()) {
+        $('card').dispatchEvent(new CustomEvent('card:order', { detail: usualOrder() }));
+      }
+      retire('Page changed — compile again.');
+    });
     $('card').addEventListener('change', () => retire('Card changed — compile again.'));
 
     $('build').addEventListener('click', async () => {
@@ -749,7 +787,7 @@ const builderData = {
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
                               { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
-                                location: currentLocation() });
+                                location: currentLocation(), tally: currentTally() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());
@@ -757,6 +795,7 @@ const builderData = {
           for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
         }
         model.style = $('style').value;
+        model.format = $('format').value || null;
         model.card = currentCard();
         model.spacing = currentSpacing();
         model.heading = currentHeadings();

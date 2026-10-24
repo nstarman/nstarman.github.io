@@ -6,6 +6,8 @@
 import { presetNames as names, preset } from '../lib/presets.js';
 
 const { current, pdf = null } = Astro.props;
+// The same CV on US Letter, built beside it.
+const letter = pdf?.replace(/\.pdf$/, '-letter.pdf');
 // Shortest first, so the scale reads 1P → 2P → NP → All.
 const presetNames = [...names].reverse();
 const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
@@ -15,7 +17,7 @@ const onBuilder = current === 'builder';
 <div class="cvbar" aria-hidden="true">
   <div class="wrap">
     {pdf
-      ? <a class="btn" href={pdf} tabindex="-1"><span class="dl">Download </span>PDF</a>
+      ? <span class="pdfs"><a class="btn" href={pdf} tabindex="-1" title="A4"><span class="dl">Download </span>PDF</a><a class="btn" href={letter} tabindex="-1" title="US Letter, 1-inch margins, nothing under 12pt">US Letter</a></span>
       : <span class="spacer"></span>}
     <span class="more">
       {onBuilder
@@ -42,7 +44,9 @@ const onBuilder = current === 'builder';
 <div class="h2row">
   <div class="ttlgroup">
     <h2>Curriculum Vitae</h2>
-    {pdf && <a class="btn" href={pdf}><span class="dl">Download </span>PDF</a>}
+    {/* The page is a choice apart from the length: each length comes on A4 and
+        on US Letter. */}
+    {pdf && <span class="pdfs"><a class="btn" href={pdf} title="A4"><span class="dl">Download </span>PDF</a><a class="btn" href={letter} title="US Letter, 1-inch margins, nothing under 12pt">US Letter</a></span>}
   </div>
   {!onBuilder && (
     <span class="more">
