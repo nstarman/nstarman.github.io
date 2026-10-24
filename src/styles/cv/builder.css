@@ -220,3 +220,4 @@
 .cardtune__add{padding:.2rem .6rem; border:1px dashed var(--rule-strong); border-radius:2rem; background:none;
   font-family:var(--mono); font-size:.72rem; color:var(--ink-mute); cursor:pointer}
 .cardtune__add:hover{color:var(--accent); border-color:var(--accent-line)}
+.fmtstale{font-family:var(--mono); font-size:.66rem; color:var(--accent)}

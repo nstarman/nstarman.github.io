@@ -191,6 +191,13 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   an empty list, a missing or empty field, an unknown `origin`, a non-GitHub
   link or a duplicate name. The index's contract is that repo's `AGENTS.md`
   ("How it reaches the website"). *Enforced:* `tests/skills.test.js`.
+- **FR-024** Google Scholar has no API and blocks CI runners, so its h-indices
+  in `config/person.json` `metrics.googleScholar` are read by hand.
+  `refresh-scholar-metrics.yml` is dispatch-only: given `hIndex`, `hIndexSince`
+  and `since`, `scripts/set-scholar-metrics.mjs` writes them with `asOf` set to
+  today, and a pull request is opened. The builder says so beside a Scholar
+  h-index whose `asOf` is more than `SCHOLAR_STALE_DAYS` (183) old.
+  *Enforced:* `tests/presets.test.js`.
 
 ## Key Entities
 

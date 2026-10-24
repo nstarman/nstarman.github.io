@@ -5,6 +5,7 @@ import NumBox from './NumBox.astro';
 import { spacingUnits } from '../lib/cvspacing.js';
 import CV_STYLES from '../../cv/lib/styles.json';
 import CV_GAPS from '../../cv/lib/gaps.json';
+import { SCHOLAR_STALE_DAYS } from '../lib/presets.js';
 import person from '../../config/person.json';
 
 const { s, all = false } = Astro.props;
@@ -116,6 +117,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
             <option value="scholar">h-index: Google Scholar</option>
             <option value="scholar-since">{`h-index: Google Scholar, since ${person.metrics?.googleScholar?.since ?? 'recent'}`}</option>
           </select>
+          {/* Shown by the builder's script when the hand-read Scholar numbers are old. */}
+          <span class="fmtstale" data-scholar-stale data-asof={person.metrics?.googleScholar?.asOf} data-days={SCHOLAR_STALE_DAYS} hidden role="status">Scholar numbers read {person.metrics?.googleScholar?.asOf}: update them</span>
         </span>
       )}
       {/* "Select Publications" when only some are ticked — or not.
