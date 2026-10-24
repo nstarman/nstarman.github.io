@@ -62,6 +62,19 @@ describe('collect', () => {
     await expect(collect('potamides-apj', github403)).rejects.toThrow(/403/);
   });
 
+  it('puts only the paper\u2019s own co-authors on its map', async () => {
+    for (const id of ids) {
+      const s = await collect(id, fromDisk('.'));
+      const mine = new Set((site.resolve(id).authors ?? []).map((a) => a.orcid).filter(Boolean));
+      expect(s.config.collaborators.people.every((p) => mine.has(p.orcid)), id).toBe(true);
+    }
+    // A paper whose packages' papers have co-authors it has not: none of theirs.
+    const s = await collect('stream-convexity-spatial', fromDisk('.'));
+    expect(s.config.collaborators.people.map((p) => p.orcid)).toEqual(
+      (site.resolve('stream-convexity-spatial').authors ?? []).map((a) => a.orcid).filter((o) => o && site.config.collaborators.people.some((p) => p.orcid === o)),
+    );
+  });
+
   it('fails naming a missing file and what referred to it', async () => {
     const reader = fromDisk('.');
     const index = await reader.index();

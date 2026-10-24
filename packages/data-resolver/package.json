@@ -1,6 +1,6 @@
 {
   "name": "@nstarkman/data-resolver",
-  "version": "20261023.0.0",
+  "version": "20261023.0.1",
   "description": "The nstarkman.space data layer as a store, and the collector a paper site snapshots from.",
   "type": "module",
   "license": "MIT",
