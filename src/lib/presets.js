@@ -89,7 +89,7 @@ export function tally(pubs) {
   };
 }
 
-export function resolve(name, only, { prefix = {}, order = [], location = {} } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {} } = {}) {
   const spec = preset(name);
   // Whose `cvs` membership this preset takes: its own, or another preset's
   // when it is the same CV in a different page format, so no item has to list
@@ -174,7 +174,8 @@ export function resolve(name, only, { prefix = {}, order = [], location = {} } =
       page: section.page ?? null,
       items: picked,
       dropped, // surfaced rather than silently truncated
-      tally: section.tally ? tally(picked) : null,
+      // The builder's say, by section id, before the preset's.
+      tally: (tallied[section.id] ?? section.tally) ? tally(picked) : null,
     };
   });
 

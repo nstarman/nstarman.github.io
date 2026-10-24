@@ -46,7 +46,9 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       : []),
     { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries`,
       // Dated entries have a right-hand column for their place.
-      places: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0 },
+      places: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0,
+      // A publication list can open with its headline numbers.
+      tally: !all && s.layout === 'publications' },
   ].map((o) => (
     <>
       <span class="fmtsub">{o.sub}</span>
@@ -100,6 +102,10 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.places && (
         <label class="fmtopt fmtcheck" title={`Print each ${s.heading} entry's place`}>
           <input type="checkbox" name={`location:${s.id}`} data-location-of={s.id} checked />Places</label>
+      )}
+      {o.tally && (
+        <label class="fmtopt fmtcheck" title={`Open ${s.heading} with its counts and the h-index`}>
+          <input type="checkbox" name={`tally:${s.id}`} data-tally-of={s.id} />Tally</label>
       )}
       {/* "Select Publications" when only some are ticked — or not.
           A list section is taken whole, so never says it. */}
