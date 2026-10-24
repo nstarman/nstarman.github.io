@@ -1,5 +1,8 @@
 version: 2
 
+# One pull request per ecosystem at a time. A group applies only to version
+# updates unless it says otherwise, so security updates get a group of their
+# own: without it, every vulnerable package came as a pull request of its own.
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -7,6 +10,11 @@ updates:
       interval: "quarterly"
     groups:
       dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security:
+        applies-to: security-updates
         patterns:
           - "*"
 
@@ -16,5 +24,10 @@ updates:
       interval: "quarterly"
     groups:
       dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security:
+        applies-to: security-updates
         patterns:
           - "*"
