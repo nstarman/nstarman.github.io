@@ -119,7 +119,7 @@ cards (`specs/cards/spec.md`).
   on a partly ticked section; group or ungroup an institution's roles; reorder
   sections (buttons, or a long-hold drag); set grid columns, heading style,
   spacing, legend place, recipient-inline, PDF style and page format (the style's
-  default paper, or A4); turn header-card parts off and reorder its links; leave
+  default paper, A4 or US Letter); turn header-card parts off and reorder its links; leave
   a section's places out; open a publication list with its tally and an h-index
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
   order, group, location, tally })`. *Enforced:* review.
@@ -169,9 +169,18 @@ cards (`specs/cards/spec.md`).
   current). The builder's Tally box and h-index menu choose the same, over the
   preset's. *Enforced:* `tests/presets.test.js` ("tally").
 - **FR-026** The page format is a choice apart from the style and the length:
-  the style's default paper, or `"a4"` whatever the style. The builder's Page
-  menu sets it in the model (`format`); a build may pass `--input page=…`. The
-  pre-built PDFs keep each style's default page. *Enforced:* review.
+  the style's default paper, `"a4"` (A4 whatever the style) or `"letter"` (US
+  Letter). The builder's Page menu sets it in the model (`format`); a build may
+  pass `--input page=…`. The pre-built PDFs keep each style's default page. On
+  `"letter"`: the margins are one inch on every side; no text is set below 12pt,
+  superscripts included; every page, the first too, is numbered "n of N" in the
+  footer with no running header; the header card's email and website default to
+  a line each (a card `order` that is set is kept); the contact block takes its
+  own height; and the right-hand column is capped, as the builder's "Cap right
+  column" option does, whether or not it is ticked. In the builder, card links
+  still in the other page's usual order take the chosen page's. *Enforced:*
+  `tests/presets.test.js` (`cardOrder`), `npm run build:pdf` (the one- and
+  two-page counts); the rest by review.
 
 ## Key Entities
 
