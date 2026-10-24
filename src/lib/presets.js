@@ -89,10 +89,6 @@ export function tally(pubs) {
 
 export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {} } = {}) {
   const spec = preset(name);
-  // Whose `cvs` membership this preset takes: its own, or another preset's
-  // when it is the same CV in a different page format, so no item has to list
-  // both.
-  const members = spec.members ?? name;
 
   const sections = spec.sections.map((section) => {
     // A list section has no items — it renders its entries verbatim — so the
@@ -119,7 +115,7 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
       (i) =>
         // `includeAll` presets take everything that matches a section; the
         // curated ones take only what opted in via `cvs`.
-        (spec.includeAll || (i.cvs ?? []).includes(members)) &&
+        (spec.includeAll || (i.cvs ?? []).includes(name)) &&
         matches(i, section.match) &&
         (!only || only.has(i.id)),
     );
@@ -179,15 +175,12 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
 
   return {
     name,
-    members,
     label: spec.label,
     detail: spec.detail,
-    // Page shape for the PDF: absent, the template's own; "letter" is US Letter
-    // with inch margins, nothing under 12pt, and every page numbered.
-    format: spec.format ?? null,
-    // What the PDF's card shows, part by part.
+    // What the PDF's card shows, part by part. Its links' order only where the
+    // preset sets one: otherwise the template's, which follows the page.
     card: { ...Object.fromEntries(CARD_PARTS.map((k) => [k, spec.card?.[k] ?? true])),
-            order: spec.card?.order ?? cardOrder(spec.format === 'letter') },
+            ...(spec.card?.order ? { order: spec.card.order } : {}) },
     // The CV that takes every item is also the one that says every line, so it
     // is what `detailsComplete` keys off. Read from the spec rather than by
     // comparing the name to "complete", so a renderer never hard-codes which

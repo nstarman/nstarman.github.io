@@ -116,7 +116,7 @@ export function rowOf(item, cv, s, keepLine) {
     // inline links, and Typst would print the markup verbatim otherwise.
     lines: [...detail.filter((_, i) => keepLine ? keepLine(item.id, i) : s.detail === 'full'),
             // Marked achievements follow every detail line, and have their own gate.
-            ...achievementLines(item, cv.members ?? cv.name, { complete: cv.includeAll })
+            ...achievementLines(item, cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
     trailing: trailing(item, s),
     recipient: item.recipient ?? null,
@@ -190,7 +190,6 @@ export function cvModel(presetName, only, keepLine, opts) {
     preset: cv.name,
     label: cv.label,
     detail: cv.detail,
-    format: cv.format,
     card: cv.card,
     place: cv.place,
     spacing: cv.spacing,

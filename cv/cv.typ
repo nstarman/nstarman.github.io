@@ -86,11 +86,11 @@
 // Builder-only too.
 #let placeof = cv.at("place", default: (:))
 
-// A page format a preset may set, as opposed to a style: "letter" is the shape
+// The page format, apart from the style and the length: "letter" is the shape
 // formal submissions ask for — US Letter, inch margins all round, no text under
-// 12pt, and every page numbered. It changes the page, not the look, so it
-// combines with any style.
-#let letter = cv.at("format", default: none) == "letter"
+// 12pt, and every page numbered. The builder sets it in the model; the PDF build
+// passes `--input page=letter` for each length's US Letter copy.
+#let letter = sys.inputs.at("page", default: cv.at("format", default: none)) == "letter"
 #let FLOOR = 12pt
 // What the header card shows, part by part — the portrait, the address, the
 // email, the website, each profile link by its service, the QR. Each is on

@@ -226,3 +226,6 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 .tlgroup--sep .tl--member .inst{display:inline}
 .tlgroup--sep .tl--member .gutterlinks{display:revert}
 .tlgroup--sep .tl--member .what{padding-left:0}
+
+/* The PDF on each page size, side by side. */
+.pdfs{display:inline-flex; gap:.35rem}

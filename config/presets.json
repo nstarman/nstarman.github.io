@@ -1,5 +1,5 @@
 {
-  "$comment": "CV presets. Each section is defined once in `$sections`: its heading, its icon, and how it selects items. A preset lists the sections it shows, in order, by id, and overrides only what it does differently there, e.g. `{ \"id\": \"publications\", \"limit\": 5 }`; `null` removes a key. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section may give a `short` name, which the contents list uses where it is short of room. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in. `members` names another preset whose `cvs` membership this one takes, for the same CV in a different page shape. A section may set `tally: true` to open with its publications' headline numbers. `card` turns parts of the PDF's header card off by name: `portrait`, `address`, `email`, `website`, `qr`, or a profile by its service, e.g. `\"ads\": false`; everything else shows. The email, the website or a profile set to `\"icon\"` shows its mark without its label, and set to `\"text\"` its label without its mark. `order` lists the email, the website and the profiles in the order they print, `\"/\"` breaking the line; by default the email and the website share a line, or on US Letter take one each, and the profiles take the next. `location: false` on a preset or a section leaves entries' places out; a section's own `location` wins. `format` sets that shape for the PDF: `\"letter\"` is US Letter with 1-inch margins, nothing under 12pt, and every page numbered.",
+  "$comment": "CV presets. Each section is defined once in `$sections`: its heading, its icon, and how it selects items. A preset lists the sections it shows, in order, by id, and overrides only what it does differently there, e.g. `{ \"id\": \"publications\", \"limit\": 5 }`; `null` removes a key. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section may give a `short` name, which the contents list uses where it is short of room. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in. A section may set `tally: true` to open with its publications' headline numbers. `card` turns parts of the PDF's header card off by name: `portrait`, `address`, `email`, `website`, `qr`, or a profile by its service, e.g. `\"ads\": false`; everything else shows. The email, the website or a profile set to `\"icon\"` shows its mark without its label, and set to `\"text\"` its label without its mark. `order` lists the email, the website and the profiles in the order they print, `\"/\"` breaking the line; by default the email and the website share a line, or on US Letter take one each, and the profiles take the next. `location: false` on a preset or a section leaves entries' places out; a section's own `location` wins.",
   "$sections": {
     "education": {
       "heading": "Education",
@@ -180,31 +180,6 @@
   "np": {
     "label": "NP",
     "detail": "full",
-    "spacing": { "publications": { "value": 1.5, "unit": "x" } },
-    "sections": [
-      "education",
-      "positions",
-      "grants-major",
-      "awards-major",
-      "publications",
-      "software",
-      "talks-invited",
-      "talks-contributed",
-      "conferences",
-      "mentoring",
-      "teaching",
-      "peer-review",
-      "service",
-      "outreach",
-      "grants-minor",
-      "media"
-    ]
-  },
-  "letter": {
-    "label": "Letter",
-    "detail": "full",
-    "members": "np",
-    "format": "letter",
     "spacing": { "publications": { "value": 1.5, "unit": "x" } },
     "sections": [
       "education",

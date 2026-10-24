@@ -42,11 +42,19 @@ for model in "${models[@]}"; do
     echo "  $preset names a face public/fonts/ does not hold"; exit 1
   fi
   pages="$("$TYPST" query "${TYPST_ARGS[@]}" cv/cv.typ '<none>' --field value 2>/dev/null || true)"
+  # The same CV on US Letter, as the page format sets it: inch margins, nothing
+  # under 12pt. The page is a choice apart from the length, so every length has
+  # one; the short CVs' lengths are calibrated on their own page, not this one.
+  out="$("$TYPST" compile "${TYPST_ARGS[@]}" --input page=letter cv/cv.typ "dist/cv/starkman-cv-$preset-letter.pdf" 2>&1)" \
+    || { echo "$out"; exit 1; }
+  [ -z "$out" ] || echo "$out"
   # Also into public/, so the dev server serves the same PDFs the built site
   # does — dist/ is not on any dev route, so "Download PDF" was dead there.
   mkdir -p public/cv
-  cp "dist/cv/starkman-cv-$preset.pdf" "public/cv/starkman-cv-$preset.pdf"
-  printf '  %-28s %s\n' "starkman-cv-$preset.pdf" "$(wc -c < "dist/cv/starkman-cv-$preset.pdf" | tr -d ' ') bytes"
+  for f in "starkman-cv-$preset.pdf" "starkman-cv-$preset-letter.pdf"; do
+    cp "dist/cv/$f" "public/cv/$f"
+    printf '  %-28s %s\n' "$f" "$(wc -c < "dist/cv/$f" | tr -d ' ') bytes"
+  done
 done
 
 # The old Jekyll site served the CV at /files/starkman_cv.pdf and that URL is

@@ -3,31 +3,26 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds, tally, CARD_PARTS } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds, tally, CARD_PARTS, cardOrder } from '../src/lib/presets.js';
 import { items } from '../src/lib/data.js';
 
 describe('the presets', () => {
-  it('are the five the site offers', () => {
-    expect(presetNames).toEqual(['complete', 'np', 'letter', '2page', '1page']);
+  it('are the four lengths the site offers; the page is a choice apart', () => {
+    expect(presetNames).toEqual(['complete', 'np', '2page', '1page']);
   });
 
-  it('can take another preset\'s membership: the letter CV is NP\'s on US Letter', () => {
-    const ids = (cv) => cv.sections.flatMap((s) => s.items.map((i) => i.id));
-    const letter = resolve('letter');
-    expect(letter.members).toBe('np');
-    expect(letter.format).toBe('letter');
-    expect(ids(letter)).toEqual(ids(resolve('np')));
-    expect(resolve('np').format).toBeNull();
-  });
-
-  it('show every part of the card, and its links in the usual order, unless they say otherwise', () => {
-    for (const name of presetNames.filter((n) => !preset(n).card && !preset(n).format)) {
+  it('show every part of the card, and leave its links\' order to the page, unless they say otherwise', () => {
+    for (const name of presetNames.filter((n) => !preset(n).card)) {
       const { card } = resolve(name);
-      expect(Object.keys(card)).toEqual([...CARD_PARTS, 'order']);
+      // No order: the template's usual one follows the page.
+      expect(Object.keys(card)).toEqual(CARD_PARTS);
       expect(CARD_PARTS.every((k) => card[k] === true)).toBe(true);
-      // The email and the website share a line, and the profiles take the next.
-      expect(card.order.slice(0, 3)).toEqual(['email', 'website', '/']);
     }
+  });
+
+  it('put the email and the website on one line, or on US Letter a line each', () => {
+    expect(cardOrder().slice(0, 3)).toEqual(['email', 'website', '/']);
+    expect(cardOrder(true).slice(0, 3)).toEqual(['email', '/', 'website']);
   });
 
   it('print every entry\'s place unless a preset or a section says not to', () => {
@@ -35,13 +30,6 @@ describe('the presets', () => {
       // A list section prints its entries as written, so has no places to leave out.
       for (const s of resolve(name).sections.filter((x) => !x.key)) expect(s.location).toBe(true);
     }
-  });
-
-  it('give the letter CV the whole card, with the email and the website a line each', () => {
-    const { card } = resolve('letter');
-    expect(CARD_PARTS.every((k) => card[k] === true)).toBe(true);
-    // At 12pt the two do not fit on one line.
-    expect(card.order.slice(0, 3)).toEqual(['email', '/', 'website']);
   });
 
   it('tally a publication list where asked: by a section, or the builder over it', () => {

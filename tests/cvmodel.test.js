@@ -18,16 +18,6 @@ describe('the model', () => {
     expect(complete.person.name).toBeTruthy();
   });
 
-  it('carries the page format, and the same lines as the preset it borrows from', () => {
-    const letter = cvModel('letter');
-    const np = cvModel('np');
-    expect(letter.format).toBe('letter');
-    // The preset it borrows from keeps the style's own page.
-    expect(np.format).toBeNull();
-    // Achievements are gated by `cvs` too, so they must follow the borrowed membership.
-    for (const row of all(letter)) expect(row.lines).toEqual(find(np, row.id).lines);
-  });
-
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');
