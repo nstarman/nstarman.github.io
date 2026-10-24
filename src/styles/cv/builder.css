@@ -221,3 +221,6 @@
   font-family:var(--mono); font-size:.72rem; color:var(--ink-mute); cursor:pointer}
 .cardtune__add:hover{color:var(--accent); border-color:var(--accent-line)}
 .fmtstale{font-family:var(--mono); font-size:.66rem; color:var(--accent)}
+.legendprev{margin:.35rem 0 .6rem; font-size:.8rem; color:var(--ink-mute)}
+.legendprev p{margin:.15rem 0}
+.keyhead{margin-left:auto; font-size:.72rem; color:var(--ink-mute); font-weight:400}

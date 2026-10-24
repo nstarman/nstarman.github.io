@@ -7,7 +7,8 @@ import CvToc from '../../components/CvToc.astro';
 import CvFmtRow from '../../components/CvFmtRow.astro';
 import CvCardTune from '../../components/CvCardTune.astro';
 import '../../styles/cv/builder.css';
-import { resolve, memberIds, presetNames, preset, cardOrder } from '../../lib/presets.js';
+import { resolve, memberIds, presetNames, preset, cardOrder, H_INDEX_SOURCES, hIndexOf } from '../../lib/presets.js';
+import { authors } from '../../lib/data.js';
 import { buildInfo } from '../../lib/buildinfo.js';
 import CV_STYLES from '../../../cv/lib/styles.json';
 
@@ -36,6 +37,17 @@ const site = buildInfo();
 // Faces only one style sets, so the others do not download them.
 const styleOwned = new Set(Object.values(CV_STYLES).flatMap((st) => st.fonts ?? []));
 const builderData = {
+  // What the publication lists' preview line needs from each paper — whether it
+  // is submitted, I lead it, a student leads it, a student is in its byline —
+  // and each source's h-index, so the tally and the key can be shown as the
+  // ticks change.
+  pubs: Object.fromEntries(cv.sections.filter((s) => s.layout === 'publications').flatMap((s) => s.items.map((i) => [i.id, {
+    sub: i.status === 'submitted' ? 1 : 0,
+    first: i.authors?.[0]?.me ? 1 : 0,
+    led: i.authors?.[0]?.mentee ? 1 : 0,
+    stu: authors(i, 6).shown.some((a) => a.student) ? 1 : 0,
+  }]))),
+  hIndex: Object.fromEntries(H_INDEX_SOURCES.map((k) => [k, hIndexOf(k)])),
   membership,
   // Each preset's card, which the card's controls start from; and the card's
   // links in their usual order, for a selection that does not say.
@@ -150,7 +162,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -544,6 +556,37 @@ const builderData = {
       note.hidden = !(menu.value.startsWith('scholar') && !(age <= +note.dataset.days));
     };
     document.addEventListener('change', (e) => { if (e.target.matches?.('[data-hindex-of]')) warnStale(e.target); });
+    /** The publication lists' preview: what the PDF prints above the list — the
+     *  tally, where ticked, and the key to the students' colours and marks, where
+     *  a ticked paper has one — as the ticks and options stand, the key at the
+     *  Legend's place. Not the PDF itself, so the words are cv.typ's, kept in step. */
+    const syncLegends = () => {
+      for (const prev of document.querySelectorAll('[data-legend-of]')) {
+        const id = prev.dataset.legendOf, group = prev.closest('.pickgroup');
+        const ticked = [...group.querySelectorAll('.itembox:checked')].map((b) => PUBS[b.value]).filter(Boolean);
+        const sum = (k) => ticked.reduce((n, p) => n + p[k], 0);
+        const tallyEl = prev.querySelector('.tallyprev');
+        const box = tallyBoxes().find((b) => b.dataset.tallyOf === id);
+        const h = box?.checked ? HINDEX[hIndexMenu(id)?.value] : null;
+        tallyEl.hidden = !box?.checked;
+        tallyEl.replaceChildren();
+        if (box?.checked) {
+          const strong = document.createElement('strong');
+          strong.textContent = `${ticked.length} papers`;
+          tallyEl.append(strong, `${sum('sub') ? ` (${sum('sub')} submitted)` : ''}: ${sum('first')} first-author${sum('led') ? `, ${sum('led')} led by students I supervised` : ''}.${h ? ` h-index ${h.value} (${h.source}).` : ''}`);
+        }
+        const place = document.querySelector(`[data-place-of="${id}.legend"]`)?.querySelector(':checked')?.value ?? 'below';
+        const show = sum('stu') > 0;
+        const inHead = place === 'title';
+        const key = group.querySelector('.keyprev');
+        const head = group.querySelector('.keyhead');
+        key.hidden = !show || inHead;
+        key.style.textAlign = place === 'right' ? 'right' : 'left';
+        head.hidden = !show || !inHead;
+        prev.hidden = tallyEl.hidden && key.hidden;
+      }
+    };
+    for (const type of ['change', 'click']) document.addEventListener(type, () => requestAnimationFrame(syncLegends));
     const setTally = (t = {}) => {
       for (const b of tallyBoxes()) {
         const v = t[b.dataset.tallyOf];
@@ -552,7 +595,9 @@ const builderData = {
         // One this page does not offer is none.
         if (menu) { menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : ''; warnStale(menu); }
       }
+      syncLegends();
     };
+    requestAnimationFrame(syncLegends);
     /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
       .filter((g) => g.checked)
