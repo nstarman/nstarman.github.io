@@ -42,6 +42,8 @@ const H_INDEX = {
   },
 };
 export const H_INDEX_SOURCES = Object.keys(H_INDEX);
+/** One source's h-index as `tally` says it, or null; for the builder's preview. */
+export const hIndexOf = (source) => H_INDEX[source]?.() ?? null;
 
 /** How long Scholar's hand-read numbers stand before the builder says they may
  *  be out of date: about six months. */

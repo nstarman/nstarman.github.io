@@ -125,6 +125,12 @@ cards (`specs/cards/spec.md`).
   and bad values, and returns an unknown style rather than refusing. `loadReport`
   says how many entries were restored and, for missing ones, the `git checkout
   <commit>` that recovers them. *Enforced:* `tests/selection.test.js`.
+- **FR-021a** In the builder, a publication list shows above its entries what
+  the PDF prints there — the tally, where ticked, with its h-index, and the key
+  to the students' colours and marks, where a ticked paper has a student in its
+  byline — counted from the ticked entries and placed as the Legend's place says
+  (below, right, or on the heading's line), updating as ticks and options change.
+  *Enforced:* review.
 - **FR-022** CI's "CV PDFs" step (`npm run build:pdf`, `scripts/build-cv-pdfs.sh`)
   compiles every `dist/cv/*.json`, then fails unless `starkman-cv-1page.pdf` has
   1 page and `starkman-cv-2page.pdf` has 2 (the largest `/Count` in the PDF).

@@ -162,6 +162,13 @@ const mapFor = (s) => {
         {/* Beside `detail`, the other choices about how a section is printed
             rather than what is in it. They open below the rule, so the heading
             row stays one line. */}
+        {/* The builder's, where the key sits on the heading's line (the Legend's
+            Title place); `syncLegends` shows it there or below. */}
+        {pick && s.layout === 'publications' && (
+          <span class="keyhead" hidden><span class="keyprev__text">Students I supervised or advised:{' '}
+              <span class="stu--undergraduate">undergraduate<sup>†</sup></span>,{' '}
+              <span class="stu--graduate">graduate<sup>‡</sup></span>.</span></span>
+        )}
         {pick && (
           <button type="button" class="fmtbtn posbtn posbtn--icon" aria-expanded="false"
                   aria-controls={`fmt-${s.id}`}
@@ -195,6 +202,16 @@ const mapFor = (s) => {
       </Head>
 
       {pick && <CvFmtRow s={s} />}
+      {/* What the PDF prints above a publication list — the tally and the key to
+          the students' colours — shown as the ticks and options stand. */}
+      {pick && s.layout === 'publications' && (
+        <div class="legendprev" data-legend-of={s.id} hidden>
+          <p class="tallyprev" hidden></p>
+          <p class="keyprev" hidden><span class="keyprev__text">Students I supervised or advised:{' '}
+              <span class="stu--undergraduate">undergraduate<sup>†</sup></span>,{' '}
+              <span class="stu--graduate">graduate<sup>‡</sup></span>.</span></p>
+        </div>
+      )}
 
       {s.layout === 'list' ? (
         <ul class="plainlist">
