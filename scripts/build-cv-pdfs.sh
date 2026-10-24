@@ -12,6 +12,12 @@ cd "$(dirname "$0")/.."
 
 TYPST="${TYPST:-typst}"
 command -v "$TYPST" >/dev/null || { echo "typst not found (set TYPST=/path/to/typst)"; exit 1; }
+# The Typst the in-browser builder runs (typst.ts 0.7.0), which CI and deploy
+# pin too. Another version builds, but can set a line a point or two apart
+# from what the site serves, so say so.
+TYPST_PINNED="0.14.2"
+have="$("$TYPST" --version | awk '{print $2}')"
+[ "$have" = "$TYPST_PINNED" ] || echo "  warning: typst $have, not $TYPST_PINNED as CI, deploy and the builder use; PDFs may differ slightly"
 
 # Every face the CV sets is vendored in public/fonts/ and served from the site,
 # so the PDF is the same wherever it is built. --ignore-system-fonts makes that
