@@ -116,7 +116,7 @@ cards (`specs/cards/spec.md`).
   default paper, or A4); turn header-card parts off and reorder its links; leave
   a section's places out; open a publication list with its tally and an h-index
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
-  order, group })`. *Enforced:* review.
+  order, group, location, tally })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
