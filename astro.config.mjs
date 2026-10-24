@@ -13,6 +13,10 @@ export default defineConfig({
   vite: {
     resolve: { alias: { '@nstarkman/research-store': fileURLToPath(new URL('./src/lib/data.js', import.meta.url)) } },
     ssr: { noExternal: [/^@nstarkman\//] },
+    // The builders load typst.ts only when asked to compile. Found that late,
+    // the dev server re-bundles its dependencies under a new hash, and the open
+    // page fails to fetch the one it asked for; bundled at startup, it cannot.
+    optimizeDeps: { include: ['@myriaddreamin/typst.ts', '@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs'] },
     // Astro 7 prerenders in its own environment: the build needs it there too.
     environments: { prerender: { resolve: { noExternal: [/^@nstarkman\//] } } },
   },
