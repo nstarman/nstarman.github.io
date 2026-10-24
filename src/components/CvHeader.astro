@@ -4,6 +4,7 @@
 // keeps the heading and the condensed bar but none of the length links: it is
 // a tool, reached from /tools/, not another length of the CV.
 import { presetNames as names, preset } from '../lib/presets.js';
+import CvBar from './CvBar.astro';
 
 const { current, pdf = null } = Astro.props;
 // Shortest first, so the scale reads 1P → 2P → NP → All.
@@ -12,24 +13,7 @@ const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
 const vars = `--stops:${presetNames.length};--i:${Math.max(0, presetNames.indexOf(current))}`;
 const onBuilder = current === 'builder';
 ---
-<div class="cvbar" aria-hidden="true">
-  <div class="wrap">
-    {pdf
-      ? <a class="btn" href={pdf} tabindex="-1"><span class="dl">Download </span>PDF</a>
-      : <span class="spacer"></span>}
-    <span class="more">
-      {onBuilder
-        /* The builder has no lengths to jump to; the slot is where the
-           selection count and Save Selection move to (see tools/cv). */
-        ? <span id="selslot"></span>
-        : <span class="cvtoggle cvtoggle--main" style={vars}>
-            {presetNames.map((n) => (
-              <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
-            ))}
-          </span>}
-    </span>
-  </div>
-</div>
+{!onBuilder && <CvBar pdf={pdf} presetNames={presetNames} current={current} vars={vars} />}
 
 {/* The builder is a tool, not a fourth length: it carries none of the length
     links, only its own heading. */}
@@ -57,6 +41,9 @@ const onBuilder = current === 'builder';
   )}
 </div>
 
+{/* On the builder the bar comes after the heading, not above it. */}
+{onBuilder && <CvBar onBuilder presetNames={presetNames} current={current} vars={vars} />}
+
 <script>
   // The condensed bar joins the header once the real controls have scrolled
   // past, so the length toggle, the download and the builder stay reachable
@@ -67,7 +54,7 @@ const onBuilder = current === 'builder';
   if (bar && controls) {
     const NAV = 52; // the sticky nav's height
     const syncBar = () => {
-      const on = controls.getBoundingClientRect().bottom < NAV;
+      const on = 'always' in bar.dataset || controls.getBoundingClientRect().bottom < NAV;
       bar.classList.toggle('is-on', on);
       bar.setAttribute('aria-hidden', on ? 'false' : 'true');
       for (const el of bar.querySelectorAll('a, button')) el.tabIndex = on ? 0 : -1;

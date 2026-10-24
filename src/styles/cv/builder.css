@@ -9,7 +9,9 @@
 
 /* CV builder */
 .builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
-.builderbar--go{margin-top:.2rem}
+.builderbar--go{margin-bottom:.3rem}
+/* Room between the Start-from row and the header card under it. */
+.builderbar:not(.builderbar--go){margin-bottom:2.2rem}
 /* A label is bold and in full ink, as the Card Builder's are, so it reads
    apart from the buttons it labels. */
 .builderbar .bl{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); margin-right:.2rem}
@@ -101,6 +103,11 @@
    the right with `detail`; first of the cluster where there is no `detail`. */
 /* In the builder bar, at the right of the compile row. */
 .builderbar .fmtbtn{margin-left:auto}
+/* Compile PDF and the settings button are a step bigger than the bar's other
+   buttons: they are what the bar is for. */
+.cvbar .builderbar--go .btn--go{font-size:.7rem; padding:.26rem .65rem}
+.cvbar .builderbar--go .fmtbtn{padding:.26rem .65rem}
+.cvbar .builderbar--go .fmtbtn .ico{width:.9rem; height:.9rem}
 /* With the controls in the sticky header the panel drops from under it, below
    the contents strip, rather than staying behind at the top of the page. */
 .fmtrow--all.is-docked{position:fixed; z-index:8; margin:0 auto; left:0; right:0;

@@ -1,0 +1,29 @@
+---
+// The CV pages' condensed bar: the length toggle and download, or on the builder
+// its compile controls, which JavaScript moves in. See CvHeader.astro.
+import { preset } from '../lib/presets.js';
+const { pdf = null, onBuilder = false, presetNames, current, vars } = Astro.props;
+const href = (n) => (n === 'np' ? '/cv/' : `/cv/${n}/`);
+---
+{/* On the builder the bar is always shown, not condensed in on scroll: it is
+    where Compile PDF and the settings button live, so they are always there,
+    just under the heading and stuck under the nav as the page scrolls. */}
+<div class:list={['cvbar', { 'is-on': onBuilder }]} aria-hidden={onBuilder ? 'false' : 'true'}
+     data-always={onBuilder ? '' : undefined}>
+  <div class="wrap">
+    {pdf
+      ? <a class="btn" href={pdf} tabindex="-1"><span class="dl">Download </span>PDF</a>
+      : <span class="spacer"></span>}
+    <span class="more">
+      {onBuilder
+        /* The builder has no lengths to jump to. */
+        ? null
+        : <span class="cvtoggle cvtoggle--main" style={vars}>
+            {presetNames.map((n) => (
+              <a href={href(n)} class={n === current ? 'on' : ''} tabindex="-1">{preset(n).label}</a>
+            ))}
+          </span>}
+    </span>
+  </div>
+</div>
+
