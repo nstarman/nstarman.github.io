@@ -101,6 +101,11 @@
    the right with `detail`; first of the cluster where there is no `detail`. */
 /* In the builder bar, at the right of the compile row. */
 .builderbar .fmtbtn{margin-left:auto}
+/* Compile PDF and the settings button keep the size they have on the page, not
+   the bar's small one: they are what the bar is for. */
+.cvbar .builderbar--go .btn--go{font-size:.75rem; padding:.35rem .8rem}
+.cvbar .builderbar--go .fmtbtn{padding:.35rem .8rem}
+.cvbar .builderbar--go .fmtbtn .ico{width:1.1rem; height:1.1rem}
 /* With the controls in the sticky header the panel drops from under it, below
    the contents strip, rather than staying behind at the top of the page. */
 .fmtrow--all.is-docked{position:fixed; z-index:8; margin:0 auto; left:0; right:0;
