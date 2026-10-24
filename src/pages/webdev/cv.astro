@@ -44,6 +44,9 @@ const builderData = {
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
+  // And its tallies, as the preset writes them: true, or { hIndex }.
+  tally: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(preset(n).sections
+    .filter((s) => typeof s === 'object' && s.tally).map((s) => [s.id, s.tally]))])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -147,7 +150,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -290,6 +293,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:')) { retire('Places changed — compile again.'); return; }
+      if (t.name?.startsWith('tally:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -413,6 +417,7 @@ const builderData = {
         // Its card, and where its entries print their place.
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
+        setTally(TALLY[t.dataset.preset]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -523,6 +528,23 @@ const builderData = {
     const currentLocation = () => Object.fromEntries(locationBoxes()
       .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
     const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
+    // Whether each publication list opens with a tally, and which h-index it adds.
+    const tallyBoxes = () => [...document.querySelectorAll('[data-tally-of]')];
+    const hIndexMenu = (id) => document.querySelector(`[data-hindex-of="${id}"]`);
+    /** Section id → true, or { hIndex }, for the lists that open with a tally. */
+    const currentTally = () => Object.fromEntries(tallyBoxes().filter((b) => b.checked).map((b) => {
+      const h = hIndexMenu(b.dataset.tallyOf)?.value;
+      return [b.dataset.tallyOf, h ? { hIndex: h } : true];
+    }));
+    const setTally = (t = {}) => {
+      for (const b of tallyBoxes()) {
+        const v = t[b.dataset.tallyOf];
+        b.checked = Boolean(v);
+        const menu = hIndexMenu(b.dataset.tallyOf);
+        // One this page does not offer is none.
+        if (menu) menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : '';
+      }
+    };
     /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
       .filter((g) => g.checked)
@@ -626,7 +648,7 @@ const builderData = {
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
                           group: currentGroup(), card: currentCard(), location: currentLocation(),
-                          page: $('format').value || null, site: SITE });
+                          page: $('format').value || null, tally: currentTally(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -675,6 +697,7 @@ const builderData = {
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocation(sel.location);
+      setTally(sel.tally);
       // The page format; one this page does not offer is the style's default.
       $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
       // A gap the file does not set, or sets out of bounds, is the default.
@@ -760,7 +783,7 @@ const builderData = {
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
                               { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
-                                location: currentLocation() });
+                                location: currentLocation(), tally: currentTally() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());

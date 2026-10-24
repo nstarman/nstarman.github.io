@@ -23,6 +23,44 @@ export const CARD_PARTS = ['portrait', 'address', 'email', 'website', ...SERVICE
  *  and the website sharing one and the profiles the next. */
 export const cardOrder = () => ['email', 'website', '/', ...SERVICES];
 
+/** The h-indices a tally can print, by name: ADS's, computed here from every
+ *  publication's citation count as the last ADS refresh left it; and Google
+ *  Scholar's two, over all years or since a recent one, read off the profile
+ *  by hand into config/person.json. Each says where it is from. */
+const H_INDEX = {
+  ads: () => {
+    const cites = items.filter((i) => i.type === 'publication').map((p) => p.citations ?? 0).sort((a, b) => b - a);
+    return { value: cites.filter((c, i) => c >= i + 1).length, source: 'ADS' };
+  },
+  scholar: () => {
+    const gs = person.metrics?.googleScholar;
+    return gs?.hIndex == null ? null : { value: gs.hIndex, source: 'Google Scholar' };
+  },
+  'scholar-since': () => {
+    const gs = person.metrics?.googleScholar;
+    return gs?.hIndexSince == null ? null : { value: gs.hIndexSince, source: `Google Scholar, since ${gs.since}` };
+  },
+};
+export const H_INDEX_SOURCES = Object.keys(H_INDEX);
+
+/**
+ * A publication list's headline numbers, for a section with a `tally`: how
+ * many papers, how many still submitted, how many I wrote first, and how many
+ * a student I supervised led — counted from the records, so they cannot fall
+ * behind the list beneath them. With `{ hIndex }` naming a source, the
+ * h-index too, said with its source, since the sources disagree.
+ */
+export function tally(pubs, { hIndex } = {}) {
+  const lead = (p) => p.authors?.[0] ?? {};
+  return {
+    total: pubs.length,
+    submitted: pubs.filter((p) => p.status === 'submitted').length,
+    first: pubs.filter((p) => lead(p).me).length,
+    student: pubs.filter((p) => lead(p).mentee).length,
+    h: H_INDEX[hIndex]?.() ?? null,
+  };
+}
+
 const asArray = (v) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);
 
 /**
@@ -68,7 +106,7 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [], location = {} } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {} } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -149,6 +187,12 @@ export function resolve(name, only, { prefix = {}, order = [], location = {} } =
       page: section.page ?? null,
       items: picked,
       dropped, // surfaced rather than silently truncated
+      // `true` for the counts, or `{ hIndex }` to add one; the builder's say, by
+      // section id, before the preset's.
+      tally: (() => {
+        const t = tallied[section.id] ?? section.tally;
+        return t ? tally(picked, t === true ? {} : t) : null;
+      })(),
     };
   });
 

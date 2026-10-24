@@ -80,6 +80,15 @@ const cleanCard = (raw) => {
 };
 
 /** Section id → false, for the sections whose entries leave their place out. */
+/** Section id → true, or { hIndex } naming its source, for the publication
+ *  lists that open with a tally. Sources are names, as headings are. */
+const cleanTally = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k]) => k.length <= 64).slice(0, 64)
+    .map(([k, v]) => [k, v === true ? true
+      : v && typeof v.hIndex === 'string' && v.hIndex.length <= 64 ? { hIndex: v.hIndex } : null])
+    .filter(([, v]) => v !== null));
+
 const cleanLocation = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
@@ -98,7 +107,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -142,6 +151,9 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
+    // Publication lists that open with a tally, and the h-index it adds.
+    // Absent, none does.
+    tally: cleanTally(tally),
   };
 }
 
@@ -153,7 +165,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, page, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, page, tally, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -214,6 +226,7 @@ export function decode(text) {
     card: cleanCard(raw.card),
     location: cleanLocation(raw.location),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
+    tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

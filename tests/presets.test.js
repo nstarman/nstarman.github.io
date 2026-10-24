@@ -3,7 +3,8 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds, CARD_PARTS } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds, CARD_PARTS, tally, H_INDEX_SOURCES } from '../src/lib/presets.js';
+import person from '../config/person.json';
 import { items } from '../src/lib/data.js';
 
 describe('the presets', () => {
@@ -30,6 +31,39 @@ describe('the presets', () => {
 
   it('reject a name that does not exist, rather than rendering nothing', () => {
     expect(() => preset('nope')).toThrow(/Unknown CV preset/);
+  });
+});
+
+describe('tally', () => {
+  const me = { me: true };
+  const mentee = { mentee: 'someone' };
+  const pubs = [
+    { authors: [me], status: 'published' },
+    { authors: [mentee, me], status: 'published' },
+    { authors: [{}, me], status: 'submitted' },
+    { authors: [me] },
+  ];
+
+  it('counts first-author and student-led papers, and no h-index unless asked', () => {
+    expect(tally(pubs)).toEqual({ total: 4, submitted: 1, first: 2, student: 1, h: null });
+  });
+
+  it('adds the h-index from the source asked for, saying which', () => {
+    const gs = person.metrics.googleScholar;
+    expect(tally(pubs, { hIndex: 'scholar' }).h).toEqual({ value: gs.hIndex, source: 'Google Scholar' });
+    expect(tally(pubs, { hIndex: 'scholar-since' }).h).toEqual({ value: gs.hIndexSince, source: `Google Scholar, since ${gs.since}` });
+    const ads = tally(pubs, { hIndex: 'ads' }).h;
+    expect(ads.source).toBe('ADS');
+    expect(ads.value).toBeGreaterThan(0);
+    expect(tally(pubs, { hIndex: 'nope' }).h).toBeNull();
+    expect(H_INDEX_SOURCES).toEqual(['ads', 'scholar', 'scholar-since']);
+  });
+
+  it('tallies a publication list where asked: by a section, or the builder over it', () => {
+    const pubsOf = (opts) => resolve('np', undefined, opts).sections.find((s) => s.id === 'publications');
+    expect(pubsOf().tally).toBeNull();
+    expect(pubsOf({ tally: { publications: true } }).tally.total).toBe(pubsOf().items.length);
+    expect(pubsOf({ tally: { publications: { hIndex: 'ads' } } }).tally.h.source).toBe('ADS');
   });
 });
 
