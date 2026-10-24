@@ -79,6 +79,11 @@ const cleanCard = (raw) => {
   return out;
 };
 
+/** Section id → false, for the sections whose entries leave their place out. */
+const cleanLocation = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
+
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
   : []);
@@ -93,7 +98,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -132,6 +137,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // What the header card shows, and its links' order. Absent, the card as it
     // comes, which is what every selection saved before the card means.
     card: cleanCard(card),
+    // Sections whose entries leave their place out. Absent, every one prints it.
+    location: cleanLocation(location),
   };
 }
 
@@ -143,7 +150,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -202,6 +209,7 @@ export function decode(text) {
     columns: cleanColumns(raw.columns),
     group: cleanGroup(raw.group),
     card: cleanCard(raw.card),
+    location: cleanLocation(raw.location),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

@@ -41,6 +41,9 @@ const builderData = {
   // links in their usual order, for a selection that does not say.
   card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
   cardOrder: cardOrder(),
+  // Each preset's sections, in its order, and whether each prints places.
+  sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
+  location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -137,7 +140,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -279,6 +282,7 @@ const builderData = {
         return;
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
+      if (t.name?.startsWith('location:')) { retire('Places changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -336,8 +340,10 @@ const builderData = {
         setOrder(FIRST_ORDER);
         retire('Order reset — compile again.');
       }
-      // "Start from" starts from the preset's sections in their usual order too.
-      if (t.dataset.all !== undefined || t.dataset.preset) setOrder(FIRST_ORDER);
+      // "Start from" starts from the preset's sections in its own order, the
+      // rest after them as they usually come; All and None, the usual order.
+      if (t.dataset.all !== undefined) setOrder(FIRST_ORDER);
+      if (t.dataset.preset) setOrder([...SECTION_ORDER[t.dataset.preset], ...FIRST_ORDER]);
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
@@ -397,8 +403,9 @@ const builderData = {
         }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
-        // Its card.
+        // Its card, and where its entries print their place.
         setCard(CARD[t.dataset.preset]);
+        setLocation(LOCATION[t.dataset.preset]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -503,6 +510,12 @@ const builderData = {
     const currentGroup = () => Object.fromEntries(groupBoxes()
       .filter((g) => g.checked !== (g.dataset.default === 'true'))
       .map((g) => [g.dataset.groupOf, g.checked]));
+    // Whether each section's entries print their place.
+    const locationBoxes = () => [...document.querySelectorAll('[data-location-of]')];
+    /** Section id → false, for the sections whose entries leave their place out. */
+    const currentLocation = () => Object.fromEntries(locationBoxes()
+      .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
+    const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
     /** Section id → `select`, for the sections whose heading says "Select". */
     const currentPrefix = () => Object.fromEntries(prefixGroups()
       .filter((g) => g.checked)
@@ -605,7 +618,7 @@ const builderData = {
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          group: currentGroup(), card: currentCard(), site: SITE });
+                          group: currentGroup(), card: currentCard(), location: currentLocation(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -652,6 +665,8 @@ const builderData = {
       // The card the file was saved with, or, from a file saved before the
       // card, the card as it comes.
       setCard(sel.card ?? {});
+      // Places, where the file leaves them out; every other section prints them.
+      setLocation(sel.location);
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -733,7 +748,8 @@ const builderData = {
         // section set, then the tick-boxes narrow it.
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
-                              { prefix: currentPrefix(), order: currentOrder(), group: currentGroup() });
+                              { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
+                                location: currentLocation() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());
