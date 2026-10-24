@@ -104,7 +104,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
           <input type="checkbox" name={`location:${s.id}`} data-location-of={s.id} checked />Places</label>
       )}
       {o.tally && (
-        <label class="fmtopt fmtcheck" title={`Open ${s.heading} with its counts and the h-index`}>
+        <label class="fmtopt fmtcheck" title={`Open ${s.heading} with its counts`}>
           <input type="checkbox" name={`tally:${s.id}`} data-tally-of={s.id} />Tally</label>
       )}
       {/* "Select Publications" when only some are ticked — or not.

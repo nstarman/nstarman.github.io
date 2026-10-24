@@ -58,14 +58,14 @@ describe('the presets', () => {
 describe('tally', () => {
   const me = { me: true };
   const mentee = { mentee: 'someone' };
-  it('counts first-author and student-led papers, and the h-index', () => {
+  it('counts first-author and student-led papers', () => {
     const pubs = [
-      { authors: [me], citations: 10, status: 'published' },
-      { authors: [mentee, me], citations: 3, status: 'published' },
-      { authors: [{}, me], citations: 2, status: 'submitted' },
+      { authors: [me], status: 'published' },
+      { authors: [mentee, me], status: 'published' },
+      { authors: [{}, me], status: 'submitted' },
       { authors: [me] },
     ];
-    expect(tally(pubs)).toEqual({ total: 4, submitted: 1, first: 2, student: 1, h: 2 });
+    expect(tally(pubs)).toEqual({ total: 4, submitted: 1, first: 2, student: 1 });
   });
 });
 

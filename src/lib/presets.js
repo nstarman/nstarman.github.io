@@ -71,21 +71,19 @@ const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?
 
 /**
  * A publication list's headline numbers, for a section with `"tally": true`:
- * how many papers, how many still submitted, how many I wrote first, how many a
- * student I supervised led, and the h-index as of the last ADS refresh. The
- * h-index rather than a citation total, which one community paper (Astropy
- * v5.0) would swamp. Counted from the records rather than typed, so it cannot
- * fall behind the list beneath it.
+ * how many papers, how many still submitted, how many I wrote first, and how
+ * many a student I supervised led. No h-index: the records' citations count
+ * only what ADS finds, and any one h-index reads low against another source's.
+ * Counted from the records rather than typed, so it cannot fall behind the
+ * list beneath it.
  */
 export function tally(pubs) {
   const lead = (p) => p.authors?.[0] ?? {};
-  const cites = pubs.map((p) => p.citations ?? 0).sort((a, b) => b - a);
   return {
     total: pubs.length,
     submitted: pubs.filter((p) => p.status === 'submitted').length,
     first: pubs.filter((p) => lead(p).me).length,
     student: pubs.filter((p) => lead(p).mentee).length,
-    h: cites.filter((c, i) => c >= i + 1).length,
   };
 }
 

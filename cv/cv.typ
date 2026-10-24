@@ -441,7 +441,7 @@
 // The list's headline numbers, where the preset asks for them — the line a
 // reader takes in before the list itself.
 #let tallyline(t) = block(sticky: true, below: gap("publications.legend", "legend"), text(size: look.sub)[
-  #strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised]. h-index #t.h.
+  #strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].
 ])
 
 #let publications(section, legend: left) = {
