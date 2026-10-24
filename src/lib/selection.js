@@ -139,7 +139,7 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     card: cleanCard(card),
     // Sections whose entries leave their place out. Absent, every one prints it.
     location: cleanLocation(location),
-    // The page format, as the Page menu names it. Absent, the style's own.
+    // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
   };

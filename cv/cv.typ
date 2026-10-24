@@ -103,7 +103,7 @@
 #let portrait = shows("portrait")
 #let qr = shows("qr")
 // The page format, a choice apart from the style and the length: none is the
-// style's own paper; "a4" is A4 whatever the style. The builder sets it in the
+// style's default paper; "a4" is A4 whatever the style. The builder sets it in the
 // model, and a build can pass `--input page=…`.
 #let paper = sys.inputs.at("page", default: cv.at("format", default: none))
 

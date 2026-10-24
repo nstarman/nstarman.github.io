@@ -102,11 +102,11 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
-          {/* The page, apart from the look: the style's own paper, or A4
+          {/* The page, apart from the look: the style's default paper, or A4
               whatever the style. */}
           <label class="bl" for="format">Page</label>
           <select class="btn btn--sel" id="format">
-            <option value="">Style's own</option>
+            <option value="">Style's default</option>
             <option value="a4">A4</option>
           </select>
           <button class="btn btn--go" type="button" id="build"
@@ -675,7 +675,7 @@ const builderData = {
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocation(sel.location);
-      // The page format; one this page does not offer is the style's own.
+      // The page format; one this page does not offer is the style's default.
       $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
