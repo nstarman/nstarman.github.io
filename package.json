@@ -28,11 +28,11 @@
     "ajv": "^8.17.1",
     "fast-check": "^4.10.2",
     "harfbuzzjs": "^1.6.3",
-    "playwright": "^1.63.0",
+    "playwright": "^1.64.1",
     "semver": "7.8.5",
     "sharp": "^0.35.5",
-    "temml": "^0.13.5",
-    "vitest": "^5.0.2"
+    "temml": "^0.14.0",
+    "vitest": "^5.0.5"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
@@ -42,6 +42,6 @@
     "@nstarkman/data-resolver": "*",
     "@nstarkman/research-kit": "*",
     "@nstarkman/site-layout": "*",
-    "astro": "^7.3.5"
+    "astro": "^7.4.2"
   }
 }
