@@ -34,7 +34,9 @@ jobs:
       - run: npm ci
       - uses: typst-community/setup-typst@v5
         with:
-          typst-version: "0.15.1"
+          # The Typst the CV builder runs in the browser: typst.ts 0.7.0 carries
+          # 0.14.2. Pinned to it so the PDFs here and the builder's agree.
+          typst-version: "0.14.2"
 
       - name: Scrape the Astropy team page
         run: node scripts/scrape-astropy-voting-members.mjs
