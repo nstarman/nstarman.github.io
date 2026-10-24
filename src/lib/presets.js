@@ -43,6 +43,10 @@ const H_INDEX = {
 };
 export const H_INDEX_SOURCES = Object.keys(H_INDEX);
 
+/** How long Scholar's hand-read numbers stand before the builder says they may
+ *  be out of date: about six months. */
+export const SCHOLAR_STALE_DAYS = 183;
+
 /**
  * A publication list's headline numbers, for a section with a `tally`: how
  * many papers, how many still submitted, how many I wrote first, and how many

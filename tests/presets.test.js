@@ -3,7 +3,7 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds, CARD_PARTS, tally, H_INDEX_SOURCES } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds, CARD_PARTS, tally, H_INDEX_SOURCES, SCHOLAR_STALE_DAYS } from '../src/lib/presets.js';
 import person from '../config/person.json';
 import { items } from '../src/lib/data.js';
 
@@ -57,6 +57,11 @@ describe('tally', () => {
     expect(Number.isInteger(ads.value) && ads.value >= 0).toBe(true);
     expect(tally(pubs, { hIndex: 'nope' }).h).toBeNull();
     expect(H_INDEX_SOURCES).toEqual(['ads', 'scholar', 'scholar-since']);
+  });
+
+  it('says how long Scholar numbers stand, and keeps a date to judge by', () => {
+    expect(SCHOLAR_STALE_DAYS).toBe(183);
+    expect(Date.parse(person.metrics.googleScholar.asOf)).not.toBeNaN();
   });
 
   it('tallies a publication list where asked: by a section, or the builder over it', () => {

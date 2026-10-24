@@ -536,13 +536,21 @@ const builderData = {
       const h = hIndexMenu(b.dataset.tallyOf)?.value;
       return [b.dataset.tallyOf, h ? { hIndex: h } : true];
     }));
+    // Say so beside a Scholar h-index whose numbers were read long ago: no API
+    // refreshes them, so the date is the only way to know.
+    const warnStale = (menu) => {
+      const note = menu.parentElement.querySelector('[data-scholar-stale]');
+      const age = (Date.now() - Date.parse(note.dataset.asof)) / 864e5;
+      note.hidden = !(menu.value.startsWith('scholar') && !(age <= +note.dataset.days));
+    };
+    document.addEventListener('change', (e) => { if (e.target.matches?.('[data-hindex-of]')) warnStale(e.target); });
     const setTally = (t = {}) => {
       for (const b of tallyBoxes()) {
         const v = t[b.dataset.tallyOf];
         b.checked = Boolean(v);
         const menu = hIndexMenu(b.dataset.tallyOf);
         // One this page does not offer is none.
-        if (menu) menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : '';
+        if (menu) { menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : ''; warnStale(menu); }
       }
     };
     /** Section id → `select`, for the sections whose heading says "Select". */

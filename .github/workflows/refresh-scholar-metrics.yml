@@ -1,0 +1,59 @@
+name: Refresh Scholar metrics
+
+# Google Scholar has no API and blocks CI runners, so its h-indices are read off
+# the profile by hand. Run this with the two numbers; it dates them today in
+# config/person.json and opens a pull request. The CV builder warns when they
+# are more than six months old. Manual only: there is nothing to fetch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      hIndex:
+        description: "h-index, all years"
+        required: true
+      hIndexSince:
+        description: "h-index, since the year below"
+        required: true
+      since:
+        description: "the year Scholar's second column counts from"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-scholar-metrics
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: chore/refresh-scholar-metrics
+      H: ${{ inputs.hIndex }}
+      H_SINCE: ${{ inputs.hIndexSince }}
+      SINCE: ${{ inputs.since }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          check-latest: true  # the runner image can lag a security release a dependency then requires
+          cache: npm
+      - run: npm ci
+
+      - name: Record
+        run: node scripts/set-scholar-metrics.mjs "$H" "$H_SINCE" "$SINCE"
+
+      - name: Verify the site still builds
+        run: |
+          npm run test:schema
+          npm run build
+
+      - name: Open a pull request
+        run: |
+          body=$'Numbers entered by hand into `.github/workflows/refresh-scholar-metrics.yml`; read off Google Scholar, which has no API.'
+          scripts/open-refresh-pr.sh "$BRANCH" "Refresh the Scholar h-indices" "$body" config/person.json
