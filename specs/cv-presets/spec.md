@@ -122,7 +122,8 @@ cards (`specs/cards/spec.md`).
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
   link order), location (sections whose places are left out, `false` only), page
-  format (`page`), tally (`true` or `{ hIndex }` per section), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  format (`page`), tally (`true` or `{ hIndex }` per section), whether the
+  right-hand column is capped (`trailcap`, `true` only), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`
