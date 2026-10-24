@@ -12,7 +12,8 @@
   "title": "JWST GO 10246: Exploring the Accretion History and Halo of Giant Elliptical Cen A with Resolved Stars",
   "shortTitle": "JWST GO 10246",
   "tier": "major",
-  "funder": "Space Telescope Science Institute",
+  "funder": "STScI",
+  "role": "Co-I",
   "summary": "Co-Investigator",
   "links": [
     {
