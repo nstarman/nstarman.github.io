@@ -139,6 +139,21 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
   ))}
   {all && (
     <>
+      {/* How the PDF is printed, apart from what is in it: its look, from
+          cv/lib/styles.json (the manifest styles.typ checks itself against, so
+          the menu cannot offer a style the template lacks), and its paper. */}
+      <span class="fmtsub">Document</span>
+      <span class="fmtline">
+        <label class="fmtlab" for="style">Style</label>
+        <select class="btn btn--sel" id="style">
+          {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
+        </select>
+        <label class="fmtlab" for="format">Page</label>
+        <select class="btn btn--sel" id="format">
+          <option value="">Style's default</option>
+          <option value="a4">A4</option>
+        </select>
+      </span>
       <span class="fmtsub">Selecting</span>
       <span class="fmtline">
         <label class="fmtopt fmtcheck">

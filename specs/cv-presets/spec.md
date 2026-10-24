@@ -106,7 +106,12 @@ cards (`specs/cards/spec.md`).
   the builder all use; every row has the fields `cv.typ` reads. *Enforced:*
   `tests/cvmodel.test.js` ("has the fields cv.typ reads…").
 - **FR-020** The CV Builder (`/webdev/cv/`) renders the complete CV with a box on
-  every entry and line, seeded from `np`. A person can: start from any preset
+  every entry and line, seeded from `np`, whose Start-from button shows lit on
+  load until the selection changes. Its first row holds Compile PDF (with Download and
+  the status) and the settings button; Style and Page are in that button's
+  "Settings for every section" panel, under Document. The condensed bar that
+  takes over on scroll keeps Compile PDF, the settings button and Save Selection
+  on one line. A person can: start from any preset
   (ticks its `memberIds`, its detail level, columns, place, spacing, inline
   recipients; `detailsComplete` lines start unticked unless the preset is
   `includeAll`) or from none; tick entries and individual lines; toggle "Select"

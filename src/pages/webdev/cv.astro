@@ -90,10 +90,24 @@ const builderData = {
         <noscript><p class="lede"><strong>This tool needs JavaScript.</strong> The pre-built CVs, with PDFs to
           download, are on <a href="/cv/">the CV page</a>.</p></noscript>
 
+        <div class="builderbar builderbar--go">
+          <button class="btn btn--go" type="button" id="build"
+                  title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
+          <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
+          <span class="status" id="status"></span>
+          {/* Settings for every section at once; each is still its own below. */}
+          <button class="fmtbtn posbtn posbtn--icon" type="button" aria-expanded="false" aria-controls="fmt-all"
+                  aria-label="Settings for every section" title="Settings for every section">
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
+          </button>
+        </div>
+
+        <CvFmtRow s={{ id: 'all', heading: 'every section', layout: 'entries' }} all />
+
         <div class="builderbar">
           <span class="bl">Start from</span>
           {presetNames.map((n) => (
-            <button class="btn" type="button" data-preset={n}>{preset(n).label}</button>
+            <button class="btn" type="button" data-preset={n} aria-pressed={n === START ? 'true' : undefined}>{preset(n).label}</button>
           ))}
           <button class="btn" type="button" data-all="0">None</button>
           <span class="sep">|</span>
@@ -107,35 +121,6 @@ const builderData = {
             <button class="btn" type="button" id="savebar">Save Selection</button>
           </span>
         </div>
-
-        <div class="builderbar builderbar--go">
-          {/* Left of Compile, because it is a choice about the thing being
-              compiled rather than a second action. */}
-          <label class="bl" for="style">Style</label>
-          {/* From cv/lib/styles.json, the manifest styles.typ checks itself
-              against, so the menu cannot offer a style the template lacks. */}
-          <select class="btn btn--sel" id="style">
-            {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
-          </select>
-          {/* The page, apart from the look: the style's default paper, or A4
-              whatever the style. */}
-          <label class="bl" for="format">Page</label>
-          <select class="btn btn--sel" id="format">
-            <option value="">Style's default</option>
-            <option value="a4">A4</option>
-          </select>
-          <button class="btn btn--go" type="button" id="build"
-                  title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
-          <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
-          <span class="status" id="status"></span>
-          {/* Settings for every section at once; each is still its own below. */}
-          <button class="fmtbtn posbtn posbtn--icon" type="button" aria-expanded="false" aria-controls="fmt-all"
-                  aria-label="Settings for every section" title="Settings for every section">
-            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
-          </button>
-        </div>
-
-        <CvFmtRow s={{ id: 'all', heading: 'every section', layout: 'entries' }} all />
 
         <iframe id="preview" title="CV preview" hidden></iframe>
 
@@ -878,8 +863,12 @@ const builderData = {
       }
     });
 
+    // The page starts as the preset it was rendered from, which the first
+    // recount would otherwise put out as a change: say so, as clicking it does.
+    const startButton = document.querySelector('[data-preset][aria-pressed="true"]');
     recount();
     applyDetail();
+    startButton?.setAttribute('aria-pressed', 'true');
     // A browser may restore the menu to another style on reload.
     syncHeading();
   </script>
