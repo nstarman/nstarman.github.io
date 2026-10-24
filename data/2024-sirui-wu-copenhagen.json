@@ -11,9 +11,14 @@
   },
   "title": "Sirui Wu (PhD student of Sarah Pearson, Copenhagen)",
   "details": [
-    "[Potamides](item:potamides-apj)"
+    "Dark matter halo shapes from stellar stream curvature",
+    "First-author papers in [The Astrophysical Journal](item:potamides-apj) and the [Journal of Open Source Software](item:potamides-joss)"
   ],
   "student": "Sirui Wu (PhD student of Sarah Pearson, Copenhagen)",
+  "refs": [
+    "potamides-apj",
+    "potamides-joss"
+  ],
   "slug": "sirui-wu",
   "person": {
     "family": "Wu",
