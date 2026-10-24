@@ -176,6 +176,11 @@ describe('tolerating the merely odd', () => {
     expect(back).toEqual({ education: false });
   });
 
+  it('carries the page format through a round trip, and reads none as the style\'s own', () => {
+    expect(decode(JSON.stringify(encode({ items: [], page: 'a4' }))).page).toBe('a4');
+    expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });
