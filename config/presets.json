@@ -205,31 +205,24 @@
     "detail": "full",
     "members": "np",
     "format": "letter",
-    "card": { "portrait": false, "ads": false, "arxiv": false, "zenodo": false },
-    "location": false,
+    "spacing": { "publications": { "value": 1.5, "unit": "x" } },
     "sections": [
       "education",
       "positions",
       "grants-major",
       "awards-major",
-      { "id": "talks-invited", "location": true },
-      "mentoring",
-      { "id": "conferences", "location": true },
-      {
-        "id": "service",
-        "match": {
-          "type": "service",
-          "not": { "id": ["massey-house-committee", "sigma-nu-alumni-advisory-board", "canadian-astronomical-society-casca"] }
-        }
-      },
-      "peer-review",
-      "outreach",
-      "teaching",
+      "publications",
       "software",
-      { "id": "talks-contributed", "location": true, "match": { "type": "presentation", "kind": ["contributed", "poster"] } },
+      "talks-invited",
+      "talks-contributed",
+      "conferences",
+      "mentoring",
+      "teaching",
+      "peer-review",
+      "service",
+      "outreach",
       "grants-minor",
-      "media",
-      { "id": "publications", "tally": true }
+      "media"
     ]
   },
   "2page": {

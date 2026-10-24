@@ -11,16 +11,12 @@ describe('the presets', () => {
     expect(presetNames).toEqual(['complete', 'np', 'letter', '2page', '1page']);
   });
 
-  it('can take another preset\'s membership, as the letter CV takes NP\'s', () => {
+  it('can take another preset\'s membership: the letter CV is NP\'s on US Letter', () => {
     const ids = (cv) => cv.sections.flatMap((s) => s.items.map((i) => i.id));
     const letter = resolve('letter');
     expect(letter.members).toBe('np');
     expect(letter.format).toBe('letter');
-    // NP's items, in the letter CV's own section order, less what it filters out:
-    // three service entries, and talks accepted but not given.
-    const dropped = ['massey-house-committee', 'sigma-nu-alumni-advisory-board', 'canadian-astronomical-society-casca',
-      ...items.filter((i) => i.type === 'presentation' && i.kind === 'accepted').map((i) => i.id)];
-    expect(new Set(ids(letter))).toEqual(new Set(ids(resolve('np')).filter((id) => !dropped.includes(id))));
+    expect(ids(letter)).toEqual(ids(resolve('np')));
     expect(resolve('np').format).toBeNull();
   });
 
@@ -41,20 +37,17 @@ describe('the presets', () => {
     }
   });
 
-  it('give the letter CV its own card: no portrait, ORCID alone, the email and the website a line each', () => {
+  it('give the letter CV the whole card, with the email and the website a line each', () => {
     const { card } = resolve('letter');
-    expect(card.portrait).toBe(false);
-    expect(['ads', 'arxiv', 'zenodo'].map((k) => card[k])).toEqual([false, false, false]);
-    expect(card.orcid).toBe(true);
+    expect(CARD_PARTS.every((k) => card[k] === true)).toBe(true);
+    // At 12pt the two do not fit on one line.
     expect(card.order.slice(0, 3)).toEqual(['email', '/', 'website']);
   });
 
-  it('end the letter CV with its publications, tallied', () => {
-    const letter = resolve('letter');
-    const pubs = letter.sections.at(-1);
-    expect(pubs.id).toBe('publications');
-    expect(pubs.tally.total).toBe(pubs.items.length);
-    expect(resolve('np').sections.find((s) => s.id === 'publications').tally).toBeNull();
+  it('tally a publication list where asked: by a section, or the builder over it', () => {
+    const pubs = (opts) => resolve('np', undefined, opts).sections.find((s) => s.id === 'publications');
+    expect(pubs().tally).toBeNull();
+    expect(pubs({ tally: { publications: true } }).tally.total).toBe(pubs().items.length);
   });
 
   it('reject a name that does not exist, rather than rendering nothing', () => {
