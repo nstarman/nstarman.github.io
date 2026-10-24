@@ -35,8 +35,8 @@
     "vitest": "^5.0.2"
   },
   "dependencies": {
-    "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
-    "@myriaddreamin/typst.ts": "^0.7.0",
+    "@myriaddreamin/typst-ts-web-compiler": "^0.8.0-rc3",
+    "@myriaddreamin/typst.ts": "^0.8.0-rc3",
     "@nstarkman/card-builder": "*",
     "@nstarkman/collaborator-map": "*",
     "@nstarkman/data-resolver": "*",
