@@ -191,7 +191,7 @@ jobs:
           message: |
             **Preview:** ${{ steps.deploy.outputs.deployment-url }}
 
-            Built from `${{ github.event.pull_request.head.sha }}`, including the four CV PDFs.
+            Built from `${{ github.event.pull_request.head.sha }}`, including the five CV PDFs.
             Updated on every push to this pull request.
 
   # The one required check. Branch protection cannot require a job that never
