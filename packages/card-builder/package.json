@@ -27,7 +27,7 @@
   "dependencies": {
     "@nstarkman/collaborator-map": "20261023.0.1",
     "@nstarkman/data-resolver": "20261023.0.1",
-    "temml": "^0.13.5"
+    "temml": "^0.14.0"
   },
   "publishConfig": {
     "access": "public",
