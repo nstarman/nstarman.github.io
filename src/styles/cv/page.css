@@ -183,6 +183,13 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
   .cvbar{transition:opacity .18s ease}
 }
 
+/* The builder's bar is always shown: under the heading it belongs to, then
+   stuck under the nav as the page scrolls, so Compile PDF and the settings
+   button are always there. Where the other pages' bar is fixed and slides in,
+   this one is in the flow. */
+.cvbar[data-always]{position:sticky; top:var(--nav-h); transform:none; opacity:1; transition:none}
+.cvbar[data-always] .wrap{padding-inline:0}
+
 /* The builder has no download, so the toggle still sits right. */
 .cvbar .spacer{flex:1}
 
