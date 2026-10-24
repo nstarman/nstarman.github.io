@@ -346,8 +346,8 @@
 
 // The right-hand column is as wide as its widest place or amount, taken from
 // every entry's text. With `trailcap` — the builder's "Cap right column" — it
-// stops at TRAILCAP and the longest, "College Station, TX, USA", wrap onto a
-// second line. Not in the flat styles, whose entries do not use a column.
+// stops at TRAILCAP, and any longer one — "College Station, TX, USA" — wraps
+// onto a second line. Not in the flat styles, whose entries do not use a column.
 #let TRAILCAP = 1.3in
 #let trailcap = cv.at("trailcap", default: false)
 #let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
