@@ -171,6 +171,11 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify({ format: FORMAT, version: VERSION, items: [], card: [1] })).card).toBeNull();
   });
 
+  it('carries the sections that leave places out through a round trip', () => {
+    const back = decode(JSON.stringify(encode({ items: [], location: { education: false, talks: true, x: 'no' } }))).location;
+    expect(back).toEqual({ education: false });
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

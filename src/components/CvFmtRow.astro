@@ -44,7 +44,9 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
     ...(s.id === 'publications'
       ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
       : []),
-    { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries` },
+    { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries`,
+      // Dated entries have a right-hand column for their place.
+      places: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0 },
   ].map((o) => (
     <>
       <span class="fmtsub">{o.sub}</span>
@@ -92,6 +94,12 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
             ))}
           </span>
         </span>
+      )}
+      {/* Whether entries print their place in the right-hand column; an
+          amount prints either way. */}
+      {o.places && (
+        <label class="fmtopt fmtcheck" title={`Print each ${s.heading} entry's place`}>
+          <input type="checkbox" name={`location:${s.id}`} data-location-of={s.id} checked />Places</label>
       )}
       {/* "Select Publications" when only some are ticked — or not.
           A list section is taken whole, so never says it. */}

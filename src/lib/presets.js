@@ -68,7 +68,7 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [] } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {} } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -140,7 +140,8 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
       detail: section.detail ?? spec.detail,
       // Whether entries print their place. An institution already says where it
       // is; a talk's city is news.
-      location: section.location ?? spec.location ?? true,
+      // The builder's say, by section id, before the preset's.
+      location: location[section.id] ?? section.location ?? spec.location ?? true,
       // Sections the page opens closed. The PDF ignores this — paper has no
       // disclosure widget, and the CV is meant to be read whole there.
       collapsed: section.collapsed ?? false,

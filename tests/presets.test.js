@@ -133,6 +133,14 @@ describe('shared sections', () => {
   });
 });
 
+describe('places', () => {
+  it('lets the builder leave a section\'s places out, over the preset', () => {
+    const at = (opts) => resolve('np', undefined, opts).sections.find((s) => s.id === 'education').location;
+    expect(at()).toBe(true);
+    expect(at({ location: { education: false } })).toBe(false);
+  });
+});
+
 describe('section order', () => {
   const ids = (opts) => resolve('complete', undefined, opts).sections.map((s) => s.id);
 
