@@ -10,7 +10,18 @@
 // in-browser builder — so all three cannot disagree about what "2-page" means.
 
 import presets from '/config/presets.json';
+import person from '/config/person.json';
 import { items, lists } from './data.js';
+
+/** What the PDF's card can show — each profile link by its service — each on
+ *  unless a preset's `card` turns it off; the email, the website or a link may
+ *  be `"icon"`, its mark without its label, or `"text"`, its label without its
+ *  mark. */
+const SERVICES = person.profiles.map((p) => (p.service ?? p.label).toLowerCase());
+export const CARD_PARTS = ['portrait', 'address', 'email', 'website', ...SERVICES, 'qr'];
+/** The card's links in the order they print, "/" breaking the line: the email
+ *  and the website sharing one and the profiles the next. */
+export const cardOrder = () => ['email', 'website', '/', ...SERVICES];
 
 const asArray = (v) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);
 
@@ -127,6 +138,9 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
       // A section may keep its elaboration where the preset drops it. A talk
       // without its subject is a list of cities.
       detail: section.detail ?? spec.detail,
+      // Whether entries print their place. An institution already says where it
+      // is; a talk's city is news.
+      location: section.location ?? spec.location ?? true,
       // Sections the page opens closed. The PDF ignores this — paper has no
       // disclosure widget, and the CV is meant to be read whole there.
       collapsed: section.collapsed ?? false,
@@ -141,6 +155,9 @@ export function resolve(name, only, { prefix = {}, order = [] } = {}) {
     name,
     label: spec.label,
     detail: spec.detail,
+    // What the PDF's card shows, part by part.
+    card: { ...Object.fromEntries(CARD_PARTS.map((k) => [k, spec.card?.[k] ?? true])),
+            order: spec.card?.order ?? cardOrder() },
     // The CV that takes every item is also the one that says every line, so it
     // is what `detailsComplete` keys off. Read from the spec rather than by
     // comparing the name to "complete", so a renderer never hard-codes which

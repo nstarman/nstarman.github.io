@@ -85,6 +85,23 @@
 // Builder-only too.
 #let placeof = cv.at("place", default: (:))
 
+// What the header card shows, part by part — the portrait, the address, the
+// email, the website, each profile link by its service, the QR. Each is on
+// unless a preset or the builder turns it off, and the card closes up around
+// the gap.
+#let card = cv.at("card", default: (:))
+#let shows(part) = card.at(part, default: true) != false
+// The email, the website or a profile link, set to "icon", prints its mark
+// alone, and set to "text" its label alone.
+#let mark(part, icon, label, fill: accent) = {
+  let only = card.at(part, default: true)
+  if only == "icon" { glyph(icon, size: 0.9em, fill: fill) }
+  else if only == "text" { label }
+  else { marked(icon, label, size: 0.9em, fill: fill) }
+}
+#let portrait = shows("portrait")
+#let qr = shows("qr")
+
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
@@ -129,15 +146,21 @@
 // about half the height.
 #let hdr = 2.0cm // the portrait and the QR are square and set the block height
 
-// ORCID keeps its own green, as it does in the LaTeX CV, and spells the
-// identifier out rather than saying "ORCID".
-#let profiles = p.profiles.map(pr => {
-  let service = lower(pr.at("service", default: pr.label))
-  let mark = service
-  let label = if service == "orcid" { p.orcid } else { pr.label }
-  link(pr.url, marked(mark, label, size: 0.9em,
-                      fill: if service == "orcid" { orcid } else { accent }))
-}).join(h(3pt))
+// What the card links to, by key: the email, the website and each profile by
+// its service. ORCID keeps its own green, as it does in the LaTeX CV, and
+// spells the identifier out rather than saying "ORCID".
+#let services = p.profiles.map(pr => lower(pr.at("service", default: pr.label)))
+#let linked = (
+  email: link("mailto:" + p.email, mark("email", "email", p.email)),
+  website: link(p.websiteUrl, mark("website", "globe", p.website)),
+  ..p.profiles.map(pr => {
+    let service = lower(pr.at("service", default: pr.label))
+    let label = if service == "orcid" { p.orcid } else { pr.label }
+    let fill = if service == "orcid" { orcid } else { accent }
+    (service, link(pr.url, mark(service, service, label, fill: fill)))
+  }).to-dict(),
+)
+#let profiles = services.filter(shows).map(k => linked.at(k)).join(h(3pt))
 
 // Who he is. Sets the height the contact column matches.
 #let namecol = {
@@ -153,14 +176,25 @@
 // How to reach him, as separate lines rather than one wrapped paragraph, so
 // they can be distributed rather than merely stacked. Every figure here is
 // transcription data — street number, postcode, ORCID iD — so it stays lining.
-#let contactlines = p.addressLines.map(l => text(size: 8.9pt, l)) + (
-  text(size: 8.9pt)[
-    #link("mailto:" + p.email)[#marked("email", p.email, size: 0.9em)]
-    #h(5pt)
-    #link(p.websiteUrl)[#marked("globe", p.website, size: 0.9em)]
-  ],
-  text(size: 8.2pt)[#profiles],
+// The links print in `order`, a "/" breaking the line. By default the email
+// and the website share one and the profiles the next.
+#let order = card.at("order", default: ("email", "website", "/", ..services))
+#let segments = order.fold(((),), (acc, k) => if k == "/" { acc + ((),) }
+  else { acc.slice(0, -1) + (acc.last() + (k,),) })
+// A line of profiles alone is set a size smaller, and closer, as it always was.
+#let linkline(keys) = {
+  if keys.all(k => k in services) { text(size: 8.2pt, keys.map(k => linked.at(k)).join(h(3pt))) }
+  else { text(size: 8.9pt, keys.map(k => linked.at(k)).join[ #h(5pt) ]) }
+}
+#let contactlines = (
+  ..if shows("address") { p.addressLines.map(l => text(size: 8.9pt, l)) },
+  ..segments.map(seg => seg.filter(k => k in linked and shows(k))).filter(seg => seg.len() > 0).map(linkline),
 )
+// Four lines, as the card has by default, spread over the name column's height
+// and line up with its edges. Any other number stacks at an even gap, centred:
+// spread, fewer lines drifted apart and pulled the address's two lines from
+// each other, and more could not fit.
+#let fixed = contactlines.len() == 4
 
 // Both columns hold four lines but at different sizes, so stacking them left
 // the contact block 8pt shorter than the name block and, being centred in the
@@ -179,9 +213,8 @@
     linebreak()
     p.affiliationShort
     v(0.2em)
-    link("mailto:" + p.email)[#marked("email", p.email)]
-    h(1.2em)
-    link(p.websiteUrl)[#marked("globe", p.website)]
+    if shows("email") { link("mailto:" + p.email)[#marked("email", p.email)]; h(1.2em) }
+    if shows("website") { link(p.websiteUrl)[#marked("globe", p.website)] }
     linebreak()
     profiles
   })
@@ -195,24 +228,25 @@
   // portrait and the QR already sit at the block's full height, so the same
   // gap top and bottom as at the sides reads as a margin rather than a hug.
   block(fill: headerwash, radius: 8pt, outset: (x: 9pt, y: 5pt), grid(
-    columns: (hdr, auto, 1fr, hdr),
+    // Without the portrait its column goes too, and the name opens the card.
+    columns: (..if portrait { (hdr,) }, auto, 1fr, ..if qr { (hdr,) }),
     column-gutter: 11pt,
-    align: (left + horizon, left + horizon, right + horizon, right + horizon),
+    align: (..if portrait { (left + horizon,) }, left + horizon, right + horizon, ..if qr { (right + horizon,) }),
 
     // Circular, as on the website. `clip` with a 50% radius does the crop, and
     // `cover` keeps the face centred instead of squashing the photo.
-    box(clip: true, radius: 50%, width: hdr, height: hdr,
-        image("assets/portrait.jpg", width: hdr, height: hdr, fit: "cover")),
+    ..if portrait { (box(clip: true, radius: 50%, width: hdr, height: hdr,
+        image("assets/portrait.jpg", width: hdr, height: hdr, fit: "cover")),) },
 
     namecol,
 
-    block(height: h, {
+    block(height: if fixed { h } else { auto }, {
       set par(justify: false, leading: 0.38em)
       set text(number-type: "lining")
-      contactlines.join(v(1fr))
+      contactlines.join(if fixed { v(1fr) } else { v(2pt) })
     }),
 
-    link(p.websiteUrl, image("assets/qr.svg", width: hdr)),
+    ..if qr { (link(p.websiteUrl, image("assets/qr.svg", width: hdr)),) },
   ))
 } }
 // The header is a block of its own, so it needs more clearance than two

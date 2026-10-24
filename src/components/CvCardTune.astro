@@ -1,0 +1,180 @@
+---
+// The CV builder's header card: a preview of the PDF's card, and behind its
+// settings button — as each section has one — a tick box for each part, and
+// the links in the order they print, dragged into place, with "/" for a line
+// break. A part turned off leaves the preview, and the card closes up as the
+// PDF's does. The controls are the state: the page's script reads the tick
+// boxes by `#card input` and the order by `#card-order [data-key]`.
+import person from '../../config/person.json';
+import portrait from '../../cv/assets/portrait.jpg';
+import qr from '../../cv/assets/qr.svg';
+import { CARD_PARTS, cardOrder } from '../lib/presets.js';
+
+const service = (p) => (p.service ?? p.label).toLowerCase();
+// What has an icon and a text, each of which can go: the email, the website
+// and the profile links — with the icon the preview draws for it.
+const MARKED = [
+  { part: 'email', name: 'Email', text: person.email, icon: 'email' },
+  { part: 'website', name: 'Website', text: person.website, icon: 'link' },
+  ...person.profiles.map((p) => ({ part: service(p), name: p.service ?? p.label,
+    text: service(p) === 'orcid' ? person.orcid : p.label, icon: service(p) })),
+];
+const byPart = Object.fromEntries(MARKED.map((m) => [m.part, m]));
+const PARTS = [['portrait', 'Portrait'], ['address', 'Address'], ['qr', 'QR code']];
+// Every part the presets know is one of these, or a link.
+for (const p of CARD_PARTS) if (!PARTS.some(([k]) => k === p) && !byPart[p]) throw new Error(`No card control for "${p}".`);
+const START = cardOrder();
+---
+<div class="cardtune" id="card">
+  <div class="cardpv" aria-label="The PDF's header card">
+    <span class="cardpv__part cardpv__portrait" data-part="portrait">
+      <img src={portrait.src} alt="" width="56" height="56" />
+    </span>
+    <div class="cardpv__name">
+      <span class="cardpv__who">{person.name}</span>
+      {person.titles.map((t) => <span>{t}</span>)}
+      <span>{person.affiliationShort}</span>
+    </div>
+    <div class="cardpv__contact">
+      <span class="cardpv__part" data-part="address">
+        {person.addressLines.map((l) => <span>{l}</span>)}
+      </span>
+      {/* The links, laid out in lines by the script from the order below. */}
+      <span class="cardpv__lines">
+        {MARKED.map((m) => (
+          <span class="cardpv__link" data-link={m.part} draggable="true" title="Drag to reorder">
+            <svg class="ico" aria-hidden="true"><use href={`#i-${m.icon}`} /></svg><span class="cardpv__label">{m.text}</span>
+          </span>
+        ))}
+      </span>
+    </div>
+    <span class="cardpv__part cardpv__qr" data-part="qr">
+      <img src={qr.src} alt="" width="56" height="56" />
+    </span>
+    <button type="button" class="fmtbtn posbtn posbtn--icon cardpv__set" aria-expanded="false" aria-controls="card-tune"
+            aria-label="What the card shows" title="What the card shows">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-sliders" /></svg>
+    </button>
+  </div>
+
+  {/* A tick box on each part's own name, as the Card Builder's parts have
+      it; the page's settings button opens and closes the row. */}
+  <div class="cardtune__row" id="card-tune" hidden>
+    <span class="fmtsub">Shows</span>
+    <span class="fmtline">
+      {PARTS.map(([part, label]) => <label class="cardtune__check"><input type="checkbox" value={part} checked />{label}</label>)}
+    </span>
+    {/* A pill for the email, the website and each link: its icon and its
+        text, either alone or both; with neither, it is off. Dragged, they
+        reorder; a "/" breaks the line there. */}
+    <span class="fmtsub">Links</span>
+    <span class="fmtline cardtune__order" id="card-order">
+      {START.map((k) => (k === '/'
+        ? <span class="cardtune__break" draggable="true" data-key="/" title="Line break — drag to move">/<button type="button" class="cardtune__x" aria-label="Remove this line break">×</button></span>
+        : <span class="cardtune__pair" draggable="true" data-key={k} title="Drag to reorder">
+            <span class="cardtune__pairname">{byPart[k].name}:</span>
+            <label><input type="checkbox" name="icon" value={k} checked />icon</label>
+            <label><input type="checkbox" name="text" value={k} checked />text</label>
+          </span>))}
+      <button type="button" class="cardtune__add" id="card-break" title="Add a line break, then drag it into place">+ /</button>
+    </span>
+  </div>
+</div>
+
+<script>
+  const root = document.getElementById('card')!;
+  const order = document.getElementById('card-order')!;
+  const lines = root.querySelector<HTMLElement>('.cardpv__lines')!;
+  const links = Object.fromEntries([...root.querySelectorAll<HTMLElement>('[data-link]')].map((l) => [l.dataset.link!, l]));
+  const keys = () => [...order.querySelectorAll<HTMLElement>('[data-key]')].map((e) => e.dataset.key!);
+  const changed = () => root.dispatchEvent(new Event('change', { bubbles: true }));
+
+  // The preview follows the controls, whoever sets them — a click here, or a
+  // preset setting them all.
+  const sync = () => {
+    const boxes = (q: string) => Object.fromEntries([...root.querySelectorAll<HTMLInputElement>(q)].map((b) => [b.value, b]));
+    const on = boxes('input:not([name])'), icon = boxes('input[name="icon"]'), text = boxes('input[name="text"]');
+    for (const p of root.querySelectorAll<HTMLElement>('[data-part]')) p.classList.toggle('is-off', !on[p.dataset.part!].checked);
+    // The email, the website and the links have no box of their own: icon and text say.
+    for (const [k, l] of Object.entries(links)) {
+      l.classList.toggle('is-off', !icon[k].checked && !text[k].checked);
+      l.classList.toggle('is-bare', !text[k].checked);
+      l.classList.toggle('is-plain', !icon[k].checked);
+    }
+    // A line per stretch between breaks.
+    lines.replaceChildren();
+    let line: HTMLElement | null = null;
+    for (const k of keys()) {
+      if (k === '/') { line = null; continue; }
+      if (!line) lines.append((line = Object.assign(document.createElement('span'), { className: 'cardpv__line' })));
+      line.append(links[k]);
+    }
+  };
+  root.addEventListener('change', sync);
+
+  // A line break, made here: a "/" to drag, with an × to take it away.
+  const breakChip = () => {
+    const chip = Object.assign(document.createElement('span'), { className: 'cardtune__break', draggable: true, title: 'Line break — drag to move' });
+    chip.dataset.key = '/';
+    chip.append('/', Object.assign(document.createElement('button'), { type: 'button', className: 'cardtune__x', textContent: '×' }));
+    chip.querySelector('button')!.setAttribute('aria-label', 'Remove this line break');
+    return chip;
+  };
+  document.getElementById('card-break')!.addEventListener('click', (e) => {
+    (e.currentTarget as HTMLElement).before(breakChip());
+    changed();
+  });
+  order.addEventListener('click', (e) => {
+    const x = (e.target as Element).closest('.cardtune__x');
+    if (!x) return;
+    x.closest('.cardtune__break')!.remove();
+    changed();
+  });
+
+  // Drag a pill or a break among the others — or a link in the preview among
+  // its links, which moves its pill: it goes before or after the one under the
+  // pointer, by which half of that the pointer is over.
+  const pillOf = (el: Element | null) => {
+    const link = el?.closest<HTMLElement>('[data-link]');
+    return link ? order.querySelector<HTMLElement>(`[data-key="${link.dataset.link}"]`) : el?.closest<HTMLElement>('#card-order [data-key]') ?? null;
+  };
+  let dragged: HTMLElement | null = null;
+  root.addEventListener('dragstart', (e) => {
+    dragged = pillOf(e.target as Element);
+    if (!dragged) return;
+    e.dataTransfer!.effectAllowed = 'move';
+    e.dataTransfer!.setData('text/plain', dragged.dataset.key!);
+    dragged.classList.add('is-dragging');
+    links[dragged.dataset.key!]?.classList.add('is-dragging');
+  });
+  root.addEventListener('dragover', (e) => {
+    if (!dragged) return;
+    const target = (e.target as Element).closest('[data-link], #card-order [data-key]');
+    const over = pillOf(target);
+    if (!target || !over) return;
+    e.preventDefault();
+    if (over === dragged) return;
+    const r = target.getBoundingClientRect();
+    over[e.clientX < r.left + r.width / 2 ? 'before' : 'after'](dragged);
+    sync();
+  });
+  root.addEventListener('drop', (e) => e.preventDefault());
+  root.addEventListener('dragend', () => {
+    if (!dragged) return;
+    dragged.classList.remove('is-dragging');
+    links[dragged.dataset.key!]?.classList.remove('is-dragging');
+    dragged = null;
+    changed();
+  });
+
+  // A preset's order: the pills in it, and its breaks made afresh.
+  root.addEventListener('card:order', (e) => {
+    const want = (e as CustomEvent<string[]>).detail;
+    const pills = Object.fromEntries([...order.querySelectorAll<HTMLElement>('.cardtune__pair')].map((p) => [p.dataset.key!, p]));
+    order.querySelectorAll('.cardtune__break').forEach((b) => b.remove());
+    const add = document.getElementById('card-break')!;
+    for (const k of want) add.before(k === '/' ? breakChip() : pills[k]);
+    sync();
+  });
+  sync();
+</script>
