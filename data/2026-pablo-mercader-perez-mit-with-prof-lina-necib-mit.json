@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "pablo-mercader-perez-mit-with-prof-lina-necib-mit",
+  "type": "mentoring",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026"
+  },
+  "title": "Pablo Mercader-Perez (MIT) with Prof. Lina Necib (MIT)",
+  "details": "Local dark matter density from pulsar accelerations with physics-informed neural fields",
+  "student": "Pablo Mercader-Perez (MIT) with Prof. Lina Necib (MIT)",
+  "coSupervisors": [
+    "Prof. Lina Necib (MIT)"
+  ],
+  "slug": "pablo-mercader-perez",
+  "person": {
+    "family": "Mercader-Perez",
+    "given": "Pablo",
+    "level": "graduate"
+  }
+}
