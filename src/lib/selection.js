@@ -79,7 +79,6 @@ const cleanCard = (raw) => {
   return out;
 };
 
-/** Section id → false, for the sections whose entries leave their place out. */
 /** Section id → true, or { hIndex } naming its source, for the publication
  *  lists that open with a tally. Sources are names, as headings are. */
 const cleanTally = (raw) => Object.fromEntries(
@@ -89,6 +88,7 @@ const cleanTally = (raw) => Object.fromEntries(
       : v && typeof v.hIndex === 'string' && v.hIndex.length <= 64 ? { hIndex: v.hIndex } : null])
     .filter(([, v]) => v !== null));
 
+/** Section id → false, for the sections whose entries leave their place out. */
 const cleanLocation = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));

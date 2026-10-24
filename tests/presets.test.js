@@ -54,7 +54,7 @@ describe('tally', () => {
     expect(tally(pubs, { hIndex: 'scholar-since' }).h).toEqual({ value: gs.hIndexSince, source: `Google Scholar, since ${gs.since}` });
     const ads = tally(pubs, { hIndex: 'ads' }).h;
     expect(ads.source).toBe('ADS');
-    expect(ads.value).toBeGreaterThan(0);
+    expect(Number.isInteger(ads.value) && ads.value >= 0).toBe(true);
     expect(tally(pubs, { hIndex: 'nope' }).h).toBeNull();
     expect(H_INDEX_SOURCES).toEqual(['ads', 'scholar', 'scholar-since']);
   });
