@@ -5,6 +5,7 @@ import CvHeader from '../../components/CvHeader.astro';
 import CvView from '../../components/CvView.astro';
 import CvToc from '../../components/CvToc.astro';
 import CvFmtRow from '../../components/CvFmtRow.astro';
+import CvCardTune from '../../components/CvCardTune.astro';
 import '../../styles/cv/builder.css';
 import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
@@ -36,6 +37,8 @@ const site = buildInfo();
 const styleOwned = new Set(Object.values(CV_STYLES).flatMap((st) => st.fonts ?? []));
 const builderData = {
   membership,
+  // Each preset's card, which the card's controls start from.
+  card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -109,6 +112,8 @@ const builderData = {
 
         <iframe id="preview" title="CV preview" hidden></iframe>
 
+        <CvCardTune />
+
         <div id="tree">
           <CvView cv={cv} pick picked={picked} level={startLevel} startPreset={START} completeLines={startsComplete} />
         </div>
@@ -130,10 +135,14 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, card: CARD, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
+    // The card's parts, each on or off; and each link's icon and text, a link
+    // keeping only one of them printing that alone, and neither, nothing.
+    const cardBoxes = () => [...document.querySelectorAll('#card input:not([name])')];
+    const markBoxes = (name) => [...document.querySelectorAll(`#card input[name="${name}"]`)];
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
     const unmarkStart = () => {
@@ -364,6 +373,12 @@ const builderData = {
         }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
+        // Its card.
+        const card = (k) => CARD[t.dataset.preset]?.[k] ?? true;
+        for (const b of cardBoxes()) b.checked = Boolean(card(b.value));
+        for (const b of markBoxes('icon')) b.checked = card(b.value) !== false && card(b.value) !== 'text';
+        for (const b of markBoxes('text')) b.checked = card(b.value) !== false && card(b.value) !== 'icon';
+        $('card').dispatchEvent(new CustomEvent('card:order', { detail: CARD[t.dataset.preset].order }));
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -684,6 +699,7 @@ const builderData = {
       syncHeading();
       retire('Style changed — compile again.');
     });
+    $('card').addEventListener('change', () => retire('Card changed — compile again.'));
 
     $('build').addEventListener('click', async () => {
       const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
@@ -702,6 +718,13 @@ const builderData = {
           for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
         }
         model.style = $('style').value;
+        const has = (name) => new Set(markBoxes(name).filter((b) => b.checked).map((b) => b.value));
+        const icon = has('icon'), text = has('text');
+        const shown = (k) => (icon.has(k) && text.has(k) ? true : icon.has(k) ? 'icon' : text.has(k) ? 'text' : false);
+        model.card = Object.fromEntries([...cardBoxes().map((b) => [b.value, b.checked]),
+                                         ...markBoxes('icon').map((b) => [b.value, shown(b.value)])]);
+        // The links' order, "/" for a line break, as the pills stand.
+        model.card.order = [...document.querySelectorAll('#card-order [data-key]')].map((e) => e.dataset.key);
         model.spacing = currentSpacing();
         model.heading = currentHeadings();
         model.place = currentPlace();

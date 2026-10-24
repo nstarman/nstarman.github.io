@@ -3,12 +3,29 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds, CARD_PARTS } from '../src/lib/presets.js';
 import { items } from '../src/lib/data.js';
 
 describe('the presets', () => {
   it('are the four the site offers', () => {
     expect(presetNames).toEqual(['complete', 'np', '2page', '1page']);
+  });
+
+  it('show every part of the card, and its links in the usual order, unless they say otherwise', () => {
+    for (const name of presetNames) {
+      const { card } = resolve(name);
+      expect(Object.keys(card)).toEqual([...CARD_PARTS, 'order']);
+      expect(CARD_PARTS.every((k) => card[k] === true)).toBe(true);
+      // The email and the website share a line, and the profiles take the next.
+      expect(card.order.slice(0, 3)).toEqual(['email', 'website', '/']);
+    }
+  });
+
+  it('print every entry\'s place unless a preset or a section says not to', () => {
+    for (const name of presetNames) {
+      // A list section prints its entries as written, so has no places to leave out.
+      for (const s of resolve(name).sections.filter((x) => !x.key)) expect(s.location).toBe(true);
+    }
   });
 
   it('reject a name that does not exist, rather than rendering nothing', () => {

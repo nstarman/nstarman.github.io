@@ -18,6 +18,15 @@ describe('the model', () => {
     expect(complete.person.name).toBeTruthy();
   });
 
+  it('leaves a place out where the section says to, but not an amount', () => {
+    const cv = { name: 'np' };
+    const place = itemById('cwru-bs');
+    const grant = itemById('astropy-cycle-iii-funding-grant');
+    expect(rowOf(place, cv, { detail: 'full' }).trailing).toBe(place.location);
+    expect(rowOf(place, cv, { detail: 'full', location: false }).trailing).toBe('');
+    expect(rowOf(grant, cv, { detail: 'full', location: false }).trailing).toMatch(/^USD/);
+  });
+
   it('spells months on dates, because the PDF prints them', () => {
     expect(find(complete, 'brinson-prize-fellowship').when).toBe('Feb 2024');
   });

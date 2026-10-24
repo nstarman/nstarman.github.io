@@ -88,13 +88,13 @@ function byline(item) {
   return out;
 }
 
-function trailing(item) {
+function trailing(item, s) {
   if (item.declined) return 'declined';
   if (item.kind === 'accepted') return 'not attended';
   if (item.amount && item.type !== 'award') {
     return money(item.amount);
   }
-  return item.location ?? '';
+  return s.location === false ? '' : item.location ?? '';
 }
 
 /** One item as a row of the model. */
@@ -118,7 +118,7 @@ export function rowOf(item, cv, s, keepLine) {
             // Marked achievements follow every detail line, and have their own gate.
             ...achievementLines(item, cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
-    trailing: trailing(item),
+    trailing: trailing(item, s),
     recipient: item.recipient ?? null,
     recipientInline: cv.recipientInline || (item.recipientInline ?? false),
     status: item.status && item.status !== 'published' ? item.status : null,
@@ -163,7 +163,7 @@ function itemsOf(s, cv, keepLine, group) {
       title: groupTitle(g.items),
       subject: subject(first) ? [{ t: first.institution, b: false }] : [],
       lines: rows.flatMap((r) => r.lines),
-      trailing: first.location ?? '',
+      trailing: s.location === false ? '' : first.location ?? '',
       links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
                        icon: REL_ICON[relKey(home)] ?? 'link' }] : [],
     }];
@@ -190,6 +190,7 @@ export function cvModel(presetName, only, keepLine, opts) {
     preset: cv.name,
     label: cv.label,
     detail: cv.detail,
+    card: cv.card,
     place: cv.place,
     spacing: cv.spacing,
     person,

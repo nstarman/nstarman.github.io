@@ -169,3 +169,54 @@
 
 .inlineopt{display:inline-flex; align-items:center; gap:.35rem; margin-left:.6rem; font-style:normal; font-size:.8rem; line-height:1; color:var(--ink-mute); cursor:pointer}
 .inlinebox{accent-color:var(--accent); width:.95rem; height:.95rem; margin:0; cursor:pointer}
+
+/* The header card, previewed: the PDF's card in the page's type, with a
+   settings button in its corner, as a section has beside its heading. */
+.cardtune{margin:.6rem 0 1.2rem}
+.cardpv{position:relative; display:flex; align-items:center; gap:.9rem; padding:.7rem 2.6rem .7rem .9rem; border-radius:10px;
+  background:var(--surface); border:1px solid var(--rule); font-size:.8rem; line-height:1.3; color:var(--ink)}
+.cardpv__name{display:flex; flex-direction:column; flex:0 0 auto; white-space:nowrap}
+.cardpv__who{font-family:var(--serif); font-size:1.35rem; line-height:1.15}
+.cardpv__contact{display:flex; flex-direction:column; align-items:flex-end; text-align:right; gap:.1rem; margin-left:auto; min-width:0}
+.cardpv__part{display:inline-flex; flex-direction:column; align-items:inherit; transition:opacity .15s}
+.cardpv__part img{display:block}
+.cardpv__portrait img{border-radius:50%; object-fit:cover}
+.cardpv__qr img{background:#fff}
+.cardpv__lines{display:flex; flex-direction:column; align-items:flex-end; gap:.1rem}
+.cardpv__line{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.1rem .5rem}
+.cardpv__link{display:inline-flex; flex-direction:row; align-items:center; gap:.3em; color:var(--accent)}
+.cardpv__link .ico{width:1em; height:1em}
+.cardpv__set{position:absolute; right:.5rem; bottom:.5rem}
+/* Off: gone, as from the PDF, and the card closes up around it. */
+.cardpv .is-off{display:none}
+.cardpv .is-bare .cardpv__label, .cardpv .is-plain .ico{display:none}
+/* A link's pill holds two tick boxes: the link, then its text. */
+.cardtune__pair{display:inline-flex; align-items:center; gap:.6em; padding:.2rem .6rem; border:1px solid transparent; border-radius:2rem;
+  background:var(--ground); font-family:var(--mono); font-size:.72rem; color:var(--ink-mute); transition:.15s}
+.cardtune__pair:has(:checked){color:var(--accent); border-color:var(--accent-line)}
+.cardtune__pair label{display:inline-flex; align-items:center; gap:.4em; cursor:pointer}
+.cardtune__pair label + label{padding-left:.6em; border-left:1px solid var(--rule-strong)}
+.cardtune__pairname{color:var(--ink)}
+.cardtune__pair input{width:.85em; height:.85em; margin:0; accent-color:var(--accent); cursor:pointer}
+/* The section settings' grey row, but its own class: the page's script
+   treats every .fmtrow as a section's. */
+.cardtune__row{display:grid; grid-template-columns:max-content 1fr; align-items:center; gap:.35rem 1.2rem; margin-top:.5rem;
+  padding:.55rem .8rem; background:color-mix(in srgb, var(--ink) 7%, var(--ground)); border-radius:16px; corner-shape:squircle}
+.cardtune__row[hidden]{display:none}
+/* A pill with its tick box inside, accented while ticked, as the Card
+   Builder's parts and extras are. */
+.cardtune__check{display:inline-flex; align-items:center; gap:.4em; padding:.2rem .6rem; border:1px solid transparent; border-radius:2rem;
+  background:var(--ground); font-family:var(--mono); font-size:.72rem; color:var(--ink-mute); cursor:pointer; transition:.15s}
+.cardtune__check:has(:checked){color:var(--accent); border-color:var(--accent-line)}
+.cardtune__check input{width:.85em; height:.85em; margin:0; accent-color:var(--accent); cursor:pointer}
+/* The links' order: pills and line breaks to drag, and + / to add one. */
+.cardtune__pair, .cardtune__break{cursor:grab}
+.cardtune__order .is-dragging, .cardpv .is-dragging{opacity:.4}
+.cardpv__link{cursor:grab}
+.cardtune__break{display:inline-flex; align-items:center; gap:.3em; padding:.2rem .5rem; border:1px dashed var(--accent-line); border-radius:2rem;
+  background:var(--ground); font-family:var(--mono); font-size:.8rem; font-weight:600; color:var(--accent)}
+.cardtune__x{padding:0; border:0; background:none; font:inherit; font-weight:400; color:var(--ink-faint); cursor:pointer}
+.cardtune__x:hover{color:var(--accent)}
+.cardtune__add{padding:.2rem .6rem; border:1px dashed var(--rule-strong); border-radius:2rem; background:none;
+  font-family:var(--mono); font-size:.72rem; color:var(--ink-mute); cursor:pointer}
+.cardtune__add:hover{color:var(--accent); border-color:var(--accent-line)}
