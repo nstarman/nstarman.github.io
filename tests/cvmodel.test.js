@@ -22,7 +22,8 @@ describe('the model', () => {
     const letter = cvModel('letter');
     const np = cvModel('np');
     expect(letter.format).toBe('letter');
-    expect(complete.format).toBeNull();
+    // The preset it borrows from keeps the style's own page.
+    expect(np.format).toBeNull();
     // Achievements are gated by `cvs` too, so they must follow the borrowed membership.
     for (const row of all(letter)) expect(row.lines).toEqual(find(np, row.id).lines);
   });
