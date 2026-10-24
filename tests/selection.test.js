@@ -181,6 +181,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
   });
 
+  it('carries whether the right column is capped through a round trip, and reads none as not', () => {
+    expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
+    expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);
+    expect(decode(JSON.stringify(encode({ items: [], trailcap: 'yes' }))).trailcap).toBe(false);
+  });
+
   it('carries the tallied lists and their h-index through a round trip, dropping nonsense', () => {
     const tally = { publications: { hIndex: 'scholar' }, other: true, bad: 'yes', worse: { hIndex: 3 } };
     expect(decode(JSON.stringify(encode({ items: [], tally }))).tally)

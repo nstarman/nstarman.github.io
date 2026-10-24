@@ -107,7 +107,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -151,6 +151,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
+    // Whether the right-hand column of dated entries is capped. Absent, it is not.
+    trailcap: trailcap === true,
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
@@ -226,6 +228,7 @@ export function decode(text) {
     card: cleanCard(raw.card),
     location: cleanLocation(raw.location),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
+    trailcap: raw.trailcap === true,
     tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
