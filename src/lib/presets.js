@@ -20,8 +20,9 @@ import { items, lists } from './data.js';
 const SERVICES = person.profiles.map((p) => (p.service ?? p.label).toLowerCase());
 export const CARD_PARTS = ['portrait', 'address', 'email', 'website', ...SERVICES, 'qr'];
 /** The card's links in the order they print, "/" breaking the line: the email
- *  and the website sharing one and the profiles the next. */
-export const cardOrder = () => ['email', 'website', '/', ...SERVICES];
+ *  and the website sharing one and the profiles the next — or, on US Letter,
+ *  the email and the website a line each, since at 12pt they do not fit one. */
+export const cardOrder = (letter) => ['email', ...(letter ? ['/'] : []), 'website', '/', ...SERVICES];
 
 /** The h-indices a tally can print, by name: ADS's, computed here from every
  *  publication's citation count as the last ADS refresh left it; and Google
@@ -206,9 +207,10 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
     name,
     label: spec.label,
     detail: spec.detail,
-    // What the PDF's card shows, part by part.
+    // What the PDF's card shows, part by part. Its links' order only where the
+    // preset sets one: otherwise the template's, which follows the page.
     card: { ...Object.fromEntries(CARD_PARTS.map((k) => [k, spec.card?.[k] ?? true])),
-            order: spec.card?.order ?? cardOrder() },
+            ...(spec.card?.order ? { order: spec.card.order } : {}) },
     // The CV that takes every item is also the one that says every line, so it
     // is what `detailsComplete` keys off. Read from the spec rather than by
     // comparing the name to "complete", so a renderer never hard-codes which

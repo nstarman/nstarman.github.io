@@ -53,6 +53,8 @@ const builderData = {
   // links in their usual order, for a selection that does not say.
   card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
   cardOrder: cardOrder(),
+  // On US Letter the email and the website take a line each.
+  cardOrderLetter: cardOrder(true),
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
@@ -147,7 +149,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -168,14 +170,17 @@ const builderData = {
         order: [...document.querySelectorAll('#card-order [data-key]')].map((e) => e.dataset.key),
       };
     };
+    /** The links' usual order for the page: on US Letter the email and the
+     *  website a line each. */
+    const usualOrder = () => ($('format').value === 'letter' ? CARD_ORDER_LETTER : CARD_ORDER);
     /** Set the controls to a card; a part it does not name is on, and without
-     *  an order the links take their usual one. */
+     *  an order the links take their usual one for the page. */
     const setCard = (card = {}) => {
       const at = (k) => card[k] ?? true;
       for (const b of cardBoxes()) b.checked = Boolean(at(b.value));
       for (const b of markBoxes('icon')) b.checked = at(b.value) !== false && at(b.value) !== 'text';
       for (const b of markBoxes('text')) b.checked = at(b.value) !== false && at(b.value) !== 'icon';
-      $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? CARD_ORDER }));
+      $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? usualOrder() }));
     };
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
@@ -411,7 +416,8 @@ const builderData = {
         }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
-        // Its card, and where its entries print their place.
+        // Its card, and where its entries print their place. Not the page: that
+        // is the Page menu's, as the style is the Style menu's.
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
         setTally(TALLY[t.dataset.preset]);
@@ -730,14 +736,15 @@ const builderData = {
       for (const g of columnGroups()) setColumns(g, sel.columns[g.dataset.columnsOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
       setOrder(sel.order.length ? sel.order : FIRST_ORDER);
+      // The page format first, as the card's usual order follows it. A format
+      // this page does not offer is the style's default.
+      $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
       // The card the file was saved with, or, from a file saved before the
       // card, the card as it comes.
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocation(sel.location);
       setTally(sel.tally);
-      // The page format; one this page does not offer is the style's default.
-      $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
       $('trailcap').checked = sel.trailcap;
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
@@ -798,11 +805,19 @@ const builderData = {
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
-    $('format').addEventListener('change', () => retire('Page changed — compile again.'));
     $('trailcap').addEventListener('change', () => retire('Right column changed — compile again.'));
     $('style').addEventListener('change', () => {
       syncHeading();
       retire('Style changed — compile again.');
+    });
+    $('format').addEventListener('change', () => {
+      // Links still in the other page's usual order take this page's; an order
+      // someone set stays as they set it.
+      const was = $('format').value === 'letter' ? CARD_ORDER : CARD_ORDER_LETTER;
+      if (currentCard().order.join() === was.join()) {
+        $('card').dispatchEvent(new CustomEvent('card:order', { detail: usualOrder() }));
+      }
+      retire('Page changed — compile again.');
     });
     $('card').addEventListener('change', () => retire('Card changed — compile again.'));
 
