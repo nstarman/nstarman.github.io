@@ -15,7 +15,7 @@ const service = (p) => (p.service ?? p.label).toLowerCase();
 // and the profile links — with the icon the preview draws for it.
 const MARKED = [
   { part: 'email', name: 'Email', text: person.email, icon: 'email' },
-  { part: 'website', name: 'Website', text: person.website, icon: 'link' },
+  { part: 'website', name: 'Website', text: person.website, icon: 'globe' },
   ...person.profiles.map((p) => ({ part: service(p), name: p.service ?? p.label,
     text: service(p) === 'orcid' ? person.orcid : p.label, icon: service(p) })),
 ];
