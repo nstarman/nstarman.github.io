@@ -43,10 +43,14 @@ const isPicked = (id) => !picked || picked.has(id);
 // choice — inclusion is a tick, not a level.
 // A mentee's marked achievements follow them, gated by their own `cvs` rather
 // than the detail level, exactly as the PDF model has them.
+// A cross-reference to an entry this CV leaves out — a preset may filter the
+// entry a line points at — prints as text rather than as an anchor to nothing.
+const onPage = new Set(cv.sections.flatMap((s) => s.items.map((i) => i.id)));
+const local = (line) => line.map((s) => (s.item && !onPage.has(s.item) ? { t: s.t } : s));
 const detail = (i) => [
   ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []),
   ...achievementLines(i, cv.name, { complete: cv.includeAll }),
-];
+].map(local);
 // Which of those lines only the complete CV shows. They are appended last, so
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.
@@ -296,11 +300,15 @@ const mapFor = (s) => {
     );
   });
   // A run of talk sections shares one wrapper, so the conference map in it
-  // sticks through all of them and stops after the last.
+  // sticks through all of them and stops after the last. A preset may split
+  // the talks into several runs; the map is one element with one id, so it sits
+  // in the first and plots every talk on the page.
   return run.talks ? (
     <div class="cvtalks">
       {sections}
-      <ConfMini ids={run.sections.flatMap(({ s }) => s.items.map((item) => item.id))} />
+      {run === runs.find((r) => r.talks) && (
+        <ConfMini ids={runs.filter((r) => r.talks).flatMap((r) => r.sections.flatMap(({ s }) => s.items.map((item) => item.id)))} />
+      )}
     </div>
   ) : sections;
 })}
