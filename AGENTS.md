@@ -207,11 +207,27 @@ the pull request instead of leaving it green with nothing run.
 ## Feature work with Spec Kit
 
 Adding an item is sections 1–4. A change goes through Spec Kit when it changes
-what an area spec says the system does; data items, fixes that bring the code
-back in line with its spec, and refactors don't. Its commands are installed
-for Claude Code and Copilot: `/speckit-specify`, then `/speckit-plan`,
-`/speckit-tasks` and `/speckit-implement`. `/speckit-plan` checks the plan
-against the constitution.
+what an area spec says the system does — a new option, control, field, workflow
+or rule, however small; data items, fixes that bring the code back in line with
+its spec, and refactors don't. When unsure, it does: a feature that skips the
+steps leaves the area spec silent or wrong about it.
+
+**Run the steps; do not write the feature's `spec.md` by hand, and do not skip
+to editing the area spec.** In order, each from its own command (installed for
+Claude Code and Copilot; the scripts they call are in `.specify/scripts/bash/`):
+
+1. `/speckit-specify` — creates `specs/NNN-<name>/spec.md` from this repo's
+   template, naming the area spec it folds into, and its quality checklist.
+2. `/speckit-plan` — fills the plan and checks it against **every article of the
+   constitution**, one row each; a VIOLATION needs a justification.
+3. `/speckit-tasks`, then `/speckit-implement` — which works the tasks off and
+   ticks them.
+4. The last push: fold the requirements into the area spec (below) and delete
+   the folder and `.specify/feature.json`.
+
+An agent makes a feature's PR only after step 2 has passed, and says in the PR
+which steps it ran. Review comments and CI fixes on an open PR are not new
+features and need no new run.
 
 The specs named for an area — `specs/data-model/`, `specs/cards/` and the rest —
 describe the system as it is. A change to what one covers updates it in the

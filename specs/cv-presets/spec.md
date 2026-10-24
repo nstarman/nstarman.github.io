@@ -112,14 +112,17 @@ cards (`specs/cards/spec.md`).
   `includeAll`) or from none; tick entries and individual lines; toggle "Select"
   on a partly ticked section; group or ungroup an institution's roles; reorder
   sections (buttons, or a long-hold drag); set grid columns, heading style,
-  spacing, legend place, recipient-inline and PDF style; save and load a
-  selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
+  spacing, legend place, recipient-inline, PDF style and page format (the style's
+  default paper, or A4); turn header-card parts off and reorder its links; leave
+  a section's places out; open a publication list with its tally and an h-index
+  from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
   order, group })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
-  spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group,
-  and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
+  link order), location (sections whose places are left out, `false` only), page
+  format (`page`), tally (`true` or `{ hIndex }` per section), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`
@@ -129,17 +132,44 @@ cards (`specs/cards/spec.md`).
   compiles every `dist/cv/*.json`, then fails unless `starkman-cv-1page.pdf` has
   1 page and `starkman-cv-2page.pdf` has 2 (the largest `/Count` in the PDF).
   *Enforced:* `.github/workflows/ci.yml` step "CV PDFs".
+- **FR-023** `card` on a preset turns parts of the PDF's header card off by name:
+  `portrait`, `address`, `email`, `website`, `qr`, or a profile by its `service`;
+  everything else shows. The email, the website or a profile set to `"icon"`
+  shows its mark without its label, and `"text"` its label without its mark.
+  `card.order` lists the email, the website and the profiles in the order they
+  print, `"/"` breaking the line; absent, the email and website share a line and
+  the profiles take the next. The builder's card controls set the same. *Enforced:*
+  `tests/presets.test.js` ("show every part of the card…"),
+  `tests/selection.test.js` ("carries the card through a round trip…").
+- **FR-024** `location: false` on a preset or a section leaves its entries'
+  places out of the right-hand column; a section's own `location` wins over the
+  preset's, and the builder's Places box over both. An amount still prints.
+  *Enforced:* `tests/presets.test.js` ("print every entry's place…",
+  "lets the builder leave a section's places out…"), `tests/cvmodel.test.js`.
+- **FR-025** A section may set `tally: true` to open with its publications'
+  headline numbers — how many papers, how many still submitted, how many I wrote
+  first and how many a student I supervised led — counted from the records, or
+  `tally: { "hIndex": "ads" | "scholar" | "scholar-since" }` to add an h-index,
+  said with its source, since the sources disagree: ADS's is computed from the
+  records' citation counts, Google Scholar's two are read by hand into
+  `config/person.json` (`specs/refresh/spec.md`, FR-024, for how they are kept
+  current). The builder's Tally box and h-index menu choose the same, over the
+  preset's. *Enforced:* `tests/presets.test.js` ("tally").
+- **FR-026** The page format is a choice apart from the style and the length:
+  the style's default paper, or `"a4"` whatever the style. The builder's Page
+  menu sets it in the model (`format`); a build may pass `--input page=…`. The
+  pre-built PDFs keep each style's default page. *Enforced:* review.
 
 ## Key Entities
 
 - **Section definition** (`$sections.<id>`): `heading`, `short?`, `icon`,
   `match` (with `not?`) *or* `list`, `layout?` (`publications`, `grid`),
   `groupBy?`, `cluster?`, `sort?`, `page?`, `limit?`, `columns?`, `detail?`,
-  `collapsed?`.
+  `collapsed?`, `tally?`.
 - **Preset**: `label`, `detail` (`full` | `summary`), `includeAll?`,
-  `sections`, `place?`, `spacing?`, `recipientInline?`.
+  `sections`, `place?`, `spacing?`, `recipientInline?`, `card?`, `location?`.
 - **Resolved CV** (`resolve`): `name`, `label`, `detail`, `includeAll`, `place`,
-  `recipientInline`, `spacing`, and sections each with `items` (or `entries` and
+  `recipientInline`, `spacing`, `card`, and sections each with `items` (or `entries` and
   `key`) and `dropped`.
 - **Render model** (`cvModel`): `preset`, `label`, `detail`, `place`, `spacing`,
   `person`, sections with `groups`, `entries` (spans), and rows (`id`, `when`,
