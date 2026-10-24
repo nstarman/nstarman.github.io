@@ -41,6 +41,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
+          check-latest: true  # the runner image can lag a security release a dependency then requires
           cache: npm
       - run: npm ci
 
