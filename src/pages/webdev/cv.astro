@@ -102,6 +102,13 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
+          {/* The page, apart from the look: the style's own paper, or A4
+              whatever the style. */}
+          <label class="bl" for="format">Page</label>
+          <select class="btn btn--sel" id="format">
+            <option value="">Style's own</option>
+            <option value="a4">A4</option>
+          </select>
           <button class="btn btn--go" type="button" id="build"
                   title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -618,7 +625,8 @@ const builderData = {
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          group: currentGroup(), card: currentCard(), location: currentLocation(), site: SITE });
+                          group: currentGroup(), card: currentCard(), location: currentLocation(),
+                          page: $('format').value || null, site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -667,6 +675,8 @@ const builderData = {
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocation(sel.location);
+      // The page format; one this page does not offer is the style's own.
+      $('format').value = [...$('format').options].some((o) => o.value === sel.page) ? sel.page : '';
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -733,6 +743,7 @@ const builderData = {
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
+    $('format').addEventListener('change', () => retire('Page changed — compile again.'));
     $('style').addEventListener('change', () => {
       syncHeading();
       retire('Style changed — compile again.');
@@ -757,6 +768,7 @@ const builderData = {
           for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
         }
         model.style = $('style').value;
+        model.format = $('format').value || null;
         model.card = currentCard();
         model.spacing = currentSpacing();
         model.heading = currentHeadings();

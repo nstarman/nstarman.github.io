@@ -102,11 +102,15 @@
 }
 #let portrait = shows("portrait")
 #let qr = shows("qr")
+// The page format, a choice apart from the style and the length: none is the
+// style's own paper; "a4" is A4 whatever the style. The builder sets it in the
+// model, and a build can pass `--input page=…`.
+#let paper = sys.inputs.at("page", default: cv.at("format", default: none))
 
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
-  paper: if flat { "us-letter" } else { "a4" },
+  paper: if paper == "a4" { "a4" } else if flat { "us-letter" } else { "a4" },
   margin: if flat { (x: 1in, top: 0.85in, bottom: 1in) }
           else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
           else { (x: 1.05cm, top: 1.19cm, bottom: 1.78cm) },
