@@ -11,7 +11,7 @@
 .builderbar{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0}
 .builderbar--go{margin-bottom:.3rem}
 /* Room between the Start-from row and the header card under it. */
-.builderbar:not(.builderbar--go){margin-bottom:1.6rem}
+.builderbar:not(.builderbar--go){margin-bottom:2.2rem}
 /* A label is bold and in full ink, as the Card Builder's are, so it reads
    apart from the buttons it labels. */
 .builderbar .bl{font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--ink); margin-right:.2rem}
