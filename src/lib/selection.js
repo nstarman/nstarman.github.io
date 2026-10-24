@@ -62,6 +62,23 @@ const cleanGroup = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' ? raw : {})
     .filter(([k, v]) => typeof v === 'boolean' && k.length <= 128).slice(0, 64));
 
+/** The header card: part → on, off, or a link's `"icon"` or `"text"` alone; and
+ *  `order`, the links in the order they print, "/" breaking the line. Names,
+ *  as headings are: which parts exist is the page's to say. Absent, `null`:
+ *  the card as it comes, every part on, in the usual order. */
+const CARD_VALUES = [true, false, 'icon', 'text'];
+const cleanCard = (raw) => {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out = {};
+  for (const [k, v] of Object.entries(raw).slice(0, 64)) {
+    if (k !== 'order' && k.length <= 64 && CARD_VALUES.includes(v)) out[k] = v;
+  }
+  if (Array.isArray(raw.order)) {
+    out.order = raw.order.filter((k) => typeof k === 'string' && k.length <= 64).slice(0, 64);
+  }
+  return out;
+};
+
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
   : []);
@@ -76,7 +93,7 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -112,6 +129,9 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     columns: cleanColumns(columns),
     // Institutions whose roles are grouped, or not, against the records' say.
     group: cleanGroup(group),
+    // What the header card shows, and its links' order. Absent, the card as it
+    // comes, which is what every selection saved before the card means.
+    card: cleanCard(card),
   };
 }
 
@@ -123,7 +143,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, style, spacing, heading, place, prefix, order, columns, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -181,6 +201,7 @@ export function decode(text) {
     order: cleanOrder(raw.order),
     columns: cleanColumns(raw.columns),
     group: cleanGroup(raw.group),
+    card: cleanCard(raw.card),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

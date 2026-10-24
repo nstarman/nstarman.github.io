@@ -173,7 +173,9 @@ const START = cardOrder();
     const pills = Object.fromEntries([...order.querySelectorAll<HTMLElement>('.cardtune__pair')].map((p) => [p.dataset.key!, p]));
     order.querySelectorAll('.cardtune__break').forEach((b) => b.remove());
     const add = document.getElementById('card-break')!;
-    for (const k of want) add.before(k === '/' ? breakChip() : pills[k]);
+    // A link this page does not have is skipped. The order's own pills move to
+    // the end, in its order, so any it leaves out stay where they were, ahead of them.
+    for (const k of want) if (k === '/' || pills[k]) add.before(k === '/' ? breakChip() : pills[k]);
     sync();
   });
   sync();

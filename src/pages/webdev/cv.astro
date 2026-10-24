@@ -7,7 +7,7 @@ import CvToc from '../../components/CvToc.astro';
 import CvFmtRow from '../../components/CvFmtRow.astro';
 import CvCardTune from '../../components/CvCardTune.astro';
 import '../../styles/cv/builder.css';
-import { resolve, memberIds, presetNames, preset } from '../../lib/presets.js';
+import { resolve, memberIds, presetNames, preset, cardOrder } from '../../lib/presets.js';
 import { buildInfo } from '../../lib/buildinfo.js';
 import CV_STYLES from '../../../cv/lib/styles.json';
 
@@ -37,8 +37,10 @@ const site = buildInfo();
 const styleOwned = new Set(Object.values(CV_STYLES).flatMap((st) => st.fonts ?? []));
 const builderData = {
   membership,
-  // Each preset's card, which the card's controls start from.
+  // Each preset's card, which the card's controls start from; and the card's
+  // links in their usual order, for a selection that does not say.
   card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
+  cardOrder: cardOrder(),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -135,7 +137,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -143,6 +145,28 @@ const builderData = {
     // keeping only one of them printing that alone, and neither, nothing.
     const cardBoxes = () => [...document.querySelectorAll('#card input:not([name])')];
     const markBoxes = (name) => [...document.querySelectorAll(`#card input[name="${name}"]`)];
+    /** The card as the controls stand: part → on or off, a link → true, its
+     *  `"icon"` or `"text"` alone, or false; and its links' order, "/" for a
+     *  line break, as the pills stand. */
+    const currentCard = () => {
+      const has = (name) => new Set(markBoxes(name).filter((b) => b.checked).map((b) => b.value));
+      const icon = has('icon'), text = has('text');
+      const shown = (k) => (icon.has(k) && text.has(k) ? true : icon.has(k) ? 'icon' : text.has(k) ? 'text' : false);
+      return {
+        ...Object.fromEntries([...cardBoxes().map((b) => [b.value, b.checked]),
+                               ...markBoxes('icon').map((b) => [b.value, shown(b.value)])]),
+        order: [...document.querySelectorAll('#card-order [data-key]')].map((e) => e.dataset.key),
+      };
+    };
+    /** Set the controls to a card; a part it does not name is on, and without
+     *  an order the links take their usual one. */
+    const setCard = (card = {}) => {
+      const at = (k) => card[k] ?? true;
+      for (const b of cardBoxes()) b.checked = Boolean(at(b.value));
+      for (const b of markBoxes('icon')) b.checked = at(b.value) !== false && at(b.value) !== 'text';
+      for (const b of markBoxes('text')) b.checked = at(b.value) !== false && at(b.value) !== 'icon';
+      $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? CARD_ORDER }));
+    };
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
     const unmarkStart = () => {
@@ -374,11 +398,7 @@ const builderData = {
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
         // Its card.
-        const card = (k) => CARD[t.dataset.preset]?.[k] ?? true;
-        for (const b of cardBoxes()) b.checked = Boolean(card(b.value));
-        for (const b of markBoxes('icon')) b.checked = card(b.value) !== false && card(b.value) !== 'text';
-        for (const b of markBoxes('text')) b.checked = card(b.value) !== false && card(b.value) !== 'icon';
-        $('card').dispatchEvent(new CustomEvent('card:order', { detail: CARD[t.dataset.preset].order }));
+        setCard(CARD[t.dataset.preset]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -585,7 +605,7 @@ const builderData = {
                           style: $('style').value, spacing: currentSpacing(),
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          group: currentGroup(), site: SITE });
+                          group: currentGroup(), card: currentCard(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -629,6 +649,9 @@ const builderData = {
       for (const g of columnGroups()) setColumns(g, sel.columns[g.dataset.columnsOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
       setOrder(sel.order.length ? sel.order : FIRST_ORDER);
+      // The card the file was saved with, or, from a file saved before the
+      // card, the card as it comes.
+      setCard(sel.card ?? {});
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -718,13 +741,7 @@ const builderData = {
           for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
         }
         model.style = $('style').value;
-        const has = (name) => new Set(markBoxes(name).filter((b) => b.checked).map((b) => b.value));
-        const icon = has('icon'), text = has('text');
-        const shown = (k) => (icon.has(k) && text.has(k) ? true : icon.has(k) ? 'icon' : text.has(k) ? 'text' : false);
-        model.card = Object.fromEntries([...cardBoxes().map((b) => [b.value, b.checked]),
-                                         ...markBoxes('icon').map((b) => [b.value, shown(b.value)])]);
-        // The links' order, "/" for a line break, as the pills stand.
-        model.card.order = [...document.querySelectorAll('#card-order [data-key]')].map((e) => e.dataset.key);
+        model.card = currentCard();
         model.spacing = currentSpacing();
         model.heading = currentHeadings();
         model.place = currentPlace();
