@@ -116,7 +116,7 @@ export function rowOf(item, cv, s, keepLine) {
     // inline links, and Typst would print the markup verbatim otherwise.
     lines: [...detail.filter((_, i) => keepLine ? keepLine(item.id, i) : s.detail === 'full'),
             // Marked achievements follow every detail line, and have their own gate.
-            ...achievementLines(item, cv.name, { complete: cv.includeAll })
+            ...achievementLines(item, cv.members ?? cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
     trailing: trailing(item, s),
     recipient: item.recipient ?? null,
@@ -190,6 +190,7 @@ export function cvModel(presetName, only, keepLine, opts) {
     preset: cv.name,
     label: cv.label,
     detail: cv.detail,
+    format: cv.format,
     card: cv.card,
     place: cv.place,
     spacing: cv.spacing,
@@ -202,6 +203,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       columns: s.columns,
       detail: s.detail,
       dropped: s.dropped,
+      tally: s.tally ?? null,
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
       // Submitted / Accepted / Published, as the LaTeX CV does.

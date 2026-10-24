@@ -37,6 +37,10 @@ const site = buildInfo();
 const styleOwned = new Set(Object.values(CV_STYLES).flatMap((st) => st.fonts ?? []));
 const builderData = {
   membership,
+  // Whose `cvs` a preset reads, for its mentees' achievements as for its items.
+  members: Object.fromEntries(presetNames.map((n) => [n, preset(n).members ?? n])),
+  // Each preset's page format, which the Page menu starts from.
+  format: Object.fromEntries(presetNames.map((n) => [n, preset(n).format ?? ''])),
   // Each preset's card, which the card's controls start from; and the card's
   // links in their usual order, for a selection that does not say.
   card: Object.fromEntries(presetNames.map((n) => [n, resolve(n).card])),
@@ -102,6 +106,13 @@ const builderData = {
           <select class="btn btn--sel" id="style">
             {Object.entries(CV_STYLES).map(([n, st]) => <option value={n}>{st.label}</option>)}
           </select>
+          {/* The page shape, apart from the look: the style's own, or US Letter
+              with inch margins, nothing under 12pt and every page numbered. */}
+          <label class="bl" for="format">Page</label>
+          <select class="btn btn--sel" id="format">
+            <option value="">Style's own</option>
+            <option value="letter">US Letter, 12pt</option>
+          </select>
           <button class="btn btn--go" type="button" id="build"
                   title="The compiler is ~10 MB and loads on first use.">Compile PDF</button>
           <a class="btn" id="download" download="starkman-cv-custom.pdf" hidden>Download</a>
@@ -140,7 +151,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { membership: MEMBERSHIP, members: MEMBERS, format: FORMAT, card: CARD, cardOrder: CARD_ORDER, sectionOrder: SECTION_ORDER, location: LOCATION, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -390,7 +401,7 @@ const builderData = {
         // An achievement prints by its own `cvs`, whatever the detail level.
         subs().forEach((b) => {
           b.checked = b.dataset.cvs !== undefined
-            ? achievementTicked(b.dataset.cvs.split(',').filter(Boolean), t.dataset.preset, unabridged)
+            ? achievementTicked(b.dataset.cvs.split(',').filter(Boolean), MEMBERS[t.dataset.preset] ?? t.dataset.preset, unabridged)
             : full && (b.dataset.complete === undefined || unabridged);
         });
         // Its grids' columns too, the usual 3 where it does not say.
@@ -403,7 +414,9 @@ const builderData = {
         }
         for (const f of spacingFields()) writeSpacing(f, SPACING[t.dataset.preset]?.[keyOf(f)] ?? null);
         for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
-        // Its card, and where its entries print their place.
+        // Its page format, which the menu beside Style shows; its card; and
+        // where its entries print their place.
+        $('format').value = FORMAT[t.dataset.preset] ?? '';
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
         applyDetail();
@@ -737,6 +750,7 @@ const builderData = {
       syncHeading();
       retire('Style changed — compile again.');
     });
+    $('format').addEventListener('change', () => retire('Page changed — compile again.'));
     $('card').addEventListener('change', () => retire('Card changed — compile again.'));
 
     $('build').addEventListener('click', async () => {
@@ -757,6 +771,7 @@ const builderData = {
           for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
         }
         model.style = $('style').value;
+        model.format = $('format').value || null;
         model.card = currentCard();
         model.spacing = currentSpacing();
         model.heading = currentHeadings();

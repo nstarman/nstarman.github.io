@@ -86,6 +86,12 @@
 // Builder-only too.
 #let placeof = cv.at("place", default: (:))
 
+// A page format a preset may set, as opposed to a style: "letter" is the shape
+// formal submissions ask for — US Letter, inch margins all round, no text under
+// 12pt, and every page numbered. It changes the page, not the look, so it
+// combines with any style.
+#let letter = cv.at("format", default: none) == "letter"
+#let FLOOR = 12pt
 // What the header card shows, part by part — the portrait, the address, the
 // email, the website, each profile link by its service, the QR. Each is on
 // unless a preset or the builder turns it off, and the card closes up around
@@ -106,14 +112,16 @@
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
-  paper: if flat { "us-letter" } else { "a4" },
-  margin: if flat { (x: 1in, top: 0.85in, bottom: 1in) }
+  paper: if flat or letter { "us-letter" } else { "a4" },
+  margin: if letter { 1in }
+          else if flat { (x: 1in, top: 0.85in, bottom: 1in) }
           else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
           else { (x: 1.05cm, top: 1.19cm, bottom: 1.78cm) },
   // fancyhdr in the reference: name, title and page number in grey, from the
-  // second page on.
-  footer: if flat { align(center, text(fill: faint, size: 10.5pt)[Last updated: #datetime.today().display("[year]-[month]-[day]")]) },
-  header: if flat { context if counter(page).get().first() > 1 {
+  // second page on. The letter format numbers every page, the first included.
+  footer: if letter { align(center, text(fill: faint, size: FLOOR, context counter(page).display("1 of 1", both: true))) }
+          else if flat { align(center, text(fill: faint, size: 10.5pt)[Last updated: #datetime.today().display("[year]-[month]-[day]")]) },
+  header: if flat and not letter { context if counter(page).get().first() > 1 {
     set text(fill: faint, size: 10.5pt)
     grid(columns: (1fr, auto, 1fr), p.name, [Curriculum Vitae], align(right)[#counter(page).display()])
   } },
@@ -132,6 +140,18 @@
   // treatment and get it back individually below; #tnum is the helper.
   number-type: look.numbers,
 )
+// The letter format's floor: whatever size a part of the CV asks for — a
+// contact line, a status tag, a mark — it prints at no less than 12pt. One rule
+// here rather than a check at every size below, so a size added later cannot
+// slip under it.
+#show text: it => if not letter { it } else {
+  context if text.size < FLOOR { set text(size: FLOOR); it } else { it }
+}
+// Two things that rule cannot see. Superscripts — the student marks — are
+// scaled at shaping time, to 0.6em; and justified lines hang their last comma
+// or hyphen past the right margin, which the inch margin forbids.
+#set super(size: if letter { 1em } else { 0.6em })
+#set text(overhang: not letter)
 #show strong: set text(weight: look.strong)
 
 #set par(
@@ -178,8 +198,11 @@
 // they can be distributed rather than merely stacked. Every figure here is
 // transcription data — street number, postcode, ORCID iD — so it stays lining.
 // The links print in `order`, a "/" breaking the line. By default the email
-// and the website share one and the profiles the next.
-#let order = card.at("order", default: ("email", "website", "/", ..services))
+// and the website share one and the profiles the next — on US Letter the email
+// and the website a line each, since at 12pt they do not fit on one and
+// wrapping left the globe behind on the email's.
+#let order = card.at("order", default: if letter { ("email", "/", "website", "/", ..services) }
+  else { ("email", "website", "/", ..services) })
 #let segments = order.fold(((),), (acc, k) => if k == "/" { acc + ((),) }
   else { acc.slice(0, -1) + (acc.last() + (k,),) })
 // A line of profiles alone is set a size smaller, and closer, as it always was.
@@ -195,7 +218,7 @@
 // and line up with its edges. Any other number stacks at an even gap, centred:
 // spread, fewer lines drifted apart and pulled the address's two lines from
 // each other, and more could not fit.
-#let fixed = contactlines.len() == 4
+#let fixed = not letter and contactlines.len() == 4
 
 // Both columns hold four lines but at different sizes, so stacking them left
 // the contact block 8pt shorter than the name block and, being centred in the
@@ -241,6 +264,9 @@
 
     namecol,
 
+    // At the letter format's 12pt the contact lines are taller than the name
+    // column, and squeezing them into its height overprints them; there the
+    // block takes its own height and the header grows to fit.
     block(height: if fixed { h } else { auto }, {
       set par(justify: false, leading: 0.38em)
       set text(number-type: "lining")
@@ -340,10 +366,16 @@
   }
 }
 
-#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else {
+// The right-hand column is as wide as its widest location or amount. At the
+// letter format's 12pt that is nearly two inches, taken from every entry's
+// text, so there it is capped and the longest — "College Station, TX, USA" —
+// wrap onto a second line instead.
+#let TRAILCAP = 1.3in
+#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
   set par(justify: false)
+  let widest = calc.max(0pt, ..items.map(it => measure(tnum(text(size: look.sub)[#it.trailing])).width))
   grid(
-    columns: (auto, 1fr, auto),
+    columns: (auto, 1fr, if letter { calc.min(widest, TRAILCAP) } else { auto }),
     column-gutter: 12pt,
     row-gutter: gutter,
     align: (left + top, left + top, right + top),
@@ -355,7 +387,7 @@
       ))
       .flatten(),
   )
-}
+} }
 
 // ── publications ──────────────────────────────────────────────────────────
 // Numbered, and the count runs through the Submitted / Accepted / Published
@@ -406,7 +438,14 @@
 
 // `legend` is the key's alignment on its own line, or `none` where it has
 // gone up onto the heading's.
+// The list's headline numbers, where the preset asks for them — the line a
+// reader takes in before the list itself.
+#let tallyline(t) = block(sticky: true, below: gap("publications.legend", "legend"), text(size: look.sub)[
+  #strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised]. h-index #t.h.
+])
+
 #let publications(section, legend: left) = {
+  if section.at("tally", default: none) != none { tallyline(section.tally) }
   if legend != none and hasstudents(section) {
     // Sticky, so a wider gap below it can never strand it at a page foot;
     // full width, or an auto block shrinks to the key and it cannot go right.

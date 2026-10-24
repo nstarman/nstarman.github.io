@@ -3,16 +3,29 @@
 // `% SKIP: (*)` preprocessor, and the page counts depend on it.
 
 import { describe, expect, it } from 'vitest';
-import { presetNames, preset, resolve, memberIds, CARD_PARTS } from '../src/lib/presets.js';
+import { presetNames, preset, resolve, memberIds, tally, CARD_PARTS } from '../src/lib/presets.js';
 import { items } from '../src/lib/data.js';
 
 describe('the presets', () => {
-  it('are the four the site offers', () => {
-    expect(presetNames).toEqual(['complete', 'np', '2page', '1page']);
+  it('are the five the site offers', () => {
+    expect(presetNames).toEqual(['complete', 'np', 'letter', '2page', '1page']);
+  });
+
+  it('can take another preset\'s membership, as the letter CV takes NP\'s', () => {
+    const ids = (cv) => cv.sections.flatMap((s) => s.items.map((i) => i.id));
+    const letter = resolve('letter');
+    expect(letter.members).toBe('np');
+    expect(letter.format).toBe('letter');
+    // NP's items, in the letter CV's own section order, less what it filters out:
+    // three service entries, and talks accepted but not given.
+    const dropped = ['massey-house-committee', 'sigma-nu-alumni-advisory-board', 'canadian-astronomical-society-casca',
+      ...items.filter((i) => i.type === 'presentation' && i.kind === 'accepted').map((i) => i.id)];
+    expect(new Set(ids(letter))).toEqual(new Set(ids(resolve('np')).filter((id) => !dropped.includes(id))));
+    expect(resolve('np').format).toBeNull();
   });
 
   it('show every part of the card, and its links in the usual order, unless they say otherwise', () => {
-    for (const name of presetNames) {
+    for (const name of presetNames.filter((n) => !preset(n).card && !preset(n).format)) {
       const { card } = resolve(name);
       expect(Object.keys(card)).toEqual([...CARD_PARTS, 'order']);
       expect(CARD_PARTS.every((k) => card[k] === true)).toBe(true);
@@ -22,14 +35,44 @@ describe('the presets', () => {
   });
 
   it('print every entry\'s place unless a preset or a section says not to', () => {
-    for (const name of presetNames) {
+    for (const name of presetNames.filter((n) => preset(n).location === undefined)) {
       // A list section prints its entries as written, so has no places to leave out.
       for (const s of resolve(name).sections.filter((x) => !x.key)) expect(s.location).toBe(true);
     }
   });
 
+  it('give the letter CV its own card: no portrait, ORCID alone, the email and the website a line each', () => {
+    const { card } = resolve('letter');
+    expect(card.portrait).toBe(false);
+    expect(['ads', 'arxiv', 'zenodo'].map((k) => card[k])).toEqual([false, false, false]);
+    expect(card.orcid).toBe(true);
+    expect(card.order.slice(0, 3)).toEqual(['email', '/', 'website']);
+  });
+
+  it('end the letter CV with its publications, tallied', () => {
+    const letter = resolve('letter');
+    const pubs = letter.sections.at(-1);
+    expect(pubs.id).toBe('publications');
+    expect(pubs.tally.total).toBe(pubs.items.length);
+    expect(resolve('np').sections.find((s) => s.id === 'publications').tally).toBeNull();
+  });
+
   it('reject a name that does not exist, rather than rendering nothing', () => {
     expect(() => preset('nope')).toThrow(/Unknown CV preset/);
+  });
+});
+
+describe('tally', () => {
+  const me = { me: true };
+  const mentee = { mentee: 'someone' };
+  it('counts first-author and student-led papers, and the h-index', () => {
+    const pubs = [
+      { authors: [me], citations: 10, status: 'published' },
+      { authors: [mentee, me], citations: 3, status: 'published' },
+      { authors: [{}, me], citations: 2, status: 'submitted' },
+      { authors: [me] },
+    ];
+    expect(tally(pubs)).toEqual({ total: 4, submitted: 1, first: 2, student: 1, h: 2 });
   });
 });
 

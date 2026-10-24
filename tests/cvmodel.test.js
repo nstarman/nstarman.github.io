@@ -18,6 +18,25 @@ describe('the model', () => {
     expect(complete.person.name).toBeTruthy();
   });
 
+  it('carries the page format, and the same lines as the preset it borrows from', () => {
+    const letter = cvModel('letter');
+    const np = cvModel('np');
+    expect(letter.format).toBe('letter');
+    expect(complete.format).toBeNull();
+    // Achievements are gated by `cvs` too, so they must follow the borrowed membership.
+    for (const row of all(letter)) expect(row.lines).toEqual(find(np, row.id).lines);
+  });
+
+  it('leaves places out of the letter CV, but for its talks', () => {
+    const letter = cvModel('letter');
+    const sec = (id) => letter.sections.find((s) => s.id === id).items;
+    expect(sec('education').every((i) => i.trailing === '')).toBe(true);
+    expect(sec('talks-invited').some((i) => i.trailing !== '')).toBe(true);
+    // A grant's amount is not a place.
+    expect(sec('grants-major').some((i) => i.trailing.startsWith('USD'))).toBe(true);
+    expect(find(cvModel('np'), 'cwru-bs').trailing).not.toBe('');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');
