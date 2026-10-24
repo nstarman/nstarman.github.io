@@ -408,9 +408,17 @@
   #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
   #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
 
+// The list's headline numbers, where the preset or the builder asks for them —
+// the line a reader takes in before the list itself — and the h-index with its
+// source, where one is asked for.
+#let tallyline(t) = block(sticky: true, below: gap("publications.legend", "legend"), text(size: look.sub)[
+  #strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#if t.at("h", default: none) != none [ h-index #t.h.value (#t.h.source).]
+])
+
 // `legend` is the key's alignment on its own line, or `none` where it has
 // gone up onto the heading's.
 #let publications(section, legend: left) = {
+  if section.at("tally", default: none) != none { tallyline(section.tally) }
   if legend != none and hasstudents(section) {
     // Sticky, so a wider gap below it can never strand it at a page foot;
     // full width, or an auto block shrinks to the key and it cannot go right.

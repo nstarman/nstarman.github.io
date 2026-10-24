@@ -181,6 +181,13 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
   });
 
+  it('carries the tallied lists and their h-index through a round trip, dropping nonsense', () => {
+    const tally = { publications: { hIndex: 'scholar' }, other: true, bad: 'yes', worse: { hIndex: 3 } };
+    expect(decode(JSON.stringify(encode({ items: [], tally }))).tally)
+      .toEqual({ publications: { hIndex: 'scholar' }, other: true });
+    expect(decode(JSON.stringify(encode({ items: [] }))).tally).toEqual({});
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

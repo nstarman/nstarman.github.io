@@ -82,5 +82,14 @@
       "label": "Google Scholar",
       "url": "https://scholar.google.com/citations?user=WxfvklgAAAAJ"
     }
-  ]
+  ],
+  "metrics": {
+    "$comment": "Numbers no record holds, read off their source by hand, with the date they were read. Google Scholar shows two h-indices: over all years, and since the year five years back.",
+    "googleScholar": {
+      "hIndex": 10,
+      "hIndexSince": 10,
+      "since": 2021,
+      "asOf": "2026-10-24"
+    }
+  }
 }
