@@ -158,6 +158,19 @@ describe('tolerating the merely odd', () => {
     expect(read({}).columns).toEqual({});
   });
 
+  it('carries the card through a round trip, dropping nonsense', () => {
+    const card = { portrait: false, qr: true, ads: 'icon', orcid: 'text', zenodo: false,
+      bogus: 'maybe', order: ['email', '/', 'website', '/', 'orcid', 7] };
+    const back = decode(JSON.stringify(encode({ items: [], card }))).card;
+    expect(back).toEqual({ portrait: false, qr: true, ads: 'icon', orcid: 'text', zenodo: false,
+      order: ['email', '/', 'website', '/', 'orcid'] });
+  });
+
+  it('reads no card as null, so a file saved before the card loads the card as it comes', () => {
+    expect(decode(JSON.stringify(encode({ items: [] }))).card).toBeNull();
+    expect(decode(JSON.stringify({ format: FORMAT, version: VERSION, items: [], card: [1] })).card).toBeNull();
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });
