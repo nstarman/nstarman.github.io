@@ -340,7 +340,8 @@
 // keeps an entry to two lines rather than three.
 #let entrybody(it, tail: none) = {
   strong(it.title)
-  if it.subject.len() > 0 [, #bolded(it.subject)]
+  // An education entry may have its institution on its own line, below the degree (`below`).
+  if it.subject.len() > 0 { if it.at("below", default: false) [#linebreak()#bolded(it.subject)] else [, #bolded(it.subject)] }
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
   if it.links.len() > 0 [ #trail(it.links)]
   // Styles with no right-hand column hand the location in here, so it ends the

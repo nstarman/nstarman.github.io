@@ -212,6 +212,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], paperIds: 'yes' }))).paperIds).toBe(false);
   });
 
+  it('carries whether Education puts the university below, and reads none as off', () => {
+    expect(decode(JSON.stringify(encode({ items: [], schoolBelow: true }))).schoolBelow).toBe(true);
+    expect(decode(JSON.stringify(encode({ items: [] }))).schoolBelow).toBe(false);
+    expect(decode(JSON.stringify(encode({ items: [], schoolBelow: 'yes' }))).schoolBelow).toBe(false);
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

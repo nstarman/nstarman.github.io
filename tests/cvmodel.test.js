@@ -99,6 +99,17 @@ describe('the model', () => {
     expect(line(charlotte, false)).toBe('First-author papers: a NeurIPS workshop paper and a paper submitted to The Astrophysical Journal');
   });
 
+  it('marks an education entry to have its institution below, and nothing else', () => {
+    const only = new Set(['toronto-phd', 'mit-postdoc']);
+    const on = cvModel('complete', only, undefined, { schoolBelow: true });
+    const off = cvModel('complete', only);
+    expect(find(on, 'toronto-phd').below).toBe(true);
+    expect(find(on, 'mit-postdoc').below).toBeUndefined();
+    expect(find(off, 'toronto-phd').below).toBeUndefined();
+    // The words are the same; the template does the breaking.
+    expect(text(find(on, 'toronto-phd').subject)).toBe('University of Toronto');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');
