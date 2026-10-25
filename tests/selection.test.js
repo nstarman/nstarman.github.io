@@ -181,6 +181,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
   });
 
+  it('carries the institution-name level through a round trip, and reads none as full', () => {
+    expect(decode(JSON.stringify(encode({ items: [], names: 2 }))).names).toBe(2);
+    expect(decode(JSON.stringify(encode({ items: [] }))).names).toBe(0);
+    expect(decode(JSON.stringify(encode({ items: [], names: 7 }))).names).toBe(0);
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

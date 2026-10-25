@@ -173,6 +173,16 @@ fetched fields (`specs/refresh/spec.md`).
   ("resolves every authors[].mentee", "agrees an author's student level");
   `tests/mentees.test.js`.
 
+### Institution names
+
+- **FR-035** An `education` or `position` record may list `institutionNames`:
+  alternatives to its `institution`, longest first. The CV builder's Institution
+  names menu picks the record's own name (Full), the first alternative (Shorter)
+  or the last (Shortest); a record with fewer alternatives prints the last it
+  has, one with none its own. Roles are grouped by `institution` whichever name
+  prints. *Enforced:* `tests/cvmodel.test.js` ("prints an institution as its name
+  level asks…"), the schema.
+
 ### Places
 
 - **FR-032** `location` is a place, never an institution: `City, ST, Country` in
@@ -210,8 +220,8 @@ fetched fields (`specs/refresh/spec.md`).
 |---|---|---|
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citeslug`, `citations`, `authorPosition`, `preliminaryOf`, `highlight` |
 | `software` | `tier`, `group` | `repo`, `authors`, `version`, `role`, `doi`, `order`, `highlight` |
-| `education` | `institution` | `degree`, `thesis`, `supervisors`, `location` |
-| `position` | `institution` | `role`, `location`, `groupRoles`, `tier`, `amount`, `funder` |
+| `education` | `institution` | `institutionNames`, `degree`, `thesis`, `supervisors`, `location` |
+| `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles`, `tier`, `amount`, `funder` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder`, `recipient`, `recipientInline` |
 | `presentation` | `kind` | `event`, `location` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs`, and for a profile `person`, `slug`, `photo`, `badge`, `research`, `journey`, `achievements` |
