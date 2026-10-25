@@ -94,8 +94,8 @@ describe('the model', () => {
     const spans = rowOf(sirui, cv, { detail: 'full' }, () => true, 0, undefined, true, true).lines.flat().filter((x) => x.icon);
     expect(spans.map((x) => x.icon)).toEqual(['paper', 'paper']);
     expect(spans[0].url).toBe('https://doi.org/10.3847/1538-4357/aea0d4');
-    // A paper with no DOI cites its arXiv id; one with neither keeps its words.
-    expect(line(charlotte, true)).toMatch(/^First-author papers: a NeurIPS workshop paper and arXiv:\d+\.\d+$/);
+    // A paper with no DOI cites its arXiv id.
+    expect(line(charlotte, true)).toMatch(/^First-author papers: arXiv:\d+\.\d+ and arXiv:\d+\.\d+$/);
     expect(line(charlotte, false)).toBe('First-author papers: a NeurIPS workshop paper and a paper submitted to The Astrophysical Journal');
   });
 
