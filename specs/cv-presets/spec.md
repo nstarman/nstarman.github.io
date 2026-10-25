@@ -118,10 +118,10 @@ cards (`specs/cards/spec.md`).
   (`fill`, `true` only; absent is off), how amounts are written (Currency: USD, CAD /
   US$, CA$ / $, CA$). An award or grant that names an institution (`funder`)
   shows it after its title, with a tick-box that turns it off for that entry. A
-  tick-box under Right column ("Fill the middle column") lays each entry out on
-  its own, so its text runs out to its own right-hand text, or to the margin where
-  it has none, with the dates still in one column and the right-hand text
-  right-aligned; unticked, the section's grid is as it was. A
+  tick-box under Right column ("Fill the middle column") sizes the right-hand column
+  to the figures and places that fit in an inch, not to the longest, so one long range
+  no longer reserves its width on every row and the middle text wraps later; it is
+  still one column, and a longer text wraps inside it; unticked, the column is as it was. A
   preset may list `funderOff` — entries, by id, whose `funder` it leaves out, as
   `2page` and `1page` do for the two NSERC graduate scholarships so their lengths
   hold; Start from sets the tick-boxes to the preset's list, and a saved

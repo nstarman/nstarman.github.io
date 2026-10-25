@@ -376,33 +376,27 @@
 // entries do not use a column.
 #let TRAILCAP = 1.3in
 #let trailcap = cv.at("trailcap", default: false) or letter
-// With `fill` — the builder's "Fill the middle column" — each entry is laid out on its
-// own: dates at the section's widest date, the right-hand text at its own width (capped
-// as `trailcap` caps it), and an entry with none runs its text to the margin. So a short
-// figure, or none, frees its own room instead of the widest figure's.
+// With `fill` — the builder's "Fill the middle column" — the right-hand column is sized
+// to the figures and places that fit in FITCAP, not to the longest: one long range or place
+// no longer reserves its width on every row, so the middle text wraps later. It is still one
+// column, in one grid; a text longer than the column wraps inside it. Where nothing fits
+// in FITCAP the column is as wide as the cap `trailcap` sets, as without the option.
+#let FITCAP = 1in
 #let fill = cv.at("fill", default: false)
-#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else if fill { context {
-  set par(justify: false)
-  let small(t) = tnum(text(size: look.sub)[#t])
-  let datew = calc.max(0pt, ..items.map(it => measure(small(it.when)).width))
-  for (k, it) in items.enumerate() {
-    if k > 0 { v(gutter) }
-    // No right-hand text is an empty string or none; either leaves the room to the entry.
+#let fillwidth(items) = {
+  let ws = items.map(it => {
     let tr = it.at("trailing", default: none)
-    if tr == none or tr == "" {
-      grid(columns: (datew, 1fr), column-gutter: 12pt, align: left + top, small(it.when), entrybody(it))
-    } else {
-      let trail = measure(small(tr)).width
-      let trailw = if trailcap { calc.min(trail, TRAILCAP) } else { trail }
-      grid(columns: (datew, 1fr, trailw), column-gutter: 12pt, align: (left + top, left + top, right + top),
-           small(it.when), entrybody(it), small(tr))
-    }
-  }
-} } else { context {
+    if tr == none or tr == "" { 0pt } else { measure(tnum(text(size: look.sub)[#tr])).width }
+  })
+  let fits = ws.filter(w => w > 0pt and w <= FITCAP)
+  if fits.len() > 0 { calc.max(..fits) } else { calc.min(calc.max(0pt, ..ws), TRAILCAP) }
+}
+#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
   set par(justify: false)
   let widest = if trailcap { calc.max(0pt, ..items.map(it => measure(tnum(text(size: look.sub)[#it.trailing])).width)) }
+  let rightw = if fill { fillwidth(items) } else if trailcap { calc.min(widest, TRAILCAP) } else { auto }
   grid(
-    columns: (auto, 1fr, if trailcap { calc.min(widest, TRAILCAP) } else { auto }),
+    columns: (auto, 1fr, rightw),
     column-gutter: 12pt,
     row-gutter: gutter,
     align: (left + top, left + top, right + top),
