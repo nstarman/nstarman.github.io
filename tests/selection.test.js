@@ -181,15 +181,9 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
   });
 
-  it('carries the institution-name level through a round trip, and reads none as full', () => {
-    expect(decode(JSON.stringify(encode({ items: [], names: 2 }))).names).toBe(2);
-    expect(decode(JSON.stringify(encode({ items: [] }))).names).toBe(0);
-    expect(decode(JSON.stringify(encode({ items: [], names: 7 }))).names).toBe(0);
-  });
-
-  it('carries each entry\'s own institution-name level, dropping nonsense', () => {
-    const back = decode(JSON.stringify(encode({ items: [], namesFor: { a: 2, b: 0, c: 9, d: 'x' } })));
-    expect(back.namesFor).toEqual({ a: 2, b: 0 });
+  it("carries each entry's institution-name level, dropping nonsense", () => {
+    const back = decode(JSON.stringify(encode({ items: [], namesFor: { a: 2, b: 1, c: 0, d: 9, e: 'x' } })));
+    expect(back.namesFor).toEqual({ a: 2, b: 1 });
     expect(decode(JSON.stringify(encode({ items: [] }))).namesFor).toEqual({});
   });
 

@@ -36,7 +36,7 @@ function groupsOf(items, field) {
  * syntax, if the same model is to feed both HTML and PDF.
  */
 /**
- * The institution as the builder's `names` level asks: 0, the record's own;
+ * The institution as an entry's name level asks: 0, the record's own;
  * 1 and 2 the first and the last of its `institutionNames`, longest first — a
  * record with fewer takes the last it has, one with none its own.
  */
@@ -157,8 +157,8 @@ export function rowOf(item, cv, s, keepLine, names = 0) {
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, names, namesFor) {
-  const levelOf = (item) => namesFor[item.id] ?? names;
+function itemsOf(s, cv, keepLine, group, namesFor) {
+  const levelOf = (item) => namesFor[item.id] ?? 0;
   const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item));
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
@@ -189,17 +189,16 @@ function itemsOf(s, cv, keepLine, group, names, namesFor) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, names?: number, namesFor?: Record<string, number> }} [opts]
- *   passed to resolve(); `names` is the institution-name level (see
- *   `institutionOf`) and `namesFor` an entry's own, by id; `group` is the builder's choice, by institution, of
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number> }} [opts]
+ *   passed to resolve(); `namesFor` is each entry's institution-name level, by
+ *   id (see `institutionOf`); `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
   const cv = resolve(presetName, only, opts);
   const group = opts?.group ?? {};
-  // The builder's Institution names level: 0 full, 1 shorter, 2 shortest.
-  const names = opts?.names ?? 0;
-  // An entry's own level, by id, over the bulk one.
+  // The institution-name level of each entry, by id: 0 full (the default), 1
+  // shorter, 2 shortest.
   const namesFor = opts?.namesFor ?? {};
 
   return {
@@ -229,7 +228,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, names, namesFor),
+      items: itemsOf(s, cv, keepLine, group, namesFor),
     })),
   };
 }

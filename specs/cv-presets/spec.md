@@ -112,9 +112,9 @@ cards (`specs/cards/spec.md`).
   under the site header as the page scrolls, above the Start-from row (which keeps
   the count and Save Selection); Style and Page are in that button's
   "Settings for every section" panel, under Document, with how much of an
-  institution's name prints (Institution names: Full, Shorter, Shortest), and each entry that has
-  shorter names a menu of its own — as the bulk menu, or Full, Shorter or Shortest —
-  that wins over it. That bar keeps Compile PDF, the settings button
+  institution's name prints (Institution names: Full, Shorter, Shortest, which sets every entry's, or Mixed
+  when they differ). Each entry that has shorter names shows its institution as a
+  menu of those names, in place of the text, so each is set on its own. That bar keeps Compile PDF, the settings button
   and Save Selection on one line. A person can: start from any preset
   (ticks its `memberIds`, its detail level, columns, place, spacing, inline
   recipients; `detailsComplete` lines start unticked unless the preset is
@@ -132,9 +132,8 @@ cards (`specs/cards/spec.md`).
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
   link order), location (sections whose places are left out, `false` only), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
-  right-hand column is capped (`trailcap`, `true` only), the institution-name
-  level (`names`, 1 or 2; absent is 0, full) and each entry's own over it
-  (`namesFor`, entry id to 0–2), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
+  level (`namesFor`, entry id to 1 or 2; absent is full), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`

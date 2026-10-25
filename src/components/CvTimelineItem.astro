@@ -70,17 +70,15 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     <strong>{item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
-      : <>, {item.institution}</>)}
-    {/* The builder's: this entry's own institution name, over the menu's. */}
-    {pick && item.institutionNames?.length > 0 && (
-      <select class="btn btn--sel namesel" data-names-of={item.id}
-              aria-label={`Institution name for ${item.title}`}>
-        <option value="">As the menu</option>
-        <option value="0">Full — {item.institution}</option>
-        <option value="1">Shorter — {item.institutionNames[0]}</option>
-        {item.institutionNames.length > 1 && <option value="2">Shortest — {item.institutionNames.at(-1)}</option>}
-      </select>
-    )}
+      : <>, {pick && item.institutionNames?.length > 0
+          /* The builder's: the institution's name is its own menu, so it is said once. */
+          ? <select class="namesel" data-names-of={item.id} aria-label={`Institution name for ${item.title}`}
+                    title="Choose how much of the institution's name prints">
+              <option value="0">{item.institution}</option>
+              <option value="1">{item.institutionNames[0]}</option>
+              {item.institutionNames.length > 1 && <option value="2">{item.institutionNames.at(-1)}</option>}
+            </select>
+          : item.institution}</>)}
     {item.event && <>, {item.event}</>}
     {item.type === 'publication' && (
       <> — <Byline shown={byline.shown} />{byline.etal && <>, et al</>}
