@@ -45,7 +45,7 @@ function institutionOf(item, names = 0) {
   return names > 0 && alt?.length ? alt[Math.min(names, alt.length) - 1] : item.institution;
 }
 
-function subject(item, names = 0) {
+function subject(item, names = 0, funder = true) {
   const plain = (t) => (t ? [{ t, b: false }] : []);
 
   switch (item.type) {
@@ -63,9 +63,9 @@ function subject(item, names = 0) {
       return plain([item.role, institutionOf(item, names)].filter(Boolean).join(', '));
     // A team grant says what my part was — "Co-Investigator, STScI".
     case 'grant':
-      return plain([item.role, item.funder].filter(Boolean).join(', '));
+      return plain([item.role, funder && item.funder].filter(Boolean).join(', '));
     default:
-      return plain(item.institution ? institutionOf(item, names) : item.organization ?? item.outlet ?? item.funder ?? '');
+      return plain(item.institution ? institutionOf(item, names) : item.organization ?? item.outlet ?? (funder && item.funder) ?? '');
   }
 }
 
@@ -108,14 +108,14 @@ function trailing(item, s, currency) {
 }
 
 /** One item as a row of the model. */
-export function rowOf(item, cv, s, keepLine, names = 0, currency) {
+export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true) {
   const detail = detailLines(item, { complete: cv.includeAll, currency });
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.
     when: dateLabel(item, { month: true }),
     title: item.title,
-    subject: subject(item, names),
+    subject: subject(item, names, funder),
     byline: item.type === 'publication' ? byline(item) : [],
     venue: item.type === 'publication' ? venueLine(item) : null,
     // The grid layout has no room for `details`, and shows this instead.
@@ -157,9 +157,9 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency) {
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
-  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency);
+  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id));
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -189,9 +189,10 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar' }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[] }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
- *   id (see `institutionOf`); `currency` how amounts are written (see `money`);
+ *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `funderOff` the ids whose
+ *   `funder` does not print;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
@@ -229,7 +230,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? [])),
     })),
   };
 }

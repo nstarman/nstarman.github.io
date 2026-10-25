@@ -237,3 +237,7 @@
   border-radius:0; padding:0 .15rem 0 0; margin:0; cursor:pointer; max-width:100%; text-overflow:ellipsis;
   field-sizing:content}
 .namesel:hover, .namesel:focus-visible{border-bottom-color:var(--accent); color:var(--accent)}
+/* An award's institution, with a tick-box to print it or not; off, it greys out. */
+.funderopt{cursor:pointer}
+.funderopt input{accent-color:var(--accent); margin:0 .25rem 0 .1rem; vertical-align:middle}
+.funderbox:not(:checked) + .funderopt__name{color:var(--ink-faint); text-decoration:line-through}

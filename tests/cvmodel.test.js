@@ -57,6 +57,19 @@ describe('the model', () => {
     expect(line({ currency: 'dollar' })).toMatch(/^\$12,000 NASA ROSES/);
   });
 
+  it('leaves an award\'s institution out where the builder switched it off', () => {
+    const id = 'osotf-hudd-award-at-massey';
+    const only = new Set([id]);
+    const who = (opts) => text(find(cvModel('complete', only, undefined, opts), id).subject);
+    expect(who()).toBe('Massey College');
+    expect(who({ funderOff: [id] })).toBe('');
+    expect(who({ funderOff: ['someone-else'] })).toBe('Massey College');
+    // A grant keeps its role when its institution is off.
+    const grant = itemById('astropy-cycle-iii-funding-grant');
+    expect(rowOf({ ...grant, role: 'Lead', funder: 'NASA' }, { name: 'np' }, { detail: 'full' }, undefined, 0, undefined, false)
+      .subject.map((s) => s.t).join('')).toBe('Lead');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');
