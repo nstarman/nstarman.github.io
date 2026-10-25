@@ -11,5 +11,6 @@
   "amount": {
     "currency": "CAD",
     "value": 2900
-  }
+  },
+  "funder": "Massey College"
 }
