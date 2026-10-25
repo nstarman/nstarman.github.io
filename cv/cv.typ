@@ -396,7 +396,8 @@
   // Only where at most half are long — a range and a declined note among amounts. Where
   // more are (a section of places), shrinking the column would wrap each of them to three lines.
   if fits.len() > 0 and (present.len() - fits.len()) * 2 <= present.len() { calc.max(..fits) }
-  else { calc.min(calc.max(0pt, ..ws), TRAILCAP) }
+  // Else the column is as without the option: capped if `trailcap` asks, else its natural width.
+  else if trailcap { calc.min(calc.max(0pt, ..ws), TRAILCAP) } else { auto }
 }
 #let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
   set par(justify: false)
