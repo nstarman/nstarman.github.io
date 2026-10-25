@@ -134,7 +134,7 @@ cards (`specs/cards/spec.md`).
   tick-box in the Education section's own settings puts each university on its own
   line, below the degree, with no comma, on the page and in the PDF; unticked, it follows the degree after a
   comma. A
-  tick-box under Mentoring cites a mentee's papers by identifier: each
+  tick-box in the Mentoring section's own settings cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
   its DOI (linked to doi.org, with the paper mark, as the Publications section writes it),
   else `arXiv:<id>` (with the arXiv mark), else keeps its words, on
@@ -176,6 +176,13 @@ cards (`specs/cards/spec.md`).
   byline — counted from the ticked entries and placed as the Legend's place says
   (below, right, or on the heading's line), updating as ticks and options change.
   *Enforced:* review.
+- **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
+  Page, Institution names, Currency, the "Select" prefix, the right column's width, section
+  order — is in the global "Settings for every section" panel. An option that applies to one
+  section — Places, a publication list's Tally and Legend, Education's university below the
+  degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
+  button on its heading), among its Items controls, and only there. A feature spec for a builder
+  option says which. *Enforced:* `tests/builder-placement.test.js`.
 - **FR-022** CI's "CV PDFs" step (`npm run build:pdf`, `scripts/build-cv-pdfs.sh`)
   compiles every `dist/cv/*.json`, then fails unless `starkman-cv-1page.pdf` has
   1 page and `starkman-cv-2page.pdf` has 2 (the largest `/Count` in the PDF).
