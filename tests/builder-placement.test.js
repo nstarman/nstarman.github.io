@@ -8,9 +8,11 @@ import fs from 'node:fs';
 
 const src = fs.readFileSync(new URL('../src/components/CvFmtRow.astro', import.meta.url), 'utf8');
 const start = src.indexOf('{all && (');
+// The marker that opens the global block; if it moves, say so rather than slicing at -1.
+if (start === -1) throw new Error('CvFmtRow.astro: the global block (`{all && (`) was not found; update this test');
 const global = src.slice(start);
 const section = src.slice(0, start);
-const ids = (text) => [...text.matchAll(/\bid="([a-z]+)"/g)].map((m) => m[1]);
+const ids = (text) => [...text.matchAll(/\bid="([A-Za-z0-9_-]+)"/g)].map((m) => m[1]);
 
 // Every control for the whole CV. A new one is added here on purpose.
 const WHOLE_CV = ['style', 'format', 'names', 'currency', 'selprefix', 'trailcap', 'fill', 'resetorder'];
