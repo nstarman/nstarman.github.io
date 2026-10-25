@@ -125,7 +125,8 @@ cards (`specs/cards/spec.md`).
   still one column, and a longer text wraps inside it; unticked, the column is as it was. A
   tick-box under Mentoring cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
-  `doi:<doi>` (linked to doi.org), else `arXiv:<id>`, else keeps its words, on
+  its DOI (linked to doi.org, with the paper mark, as the Publications section writes it),
+  else `arXiv:<id>` (with the arXiv mark), else keeps its words, on
   the page and in the PDF; unticked, the lines are in words. A
   preset may list `funderOff` — entries, by id, whose `funder` it leaves out, as
   `2page` and `1page` do for the two NSERC graduate scholarships so their lengths

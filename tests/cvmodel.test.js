@@ -89,7 +89,11 @@ describe('the model', () => {
     const line = (item, ids) => rowOf(item, cv, { detail: 'full' }, () => true, 0, undefined, true, ids).lines
       .map((l) => text(l)).find((t) => t.startsWith('First-author papers'));
     expect(line(sirui, false)).toBe('First-author papers: in The Astrophysical Journal and in the Journal of Open Source Software');
-    expect(line(sirui, true)).toBe('First-author papers: doi:10.3847/1538-4357/aea0d4 and doi:10.21105/joss.10712');
+    expect(line(sirui, true)).toBe('First-author papers: 10.3847/1538-4357/aea0d4 and 10.21105/joss.10712');
+    // Each carries its mark and link, as the Publications section writes a DOI.
+    const spans = rowOf(sirui, cv, { detail: 'full' }, () => true, 0, undefined, true, true).lines.flat().filter((x) => x.icon);
+    expect(spans.map((x) => x.icon)).toEqual(['paper', 'paper']);
+    expect(spans[0].url).toBe('https://doi.org/10.3847/1538-4357/aea0d4');
     // A paper with no DOI cites its arXiv id; one with neither keeps its words.
     expect(line(charlotte, true)).toMatch(/^First-author papers: a NeurIPS workshop paper and arXiv:\d+\.\d+$/);
     expect(line(charlotte, false)).toBe('First-author papers: a NeurIPS workshop paper and a paper submitted to The Astrophysical Journal');

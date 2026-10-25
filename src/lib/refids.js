@@ -1,14 +1,15 @@
 // A paper cited by its identifier rather than its words: its DOI, else its arXiv id.
 // Used for a mentoring entry's lines, where "[a NeurIPS workshop paper](item:pinns-neurips)"
-// can instead read "doi:10.…".
+// can instead read as its DOI or arXiv id, with the mark the Publications section gives it.
 
 import { resolve as itemById } from './data.js';
 
-/** `{ t, url }` for a publication's DOI, else its arXiv id, or null where it has neither. */
+/** `{ t, url, icon }` for a publication's DOI (the bare DOI, with the paper mark, as the
+ *  Publications section writes it), else its arXiv id, or null where it has neither. */
 export function identifierOf(item) {
   if (item?.type !== 'publication') return null;
-  if (item.doi) return { t: `doi:${item.doi}`, url: `https://doi.org/${item.doi}` };
-  if (item.arxiv) return { t: `arXiv:${item.arxiv}`, url: `https://arxiv.org/abs/${item.arxiv}` };
+  if (item.doi) return { t: item.doi, url: `https://doi.org/${item.doi}`, icon: 'paper' };
+  if (item.arxiv) return { t: `arXiv:${item.arxiv}`, url: `https://arxiv.org/abs/${item.arxiv}`, icon: 'arxiv' };
   return null;
 }
 

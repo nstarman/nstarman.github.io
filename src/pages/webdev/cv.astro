@@ -849,9 +849,10 @@ const builderData = {
     // (every entry is on the builder's page, but an off-page one still swaps its text).
     const showPaperIds = () => {
       // An off-page reference has no link to swap, only its text.
+      const alt = $('paperids').checked;
       for (const a of document.querySelectorAll('.pid')) {
-        const alt = $('paperids').checked;
-        a.textContent = alt ? a.dataset.altText : a.dataset.text;
+        a.querySelector('.pid__words').hidden = alt;
+        a.querySelector('.pid__id').hidden = !alt;
         if (a.dataset.href) a.href = alt ? a.dataset.altHref : a.dataset.href;
       }
     };

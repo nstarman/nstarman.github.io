@@ -328,7 +328,10 @@
 #let bolded(sp) = sp.map(s => if s.b { strong(s.t) } else if s.at("student", default: none) != none {
   text(fill: stucolour.at(s.student))[#s.t#super(stumark.at(s.student))]
 } else { s.t }).join()
-#let linked(sp) = sp.map(s => if "url" in s and not s.url.starts-with("#") {
+#let linked(sp) = sp.map(s => if "icon" in s and "url" in s {
+  // A paper cited by identifier: its mark and the identifier, as the Publications section has it.
+  link(s.url, marked(s.icon, lnum(s.t), size: 0.9em))
+} else if "url" in s and not s.url.starts-with("#") {
   link(s.url)[#s.t]
 } else { s.t }).join()
 
