@@ -194,6 +194,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], currency: 'xx' }))).currency).toBeNull();
   });
 
+  it('carries the entries whose institution is switched off, dropping nonsense', () => {
+    const back = decode(JSON.stringify(encode({ items: [], funderOff: ['a', 'a', 'b', 7, null] })));
+    expect(back.funderOff).toEqual(['a', 'b']);
+    expect(decode(JSON.stringify(encode({ items: [] }))).funderOff).toEqual([]);
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

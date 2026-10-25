@@ -578,6 +578,13 @@ const builderData = {
       }
     };
     for (const type of ['change', 'click']) document.addEventListener(type, () => requestAnimationFrame(syncLegends));
+    /** The ids of the entries whose institution is unticked. */
+    const funderBoxes = () => [...document.querySelectorAll('[data-funder-of]')];
+    const currentFunderOff = () => funderBoxes().filter((b) => !b.checked).map((b) => b.dataset.funderOf);
+    const setFunderOff = (ids = []) => {
+      const off = new Set(ids);
+      for (const b of funderBoxes()) b.checked = !off.has(b.dataset.funderOf);
+    };
     /** Entry id → its institution-name level, for the entries not at full. */
     const nameMenus = () => [...document.querySelectorAll('[data-names-of]')];
     const currentNamesFor = () => Object.fromEntries(nameMenus()
@@ -705,7 +712,7 @@ const builderData = {
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
                           group: currentGroup(), card: currentCard(), location: currentLocation(),
-                          page: $('format').value || null, trailcap: $('trailcap').checked, namesFor: currentNamesFor(), currency: $('currency').value || null, tally: currentTally(), site: SITE });
+                          page: $('format').value || null, trailcap: $('trailcap').checked, namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), tally: currentTally(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -762,6 +769,7 @@ const builderData = {
       setNamesFor(sel.namesFor);
       $('currency').value = [...$('currency').options].some((o) => o.value === sel.currency) ? sel.currency : '';
       showCurrency();
+      setFunderOff(sel.funderOff);
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -827,6 +835,9 @@ const builderData = {
       const style = $('currency').value;
       for (const a of document.querySelectorAll('.amt')) a.textContent = a.dataset[style || 'code'];
     };
+    document.addEventListener('change', (e) => {
+      if (e.target.matches?.('[data-funder-of]')) retire('Institution changed — compile again.');
+    });
     $('currency').addEventListener('change', () => { showCurrency(); retire('Currency changed — compile again.'); });
     // The settings menu sets every entry's institution name; an entry's own menu
     // sets that one, and the settings menu then says Mixed or the level they share.
@@ -864,7 +875,7 @@ const builderData = {
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
                               { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
-                                location: currentLocation(), tally: currentTally(), namesFor: currentNamesFor(), currency: $('currency').value || undefined });
+                                location: currentLocation(), tally: currentTally(), namesFor: currentNamesFor(), currency: $('currency').value || undefined, funderOff: currentFunderOff() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());

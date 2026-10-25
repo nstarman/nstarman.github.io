@@ -79,6 +79,12 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
               {item.institutionNames.length > 1 && <option value="2">{item.institutionNames.at(-1)}</option>}
             </select>
           : item.institution}</>)}
+    {/* The builder's: the institution an award or grant names, and whether it prints. */}
+    {pick && item.funder && ['award', 'grant'].includes(item.type) && (
+      <label class="funderopt" title="Print this institution after the title">, <input type="checkbox" class="funderbox"
+             data-funder-of={item.id} checked
+             aria-label={`Print ${item.funder} after ${item.title}`} /><span class="funderopt__name">{item.funder}</span></label>
+    )}
     {item.event && <>, {item.event}</>}
     {item.type === 'publication' && (
       <> — <Byline shown={byline.shown} />{byline.etal && <>, et al</>}
