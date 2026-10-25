@@ -110,6 +110,13 @@ describe('the model', () => {
     expect(text(find(on, 'toronto-phd').subject)).toBe('University of Toronto');
   });
 
+  it("draws a school's homepage link as a graduation cap, and no other link", () => {
+    const only = new Set(['toronto-phd', 'mit-postdoc']);
+    const m = cvModel('complete', only);
+    expect(find(m, 'toronto-phd').links.find((l) => l.rel === 'homepage').icon).toBe('cap');
+    expect(find(m, 'mit-postdoc').links.find((l) => l.rel === 'homepage').icon).toBe('link');
+  });
+
   it('marks the link icon for the degree line only with the institution below', () => {
     const only = new Set(['toronto-phd', 'mit-postdoc']);
     const on = cvModel('complete', only, undefined, { schoolBelow: true, linkOnDegree: true });

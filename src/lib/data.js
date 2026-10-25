@@ -58,6 +58,6 @@ export const {
   byType, featured, resolve, titleOf, splitTitle, HIGHLIGHT_TOPICS,
   SOFTWARE_GROUPS, displayName, authorPosition, venueUrl, softwarePapers, softwareUsed,
   affiliationAt, authors, positionStops, money, venueLine, year,
-  dateLabel, relKey, REL_ICON, primaryLink, links, assists,
+  dateLabel, relKey, REL_ICON, linkIcon, primaryLink, links, assists,
   assistItem, groupedByDefault, institutionGroups, groupTitle, groupDate,
 } = store;

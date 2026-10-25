@@ -8,7 +8,7 @@
 import person from '/config/person.json';
 import { resolve } from './presets.js';
 import { asIdentifiers } from './refids.js';
-import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
+import { authors, venueLine, dateLabel, links, money, softwarePapers, linkIcon, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
 import { spans, detailLines, achievementLines } from '@nstarkman/data-resolver/inline.js';
 
 /**
@@ -146,7 +146,7 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
         rel: l.rel,
         url: l.url,
         label: l.label ?? l.rel,
-        icon: REL_ICON[relKey(l)] ?? 'link',
+        icon: linkIcon(item, l),
       }));
       const papers = item.type === 'software' ? papersOf(item) : [];
       // Second, so the grid still titles the package with its repository
@@ -186,7 +186,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
       lines: rows.flatMap((r) => r.lines),
       trailing: s.location === false ? '' : first.location ?? '',
       links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
-                       icon: REL_ICON[relKey(home)] ?? 'link' }] : [],
+                       icon: linkIcon(first, home) }] : [],
     }];
   });
 }
