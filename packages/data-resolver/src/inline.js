@@ -78,13 +78,28 @@ export function lines(long, base = '') {
  * lines by index, and inserting in the middle would silently move its ticks.
  */
 export function detailLines(item, { complete = false, currency, forms = false } = {}) {
-  const prose = (long) => amountLines(long, item, { currency, forms });
+  const prose = (long) => amountLines(long, item, { currency, forms }).map(noFinalPeriod);
   return [
     ...prose(item.details),
-    ...(item.thesis ? [spans(`Thesis: ${item.thesis}`)] : []),
-    ...(item.supervisors?.length ? [spans(`Supervisors: ${item.supervisors.join(', ')}`)] : []),
+    ...(item.thesis ? [noFinalPeriod(spans(`Thesis: ${item.thesis}`))] : []),
+    ...(item.supervisors?.length ? [noFinalPeriod(spans(`Supervisors: ${item.supervisors.join(', ')}`))] : []),
     ...(complete ? prose(item.detailsComplete) : []),
   ];
+}
+
+/**
+ * A CV line is a label or a phrase under a heading, so it does not end in a period: the
+ * last span loses one. A line ending in an abbreviation ("et al.", "etc.") or an ellipsis
+ * keeps it. The record is not changed, only what is shown.
+ */
+export const KEEPS_PERIOD = /(\.\.|\b(?:al|etc|Jr|Sr|Inc|vs|St|Co|Ltd)\.)$/;
+export function noFinalPeriod(line) {
+  const last = line[line.length - 1];
+  if (!last || !last.t) return line;
+  const t = last.t.trimEnd();
+  if (!t.endsWith('.') || KEEPS_PERIOD.test(t)) return line;
+  const rest = t.slice(0, -1);
+  return rest ? [...line.slice(0, -1), { ...last, t: rest }] : line.slice(0, -1);
 }
 
 /**
