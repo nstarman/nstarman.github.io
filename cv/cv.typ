@@ -376,11 +376,27 @@
 // entries do not use a column.
 #let TRAILCAP = 1.3in
 #let trailcap = cv.at("trailcap", default: false) or letter
+// With `fill` — the builder's "Fill the middle column" — the right-hand column is sized
+// to the figures and places that fit in FITCAP, not to the longest: one long range or place
+// no longer reserves its width on every row, so the middle text wraps later. It is still one
+// column, in one grid; a text longer than the column wraps inside it. Where nothing fits
+// in FITCAP the column is as wide as the cap `trailcap` sets, as without the option.
+#let FITCAP = 1in
+#let fill = cv.at("fill", default: false)
+#let fillwidth(items) = {
+  let ws = items.map(it => {
+    let tr = it.at("trailing", default: none)
+    if tr == none or tr == "" { 0pt } else { measure(tnum(text(size: look.sub)[#tr])).width }
+  })
+  let fits = ws.filter(w => w > 0pt and w <= FITCAP)
+  if fits.len() > 0 { calc.max(..fits) } else { calc.min(calc.max(0pt, ..ws), TRAILCAP) }
+}
 #let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
   set par(justify: false)
   let widest = if trailcap { calc.max(0pt, ..items.map(it => measure(tnum(text(size: look.sub)[#it.trailing])).width)) }
+  let rightw = if fill { fillwidth(items) } else if trailcap { calc.min(widest, TRAILCAP) } else { auto }
   grid(
-    columns: (auto, 1fr, if trailcap { calc.min(widest, TRAILCAP) } else { auto }),
+    columns: (auto, 1fr, rightw),
     column-gutter: 12pt,
     row-gutter: gutter,
     align: (left + top, left + top, right + top),

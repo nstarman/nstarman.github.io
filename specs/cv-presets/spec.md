@@ -114,9 +114,14 @@ cards (`specs/cards/spec.md`).
   "Settings for every section" panel, under Document, with how much of an
   institution's name prints (Institution names: Full, Shorter, Shortest, which sets every entry's, or Mixed
   when they differ). Each entry that has shorter names shows its institution as a
-  menu of those names, in place of the text, so each is set on its own; and how amounts are written (Currency: USD, CAD /
+  menu of those names, in place of the text, so each is set on its own; and whether the middle column fills
+  (`fill`, `true` only; absent is off), how amounts are written (Currency: USD, CAD /
   US$, CA$ / $, CA$). An award or grant that names an institution (`funder`)
   shows it after its title, with a tick-box that turns it off for that entry. A
+  tick-box under Right column ("Fill the middle column") sizes the right-hand column
+  to the figures and places that fit in an inch, not to the longest, so one long range
+  no longer reserves its width on every row and the middle text wraps later; it is
+  still one column, and a longer text wraps inside it; unticked, the column is as it was. A
   preset may list `funderOff` — entries, by id, whose `funder` it leaves out, as
   `2page` and `1page` do for the two NSERC graduate scholarships so their lengths
   hold; Start from sets the tick-boxes to the preset's list, and a saved
