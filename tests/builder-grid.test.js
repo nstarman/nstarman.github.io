@@ -5,7 +5,7 @@ import { test, expect } from 'vitest';
 // one .fmtline. A stray line takes the subject column and pushes every control
 // after it off the panel.
 test('each settings subject has exactly one line of options', () => {
-  const src = readFileSync('src/components/CvFmtRow.astro', 'utf8');
+  const src = readFileSync(new URL('../src/components/CvFmtRow.astro', import.meta.url), 'utf8');
   const count = (re) => [...src.matchAll(re)].length;
   const lines = count(/<span class="fmtline">/g);
   const subs = count(/<span class="fmtsub">/g);
