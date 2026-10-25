@@ -387,13 +387,15 @@
   let datew = calc.max(0pt, ..items.map(it => measure(small(it.when)).width))
   for (k, it) in items.enumerate() {
     if k > 0 { v(gutter) }
-    let trail = measure(small(it.trailing)).width
-    let trailw = if trailcap { calc.min(trail, TRAILCAP) } else { trail }
-    if it.trailing == "" {
+    // No right-hand text is an empty string or none; either leaves the room to the entry.
+    let tr = it.at("trailing", default: none)
+    if tr == none or tr == "" {
       grid(columns: (datew, 1fr), column-gutter: 12pt, align: left + top, small(it.when), entrybody(it))
     } else {
+      let trail = measure(small(tr)).width
+      let trailw = if trailcap { calc.min(trail, TRAILCAP) } else { trail }
       grid(columns: (datew, 1fr, trailw), column-gutter: 12pt, align: (left + top, left + top, right + top),
-           small(it.when), entrybody(it), small(it.trailing))
+           small(it.when), entrybody(it), small(tr))
     }
   }
 } } else { context {
