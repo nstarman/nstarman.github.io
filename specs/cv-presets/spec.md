@@ -115,7 +115,8 @@ cards (`specs/cards/spec.md`).
   institution's name prints (Institution names: Full, Shorter, Shortest, which sets every entry's, or Mixed
   when they differ). Each entry that has shorter names shows its institution as a
   menu of those names, in place of the text, so each is set on its own; and whether the middle column fills
-  (`fill`, `true` only; absent is off), whether a mentee's papers are cited by identifier
+  (`fill`, `true` only; absent is off), whether Education puts the university on its own line
+  (`schoolBelow`, `true` only; absent is off), whether a mentee's papers are cited by identifier
   (`paperIds`, `true` only; absent is words), how amounts are written (Currency: USD, CAD /
   US$, CA$ / $, CA$). An award or grant that names an institution (`funder`)
   shows it after its title, with a tick-box that turns it off for that entry. A
@@ -157,7 +158,8 @@ cards (`specs/cards/spec.md`).
   right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
-  is switched off (`funderOff`, entry ids; absent is none), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  is switched off (`funderOff`, entry ids; absent is none), whether Education puts the
+  university on its own line (`schoolBelow`, `true` only), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`
