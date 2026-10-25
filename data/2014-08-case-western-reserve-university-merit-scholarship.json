@@ -14,5 +14,6 @@
   "amount": {
     "currency": "USD",
     "value": 120000
-  }
+  },
+  "funder": "Case Western Reserve University"
 }
