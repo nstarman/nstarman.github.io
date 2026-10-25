@@ -81,8 +81,8 @@ export function detailLines(item, { complete = false, currency, forms = false } 
   const prose = (long) => amountLines(long, item, { currency, forms }).map(noFinalPeriod);
   return [
     ...prose(item.details),
-    ...(item.thesis ? [spans(`Thesis: ${item.thesis}`)] : []),
-    ...(item.supervisors?.length ? [spans(`Supervisors: ${item.supervisors.join(', ')}`)] : []),
+    ...(item.thesis ? [noFinalPeriod(spans(`Thesis: ${item.thesis}`))] : []),
+    ...(item.supervisors?.length ? [noFinalPeriod(spans(`Supervisors: ${item.supervisors.join(', ')}`))] : []),
     ...(complete ? prose(item.detailsComplete) : []),
   ];
 }
@@ -92,7 +92,7 @@ export function detailLines(item, { complete = false, currency, forms = false } 
  * last span loses one. A line ending in an abbreviation ("et al.", "etc.") or an ellipsis
  * keeps it. The record is not changed, only what is shown.
  */
-const KEEPS_PERIOD = /(\.\.|\b(?:al|etc|Jr|Sr|Inc|vs|St|Co|Ltd)\.)$/;
+export const KEEPS_PERIOD = /(\.\.|\b(?:al|etc|Jr|Sr|Inc|vs|St|Co|Ltd)\.)$/;
 export function noFinalPeriod(line) {
   const last = line[line.length - 1];
   if (!last || !last.t) return line;

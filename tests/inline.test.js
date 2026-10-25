@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, noFinalPeriod, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
+import { spans, plain, lines, detailLines, noFinalPeriod, KEEPS_PERIOD, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 describe('spans', () => {
@@ -146,6 +146,11 @@ describe('a line does not end in a period', () => {
     }
   });
 
+  it('applies to the thesis and supervisors lines too', () => {
+    const lns = detailLines({ thesis: 'A thesis title.', supervisors: ['A B'] }).map(text);
+    expect(lns).toEqual(['Thesis: A thesis title', 'Supervisors: A B']);
+  });
+
   it('keeps a link that ends the line, and drops a span that was only the period', () => {
     const line = noFinalPeriod(spans('Mentor: [Ira Wasserman](https://example.org).'));
     expect(line).toEqual([{ t: 'Mentor: ' }, { t: 'Ira Wasserman', url: 'https://example.org' }]);
@@ -154,7 +159,7 @@ describe('a line does not end in a period', () => {
   it('is what the lines of a record are shown as, the record unchanged', () => {
     const bs = itemById('cwru-bs');
     const lns = detailLines(bs).map(text);
-    expect(lns.every((l) => !l.endsWith('.') || /(al|etc)\.$/.test(l))).toBe(true);
+    expect(lns.every((l) => !l.endsWith('.') || KEEPS_PERIOD.test(l))).toBe(true);
     expect(JSON.stringify(bs.details)).toMatch(/\.\"/);
   });
 

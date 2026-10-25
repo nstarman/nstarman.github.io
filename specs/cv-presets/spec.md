@@ -84,8 +84,9 @@ cards (`specs/cards/spec.md`).
   (always rendered by the template) is unaffected. Achievements are gated by
   their own `cvs` (all of them on `includeAll`), not by `detail`, oldest first. A
   line is a label or a phrase, so it is shown without a final period (kept after an
-  abbreviation such as "et al." and after an ellipsis), on the page and in the PDF; the
-  record is unchanged, and items listed on one line are separated by a middle dot.
+  abbreviation such as "et al." and after an ellipsis), on the page and in the PDF; only
+  the display drops it, the record is as written. Items listed on one line are written
+  with a middle dot between them (a convention in the data, as in the PhD entry).
   *Enforced:* `tests/cvmodel.test.js` ("detail levels", "prints `detailsComplete`
   in the complete CV and nowhere else", "mentee achievements"),
   `tests/inline.test.js` ("a line does not end in a period").
