@@ -114,7 +114,8 @@ cards (`specs/cards/spec.md`).
   "Settings for every section" panel, under Document, with how much of an
   institution's name prints (Institution names: Full, Shorter, Shortest, which sets every entry's, or Mixed
   when they differ). Each entry that has shorter names shows its institution as a
-  menu of those names, in place of the text, so each is set on its own. That bar keeps Compile PDF, the settings button
+  menu of those names, in place of the text, so each is set on its own; and how amounts are written (Currency: USD, CAD /
+  US$, CA$ / $, CA$). That bar keeps Compile PDF, the settings button
   and Save Selection on one line. A person can: start from any preset
   (ticks its `memberIds`, its detail level, columns, place, spacing, inline
   recipients; `detailsComplete` lines start unticked unless the preset is
@@ -133,7 +134,8 @@ cards (`specs/cards/spec.md`).
   link order), location (sections whose places are left out, `false` only), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
   right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
-  level (`namesFor`, entry id to 1 or 2; absent is full), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
+  (`currency`, `us` or `dollar`; absent is codes), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`

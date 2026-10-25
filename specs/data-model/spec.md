@@ -173,6 +173,21 @@ fetched fields (`specs/refresh/spec.md`).
   ("resolves every authors[].mentee", "agrees an author's student level");
   `tests/mentees.test.js`.
 
+### Amounts
+
+- **FR-034** An `amount` is `{ currency, value, valueMax?, perAnnum? }` and is shown
+  by the one formatter `money()`: with its code, `USD 360,000`, `CAD 20,000–30,000
+  p.a.`, unless a style is asked for. The CV builder's Currency menu asks for `us`
+  (the D replaced by a sign: `US$360,000`, `CA$23,000`) or `dollar` (`$360,000`,
+  `CA$23,000`); a currency with no sign keeps its code in every style. The style
+  is a choice for a CV, saved in a selection as `currency`, and the builder's
+  page shows its amounts in it; the website always uses codes. A figure in prose
+  is written once, as the token `{amount}` in `details`, `detailsComplete` or
+  `summary`, standing for the record's own `amount` in the same style; a record
+  that uses the token without an `amount` fails the data tests. *Enforced:* `tests/data.test.js` ("money"), `tests/cvmodel.test.js`,
+  `tests/selection.test.js`, `tests/integrity.test.js` ("has an amount behind every
+  {amount}").
+
 ### Institution names
 
 - **FR-035** An `education` or `position` record may list `institutionNames`:

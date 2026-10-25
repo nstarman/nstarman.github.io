@@ -3,6 +3,8 @@
 // given — the website's whole data/ (its src/lib/data.js), or the slice of it a paper
 // site keeps (collect.js). Moved here from src/lib/data.js unchanged but for that.
 
+import { money } from './money.js';
+
 /**
  * Partial dates (YYYY, YYYY-MM, YYYY-MM-DD) compare correctly as strings, so a
  * month orders items inside a year even though only the year is ever shown.
@@ -289,14 +291,6 @@ export function createStore({ items: given, lists = new Map(), config }) {
       if (count > previous && count < positions.length) stops.push({ n, count });
     }
     return stops;
-  }
-
-  /** "USD 10,000", "CAD 20,000\u201330,000 p.a.", or null. */
-  function money(a) {
-    if (!a) return null;
-    const n = (v) => v.toLocaleString('en-US');
-    const span = a.valueMax ? `${n(a.value)}\u2013${n(a.valueMax)}` : n(a.value);
-    return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
   }
 
   /** "The Astrophysical Journal 979, 155"; short, "ApJ 979, 155", where

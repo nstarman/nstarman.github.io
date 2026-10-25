@@ -98,18 +98,18 @@ function byline(item) {
   return out;
 }
 
-function trailing(item, s) {
+function trailing(item, s, currency) {
   if (item.declined) return 'declined';
   if (item.kind === 'accepted') return 'not attended';
   if (item.amount && item.type !== 'award') {
-    return money(item.amount);
+    return money(item.amount, currency);
   }
   return s.location === false ? '' : item.location ?? '';
 }
 
 /** One item as a row of the model. */
-export function rowOf(item, cv, s, keepLine, names = 0) {
-  const detail = detailLines(item, { complete: cv.includeAll });
+export function rowOf(item, cv, s, keepLine, names = 0, currency) {
+  const detail = detailLines(item, { complete: cv.includeAll, currency });
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.
@@ -128,7 +128,7 @@ export function rowOf(item, cv, s, keepLine, names = 0) {
             // Marked achievements follow every detail line, and have their own gate.
             ...achievementLines(item, cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
-    trailing: trailing(item, s),
+    trailing: trailing(item, s, currency),
     recipient: item.recipient ?? null,
     recipientInline: cv.recipientInline || (item.recipientInline ?? false),
     status: item.status && item.status !== 'published' ? item.status : null,
@@ -157,9 +157,9 @@ export function rowOf(item, cv, s, keepLine, names = 0) {
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
-  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item));
+  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency);
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -189,9 +189,10 @@ function itemsOf(s, cv, keepLine, group, namesFor) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number> }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar' }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
- *   id (see `institutionOf`); `group` is the builder's choice, by institution, of
+ *   id (see `institutionOf`); `currency` how amounts are written (see `money`);
+ *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
@@ -228,7 +229,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency),
     })),
   };
 }

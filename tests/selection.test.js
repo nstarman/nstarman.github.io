@@ -187,6 +187,13 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).namesFor).toEqual({});
   });
 
+  it('carries the currency style through a round trip, and reads none as codes', () => {
+    expect(decode(JSON.stringify(encode({ items: [], currency: 'dollar' }))).currency).toBe('dollar');
+    expect(decode(JSON.stringify(encode({ items: [], currency: 'us' }))).currency).toBe('us');
+    expect(decode(JSON.stringify(encode({ items: [] }))).currency).toBeNull();
+    expect(decode(JSON.stringify(encode({ items: [], currency: 'xx' }))).currency).toBeNull();
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);
