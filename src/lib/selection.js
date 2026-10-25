@@ -107,7 +107,12 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, names, tally, site = {}, savedAt }) {
+/** Entry id → its own institution-name level (0 to 2), over the bulk one. */
+const cleanNamesFor = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k, v]) => k.length <= 64 && [0, 1, 2].includes(v)).slice(0, 256));
+
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, names, namesFor, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -155,6 +160,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     trailcap: trailcap === true,
     // How much of an institution's name prints: 0 full, 1 shorter, 2 shortest. Absent, full.
     names: [1, 2].includes(names) ? names : 0,
+    // An entry's own name level over it, by id. Absent, every entry follows it.
+    namesFor: cleanNamesFor(namesFor),
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
@@ -232,6 +239,7 @@ export function decode(text) {
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
     names: [1, 2].includes(raw.names) ? raw.names : 0,
+    namesFor: cleanNamesFor(raw.namesFor),
     tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {

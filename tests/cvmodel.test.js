@@ -28,6 +28,11 @@ describe('the model', () => {
     // An institution with no alternatives is its own at every level.
     const bs = itemById('cwru-bs');
     expect(text(rowOf(bs, cv, { detail: 'full' }, undefined, 2).subject)).toContain(bs.institution);
+    // An entry's own level wins over the bulk one.
+    const model = cvModel('complete', new Set(['mit-postdoc']), undefined, { names: 0, namesFor: { 'mit-postdoc': 2 } });
+    expect(text(find(model, 'mit-postdoc').subject)).toBe('MIT Kavli');
+    const bulk = cvModel('complete', new Set(['mit-postdoc']), undefined, { names: 1, namesFor: {} });
+    expect(text(find(bulk, 'mit-postdoc').subject)).toBe('MIT Kavli Institute for Astrophysics');
     // A level past the last alternative takes the last.
     const one = { ...post, institutionNames: ['MIT Kavli'] };
     expect(text(rowOf(one, cv, { detail: 'full' }, undefined, 1).subject)).toBe('MIT Kavli');

@@ -157,8 +157,9 @@ export function rowOf(item, cv, s, keepLine, names = 0) {
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, names) {
-  const row = (item) => rowOf(item, cv, s, keepLine, names);
+function itemsOf(s, cv, keepLine, group, names, namesFor) {
+  const levelOf = (item) => namesFor[item.id] ?? names;
+  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item));
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -171,7 +172,7 @@ function itemsOf(s, cv, keepLine, group, names) {
       id: `group:${first.institution}`,
       when: dateLabel({ date: groupDate(g.items) }, { month: true }),
       title: groupTitle(g.items),
-      subject: subject(first, names) ? [{ t: institutionOf(first, names), b: false }] : [],
+      subject: subject(first, levelOf(first)) ? [{ t: institutionOf(first, levelOf(first)), b: false }] : [],
       lines: rows.flatMap((r) => r.lines),
       trailing: s.location === false ? '' : first.location ?? '',
       links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
@@ -188,9 +189,9 @@ function itemsOf(s, cv, keepLine, group, names) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, names?: number }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, names?: number, namesFor?: Record<string, number> }} [opts]
  *   passed to resolve(); `names` is the institution-name level (see
- *   `institutionOf`); `group` is the builder's choice, by institution, of
+ *   `institutionOf`) and `namesFor` an entry's own, by id; `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
@@ -198,6 +199,8 @@ export function cvModel(presetName, only, keepLine, opts) {
   const group = opts?.group ?? {};
   // The builder's Institution names level: 0 full, 1 shorter, 2 shortest.
   const names = opts?.names ?? 0;
+  // An entry's own level, by id, over the bulk one.
+  const namesFor = opts?.namesFor ?? {};
 
   return {
     preset: cv.name,
@@ -226,7 +229,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, names),
+      items: itemsOf(s, cv, keepLine, group, names, namesFor),
     })),
   };
 }

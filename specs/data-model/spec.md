@@ -179,7 +179,8 @@ fetched fields (`specs/refresh/spec.md`).
   alternatives to its `institution`, longest first. The CV builder's Institution
   names menu picks the record's own name (Full), the first alternative (Shorter)
   or the last (Shortest); a record with fewer alternatives prints the last it
-  has, one with none its own. Roles are grouped by `institution` whichever name
+  has, one with none its own. An entry's own choice (`namesFor` in a saved
+  selection) wins over the menu. Roles are grouped by `institution` whichever name
   prints. *Enforced:* `tests/cvmodel.test.js` ("prints an institution as its name
   level asks…"), the schema.
 

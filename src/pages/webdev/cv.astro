@@ -578,6 +578,12 @@ const builderData = {
       }
     };
     for (const type of ['change', 'click']) document.addEventListener(type, () => requestAnimationFrame(syncLegends));
+    /** Entry id → its own institution-name level, for the entries that set one. */
+    const currentNamesFor = () => Object.fromEntries([...document.querySelectorAll('[data-names-of]')]
+      .filter((m) => m.value !== '').map((m) => [m.dataset.namesOf, Number(m.value)]));
+    const setNamesFor = (map = {}) => {
+      for (const m of document.querySelectorAll('[data-names-of]')) m.value = map[m.dataset.namesOf] === undefined ? '' : String(map[m.dataset.namesOf]);
+    };
     const setTally = (t = {}) => {
       for (const b of tallyBoxes()) {
         const v = t[b.dataset.tallyOf];
@@ -692,7 +698,7 @@ const builderData = {
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
                           group: currentGroup(), card: currentCard(), location: currentLocation(),
-                          page: $('format').value || null, trailcap: $('trailcap').checked, names: Number($('names').value), tally: currentTally(), site: SITE });
+                          page: $('format').value || null, trailcap: $('trailcap').checked, names: Number($('names').value), namesFor: currentNamesFor(), tally: currentTally(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -747,6 +753,7 @@ const builderData = {
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
       $('names').value = String(sel.names);
+      setNamesFor(sel.namesFor);
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -808,6 +815,7 @@ const builderData = {
     // longer matches what the menu says, and the preview keeps showing it.
     $('trailcap').addEventListener('change', () => retire('Right column changed — compile again.'));
     $('names').addEventListener('change', () => retire('Institution names changed — compile again.'));
+    document.addEventListener('change', (e) => { if (e.target.matches?.('[data-names-of]')) retire('Institution names changed — compile again.'); });
     $('style').addEventListener('change', () => {
       syncHeading();
       retire('Style changed — compile again.');
@@ -833,7 +841,7 @@ const builderData = {
         const lines = currentLines();
         const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
                               { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
-                                location: currentLocation(), tally: currentTally(), names: Number($('names').value) });
+                                location: currentLocation(), tally: currentTally(), names: Number($('names').value), namesFor: currentNamesFor() });
         // The template reads this; absent, it compiles the default. The CLI
         // never writes it, so the pre-built PDFs cannot drift from this menu.
         const inline = new Set(currentInline());
