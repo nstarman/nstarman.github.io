@@ -11,6 +11,8 @@
   "title": "Physics-Informed Neural Networks for Modeling Galactic Gravitational Potentials",
   "status": "published",
   "entryType": "inproceedings",
+  "arxiv": "2602.01806",
+  "primaryClass": "astro-ph.GA",
   "preliminaryOf": "pinns-mnras",
   "authors": [
     {
