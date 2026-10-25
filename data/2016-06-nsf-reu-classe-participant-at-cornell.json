@@ -6,8 +6,12 @@
   "date": {
     "start": "2016-06"
   },
-  "title": "NSF-REU Participant",
+  "title": "NSF-REU Student",
   "institution": "Cornell Laboratory for Accelerator-based Sciences and Education (CLASSE)",
+  "institutionNames": [
+    "Cornell Laboratory (CLASSE)",
+    "(CLASSE)"
+  ],
   "location": "Ithaca, NY, USA",
   "details": [
     "Mentor: [Ira Wasserman](https://astro.cornell.edu/ira-wasserman) (Cornell Astronomy).",
