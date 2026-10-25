@@ -70,6 +70,18 @@ describe('the model', () => {
       .subject.map((s) => s.t).join('')).toBe('Lead');
   });
 
+  it('says what a declined grant was worth, in the currency style', () => {
+    const id = 'nserc-pdf';
+    const only = new Set([id]);
+    const trail = (opts) => find(cvModel('complete', only, undefined, opts), id).trailing;
+    expect(trail()).toBe('CAD 90,000 (declined)');
+    expect(trail({ currency: 'dollar' })).toBe('CA$90,000 (declined)');
+    // A declined entry with no amount, or an award, says only "declined".
+    const cv = { name: 'np' };
+    expect(rowOf({ type: 'grant', declined: true, title: 'x', date: { start: '2020' } }, cv, { detail: 'full' }).trailing).toBe('declined');
+    expect(rowOf({ type: 'award', declined: true, amount: { currency: 'USD', value: 5 }, title: 'x', date: { start: '2020' } }, cv, { detail: 'full' }).trailing).toBe('declined');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');

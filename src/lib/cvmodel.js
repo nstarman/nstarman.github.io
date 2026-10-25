@@ -99,7 +99,10 @@ function byline(item) {
 }
 
 function trailing(item, s, currency) {
-  if (item.declined) return 'declined';
+  // A declined grant still says what it was worth: the amount, then "(declined)".
+  if (item.declined) {
+    return item.amount && item.type !== 'award' ? `${money(item.amount, currency)} (declined)` : 'declined';
+  }
   if (item.kind === 'accepted') return 'not attended';
   if (item.amount && item.type !== 'award') {
     return money(item.amount, currency);

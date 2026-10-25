@@ -168,7 +168,9 @@ cards (`specs/cards/spec.md`).
   `tests/selection.test.js` ("carries the card through a round trip…").
 - **FR-024** `location: false` on a preset or a section leaves its entries'
   places out of the right-hand column; a section's own `location` wins over the
-  preset's, and the builder's Places box over both. An amount still prints.
+  preset's, and the builder's Places box over both. An amount still prints, and a declined
+  grant or position prints its amount then "(declined)"; any other declined entry
+  prints "declined".
   *Enforced:* `tests/presets.test.js` ("print every entry's place…",
   "lets the builder leave a section's places out…"), `tests/cvmodel.test.js`.
 - **FR-025** A section may set `tally: true` to open with its publications'
