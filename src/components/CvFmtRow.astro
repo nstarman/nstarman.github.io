@@ -183,6 +183,10 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
         <label class="fmtopt fmtcheck" title="Stop the column at a set width, so a long place or amount wraps onto a second line">
           <input type="checkbox" id="trailcap" />Cap its width, so long places and amounts wrap</label>
       </span>
+      <span class="fmtline">
+        <label class="fmtopt fmtcheck" title="Let each entry's text run out to its own right-hand text, or to the margin where it has none">
+          <input type="checkbox" id="fill" />Fill the middle column, using the room beside short entries</label>
+      </span>
       <span class="fmtsub">Order</span>
       <span class="fmtline">
         <button type="button" class="btn" id="resetorder" disabled>Reset section order</button>

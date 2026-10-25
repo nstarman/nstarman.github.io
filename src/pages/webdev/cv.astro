@@ -715,7 +715,7 @@ const builderData = {
                           heading: currentHeadings(), place: currentPlace(),
                           prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
                           group: currentGroup(), card: currentCard(), location: currentLocation(),
-                          page: $('format').value || null, trailcap: $('trailcap').checked, namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), tally: currentTally(), site: SITE });
+                          page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked, namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), tally: currentTally(), site: SITE });
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -769,6 +769,7 @@ const builderData = {
       setLocation(sel.location);
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
+      $('fill').checked = sel.fill;
       setNamesFor(sel.namesFor);
       $('currency').value = [...$('currency').options].some((o) => o.value === sel.currency) ? sel.currency : '';
       showCurrency();
@@ -833,6 +834,7 @@ const builderData = {
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
     $('trailcap').addEventListener('change', () => retire('Right column changed — compile again.'));
+    $('fill').addEventListener('change', () => retire('Middle column changed — compile again.'));
     // The page shows amounts as the Currency menu will write them.
     const showCurrency = () => {
       const style = $('currency').value;
@@ -888,6 +890,7 @@ const builderData = {
         model.style = $('style').value;
         model.format = $('format').value || null;
         model.trailcap = $('trailcap').checked;
+        model.fill = $('fill').checked;
         model.card = currentCard();
         model.spacing = currentSpacing();
         model.heading = currentHeadings();

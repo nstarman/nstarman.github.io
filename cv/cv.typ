@@ -376,7 +376,27 @@
 // entries do not use a column.
 #let TRAILCAP = 1.3in
 #let trailcap = cv.at("trailcap", default: false) or letter
-#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
+// With `fill` — the builder's "Fill the middle column" — each entry is laid out on its
+// own: dates at the section's widest date, the right-hand text at its own width (capped
+// as `trailcap` caps it), and an entry with none runs its text to the margin. So a short
+// figure, or none, frees its own room instead of the widest figure's.
+#let fill = cv.at("fill", default: false)
+#let entries(items, gutter) = if flat { entriesflat(items, gutter) } else if fill { context {
+  set par(justify: false)
+  let small(t) = tnum(text(size: look.sub)[#t])
+  let datew = calc.max(0pt, ..items.map(it => measure(small(it.when)).width))
+  for (k, it) in items.enumerate() {
+    if k > 0 { v(gutter) }
+    let trail = measure(small(it.trailing)).width
+    let trailw = if trailcap { calc.min(trail, TRAILCAP) } else { trail }
+    if it.trailing == "" {
+      grid(columns: (datew, 1fr), column-gutter: 12pt, align: left + top, small(it.when), entrybody(it))
+    } else {
+      grid(columns: (datew, 1fr, trailw), column-gutter: 12pt, align: (left + top, left + top, right + top),
+           small(it.when), entrybody(it), small(it.trailing))
+    }
+  }
+} } else { context {
   set par(justify: false)
   let widest = if trailcap { calc.max(0pt, ..items.map(it => measure(tnum(text(size: look.sub)[#it.trailing])).width)) }
   grid(

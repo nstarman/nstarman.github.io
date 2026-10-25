@@ -200,6 +200,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).funderOff).toEqual([]);
   });
 
+  it('carries whether the middle column fills, and reads none as off', () => {
+    expect(decode(JSON.stringify(encode({ items: [], fill: true }))).fill).toBe(true);
+    expect(decode(JSON.stringify(encode({ items: [] }))).fill).toBe(false);
+    expect(decode(JSON.stringify(encode({ items: [], fill: 'yes' }))).fill).toBe(false);
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);
