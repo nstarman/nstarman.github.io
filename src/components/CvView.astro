@@ -48,7 +48,7 @@ const isPicked = (id) => !picked || picked.has(id);
 const onPage = new Set(cv.sections.flatMap((s) => s.items.map((i) => i.id)));
 const local = (line) => line.map((s) => (s.item && !onPage.has(s.item) ? { t: s.t } : s));
 const detail = (i) => [
-  ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll }) : []),
+  ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll, forms: pick }) : []),
   ...achievementLines(i, cv.name, { complete: cv.includeAll }),
 ].map(local);
 // Which of those lines only the complete CV shows. They are appended last, so

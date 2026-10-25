@@ -11,7 +11,7 @@
   },
   "title": "Astropy Cycle III Funding Grants",
   "tier": "major",
-  "details": "USD 8,000 NASA ROSES and Moore Foundation funding to Astropy Lead: “Quantity 2.0: unitful calculations beyond NumPy\"",
+  "details": "{amount} NASA ROSES and Moore Foundation funding to Astropy Lead: “Quantity 2.0: unitful calculations beyond NumPy\"",
   "amount": {
     "currency": "USD",
     "value": 8000

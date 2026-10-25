@@ -181,8 +181,12 @@ fetched fields (`specs/refresh/spec.md`).
   (the D replaced by a sign: `US$360,000`, `CA$23,000`) or `dollar` (`$360,000`,
   `CA$23,000`); a currency with no sign keeps its code in every style. The style
   is a choice for a CV, saved in a selection as `currency`, and the builder's
-  page shows its amounts in it; the website always uses codes. *Enforced:* `tests/data.test.js` ("money"), `tests/cvmodel.test.js`,
-  `tests/selection.test.js`.
+  page shows its amounts in it; the website always uses codes. A figure in prose
+  is written once, as the token `{amount}` in `details`, `detailsComplete` or
+  `summary`, standing for the record's own `amount` in the same style; a record
+  that uses the token without an `amount` fails the data tests. *Enforced:* `tests/data.test.js` ("money"), `tests/cvmodel.test.js`,
+  `tests/selection.test.js`, `tests/integrity.test.js` ("has an amount behind every
+  {amount}").
 
 ### Institution names
 

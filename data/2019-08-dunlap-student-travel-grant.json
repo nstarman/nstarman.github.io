@@ -8,5 +8,9 @@
   },
   "title": "Dunlap Student Travel Grant",
   "tier": "minor",
-  "details": "To present at the 5th Gaia Challenge Workshop (Value: $2,075)"
+  "details": "To present at the 5th Gaia Challenge Workshop (Value: {amount})",
+  "amount": {
+    "currency": "USD",
+    "value": 2075
+  }
 }

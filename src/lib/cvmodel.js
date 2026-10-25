@@ -109,7 +109,7 @@ function trailing(item, s, currency) {
 
 /** One item as a row of the model. */
 export function rowOf(item, cv, s, keepLine, names = 0, currency) {
-  const detail = detailLines(item, { complete: cv.includeAll });
+  const detail = detailLines(item, { complete: cv.includeAll, currency });
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.

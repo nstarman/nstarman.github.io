@@ -20,6 +20,13 @@ describe('the database', () => {
     expect(dangling).toEqual([]);
   });
 
+  it('has an amount behind every {amount} in prose', () => {
+    const fields = ['details', 'detailsComplete', 'summary'];
+    const bad = items.filter((i) => fields.some((f) => JSON.stringify(i[f] ?? '').includes('{amount}')) && !i.amount)
+      .map((i) => i.id);
+    expect(bad).toEqual([]);
+  });
+
   it('resolves every preliminaryOf to a publication', () => {
     const bad = items.filter((i) => i.preliminaryOf
       && items.find((j) => j.id === i.preliminaryOf)?.type !== 'publication');

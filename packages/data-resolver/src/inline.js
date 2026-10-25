@@ -10,6 +10,7 @@
 
 import { dateLabel } from '@nstarkman/research-store';
 import { sortAchievements } from './mentees.js';
+import { money } from './money.js';
 
 // `[text](https://…)` for the web, and `[text](item:some-id)` to point at
 // another entry on the same CV — the CV cross-references itself (a position
@@ -76,13 +77,35 @@ export function lines(long, base = '') {
  * means the same thing whether or not they are included — the builder ticks
  * lines by index, and inserting in the middle would silently move its ticks.
  */
-export function detailLines(item, { complete = false } = {}) {
+export function detailLines(item, { complete = false, currency, forms = false } = {}) {
+  const prose = (long) => amountLines(long, item, { currency, forms });
   return [
-    ...lines(item.details),
+    ...prose(item.details),
     ...(item.thesis ? [spans(`Thesis: ${item.thesis}`)] : []),
     ...(item.supervisors?.length ? [spans(`Supervisors: ${item.supervisors.join(', ')}`)] : []),
-    ...(complete ? lines(item.detailsComplete) : []),
+    ...(complete ? prose(item.detailsComplete) : []),
   ];
+}
+
+/**
+ * `lines`, with `{amount}` standing for the item's `amount` written as `money` writes
+ * it in `currency`: so a figure in prose is stored once, in the data, and follows
+ * the CV's currency style. With `forms` the span carries all three forms, for the
+ * builder's page to swap; a token on an item with no `amount` is left as it is,
+ * which the data tests refuse.
+ */
+function amountLines(long, item, { currency, forms }) {
+  const token = '{amount}';
+  return (Array.isArray(long) ? long : [long]).filter(Boolean).map((line) => {
+    if (!item.amount || !line.includes(token)) return spans(line);
+    return line.split(token).flatMap((piece, k) => [
+      ...(k ? [{
+        t: money(item.amount, currency),
+        ...(forms && { forms: { code: money(item.amount), us: money(item.amount, 'us'), dollar: money(item.amount, 'dollar') } }),
+      }] : []),
+      ...spans(piece),
+    ]);
+  });
 }
 
 /**
