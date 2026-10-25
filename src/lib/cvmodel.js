@@ -163,9 +163,13 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
-  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds);
+  // An education entry may have its institution on its own line, below the degree.
+  const row = (item) => ({
+    ...rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds),
+    ...(schoolBelow && item.type === 'education' && { below: true }),
+  });
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -195,9 +199,10 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
- *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `funderOff` the ids whose
+ *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
+ *   entry's institution on its own line; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -236,7 +241,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds)),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow)),
     })),
   };
 }

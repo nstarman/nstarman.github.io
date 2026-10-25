@@ -117,7 +117,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, currency, funderOff, fill, paperIds, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -174,6 +174,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     fill: fill === true,
     // Whether a mentee's papers are cited by identifier. Absent, in words.
     paperIds: paperIds === true,
+    // Whether Education puts the university on its own line. Absent, on the degree's line.
+    schoolBelow: schoolBelow === true,
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
@@ -255,6 +257,7 @@ export function decode(text) {
     funderOff: cleanIds(raw.funderOff),
     fill: raw.fill === true,
     paperIds: raw.paperIds === true,
+    schoolBelow: raw.schoolBelow === true,
     tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {

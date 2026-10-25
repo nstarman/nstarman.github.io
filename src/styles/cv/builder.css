@@ -243,3 +243,6 @@
 .funderbox:not(:checked) + .funderopt__name{color:var(--ink-faint); text-decoration:line-through}
 /* A paper cited by identifier on the builder's page: its mark, text-sized, then the identifier. */
 .pid .ico{width:.9em; height:.9em; fill:currentColor; vertical-align:-.1em}
+/* With "university on its own line", an education entry's institution is a block below the degree. */
+#tree.schoolbelow .edusep{display:none}
+#tree.schoolbelow .eduinst{display:block}

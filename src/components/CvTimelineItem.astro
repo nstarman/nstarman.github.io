@@ -70,7 +70,7 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     <strong>{item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
-      : <>, {pick && item.institutionNames?.length > 0
+      : <><span class={item.type === 'education' ? 'edusep' : undefined}>, </span><span class={item.type === 'education' ? 'eduinst' : undefined}>{pick && item.institutionNames?.length > 0
           /* The builder's: the institution's name is its own menu, so it is said once. */
           ? <select class="namesel" data-names-of={item.id} aria-label={`Institution name for ${item.title}`}
                     title="Choose how much of the institution's name prints">
@@ -78,7 +78,7 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
               <option value="1">{item.institutionNames[0]}</option>
               {item.institutionNames.length > 1 && <option value="2">{item.institutionNames.at(-1)}</option>}
             </select>
-          : item.institution}</>)}
+          : item.institution}</span></>)}
     {/* The builder's: the institution an award or grant names, and whether it prints. */}
     {pick && item.funder && ['award', 'grant'].includes(item.type) && (
       <label class="funderopt" title="Print this institution after the title">, <input type="checkbox" class="funderbox"
