@@ -845,12 +845,14 @@ const builderData = {
     document.addEventListener('change', (e) => {
       if (e.target.matches?.('[data-funder-of]')) retire('Institution changed — compile again.');
     });
-    // The page cites a mentee's papers as the tick-box says: in words, or by identifier.
+    // The page cites a mentee's papers as the tick-box says: in words, or by identifier
+    // (every entry is on the builder's page, but an off-page one still swaps its text).
     const showPaperIds = () => {
-      for (const a of document.querySelectorAll('a.pid')) {
+      // An off-page reference has no link to swap, only its text.
+      for (const a of document.querySelectorAll('.pid')) {
         const alt = $('paperids').checked;
         a.textContent = alt ? a.dataset.altText : a.dataset.text;
-        a.href = alt ? a.dataset.altHref : a.dataset.href;
+        if (a.dataset.href) a.href = alt ? a.dataset.altHref : a.dataset.href;
       }
     };
     $('paperids').addEventListener('change', () => { showPaperIds(); retire('Paper citations changed — compile again.'); });

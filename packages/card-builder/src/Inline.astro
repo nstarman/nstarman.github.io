@@ -9,6 +9,7 @@ const parts = spans ?? split(text, base);
 ---
 {parts.map((x) => (x.alt && x.url ? <a class="pid" href={x.url} data-text={x.t} data-href={x.url}
                        data-alt-text={x.alt.t} data-alt-href={x.alt.url}>{x.t}</a>
+  : x.alt ? <span class="pid" data-text={x.t} data-alt-text={x.alt.t}>{x.t}</span>
   : x.url ? <a href={x.url}>{x.t}</a>
   : x.forms ? <span class="amt" data-code={x.forms.code} data-us={x.forms.us} data-dollar={x.forms.dollar}>{x.t}</span>
   : x.t))}
