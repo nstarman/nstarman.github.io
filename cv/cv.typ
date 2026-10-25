@@ -337,7 +337,8 @@
 
 // ── one entry ─────────────────────────────────────────────────────────────
 // Title and subject share a line — "**Institution**, Role" — which is what
-// keeps an entry to two lines rather than three.
+// keeps an entry to two lines rather than three; an education entry marked `below` (the
+// builder's "university on its own line") breaks the line there instead, at the cost of one.
 #let entrybody(it, tail: none) = {
   strong(it.title)
   // An education entry may have its institution on its own line, below the degree (`below`).
