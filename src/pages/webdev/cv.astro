@@ -761,6 +761,7 @@ const builderData = {
       $('trailcap').checked = sel.trailcap;
       setNamesFor(sel.namesFor);
       $('currency').value = [...$('currency').options].some((o) => o.value === sel.currency) ? sel.currency : '';
+      showCurrency();
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
@@ -821,7 +822,12 @@ const builderData = {
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
     $('trailcap').addEventListener('change', () => retire('Right column changed — compile again.'));
-    $('currency').addEventListener('change', () => retire('Currency changed — compile again.'));
+    // The page shows amounts as the Currency menu will write them.
+    const showCurrency = () => {
+      const style = $('currency').value;
+      for (const a of document.querySelectorAll('.amt')) a.textContent = a.dataset[style || 'code'];
+    };
+    $('currency').addEventListener('change', () => { showCurrency(); retire('Currency changed — compile again.'); });
     // The settings menu sets every entry's institution name; an entry's own menu
     // sets that one, and the settings menu then says Mixed or the level they share.
     $('names').addEventListener('change', () => {

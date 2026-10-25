@@ -88,7 +88,11 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     )}
     {/* Grants show their figure; awards keep theirs in the record only. */}
     {item.amount && item.type !== 'award' && (
-      <> — {money(item.amount)}{item.declined && ' (declined)'}</>
+      <> — {pick
+        /* The builder's: the figure follows its Currency menu, so it carries each form. */
+        ? <span class="amt" data-code={money(item.amount)} data-us={money(item.amount, 'us')}
+                data-dollar={money(item.amount, 'dollar')}>{money(item.amount)}</span>
+        : money(item.amount)}{item.declined && ' (declined)'}</>
     )}
     {item.declined && item.type === 'award' && <> (declined)</>}
     {item.kind === 'accepted' && <> (accepted, not attended)</>}
