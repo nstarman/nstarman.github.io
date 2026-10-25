@@ -164,19 +164,19 @@ describe('detail levels', () => {
     const record = itemById('cwru-bs');
     expect(record.detailsComplete).toBe('GPA 4.0.');
 
-    expect(text(cvModel('complete'), 'cwru-bs')).toContain('GPA 4.0.');
+    expect(text(cvModel('complete'), 'cwru-bs')).toContain('GPA 4.0');
     for (const name of ['np', '2page', '1page']) {
       expect(text(cvModel(name), 'cwru-bs')).not.toContain('GPA');
     }
     // And the tier above it still prints everywhere it did before.
-    expect(text(cvModel('np'), 'cwru-bs')).toContain('Summa Cum Laude.');
+    expect(text(cvModel('np'), 'cwru-bs')).toContain('Summa Cum Laude');
   });
 
   it('appends a complete-only line last, so line indices do not shift', () => {
     // The builder ticks lines by index. If the extra line were inserted among
     // the others, every tick after it would silently point at a different line.
     const lines = all(cvModel('complete')).find((i) => i.id === 'cwru-bs').lines;
-    expect(lines.at(-1).map((sp) => sp.t).join(' ')).toContain('GPA 4.0.');
+    expect(lines.at(-1).map((sp) => sp.t).join(' ')).toContain('GPA 4.0');
   });
 });
 
@@ -273,11 +273,11 @@ describe('mentee achievements', () => {
     expect(lines(row('2page'))).toEqual(['Prize — AAS (2026)']);
   });
   it('prints neither on a preset that marks neither', () => {
-    expect(lines(row('np'))).toEqual(['About M.']);
+    expect(lines(row('np'))).toEqual(['About M']);
   });
   it('prints all, oldest first, on the complete CV', () => {
     expect(lines(row('complete', undefined, true)))
-      .toEqual(['About M.', 'Talk — Out (2025)', 'Prize — AAS (2026)']);
+      .toEqual(['About M', 'Talk — Out (2025)', 'Prize — AAS (2026)']);
   });
   it('keeps an achievement the builder ticks by its own index', () => {
     expect(lines(row('complete', (_id, i) => i === 1, true))).toEqual(['Talk — Out (2025)']);
@@ -287,6 +287,6 @@ describe('mentee achievements', () => {
     expect([0, 1, 2].map((i) => lineTier(i, 1, 2))).toEqual(['base', 'complete', 'achievement']);
   });
   it('is not kept by a builder tick of an earlier line', () => {
-    expect(lines(row('complete', (_id, i) => i === 0, true))).toEqual(['About M.']);
+    expect(lines(row('complete', (_id, i) => i === 0, true))).toEqual(['About M']);
   });
 });

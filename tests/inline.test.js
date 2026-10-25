@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
+import { spans, plain, lines, detailLines, noFinalPeriod, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 describe('spans', () => {
@@ -128,5 +128,38 @@ describe('seeding the builder\'s achievement ticks', () => {
   });
   it('reads a record\'s cvs in line order', () => {
     expect(achievementCvs(itemById('amir-abdul-howard'))).toHaveLength(4);
+  });
+});
+
+describe('a line does not end in a period', () => {
+  const text = (line) => line.map((s) => s.t).join('');
+
+  it('drops a final period, and only that one', () => {
+    expect(text(noFinalPeriod(spans('Advisor: John Ruhl (CWRU Physics).')))).toBe('Advisor: John Ruhl (CWRU Physics)');
+    expect(text(noFinalPeriod(spans('Funding: federal grants awarded to Prof. Ruhl.')))).toBe('Funding: federal grants awarded to Prof. Ruhl');
+    expect(text(noFinalPeriod(spans('Summa Cum Laude')))).toBe('Summa Cum Laude');
+  });
+
+  it('keeps it after an abbreviation or an ellipsis', () => {
+    for (const l of ['Starkman et al.', 'Papers, posters, etc.', 'and so on...']) {
+      expect(text(noFinalPeriod(spans(l)))).toBe(l);
+    }
+  });
+
+  it('keeps a link that ends the line, and drops a span that was only the period', () => {
+    const line = noFinalPeriod(spans('Mentor: [Ira Wasserman](https://example.org).'));
+    expect(line).toEqual([{ t: 'Mentor: ' }, { t: 'Ira Wasserman', url: 'https://example.org' }]);
+  });
+
+  it('is what the lines of a record are shown as, the record unchanged', () => {
+    const bs = itemById('cwru-bs');
+    const lns = detailLines(bs).map(text);
+    expect(lns.every((l) => !l.endsWith('.') || /(al|etc)\.$/.test(l))).toBe(true);
+    expect(JSON.stringify(bs.details)).toMatch(/\.\"/);
+  });
+
+  it('puts a middle dot between the PhD fellowships', () => {
+    const phd = detailLines(itemById('toronto-phd')).map(text)[0];
+    expect(phd).toBe('NSERC CGS-D Fellow 2020–2023 · NSERC CGS-M Fellow 2019–2020');
   });
 });
