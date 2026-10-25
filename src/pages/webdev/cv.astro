@@ -61,6 +61,8 @@ const builderData = {
   // And its tallies, as the preset writes them: true, or { hIndex }.
   tally: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(preset(n).sections
     .filter((s) => typeof s === 'object' && s.tally).map((s) => [s.id, s.tally]))])),
+  // The entries whose institution each preset leaves out.
+  funderOff: Object.fromEntries(presetNames.map((n) => [n, preset(n).funderOff ?? []])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
   place: Object.fromEntries(presetNames.map((n) => [n, preset(n).place ?? {}])),
   recipientInline: Object.fromEntries(presetNames.map((n) => [n, preset(n).recipientInline])),
@@ -149,7 +151,7 @@ const builderData = {
     import { move, holdDrag } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -421,6 +423,7 @@ const builderData = {
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
         setTally(TALLY[t.dataset.preset]);
+        setFunderOff(FUNDER_OFF[t.dataset.preset]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');

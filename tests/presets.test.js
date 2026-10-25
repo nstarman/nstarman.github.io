@@ -76,6 +76,15 @@ describe('tally', () => {
   });
 });
 
+describe('funderOff', () => {
+  it('is what a preset lists, and empty where it lists none', () => {
+    expect(resolve('2page').funderOff).toEqual(['nserc-cgs-d', 'nserc-cgs-m']);
+    expect(resolve('1page').funderOff).toEqual(['nserc-cgs-d', 'nserc-cgs-m']);
+    expect(resolve('np').funderOff).toEqual([]);
+    expect(resolve('complete').funderOff).toEqual([]);
+  });
+});
+
 describe('resolve', () => {
   it('takes everything for the complete CV, and a subset for the rest', () => {
     const complete = resolve('complete');
