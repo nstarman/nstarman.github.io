@@ -225,7 +225,9 @@ Claude Code and Copilot; the scripts they call are in `.specify/scripts/bash/`):
 4. The last push: fold the requirements into the area spec (below) and delete
    the folder and `.specify/feature.json`.
 
-An agent makes a feature's PR only after step 2 has passed, and says in the PR
+A feature that adds a builder option says in its spec where the option lives — the global
+panel for the whole CV, or its section's own settings row — by `specs/cv-presets/spec.md`
+FR-027. An agent makes a feature's PR only after step 2 has passed, and says in the PR
 which steps it ran. Review comments and CI fixes on an open PR are not new
 features and need no new run.
 
