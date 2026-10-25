@@ -14,6 +14,7 @@ import CvToc from './CvToc.astro';
 import CvTimelineItem from './CvTimelineItem.astro';
 import Card from '@nstarkman/card-builder/Card.astro';
 import CvFmtRow from './CvFmtRow.astro';
+import { withIdentifiers } from '../lib/refids.js';
 
 // Worth offering only when it splits the section: if every package has a
 // paper, or none does, the button would just be a slower "All".
@@ -46,11 +47,13 @@ const isPicked = (id) => !picked || picked.has(id);
 // A cross-reference to an entry this CV leaves out — a preset may filter the
 // entry a line points at — prints as text rather than as an anchor to nothing.
 const onPage = new Set(cv.sections.flatMap((s) => s.items.map((i) => i.id)));
-const local = (line) => line.map((s) => (s.item && !onPage.has(s.item) ? { t: s.t } : s));
+const local = (line) => line.map((s) => (s.item && !onPage.has(s.item) ? { t: s.t, ...(s.alt && { alt: s.alt }) } : s));
+// In the builder a mentee's references to papers also carry their identifier, for its menu to swap.
+const papers = (i, line) => (pick && i.type === 'mentoring' ? withIdentifiers(line) : line);
 const detail = (i) => [
   ...(cv.detail === 'full' || pick ? detailLines(i, { complete: cv.includeAll, forms: pick }) : []),
   ...achievementLines(i, cv.name, { complete: cv.includeAll }),
-].map(local);
+].map((l) => local(papers(i, l)));
 // Which of those lines only the complete CV shows. They are appended last, so
 // everything from this index on is complete-only — the builder needs to know,
 // because seeding from NP must not tick a line the NP CV does not print.
