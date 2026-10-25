@@ -130,7 +130,9 @@ cards (`specs/cards/spec.md`).
   no longer reserves its width on every row and the middle text wraps later; it is
   still one column, and a longer text wraps inside it. Where more than half of the
   entries are longer than an inch (a section of places) it is as wide as it would be
-  without the option; unticked, the column is as it was. A
+  without the option; unticked, the column is as it was. A section in which no entry
+  has right-hand text has no right-hand column, and no gutter for one, so the middle text
+  uses the full width. A
   tick-box in the Education section's own settings puts each university on its own
   line, below the degree, with no comma, on the page and in the PDF; unticked, it follows the degree after a
   comma. A

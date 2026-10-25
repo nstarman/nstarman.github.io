@@ -405,16 +405,18 @@
   set par(justify: false)
   let widest = if trailcap { calc.max(0pt, ..items.map(it => measure(tnum(text(size: look.sub)[#it.trailing])).width)) }
   let rightw = if fill { fillwidth(items) } else if trailcap { calc.min(widest, TRAILCAP) } else { auto }
+  // No right-hand column, and not its gutter, where no entry has right-hand text.
+  let has = items.any(it => it.at("trailing", default: none) not in (none, ""))
   grid(
-    columns: (auto, 1fr, rightw),
+    columns: if has { (auto, 1fr, rightw) } else { (auto, 1fr) },
     column-gutter: 12pt,
     row-gutter: gutter,
-    align: (left + top, left + top, right + top),
+    align: if has { (left + top, left + top, right + top) } else { left + top },
     ..items
       .map(it => (
         tnum(text(size: look.sub)[#it.when]),
         entrybody(it),
-        tnum(text(size: look.sub)[#it.trailing]),
+        ..if has { (tnum(text(size: look.sub)[#it.trailing]),) } else { () },
       ))
       .flatten(),
   )
