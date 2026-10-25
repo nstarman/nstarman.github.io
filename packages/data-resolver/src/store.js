@@ -349,6 +349,9 @@ export function createStore({ items: given, lists = new Map(), config }) {
     event: 'link', homepage: 'link',
   };
 
+  /** A link's mark: its rel's, but a school's homepage is a graduation cap. */
+  const linkIcon = (item, l) => (item.type === 'education' && l.rel === 'homepage' ? 'cap' : REL_ICON[relKey(l)] ?? 'link');
+
   /**
    * The one link a title points at: the article, else the preprint, else its
    * ADS record, else null. The ADS link is synthesised as a `paper` rel, so it
@@ -459,5 +462,5 @@ export function createStore({ items: given, lists = new Map(), config }) {
     return { start, end };
   }
 
-  return { items, lists, config, byType, featured, resolve, titleOf, splitTitle, HIGHLIGHT_TOPICS, SOFTWARE_GROUPS, displayName, authorPosition, venueUrl, softwarePapers, softwareUsed, affiliationAt, authors, positionStops, money, venueLine, year, dateLabel, relKey, REL_ICON, primaryLink, links, assists, assistItem, groupedByDefault, institutionGroups, groupTitle, groupDate };
+  return { items, lists, config, byType, featured, resolve, titleOf, splitTitle, HIGHLIGHT_TOPICS, SOFTWARE_GROUPS, displayName, authorPosition, venueUrl, softwarePapers, softwareUsed, affiliationAt, authors, positionStops, money, venueLine, year, dateLabel, relKey, REL_ICON, linkIcon, primaryLink, links, assists, assistItem, groupedByDefault, institutionGroups, groupTitle, groupDate };
 }

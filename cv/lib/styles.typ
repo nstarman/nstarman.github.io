@@ -49,6 +49,7 @@
   data: (FA, "\u{F1C0}"), // database
   slides: (FA, "\u{F15C}"),
   link: (FA, "\u{F0C1}"),
+  cap: (FA, "\u{F19D}"), // graduation-cap: a school's link
   email: (FA, "\u{F0E0}"), // envelope
   globe: (FA, "\u{F0AC}"),
   orcid: (FAB, "\u{F8D2}"),

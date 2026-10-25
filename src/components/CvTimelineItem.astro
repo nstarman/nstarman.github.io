@@ -2,7 +2,7 @@
 // One row of the CV's timeline: the date gutter, the entry, its detail lines
 // and its links. In the builder (`pick`) it also carries the tick-boxes, so
 // what you select is what you are reading.
-import { dateLabel, authors, venueLine, links, REL_ICON, relKey, authorPosition, money }
+import { dateLabel, authors, venueLine, links, linkIcon, authorPosition, money }
   from '../lib/data.js';
 import LinkIcons from '@nstarkman/card-builder/LinkIcons.astro';
 import Inline from '@nstarkman/card-builder/Inline.astro';
@@ -59,7 +59,7 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
          aria-label={`${item.event ?? item.institution ?? item.organization ?? item.title} ${l.label ?? l.rel}`}
          title={l.label ?? l.rel}>
         <svg class="ico" aria-hidden="true" focusable="false">
-          <use href={`#i-${REL_ICON[relKey(l)] ?? 'link'}`} />
+          <use href={`#i-${linkIcon(item, l)}`} />
         </svg>
       </a>
     ))}

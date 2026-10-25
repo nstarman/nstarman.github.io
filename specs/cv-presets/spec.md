@@ -139,7 +139,8 @@ cards (`specs/cards/spec.md`).
   comma. While it is ticked, a second tick-box in the same settings, "Link icon on the degree line", moves each
   education entry's link icon from the end of the university line to the end of the degree line, in the PDF (the
   page draws that link in the date gutter, on no line); it is not offered, and does nothing, with the university
-  on the degree's line. A
+  on the degree's line. An education entry's homepage link is drawn as a graduation cap, in the PDF and in the
+  page's date gutter; every other link, including a position's homepage, keeps its mark. A
   tick-box in the Mentoring section's own settings cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
   its DOI (linked to doi.org, with the paper mark, as the Publications section writes it),
