@@ -50,7 +50,9 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       // Dated entries have a right-hand column for their place.
       places: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0,
       // A publication list can open with its headline numbers.
-      tally: !all && s.layout === 'publications' },
+      tally: !all && s.layout === 'publications',
+      // Education can put the university under the degree.
+      school: !all && s.id === 'education' },
   ].map((o) => (
     <>
       <span class="fmtsub">{o.sub}</span>
@@ -104,6 +106,11 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.places && (
         <label class="fmtopt fmtcheck" title={`Print each ${s.heading} entry's place`}>
           <input type="checkbox" name={`location:${s.id}`} data-location-of={s.id} checked />Places</label>
+      )}
+      {/* Each education entry's university on its own line, below the degree, with no comma. */}
+      {o.school && (
+        <label class="fmtopt fmtcheck" title="Put each university on its own line, below the degree, with no comma">
+          <input type="checkbox" id="schoolbelow" />University below the degree</label>
       )}
       {/* The tally, and which h-index it adds, if any: each source's says where
           it is from, as the sources disagree. */}
@@ -170,11 +177,6 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
           <option value="us">US$, CA$</option>
           <option value="dollar">$, CA$</option>
         </select>
-      </span>
-      <span class="fmtsub">Education</span>
-      <span class="fmtline">
-        <label class="fmtopt fmtcheck" title="Put each university on its own line, below the degree, with no comma">
-          <input type="checkbox" id="schoolbelow" />Put the university on its own line, below the degree</label>
       </span>
       <span class="fmtsub">Mentoring</span>
       <span class="fmtline">

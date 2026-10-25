@@ -126,8 +126,8 @@ cards (`specs/cards/spec.md`).
   still one column, and a longer text wraps inside it. Where more than half of the
   entries are longer than an inch (a section of places) it is as wide as it would be
   without the option; unticked, the column is as it was. A
-  tick-box under Education puts each university on its own line, below the degree,
-  with no comma, on the page and in the PDF; unticked, it follows the degree after a
+  tick-box in the Education section's own settings puts each university on its own
+  line, below the degree, with no comma, on the page and in the PDF; unticked, it follows the degree after a
   comma. A
   tick-box under Mentoring cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
