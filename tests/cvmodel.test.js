@@ -110,6 +110,15 @@ describe('the model', () => {
     expect(text(find(on, 'toronto-phd').subject)).toBe('University of Toronto');
   });
 
+  it('marks the link icon for the degree line only with the institution below', () => {
+    const only = new Set(['toronto-phd', 'mit-postdoc']);
+    const on = cvModel('complete', only, undefined, { schoolBelow: true, linkOnDegree: true });
+    expect(find(on, 'toronto-phd').linkOnDegree).toBe(true);
+    expect(find(on, 'mit-postdoc').linkOnDegree).toBeUndefined();
+    expect(find(cvModel('complete', only, undefined, { linkOnDegree: true }), 'toronto-phd').linkOnDegree).toBeUndefined();
+    expect(find(cvModel('complete', only, undefined, { schoolBelow: true }), 'toronto-phd').linkOnDegree).toBeUndefined();
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');

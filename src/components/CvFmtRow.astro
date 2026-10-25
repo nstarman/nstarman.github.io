@@ -113,6 +113,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.school && (
         <label class="fmtopt fmtcheck" title="Put each university on its own line, below the degree, with no comma">
           <input type="checkbox" id="schoolbelow" />University below the degree</label>
+        <label class="fmtopt fmtcheck" hidden title="Put the link icon at the end of the degree line, not the university line">
+          <input type="checkbox" id="linkondegree" />Link icon on the degree line</label>
       )}
       {/* A mentee's papers cited by DOI, else arXiv id, instead of in words. */}
       {o.mentees && (
