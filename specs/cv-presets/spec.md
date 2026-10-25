@@ -122,7 +122,9 @@ cards (`specs/cards/spec.md`).
   tick-box under Right column ("Fill the middle column") sizes the right-hand column
   to the figures and places that fit in an inch, not to the longest, so one long range
   no longer reserves its width on every row and the middle text wraps later; it is
-  still one column, and a longer text wraps inside it; unticked, the column is as it was. A
+  still one column, and a longer text wraps inside it. Where more than half of the
+  entries are longer than an inch (a section of places) it is as wide as it would be
+  without the option; unticked, the column is as it was. A
   tick-box under Mentoring cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
   its DOI (linked to doi.org, with the paper mark, as the Publications section writes it),

@@ -382,8 +382,8 @@
 // With `fill` — the builder's "Fill the middle column" — the right-hand column is sized
 // to the figures and places that fit in FITCAP, not to the longest: one long range or place
 // no longer reserves its width on every row, so the middle text wraps later. It is still one
-// column, in one grid; a text longer than the column wraps inside it. Where nothing fits
-// in FITCAP the column is as wide as the cap `trailcap` sets, as without the option.
+// column, in one grid; a text longer than the column wraps inside it. Where most are longer
+// than FITCAP (places) the column is as wide as the cap `trailcap` sets, as without the option.
 #let FITCAP = 1in
 #let fill = cv.at("fill", default: false)
 #let fillwidth(items) = {
@@ -391,8 +391,13 @@
     let tr = it.at("trailing", default: none)
     if tr == none or tr == "" { 0pt } else { measure(tnum(text(size: look.sub)[#tr])).width }
   })
-  let fits = ws.filter(w => w > 0pt and w <= FITCAP)
-  if fits.len() > 0 { calc.max(..fits) } else { calc.min(calc.max(0pt, ..ws), TRAILCAP) }
+  let present = ws.filter(w => w > 0pt)
+  let fits = present.filter(w => w <= FITCAP)
+  // Only where at most half are long — a range and a declined note among amounts. Where
+  // more are (a section of places), shrinking the column would wrap each of them to three lines.
+  if fits.len() > 0 and (present.len() - fits.len()) * 2 <= present.len() { calc.max(..fits) }
+  // Else the column is as without the option: capped if `trailcap` asks, else its natural width.
+  else if trailcap { calc.min(calc.max(0pt, ..ws), TRAILCAP) } else { auto }
 }
 #let entries(items, gutter) = if flat { entriesflat(items, gutter) } else { context {
   set par(justify: false)
