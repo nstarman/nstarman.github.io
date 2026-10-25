@@ -17,7 +17,7 @@ const ids = (text) => [...text.matchAll(/\bid="([A-Za-z0-9_-]+)"/g)].map((m) => 
 // Every control for the whole CV. A new one is added here on purpose.
 const WHOLE_CV = ['style', 'format', 'names', 'currency', 'selprefix', 'trailcap', 'fill', 'resetorder'];
 // Controls for one section, and the section whose row holds each.
-const ONE_SECTION = { schoolbelow: "s.id === 'education'", paperids: "s.id === 'mentoring'" };
+const ONE_SECTION = { schoolbelow: "s.id === 'education'", linkondegree: "s.id === 'education'", paperids: "s.id === 'mentoring'" };
 
 describe('where a builder option lives', () => {
   it('has only options for the whole CV in the global panel', () => {

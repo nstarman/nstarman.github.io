@@ -163,12 +163,12 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
   // An education entry may have its institution on its own line, below the degree.
   const row = (item) => ({
     ...rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds),
-    ...(schoolBelow && item.type === 'education' && { below: true }),
+    ...(schoolBelow && item.type === 'education' && { below: true, ...(linkOnDegree && { linkOnDegree: true }) }),
   });
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
@@ -241,7 +241,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow)),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree)),
     })),
   };
 }

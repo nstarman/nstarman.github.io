@@ -216,6 +216,9 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], schoolBelow: true }))).schoolBelow).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).schoolBelow).toBe(false);
     expect(decode(JSON.stringify(encode({ items: [], schoolBelow: 'yes' }))).schoolBelow).toBe(false);
+    expect(decode(JSON.stringify(encode({ items: [], linkOnDegree: true }))).linkOnDegree).toBe(true);
+    expect(decode(JSON.stringify(encode({ items: [] }))).linkOnDegree).toBe(false);
+    expect(decode(JSON.stringify(encode({ items: [], linkOnDegree: 'yes' }))).linkOnDegree).toBe(false);
   });
 
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
