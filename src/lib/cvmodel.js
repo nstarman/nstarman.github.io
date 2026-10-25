@@ -192,7 +192,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff) {
  * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[] }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `funderOff` the ids whose
- *   `funder` does not print;
+ *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
@@ -230,7 +230,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? [])),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff)),
     })),
   };
 }

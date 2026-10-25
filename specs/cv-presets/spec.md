@@ -116,7 +116,11 @@ cards (`specs/cards/spec.md`).
   when they differ). Each entry that has shorter names shows its institution as a
   menu of those names, in place of the text, so each is set on its own; and how amounts are written (Currency: USD, CAD /
   US$, CA$ / $, CA$). An award or grant that names an institution (`funder`)
-  shows it after its title, with a tick-box that turns it off for that entry. That bar keeps Compile PDF, the settings button
+  shows it after its title, with a tick-box that turns it off for that entry. A
+  preset may list `funderOff` — entries, by id, whose `funder` it leaves out, as
+  `2page` and `1page` do for the two NSERC graduate scholarships so their lengths
+  hold; Start from sets the tick-boxes to the preset's list, and a saved
+  selection's own `funderOff` replaces it. That bar keeps Compile PDF, the settings button
   and Save Selection on one line. A person can: start from any preset
   (ticks its `memberIds`, its detail level, columns, place, spacing, inline
   recipients; `detailsComplete` lines start unticked unless the preset is

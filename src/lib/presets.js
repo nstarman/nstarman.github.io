@@ -220,6 +220,8 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
     place: spec.place ?? {},
     // Print an entry's recipient on its title line. An item's own flag also does.
     recipientInline: Boolean(spec.recipientInline),
+    // Entries whose institution (`funder`) this preset leaves out, by id.
+    funderOff: spec.funderOff ?? [],
     // Gaps the preset sets, keyed as the builder's `spacing`.
     spacing: spec.spacing ?? {},
     // `order` is the builder's: section ids, first to last. Sections it does not
