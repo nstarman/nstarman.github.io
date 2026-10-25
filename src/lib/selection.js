@@ -107,12 +107,14 @@ const cleanColumns = (raw) => {
   return out;
 };
 
+const CURRENCY_STYLES = ['us', 'dollar'];
+
 /** Entry id → its institution-name level, 1 or 2; full is the absence. */
 const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, currency, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -161,6 +163,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // How much of an entry's institution name prints, by id: 1 shorter, 2
     // shortest. Absent, full.
     namesFor: cleanNamesFor(namesFor),
+    // How amounts are written: `us` (US$, CA$) or `dollar` ($, CA$). Absent, codes.
+    currency: CURRENCY_STYLES.includes(currency) ? currency : null,
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
@@ -238,6 +242,7 @@ export function decode(text) {
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
     namesFor: cleanNamesFor(raw.namesFor),
+    currency: CURRENCY_STYLES.includes(raw.currency) ? raw.currency : null,
     tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {

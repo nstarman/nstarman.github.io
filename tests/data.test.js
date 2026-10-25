@@ -360,6 +360,18 @@ describe('money', () => {
       .toBe('CAD 20,000\u201330,000 p.a.');
   });
 
+  it('writes the currency as asked: US$ and CA$, or $ and CA$, a code where there is no sign', () => {
+    const usd = { currency: 'USD', value: 360000 };
+    const cad = { currency: 'CAD', value: 20000, valueMax: 30000, perAnnum: true };
+    expect(money(usd, 'us')).toBe('US$360,000');
+    expect(money(cad, 'us')).toBe('CA$20,000\u201330,000 p.a.');
+    expect(money(usd, 'dollar')).toBe('$360,000');
+    expect(money(cad, 'dollar')).toBe('CA$20,000\u201330,000 p.a.');
+    expect(money({ currency: 'EUR', value: 5 }, 'us')).toBe('EUR 5');
+    expect(money(usd, 'nope')).toBe('USD 360,000');
+    expect(money(usd)).toBe('USD 360,000');
+  });
+
   it('is null when there is no amount', () => {
     expect(money(undefined)).toBeNull();
   });

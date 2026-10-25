@@ -40,6 +40,14 @@ describe('the model', () => {
     expect(text(rowOf(one, cv, { detail: 'full' }, undefined, 1).subject)).toBe('MIT Kavli');
   });
 
+  it('writes amounts in the currency style asked for, codes by default', () => {
+    const only = new Set(['astropy-cycle-iii-funding-grant']);
+    const trail = (opts) => find(cvModel('complete', only, undefined, opts), 'astropy-cycle-iii-funding-grant').trailing;
+    expect(trail()).toBe('USD 12,000');
+    expect(trail({ currency: 'us' })).toBe('US$12,000');
+    expect(trail({ currency: 'dollar' })).toBe('$12,000');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');

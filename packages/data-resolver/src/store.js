@@ -291,12 +291,18 @@ export function createStore({ items: given, lists = new Map(), config }) {
     return stops;
   }
 
-  /** "USD 10,000", "CAD 20,000\u201330,000 p.a.", or null. */
-  function money(a) {
+  /** How a currency is written, by style: `us` replaces the D with a sign, `dollar`
+   *  gives US dollars the bare sign. A currency with no sign keeps its code. */
+  const SIGNS = { us: { USD: 'US$', CAD: 'CA$' }, dollar: { USD: '$', CAD: 'CA$' } };
+
+  /** "USD 10,000", "CAD 20,000\u201330,000 p.a.", or null; in a `style`, "US$10,000",
+   *  "$10,000", "CA$20,000\u201330,000 p.a.". The code is the default. */
+  function money(a, style) {
     if (!a) return null;
     const n = (v) => v.toLocaleString('en-US');
     const span = a.valueMax ? `${n(a.value)}\u2013${n(a.valueMax)}` : n(a.value);
-    return `${a.currency} ${span}${a.perAnnum ? ' p.a.' : ''}`;
+    const sign = SIGNS[style]?.[a.currency];
+    return `${sign ?? `${a.currency} `}${span}${a.perAnnum ? ' p.a.' : ''}`;
   }
 
   /** "The Astrophysical Journal 979, 155"; short, "ApJ 979, 155", where
