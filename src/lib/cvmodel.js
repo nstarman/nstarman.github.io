@@ -7,6 +7,7 @@
 
 import person from '/config/person.json';
 import { resolve } from './presets.js';
+import { asIdentifiers } from './refids.js';
 import { authors, venueLine, dateLabel, links, money, softwarePapers, REL_ICON, relKey, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
 import { spans, detailLines, achievementLines } from '@nstarkman/data-resolver/inline.js';
 
@@ -111,7 +112,7 @@ function trailing(item, s, currency) {
 }
 
 /** One item as a row of the model. */
-export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true) {
+export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true, ids = false) {
   const detail = detailLines(item, { complete: cv.includeAll, currency });
   return {
     id: item.id,
@@ -127,7 +128,9 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true)
     // summary/details split, and what make_short.py could not express.
     // Span arrays, not strings: `details` may be several lines and may carry
     // inline links, and Typst would print the markup verbatim otherwise.
-    lines: [...detail.filter((_, i) => keepLine ? keepLine(item.id, i) : s.detail === 'full'),
+    // A mentee's papers may be cited by identifier (`ids`) instead of in words.
+    lines: [...detail.filter((_, i) => keepLine ? keepLine(item.id, i) : s.detail === 'full')
+              .map((l) => (ids && item.type === 'mentoring' ? asIdentifiers(l) : l)),
             // Marked achievements follow every detail line, and have their own gate.
             ...achievementLines(item, cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
@@ -160,9 +163,9 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true)
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
-  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id));
+  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds);
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -192,9 +195,9 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[] }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
- *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `funderOff` the ids whose
+ *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -233,7 +236,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff)),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds)),
     })),
   };
 }
