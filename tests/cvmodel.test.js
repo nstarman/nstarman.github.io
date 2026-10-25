@@ -18,6 +18,28 @@ describe('the model', () => {
     expect(complete.person.name).toBeTruthy();
   });
 
+  it('prints an institution as its name level asks: full, first alternative, last', () => {
+    const post = itemById('mit-postdoc');
+    const cv = { name: 'np' };
+    const at = (names) => text(rowOf(post, cv, { detail: 'full' }, undefined, names).subject);
+    expect(at(0)).toBe('MIT Kavli Institute for Astrophysics and Space Research');
+    expect(at(1)).toBe('MIT Kavli Institute for Astrophysics');
+    expect(at(2)).toBe('MIT Kavli');
+    // An institution with no alternatives is its own at every level.
+    const bs = itemById('cwru-bs');
+    expect(text(rowOf(bs, cv, { detail: 'full' }, undefined, 2).subject)).toContain(bs.institution);
+    // Each entry's level comes from `namesFor`, by id; absent is full.
+    const model = cvModel('complete', new Set(['mit-postdoc']), undefined, { namesFor: { 'mit-postdoc': 2 } });
+    expect(text(find(model, 'mit-postdoc').subject)).toBe('MIT Kavli');
+    const bulk = cvModel('complete', new Set(['mit-postdoc']), undefined, { namesFor: { 'mit-postdoc': 1 } });
+    expect(text(find(bulk, 'mit-postdoc').subject)).toBe('MIT Kavli Institute for Astrophysics');
+    const none = cvModel('complete', new Set(['mit-postdoc']));
+    expect(text(find(none, 'mit-postdoc').subject)).toBe('MIT Kavli Institute for Astrophysics and Space Research');
+    // A level past the last alternative takes the last.
+    const one = { ...post, institutionNames: ['MIT Kavli'] };
+    expect(text(rowOf(one, cv, { detail: 'full' }, undefined, 1).subject)).toBe('MIT Kavli');
+  });
+
   it('leaves a place out where the section says to, but not an amount', () => {
     const cv = { name: 'np' };
     const place = itemById('cwru-bs');

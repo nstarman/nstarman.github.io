@@ -231,3 +231,9 @@
 .legendprev{margin:.35rem 0 .6rem; font-size:.8rem; color:var(--ink-mute)}
 .legendprev p{margin:.15rem 0}
 .keyhead{margin-left:auto; font-size:.72rem; color:var(--ink-mute); font-weight:400}
+/* An entry's institution name is its own menu: it reads as the text it replaces,
+   with a small mark to say it can change. */
+.namesel{font:inherit; color:inherit; background:transparent; border:0; border-bottom:1px dotted var(--ink-faint);
+  border-radius:0; padding:0 .15rem 0 0; margin:0; cursor:pointer; max-width:100%; text-overflow:ellipsis;
+  field-sizing:content}
+.namesel:hover, .namesel:focus-visible{border-bottom-color:var(--accent); color:var(--accent)}

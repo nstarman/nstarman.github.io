@@ -35,7 +35,17 @@ function groupsOf(items, field) {
  * string because Typst prints a literal "*" — emphasis has to be structure, not
  * syntax, if the same model is to feed both HTML and PDF.
  */
-function subject(item) {
+/**
+ * The institution as an entry's name level asks: 0, the record's own;
+ * 1 and 2 the first and the last of its `institutionNames`, longest first — a
+ * record with fewer takes the last it has, one with none its own.
+ */
+function institutionOf(item, names = 0) {
+  const alt = item.institutionNames;
+  return names > 0 && alt?.length ? alt[Math.min(names, alt.length) - 1] : item.institution;
+}
+
+function subject(item, names = 0) {
   const plain = (t) => (t ? [{ t, b: false }] : []);
 
   switch (item.type) {
@@ -45,17 +55,17 @@ function subject(item) {
       return plain(item.event ?? '');
     case 'mentoring': {
       const who = item.student === item.title ? null : item.student;
-      return plain([who, item.institution && `(${item.institution})`].filter(Boolean).join(' '));
+      return plain([who, item.institution && `(${institutionOf(item, names)})`].filter(Boolean).join(' '));
     }
     // location belongs in the right-hand column; repeating it here printed it twice
     case 'education':
     case 'position':
-      return plain([item.role, item.institution].filter(Boolean).join(', '));
+      return plain([item.role, institutionOf(item, names)].filter(Boolean).join(', '));
     // A team grant says what my part was — "Co-Investigator, STScI".
     case 'grant':
       return plain([item.role, item.funder].filter(Boolean).join(', '));
     default:
-      return plain(item.institution ?? item.organization ?? item.outlet ?? item.funder ?? '');
+      return plain(item.institution ? institutionOf(item, names) : item.organization ?? item.outlet ?? item.funder ?? '');
   }
 }
 
@@ -98,14 +108,14 @@ function trailing(item, s) {
 }
 
 /** One item as a row of the model. */
-export function rowOf(item, cv, s, keepLine) {
+export function rowOf(item, cv, s, keepLine, names = 0) {
   const detail = detailLines(item, { complete: cv.includeAll });
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.
     when: dateLabel(item, { month: true }),
     title: item.title,
-    subject: subject(item),
+    subject: subject(item, names),
     byline: item.type === 'publication' ? byline(item) : [],
     venue: item.type === 'publication' ? venueLine(item) : null,
     // The grid layout has no room for `details`, and shows this instead.
@@ -147,8 +157,9 @@ export function rowOf(item, cv, s, keepLine) {
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group) {
-  const row = (item) => rowOf(item, cv, s, keepLine);
+function itemsOf(s, cv, keepLine, group, namesFor) {
+  const levelOf = (item) => namesFor[item.id] ?? 0;
+  const row = (item) => rowOf(item, cv, s, keepLine, levelOf(item));
   if (s.cluster !== 'institution') return s.items.map(row);
   const grouped = (items) => group[items[0].institution] ?? groupedByDefault(items);
   return institutionGroups(s.items, grouped).flatMap((g) => {
@@ -161,7 +172,7 @@ function itemsOf(s, cv, keepLine, group) {
       id: `group:${first.institution}`,
       when: dateLabel({ date: groupDate(g.items) }, { month: true }),
       title: groupTitle(g.items),
-      subject: subject(first) ? [{ t: first.institution, b: false }] : [],
+      subject: subject(first, levelOf(first)) ? [{ t: institutionOf(first, levelOf(first)), b: false }] : [],
       lines: rows.flatMap((r) => r.lines),
       trailing: s.location === false ? '' : first.location ?? '',
       links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
@@ -178,13 +189,17 @@ function itemsOf(s, cv, keepLine, group) {
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean> }} [opts]
- *   passed to resolve(); `group` is the builder's choice, by institution, of
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number> }} [opts]
+ *   passed to resolve(); `namesFor` is each entry's institution-name level, by
+ *   id (see `institutionOf`); `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
   const cv = resolve(presetName, only, opts);
   const group = opts?.group ?? {};
+  // The institution-name level of each entry, by id: 0 full (the default), 1
+  // shorter, 2 shortest.
+  const namesFor = opts?.namesFor ?? {};
 
   return {
     preset: cv.name,
@@ -213,7 +228,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group),
+      items: itemsOf(s, cv, keepLine, group, namesFor),
     })),
   };
 }

@@ -107,7 +107,12 @@ const cleanColumns = (raw) => {
   return out;
 };
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, tally, site = {}, savedAt }) {
+/** Entry id → its institution-name level, 1 or 2; full is the absence. */
+const cleanNamesFor = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
+
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -153,6 +158,9 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     page: typeof page === 'string' && page.length <= 64 ? page : null,
     // Whether the right-hand column of dated entries is capped. Absent, it is not.
     trailcap: trailcap === true,
+    // How much of an entry's institution name prints, by id: 1 shorter, 2
+    // shortest. Absent, full.
+    namesFor: cleanNamesFor(namesFor),
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
@@ -229,6 +237,7 @@ export function decode(text) {
     location: cleanLocation(raw.location),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
+    namesFor: cleanNamesFor(raw.namesFor),
     tally: cleanTally(raw.tally),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {

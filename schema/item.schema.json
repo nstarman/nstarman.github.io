@@ -325,6 +325,11 @@
           "institution": {
             "type": "string"
           },
+          "institutionNames": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1
+          },
           "degree": {
             "type": "string"
           },
@@ -361,6 +366,11 @@
         "properties": {
           "institution": {
             "type": "string"
+          },
+          "institutionNames": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1
           },
           "role": {
             "type": "string"
