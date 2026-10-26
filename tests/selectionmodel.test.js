@@ -74,6 +74,23 @@ describe('one model from a selection', () => {
       expect(r.stderr).toContain('Nothing selected');
     }, 60_000);
 
+    it('refuses a file that is not a selection', () => {
+      fs.writeFileSync(path.join(dir, 'bad.json'), '{}');
+      const r = spawnSync('node', [path.join(root, 'scripts/build-cv.mjs'), path.join(dir, 'bad.json'), '--model'],
+        { encoding: 'utf8', cwd: dir });
+      expect(r.status).not.toBe(0);
+      expect(r.stderr).toContain('not a CV selection');
+    }, 60_000);
+
+    it('drops an entry the database no longer holds', () => {
+      const sel = richSelection();
+      fs.writeFileSync(path.join(dir, 'gone.json'), JSON.stringify({ ...sel, items: [...sel.items, 'no-such-entry'] }));
+      const r = spawnSync('node', [path.join(root, 'scripts/build-cv.mjs'), 'gone.json', '--model'],
+        { encoding: 'utf8', maxBuffer: 1 << 28, cwd: dir });
+      expect(r.status, r.stderr).toBe(0);
+      expect(r.stdout).not.toContain('no-such-entry');
+    }, 60_000);
+
     const haveTypst = spawnSync(process.env.TYPST ?? 'typst', ['--version']).status === 0;
     it.skipIf(!haveTypst)('compiles a PDF, leaving no cv/cv.json behind', () => {
       const out = path.join(dir, 'out.pdf');

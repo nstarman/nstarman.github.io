@@ -155,15 +155,21 @@ snapshots (`specs/refresh/spec.md`).
   on any face in the complete CV outside the vendored ones; and unless `1page` is one page and
   `2page` two. It copies the `np` PDF to `/files/starkman_cv.pdf`. *Enforced:* CI step "CV PDFs".
 - **FR-028** `npm run build:cv -- <selection.json> [out.pdf]` (`scripts/build-cv.mjs`) compiles a saved
-  builder selection without the site, with the Typst arguments of FR-019 (the file defaults to
-  `<selection>.pdf`; `TYPST=` names the binary). Its model is `modelFromSelection(decode(file))`
-  (`src/lib/selectionmodel.js`), the function the builder's Compile also calls on its controls read
-  through `currentSelection()`, the same function Save writes with, so the page and the command draw
-  one selection as one CV; the page builds no model otherwise. `--model` prints the model as JSON and
-  compiles nothing. An empty or unreadable selection exits non-zero with a message and no PDF, and
-  `cv/cv.json` is not left behind. *Enforced:* `tests/selectionmodel.test.js` (the page calls the
-  shared function and no other; it reads every field `decode` returns; the command's model equals the
-  function's; the PDF compiles where Typst is installed).
+  builder selection without the site, with the template, fonts and Typst arguments of FR-019 (`TYPST=`
+  names the binary). The output defaults to `<selection>.pdf` beside the file, and both paths are
+  taken from where the command was run. `--model` prints the render model as JSON and compiles
+  nothing. A selection with nothing ticked, an unreadable or newer-format file, a missing Typst, a
+  Typst failure or an "unknown font family" warning exits non-zero with a message and no PDF, and
+  `cv/cv.json` is not left behind; an entry the database no longer holds is dropped, as in the
+  builder.
+- **FR-029** The builder and `build:cv` draw one selection as one CV. The model is
+  `modelFromSelection(sel)` (`src/lib/selectionmodel.js`) over a decoded selection, and it uses every
+  field `decode` returns but the provenance (`savedAt`, `site`). The builder's Compile calls it on `decode(JSON.stringify(currentSelection()))`, the same
+  `currentSelection()` Save writes, so the saved file and the compiled CV name the same settings;
+  the page builds no model any other way. *Enforced:* `tests/selectionmodel.test.js` — the page calls
+  the function and not `cvModel`, the function reads every field, and the command's model equals the
+  function's; the PDF compile runs where Typst is installed. The builder keeps compiling with its own
+  copy of the compiler, so a line may set differently from the command's PDF by a compiler version.
 
 ### Hosted-sites layout
 
