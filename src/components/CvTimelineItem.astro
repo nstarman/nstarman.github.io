@@ -38,10 +38,9 @@ const inGutter = (l) => l.rel === 'homepage' || item.type === 'presentation';
 const gutterLinks = links(item).filter(inGutter);
 const bodyLinks = links(item).filter((l) => !inGutter(l));
 const byline = item.type === 'publication' ? authors(item, 4) : null;
-// In the builder a title that ends in its place says so, so the section's "Place in the title"
-// box can show or hide it as the PDF will.
-const titleEnd = item.titlePlace ? ` (${item.titlePlace})` : null;
-const titleSplit = pick && titleEnd && item.title.endsWith(titleEnd) && item.title.length > titleEnd.length;
+// In the builder a talk's place is drawn where its section puts it: in the right-hand column, below
+// the title or in the title (the city, before the first comma). The section's `data-place-at` shows one.
+const talkPlace = pick && item.type === 'presentation' && item.location ? item.location : null;
 ---
 <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${member ? ' tl--member' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
      id={`item-${item.id}`}>
@@ -71,8 +70,12 @@ const titleSplit = pick && titleEnd && item.title.endsWith(titleEnd) && item.tit
     )}
   </span>
   <span class="what">
-    <strong>{titleSplit
-      ? <>{item.title.slice(0, -titleEnd.length)}<span class="titleplace">{titleEnd}</span></>
+    {talkPlace && <span class="plc plc--right">{talkPlace}</span>}
+    <strong>{talkPlace
+      ? (item.title.endsWith(')')
+        /* Inside a label the title already ends in, "(Talk, Cambridge)". */
+        ? <>{item.title.slice(0, -1)}<span class="plc plc--title">, {talkPlace.split(',')[0].trim()}</span>)</>
+        : <>{item.title}<span class="plc plc--title"> ({talkPlace.split(',')[0].trim()})</span></>)
       : item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
@@ -127,6 +130,7 @@ const titleSplit = pick && titleEnd && item.title.endsWith(titleEnd) && item.tit
     {item.status && item.status !== 'published' && (
       <span class="statustag">{item.status}</span>
     )}
+    {talkPlace && <span class="plc plc--below">{talkPlace}</span>}
     {lines.map((line, i) => {
       const tier = lineTier(i, baseCount, detailCount);
       const cvs = tier === 'achievement' ? achievementCvs[i - detailCount] ?? [] : null;

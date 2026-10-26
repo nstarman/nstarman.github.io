@@ -9,9 +9,8 @@
   "date": {
     "start": "2026-02"
   },
-  "title": "CWRU Seminar (Cleveland)",
+  "title": "CWRU Seminar",
   "kind": "invited",
   "location": "Cleveland, OH, USA",
-  "titlePlace": "Cleveland",
   "talk": "Computationally Unscrambling EGGS (Extra-Galactic Gravity from Streams)"
 }

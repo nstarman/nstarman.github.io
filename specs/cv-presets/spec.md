@@ -162,17 +162,18 @@ cards (`specs/cards/spec.md`).
   sections (buttons, or a long-hold drag); set grid columns, heading style,
   spacing, legend place, recipient-inline, PDF style and page format (the style's
   default paper, A4 or US Letter); turn header-card parts off and reorder its links; leave
-  a section's places out, or, for a section of talks, print each place on a line below the title, or keep the place in its titles;
+  a section's places out, or, for a section of talks, print each place in the right column, below the title,
+  in the title or not at all (one choice);
   open a publication list with its tally and an h-index
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
-  order, group, location, locationBelow, titlePlace, tally })`. *Enforced:* review.
+  order, group, locationAt, tally })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
-  link order), location (sections whose places are left out, `false` only), `locationBelow` (sections
-  whose entries print their place below the title, `true` only; absent is off), `titlePlace` (sections
-  whose titles keep the place they end with, `true` only; absent is left out), page
+  link order), `locationAt` (section id to where its places print: `below` the title, `title` or `none`;
+  absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
+  as `below`), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
   right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
@@ -193,7 +194,7 @@ cards (`specs/cards/spec.md`).
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, the "Select" prefix, the right column's width, section
   order — is in the global "Settings for every section" panel. An option that applies to one
-  section — Places, a talks section's place below the title and place in the title, a publication list's Tally and Legend,
+  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally and Legend,
   Education's university below the degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
@@ -214,22 +215,20 @@ cards (`specs/cards/spec.md`).
   places out of the right-hand column; a section's own `location` wins over the
   preset's, and the builder's Places box over both. An amount still prints, and a declined
   grant prints its amount then "(declined)"; any other declined entry
-  prints "declined". For a section of talks the builder's **Place below the title** (the saved
-  `locationBelow`, in that section's Items row, offered while Places is ticked) prints each entry's
-  place, in italics, on a line of its own directly below its title line, before its other lines, and no longer
-  in the right-hand column — so a section whose only right-hand text was places has no column; an
-  amount, "declined" and "not attended" stay in the column, and an entry with no place prints no
-  line. No preset sets it; without it every output is as before.
-  A talk's `title` may end in its place in parentheses (`EAS 26-S10 (Lausanne)`), which its record
-  names as `titlePlace`; the CV PDF prints the title without ` (place)`, so a place printed in the
-  column or below is not said twice, unless the builder's **Place in the title** (the saved
-  `titlePlace`, `true` only, unticked by default, in the section's Items row, offered where an
-  entry names one) keeps it, and the builder's preview shows or hides the place at the end of
-  each title as the box says. It changes the CV PDF only; no other renderer or title does, and no
-  preset sets it, so the presets' PDFs leave the place out.
+  prints "declined". A talk's place is its `location`, and a section of talks prints it in exactly one
+  position, chosen with the builder's **Place** setting in that section's Items row (the saved
+  `locationAt`): **Right column** (the default), **Below the title**, **In the title** or **None**.
+  Below puts it, in italics, on a line of its own directly below its title line, before its other
+  lines; In the title adds the city (the text before the first comma) in parentheses, or after a
+  comma inside a label the title already ends in, "(Talk, Cambridge)"; the other positions then
+  print nothing, so a section whose only right-hand text was places has no column. An amount,
+  "declined" and "not attended" stay in the column; an entry with no place prints none of these. A
+  title is the event's name and does not carry its place as text. The builder's preview shows each
+  place where it will print. Other dated sections keep their Places box (`right` or `none`). No
+  preset sets it, so the presets keep the place in the column.
   *Enforced:* `tests/presets.test.js` ("print every entry's place…",
-  "lets the builder leave a section's places out…"), `tests/cvmodel.test.js` ("a talk's place
-  below its title", "the place a title ends with"), `tests/titleplace.test.js`, `tests/selection.test.js`, `tests/builder-placement.test.js`.
+  "lets the builder leave a section's places out…"), `tests/cvmodel.test.js` ("where a talk's place prints"), `tests/talkplace.test.js`,
+  `tests/selection.test.js`, `tests/builder-placement.test.js`.
 - **FR-025** A section may set `tally: true` to open with its publications'
   headline numbers — how many papers, how many still submitted, how many I wrote
   first and how many a student I supervised led — counted from the records, or

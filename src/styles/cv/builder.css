@@ -244,7 +244,14 @@
 /* A paper cited by identifier on the builder's page: its mark, text-sized, then the identifier. */
 .pid .ico{width:.9em; height:.9em; fill:currentColor; vertical-align:-.1em}
 /* With "university on its own line", an education entry's institution is a block below the degree. */
-/* A title's place, "(Lausanne)", is shown only in a section whose Place in the title box is ticked. */
-.cvsec:not(.keeptitleplace) .titleplace{display:none}
+/* A talk's place is shown where its section puts it: the right-hand column (the default),
+   below the title, in the title, or nowhere. */
+.fmtopt input[type=radio]{margin-right:.35rem}
+.plc{display:none}
+.plc--right{float:right;margin-left:1rem;color:var(--ink-faint)}
+.plc--below{font-style:italic}
+.cvsec:not([data-place-at]) .plc--right,.cvsec[data-place-at="right"] .plc--right{display:inline}
+.cvsec[data-place-at="below"] .plc--below{display:block}
+.cvsec[data-place-at="title"] .plc--title{display:inline}
 #tree.schoolbelow .edusep{display:none}
 #tree.schoolbelow .eduinst{display:block}

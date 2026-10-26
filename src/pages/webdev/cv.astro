@@ -296,9 +296,7 @@ const builderData = {
         return;
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
-      if (t.name?.startsWith('location:')) { showLocationBelow(); retire('Places changed — compile again.'); return; }
-      if (t.name?.startsWith('titleplace:')) { showTitlePlace(); retire('Titles changed — compile again.'); return; }
-      if (t.name?.startsWith('locationbelow:')) { retire('Places changed — compile again.'); return; }
+      if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
       if (t.name?.startsWith('tally:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
@@ -423,9 +421,7 @@ const builderData = {
         // Its card, and where its entries print their place. Not the page: that
         // is the Page menu's, as the style is the Style menu's.
         setCard(CARD[t.dataset.preset]);
-        setLocation(LOCATION[t.dataset.preset]);
-        setLocationBelow({});
-        setTitlePlace({});
+        setLocationAt(Object.fromEntries(Object.entries(LOCATION[t.dataset.preset] ?? {}).filter(([, v]) => v === false).map(([k]) => [k, 'none'])));
         setTally(TALLY[t.dataset.preset]);
         setFunderOff(FUNDER_OFF[t.dataset.preset]);
         applyDetail();
@@ -534,37 +530,26 @@ const builderData = {
       .map((g) => [g.dataset.groupOf, g.checked]));
     // Whether each section's entries print their place.
     const locationBoxes = () => [...document.querySelectorAll('[data-location-of]')];
-    /** Section id → false, for the sections whose entries leave their place out. */
-    const currentLocation = () => Object.fromEntries(locationBoxes()
-      .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
-    const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
-    // Whether each section's titles keep the place they end with, "(Lausanne)"; off by default.
-    const titlePlaceBoxes = () => [...document.querySelectorAll('[data-title-place-of]')];
-    /** Section id → true, for the sections whose titles keep their place. */
-    const currentTitlePlace = () => Object.fromEntries(titlePlaceBoxes()
-      .filter((b) => b.checked).map((b) => [b.dataset.titlePlaceOf, true]));
-    // The preview shows or hides the place at the end of each title as the box says.
-    const showTitlePlace = () => {
-      for (const b of titlePlaceBoxes()) document.getElementById(b.dataset.titlePlaceOf)?.closest('.cvsec')?.classList.toggle('keeptitleplace', b.checked);
+    // A section of talks chooses where its places print: the column, below the title, in it, or none.
+    const placeAtGroups = () => [...document.querySelectorAll('[data-place-at-of]')];
+    const placeAtOf = (g) => g.querySelector(':checked')?.value ?? 'right';
+    /** Section id → `below`, `title` or `none`, for the sections whose places are not in the right-hand column. */
+    const currentLocationAt = () => ({
+      ...Object.fromEntries(locationBoxes().filter((b) => !b.checked).map((b) => [b.dataset.locationOf, 'none'])),
+      ...Object.fromEntries(placeAtGroups().filter((g) => placeAtOf(g) !== 'right').map((g) => [g.dataset.placeAtOf, placeAtOf(g)])),
+    });
+    // The preview shows each talk's place where the section puts it.
+    const showPlaceAt = () => {
+      for (const g of placeAtGroups()) document.getElementById(g.dataset.placeAtOf)?.closest('.cvsec')?.setAttribute('data-place-at', placeAtOf(g));
     };
-    const setTitlePlace = (tp = {}) => {
-      for (const b of titlePlaceBoxes()) b.checked = tp[b.dataset.titlePlaceOf] === true;
-      showTitlePlace();
-    };
-    // Whether each talks section prints its entries' place below the title. The box is offered
-    // only while that section prints places.
-    const locationBelowBoxes = () => [...document.querySelectorAll('[data-location-below-of]')];
-    /** Section id → true, for the sections whose entries print their place below the title. */
-    const currentLocationBelow = () => Object.fromEntries(locationBelowBoxes()
-      .filter((b) => b.checked).map((b) => [b.dataset.locationBelowOf, true]));
-    const showLocationBelow = () => {
-      for (const b of locationBelowBoxes()) {
-        b.closest('.fmtopt').hidden = !document.querySelector(`[data-location-of="${b.dataset.locationBelowOf}"]`)?.checked;
+    const setLocationAt = (at = {}) => {
+      for (const b of locationBoxes()) b.checked = at[b.dataset.locationOf] !== 'none';
+      for (const g of placeAtGroups()) {
+        const radios = [...g.querySelectorAll('input')];
+        const want = radios.some((r) => r.value === at[g.dataset.placeAtOf]) ? at[g.dataset.placeAtOf] : 'right';
+        for (const r of radios) r.checked = r.value === want;
       }
-    };
-    const setLocationBelow = (loc = {}) => {
-      for (const b of locationBelowBoxes()) b.checked = loc[b.dataset.locationBelowOf] === true;
-      showLocationBelow();
+      showPlaceAt();
     };
     // Whether each publication list opens with a tally, and which h-index it adds.
     const tallyBoxes = () => [...document.querySelectorAll('[data-tally-of]')];
@@ -747,7 +732,7 @@ const builderData = {
       style: $('style').value, spacing: currentSpacing(),
       heading: currentHeadings(), place: currentPlace(),
       prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-      group: currentGroup(), card: currentCard(), location: currentLocation(), locationBelow: currentLocationBelow(), titlePlace: currentTitlePlace(),
+      group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(),
       page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
@@ -807,9 +792,7 @@ const builderData = {
       // card, the card as it comes.
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
-      setLocation(sel.location);
-      setLocationBelow(sel.locationBelow);
-      setTitlePlace(sel.titlePlace);
+      setLocationAt(sel.locationAt);
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
       $('fill').checked = sel.fill;

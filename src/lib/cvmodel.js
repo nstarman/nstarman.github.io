@@ -163,21 +163,25 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeBelow, titlePlaceOff) {
+/** A place as a title carries it: the city, the text before the first comma. */
+const cityOf = (location) => location.split(',')[0].trim();
+/** A title with its place: "EAS 26-S10 (Lausanne)", and inside a label it already ends in:
+ *  "Astropy Conference (Talk, Cambridge)". */
+const withPlace = (title, city) => (/\([^()]*\)\s*$/.test(title) ? title.replace(/\)\s*$/, `, ${city})`) : `${title} (${city})`);
+
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
   // An education entry may have its institution on its own line, below the degree.
   const row = (item) => {
     const r = rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds);
-    // A place in the right-hand column moves under the title; an amount, "declined" or "not
-    // attended" is not the place and stays.
-    const moved = placeBelow && item.location && r.trailing === item.location;
-    // A title that ends in its place, without it unless the section keeps it.
-    const ending = item.titlePlace && ` (${item.titlePlace})`;
-    const bare = titlePlaceOff && ending && item.title.endsWith(ending) && item.title.slice(0, -ending.length);
+    // The place is printed in one position. In the right-hand column unless the section moves it
+    // below the title or into it; an amount, "declined" or "not attended" is not the place and stays.
+    const moved = placeAt && item.location && r.trailing === item.location;
     return {
       ...r,
-      ...(bare && { title: bare }),
-      ...(moved && { trailing: '', placeBelow: item.location }),
+      ...(moved && { trailing: '' }),
+      ...(moved && placeAt === 'below' && { placeBelow: item.location }),
+      ...(moved && placeAt === 'title' && { title: withPlace(r.title, cityOf(item.location)) }),
       ...(schoolBelow && item.type === 'education' && { below: true, ...(linkOnDegree && { linkOnDegree: true }) }),
     };
   };
@@ -210,19 +214,20 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationBelow?: Record<string, boolean>, titlePlace?: Record<string, boolean> }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationAt?: Record<string, 'below' | 'title' | 'none'> }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
  *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
- *   (with `schoolBelow`); `locationBelow` the sections whose entries print their
- *   place on a line below the title, not in the right-hand column; `titlePlace` the sections
- *   (`true`) whose entries keep the place their title ends with, which is otherwise left out; `funderOff` the ids whose
+ *   (with `schoolBelow`); `locationAt` where each section's entries print their place — `below` the
+ *   title, `title` (in it, in parentheses) or `none` — else the right-hand column; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
  */
 export function cvModel(presetName, only, keepLine, opts) {
-  const cv = resolve(presetName, only, opts);
+  // A section whose places are `none` leaves them out, as `location: false` does.
+  const none = Object.fromEntries(Object.entries(opts?.locationAt ?? {}).filter(([, v]) => v === 'none').map(([k]) => [k, false]));
+  const cv = resolve(presetName, only, { ...opts, location: { ...opts?.location, ...none } });
   const group = opts?.group ?? {};
   // The institution-name level of each entry, by id: 0 full (the default), 1
   // shorter, 2 shortest.
@@ -255,7 +260,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), opts?.locationBelow?.[s.id] === true, opts?.titlePlace?.[s.id] !== true),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), ['below', 'title'].find((v) => v === opts?.locationAt?.[s.id])),
     })),
   };
 }

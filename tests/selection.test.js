@@ -171,9 +171,10 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify({ format: FORMAT, version: VERSION, items: [], card: [1] })).card).toBeNull();
   });
 
-  it('carries the sections that leave places out through a round trip', () => {
-    const back = decode(JSON.stringify(encode({ items: [], location: { education: false, talks: true, x: 'no' } }))).location;
-    expect(back).toEqual({ education: false });
+  it('carries where each section prints its places through a round trip', () => {
+    const back = decode(JSON.stringify(encode({ items: [], locationAt: { education: 'none', talks: 'title', y: 'below', z: 'right', x: 'no' } }))).locationAt;
+    // `right` is the default, so it is absence; anything unknown is dropped.
+    expect(back).toEqual({ education: 'none', talks: 'title', y: 'below' });
   });
 
   it('carries the page format through a round trip, and reads none as the style\'s own', () => {
@@ -221,22 +222,23 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], linkOnDegree: 'yes' }))).linkOnDegree).toBe(false);
   });
 
-  it('carries the sections whose places print below the title, reading none as off', () => {
-    const back = (locationBelow) => decode(JSON.stringify(encode({ items: [], locationBelow }))).locationBelow;
-    expect(back({ 'talks-invited': true })).toEqual({ 'talks-invited': true });
-    expect(back(undefined)).toEqual({});
-    // Only `true` counts, and an id is held to its limit.
-    expect(back({ a: false, b: 'yes', c: 1, ['x'.repeat(65)]: true, ok: true })).toEqual({ ok: true });
-    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).locationBelow).toEqual({});
+  it('reads no place setting as the right-hand column, and holds an id to its limit', () => {
+    const file = (extra) => decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [], ...extra })).locationAt;
+    expect(file({})).toEqual({});
+    expect(file({ locationAt: { ['x'.repeat(65)]: 'below', ok: 'below' } })).toEqual({ ok: 'below' });
   });
 
-  it('carries the sections whose titles keep their place, reading none as left out', () => {
-    const back = (titlePlace) => decode(JSON.stringify(encode({ items: [], titlePlace }))).titlePlace;
-    expect(back({ 'talks-invited': true })).toEqual({ 'talks-invited': true });
-    expect(back(undefined)).toEqual({});
-    // Only `true` counts, and an id is held to its limit.
-    expect(back({ a: false, b: 'yes', c: 1, ['x'.repeat(65)]: true, ok: true })).toEqual({ ok: true });
-    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).titlePlace).toEqual({});
+  it("reads an older file's places-off and below-the-title as the one setting", () => {
+    const file = (extra) => decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [], ...extra })).locationAt;
+    expect(file({ location: { education: false, talks: true, x: 'no' } })).toEqual({ education: 'none' });
+    expect(file({ locationBelow: { 'talks-invited': true, other: false } })).toEqual({ 'talks-invited': 'below' });
+    // Leaving places out wins over below; an explicit setting wins over both.
+    expect(file({ location: { a: false }, locationBelow: { a: true } })).toEqual({ a: 'none' });
+    expect(file({ location: { a: false }, locationBelow: { a: true }, locationAt: { a: 'title' } })).toEqual({ a: 'title' });
+    // And the old fields are no longer returned.
+    const sel = decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [], location: { a: false } }));
+    expect(sel.location).toBeUndefined();
+    expect(sel.locationBelow).toBeUndefined();
   });
 
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {

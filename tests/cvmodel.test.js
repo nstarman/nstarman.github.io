@@ -156,40 +156,58 @@ describe('detail levels', () => {
     expect(talks.items.some((i) => i.lines.length > 0)).toBe(true);
   });
 
-  describe("a talk's place below its title", () => {
-    const talk = (cv) => all(cv).find((i) => i.id === 'marche-iii-big-bang-big-stars-big-computers-jesi');
-    const only = new Set(['marche-iii-big-bang-big-stars-big-computers-jesi', 'cwru-seminar']);
-    const off = cvModel('complete', only);
-    const on = cvModel('complete', only, undefined, { locationBelow: { 'talks-invited': true } });
+  describe("where a talk's place prints", () => {
+    const id = 'marche-iii-big-bang-big-stars-big-computers-jesi';
+    const talk = (cv) => all(cv).find((i) => i.id === id);
+    const only = new Set([id, 'cwru-seminar']);
+    const at = (v) => talk(cvModel('complete', only, undefined, v && { locationAt: { 'talks-invited': v } }));
+    // Everywhere a row could carry the place: the column, a line below, the title.
+    const where = (r) => [r.trailing.includes('Jesi') && 'right', r.placeBelow?.includes('Jesi') && 'below',
+      /\(Jesi\)$/.test(r.title) && 'title'].filter(Boolean);
 
-    it('moves the place out of the right-hand column', () => {
-      expect(talk(off).trailing).toBe('Jesi, Italy');
-      expect(talk(off).placeBelow).toBeUndefined();
-      expect(talk(on).trailing).toBe('');
-      expect(talk(on).placeBelow).toBe('Jesi, Italy');
+    it('is in the right-hand column unless the section says otherwise', () => {
+      expect(where(at())).toEqual(['right']);
+      expect(at().trailing).toBe('Jesi, Italy');
+      expect(at().title).toBe('Marche III: Big Bang, Big Stars, Big Computers');
     });
 
-    it('changes only the ticked section and nothing else of the row', () => {
-      const other = cvModel('complete', only, undefined, { locationBelow: { publications: true } });
-      expect(other).toEqual(off);
-      const { trailing: _t, placeBelow: _p, ...rest } = talk(on);
-      const { trailing: _t2, ...restOff } = talk(off);
-      expect(rest).toEqual(restOff);
+    it('is in exactly one position, whichever the section says', () => {
+      expect(where(at('below'))).toEqual(['below']);
+      expect(where(at('title'))).toEqual(['title']);
+      expect(where(at('none'))).toEqual([]);
+      expect(at('below').placeBelow).toBe('Jesi, Italy');
+      expect(at('title').title).toBe('Marche III: Big Bang, Big Stars, Big Computers (Jesi)');
     });
 
-    it('prints no line for a talk with no place, and leaves a note where it is', () => {
-      const accepted = itemById('astropy-conference-talk');
-      const cv = { name: 'complete' };
-      const s = { id: 'talks-invited', detail: 'full' };
-      const row = rowOf({ ...accepted, kind: 'accepted', location: undefined }, cv, s);
+    it('is the city in a title: the text before the first comma, or the whole of "Online"', () => {
+      const cita = (v) => find(cvModel('complete', new Set(['cita-seminar', 'oxford-physics-colloquium']), undefined, { locationAt: { 'talks-invited': v } }), 'cita-seminar');
+      expect(cita('title').title).toBe('CITA Seminar (Toronto)');
+      const online = find(cvModel('complete', new Set(['oxford-physics-colloquium']), undefined, { locationAt: { 'talks-invited': 'title' } }), 'oxford-physics-colloquium');
+      expect(online.title).toBe('Oxford Physics Colloquium (Online)');
+    });
+
+    it('joins a label the title already ends in: (Talk, City), not (Talk) (City)', () => {
+      const tevpa = find(cvModel('complete', new Set(['tevpa-talk']), undefined, { locationAt: { 'talks-contributed': 'title' } }), 'tevpa-talk');
+      expect(tevpa.title).toBe('TeVPA (Talk, Valencia)');
+    });
+
+    it('changes only the named section and nothing else of the row', () => {
+      expect(cvModel('complete', only, undefined, { locationAt: { publications: 'title' } })).toEqual(cvModel('complete', only));
+      const { trailing: _t, placeBelow: _p, title: _ti, ...rest } = at('below');
+      const { trailing: _t2, title: _ti2, ...restRight } = at();
+      expect(rest).toEqual(restRight);
+    });
+
+    it('prints no place, line or parentheses for a talk with no place, and leaves a note where it is', () => {
+      const accepted = { ...itemById('astropy-conference-talk'), kind: 'accepted', location: undefined };
+      const row = rowOf(accepted, { name: 'complete' }, { id: 'talks-invited', detail: 'full' });
       expect(row.trailing).toBe('not attended');
       expect(row.placeBelow).toBeUndefined();
     });
 
-    it('leaves the place out when the section prints none', () => {
-      const none = cvModel('complete', only, undefined, { location: { 'talks-invited': false }, locationBelow: { 'talks-invited': true } });
-      expect(talk(none).trailing).toBe('');
-      expect(talk(none).placeBelow).toBeUndefined();
+    it('is the same as a preset that leaves places out, for none', () => {
+      const viaPreset = cvModel('complete', only, undefined, { location: { 'talks-invited': false } });
+      expect(at('none')).toEqual(talk(viaPreset));
     });
   });
 
@@ -201,32 +219,6 @@ describe('detail levels', () => {
       .toEqual(['“Resolving the Recombination Visibility Function Width Tension”', 'Awarded best graduate student presentation']);
     // A note that is not a title is not quoted.
     expect(find(complete, 'gaia-hackathon').lines.map(text)).toEqual(['Role: LOC']);
-  });
-
-  describe('the place a title ends with', () => {
-    const only = new Set(['eas-26-s10-lausanne', 'tevpa-talk', 'cwru-seminar']);
-    const title = (cv, id) => find(cv, id).title;
-    const bare = cvModel('complete', only);
-    const kept = cvModel('complete', only, undefined, { titlePlace: { 'talks-invited': true } });
-
-    it('is left out of the title unless the section keeps it', () => {
-      expect(title(bare, 'eas-26-s10-lausanne')).toBe('EAS 26-S10');
-      expect(title(kept, 'eas-26-s10-lausanne')).toBe('EAS 26-S10 (Lausanne)');
-    });
-
-    it('takes only the place the record names, and only in a section that names one', () => {
-      // "(Talk)" is a kind label, not a place; a record that names no title place is whole.
-      expect(title(bare, 'tevpa-talk')).toBe('TeVPA (Talk)');
-      expect(title(bare, 'cwru-seminar')).toBe(title(kept, 'cwru-seminar'));
-      // Keeping it in another section changes nothing here.
-      expect(cvModel('complete', only, undefined, { titlePlace: { publications: true } })).toEqual(bare);
-    });
-
-    it('changes nothing else of the row', () => {
-      const { title: _a, ...rest } = find(bare, 'eas-26-s10-lausanne');
-      const { title: _b, ...restKept } = find(kept, 'eas-26-s10-lausanne');
-      expect(rest).toEqual(restKept);
-    });
   });
 
   it('lets the builder pick individual lines', () => {

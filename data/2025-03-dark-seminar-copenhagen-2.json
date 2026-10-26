@@ -9,9 +9,8 @@
   "date": {
     "start": "2025-03"
   },
-  "title": "DARK seminar (Copenhagen)",
+  "title": "DARK seminar",
   "kind": "invited",
   "location": "Copenhagen, Denmark",
-  "titlePlace": "Copenhagen",
   "talk": "Bayesian models for detecting streams in LSST data"
 }

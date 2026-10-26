@@ -33,27 +33,25 @@ describe('where a builder option lives', () => {
     }
   });
 
-  it("offers a talks section's place below the title in that section's row only, and for talks", () => {
-    expect(section).toContain('data-location-below-of');
-    expect(global).not.toContain('data-location-below-of');
+  it("offers a talks section's place as one choice, in that section's row only", () => {
+    expect(section).toContain('data-place-at-of');
+    expect(global).not.toContain('data-place-at-of');
+    // For talks only; the other dated sections keep their Places box.
     expect(section).toContain("s.items.every((i) => i.type === 'presentation')");
+    expect(section).toContain('&& !talks');
   });
 
-  it("offers the place in a title in a section's row only, where a talk has one", () => {
-    expect(section).toContain('data-title-place-of');
-    expect(global).not.toContain('data-title-place-of');
-    expect(section).toContain('s.items.some((i) => i.titlePlace)');
-  });
-
-  it("shows or hides a title's place in the preview as the box says", () => {
+  it("shows each talk's place in the preview where the section puts it", () => {
     const page = fs.readFileSync(new URL('../src/pages/webdev/cv.astro', import.meta.url), 'utf8');
     const item = fs.readFileSync(new URL('../src/components/CvTimelineItem.astro', import.meta.url), 'utf8');
     const css = fs.readFileSync(new URL('../src/styles/cv/builder.css', import.meta.url), 'utf8');
-    // Only the builder's rows split the title; the rule hides the place unless the section keeps it.
-    expect(item).toContain('const titleSplit = pick &&');
-    expect(css).toContain('.cvsec:not(.keeptitleplace) .titleplace{display:none}');
-    // A change to the box, a loaded selection and a preset's start all update the preview.
-    expect(page).toMatch(/startsWith\('titleplace:'\)\) \{ showTitlePlace\(\)/);
-    expect(page).toMatch(/const setTitlePlace = [\s\S]*?showTitlePlace\(\);/);
+    // Only the builder's rows carry the three renderings; the section's attribute shows one.
+    expect(item).toContain("const talkPlace = pick && item.type === 'presentation'");
+    for (const v of ['right', 'below', 'title']) expect(item).toContain(`plc plc--${v}`);
+    expect(css).toContain('.cvsec[data-place-at="below"] .plc--below{display:block}');
+    expect(css).toContain('.cvsec[data-place-at="title"] .plc--title{display:inline}');
+    // A change, a loaded selection and a preset's start all update it.
+    expect(page).toMatch(/startsWith\('placeat:'\)\) \{ showPlaceAt\(\)/);
+    expect(page).toMatch(/const setLocationAt = [\s\S]*?showPlaceAt\(\);/);
   });
 });
