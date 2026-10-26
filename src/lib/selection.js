@@ -93,6 +93,12 @@ const cleanLocation = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
 
+/** Section id → true, for the sections whose entries print their place on a line
+ *  of its own below the title, not in the right-hand column. */
+const cleanLocationBelow = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k, v]) => v === true && k.length <= 64).slice(0, 64));
+
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
   : []);
@@ -117,7 +123,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, locationBelow, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -158,6 +164,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     card: cleanCard(card),
     // Sections whose entries leave their place out. Absent, every one prints it.
     location: cleanLocation(location),
+    // Sections whose entries print their place below the title. Absent, none does.
+    locationBelow: cleanLocationBelow(locationBelow),
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
@@ -191,7 +199,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, page, tally, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, locationBelow, page, tally, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -251,6 +259,7 @@ export function decode(text) {
     group: cleanGroup(raw.group),
     card: cleanCard(raw.card),
     location: cleanLocation(raw.location),
+    locationBelow: cleanLocationBelow(raw.locationBelow),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
     namesFor: cleanNamesFor(raw.namesFor),

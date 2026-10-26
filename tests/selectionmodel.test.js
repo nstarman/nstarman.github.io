@@ -23,6 +23,7 @@ const richSelection = () => encode({
   style: 'default', page: 'letter', trailcap: true, fill: true,
   currency: 'dollar', paperIds: true, schoolBelow: true, linkOnDegree: true,
   funderOff: ['astropy-berkeley-prize'],
+  locationBelow: { 'talks-invited': true },
   spacing: { education: { value: 2, unit: 'pt' } },
   site: { commit: null, short: null, dirty: false },
   savedAt: '2026-01-01T00:00:00.000Z',
@@ -50,6 +51,9 @@ describe('one model from a selection', () => {
     const model = modelFromSelection(decode(JSON.stringify(richSelection())));
     expect(model).toMatchObject({ style: 'default', format: 'letter', trailcap: true, fill: true });
     expect(model.sections.length).toBeGreaterThan(5);
+    const talks = model.sections.find((s) => s.id === 'talks-invited').items;
+    expect(talks.some((i) => i.placeBelow)).toBe(true);
+    expect(talks.every((i) => !i.placeBelow || i.trailing === '')).toBe(true);
   });
 
   describe('the command line', () => {

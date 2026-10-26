@@ -32,4 +32,10 @@ describe('where a builder option lives', () => {
       expect(src).toContain(guard);
     }
   });
+
+  it("offers a talks section's place below the title in that section's row only, and for talks", () => {
+    expect(section).toContain('data-location-below-of');
+    expect(global).not.toContain('data-location-below-of');
+    expect(section).toContain("s.items.every((i) => i.type === 'presentation')");
+  });
 });
