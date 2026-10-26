@@ -61,7 +61,7 @@
   grants: (FA, "\u{F0D6}"), // money-bill
   talks: (FA, "\u{F51C}"), // chalkboard-teacher
   conferences: (FA, "\u{F0C0}"), // users
-  mentoring: (FA, "\u{E068}"), // people-arrows
+  mentoring: (FA, "\u{F4D7}"), // route
   teaching: (FA, "\u{F5D1}"), // apple-alt
   service: (FA, "\u{F2B5}"), // handshake
   panels: (FA, "\u{F0E3}"), // gavel
