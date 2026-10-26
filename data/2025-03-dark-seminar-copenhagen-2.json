@@ -12,5 +12,6 @@
   "title": "DARK seminar (Copenhagen)",
   "kind": "invited",
   "location": "Copenhagen, Denmark",
+  "titlePlace": "Copenhagen",
   "talk": "Bayesian models for detecting streams in LSST data"
 }

@@ -485,6 +485,11 @@
           "location": {
             "type": "string"
           },
+          "titlePlace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The place the title ends with, in parentheses: `EAS 26-S10 (Lausanne)` has `Lausanne`. Lets the CV print the title without it where the place is shown elsewhere in the entry."
+          },
           "talk": {
             "type": "string",
             "minLength": 1,

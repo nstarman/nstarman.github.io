@@ -38,4 +38,10 @@ describe('where a builder option lives', () => {
     expect(global).not.toContain('data-location-below-of');
     expect(section).toContain("s.items.every((i) => i.type === 'presentation')");
   });
+
+  it("offers the place in a title in a section's row only, where a talk has one", () => {
+    expect(section).toContain('data-title-place-of');
+    expect(global).not.toContain('data-title-place-of');
+    expect(section).toContain('s.items.some((i) => i.titlePlace)');
+  });
 });

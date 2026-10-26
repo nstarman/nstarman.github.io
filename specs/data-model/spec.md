@@ -99,9 +99,11 @@ fetched fields (`specs/refresh/spec.md`).
   `talk` is the title of the talk or poster, a non-empty string without quotation marks
   (renderers add them) and with the inline links `details` allows; no other type has it.
   A note that is not a title (a role, a lecturer's post) stays in `details`, so `talk`
-  is the only text a renderer quotes. *Enforced:* the schema
-  (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`),
-  `tests/talktitle.test.js` (no title lost or doubled, a role never a title); review for
+  is the only text a renderer quotes. A `titlePlace` is the place a title ends with, in
+  parentheses (`Lausanne` for `EAS 26-S10 (Lausanne)`), and the title ends with exactly that text;
+  the CV can print the title without it. *Enforced:* the schema
+  (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`, `title-place-on-non-presentation.json`),
+  `tests/titleplace.test.js` (the title ends with its place), `tests/talktitle.test.js` (no title lost or doubled, a role never a title); review for
   `accepted` without `location`.
 
 ### Publications
@@ -245,7 +247,7 @@ fetched fields (`specs/refresh/spec.md`).
 | `education` | `institution` | `institutionNames`, `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles`, `tier`, `amount`, `funder` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder`, `recipient`, `recipientInline` |
-| `presentation` | `kind` | `event`, `location`, `talk` |
+| `presentation` | `kind` | `event`, `location`, `talk`, `titlePlace` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs`, and for a profile `person`, `slug`, `photo`, `badge`, `research`, `journey`, `achievements` |
 | `teaching` | — | `institution`, `course`, `role` |
 | `service`, `outreach` | — | `organization`, `role`, `kind` (`invited` · `contributed`), `location` |

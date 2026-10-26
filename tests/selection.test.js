@@ -230,6 +230,15 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).locationBelow).toEqual({});
   });
 
+  it('carries the sections whose titles leave their place out, reading none as on', () => {
+    const back = (titlePlace) => decode(JSON.stringify(encode({ items: [], titlePlace }))).titlePlace;
+    expect(back({ 'talks-invited': false })).toEqual({ 'talks-invited': false });
+    expect(back(undefined)).toEqual({});
+    // Only `false` counts, and an id is held to its limit.
+    expect(back({ a: true, b: 'no', c: 0, ['x'.repeat(65)]: false, ok: false })).toEqual({ ok: false });
+    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).titlePlace).toEqual({});
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

@@ -162,16 +162,17 @@ cards (`specs/cards/spec.md`).
   sections (buttons, or a long-hold drag); set grid columns, heading style,
   spacing, legend place, recipient-inline, PDF style and page format (the style's
   default paper, A4 or US Letter); turn header-card parts off and reorder its links; leave
-  a section's places out, or, for a section of talks, print each place on a line below the title;
+  a section's places out, or, for a section of talks, print each place on a line below the title, or leave the place out of its titles;
   open a publication list with its tally and an h-index
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
-  order, group, location, locationBelow, tally })`. *Enforced:* review.
+  order, group, location, locationBelow, titlePlace, tally })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
   link order), location (sections whose places are left out, `false` only), `locationBelow` (sections
-  whose entries print their place below the title, `true` only; absent is off), page
+  whose entries print their place below the title, `true` only; absent is off), `titlePlace` (sections
+  whose titles leave out the place they end with, `false` only; absent is on), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
   right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
@@ -192,7 +193,7 @@ cards (`specs/cards/spec.md`).
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, the "Select" prefix, the right column's width, section
   order — is in the global "Settings for every section" panel. An option that applies to one
-  section — Places, a talks section's place below the title, a publication list's Tally and Legend,
+  section — Places, a talks section's place below the title and place in the title, a publication list's Tally and Legend,
   Education's university below the degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
@@ -219,9 +220,14 @@ cards (`specs/cards/spec.md`).
   in the right-hand column — so a section whose only right-hand text was places has no column; an
   amount, "declined" and "not attended" stay in the column, and an entry with no place prints no
   line. No preset sets it; without it every output is as before.
+  A talk's `title` may end in its place in parentheses (`EAS 26-S10 (Lausanne)`), which its record
+  names as `titlePlace`; the builder's **Place in the title** (the saved `titlePlace`, `false` only, in
+  the section's Items row, offered where an entry names one) is on by default, and off prints the
+  title without ` (place)`, so a place printed in the column or below is not said twice. It changes
+  the CV PDF only; no other renderer or title does, and no preset sets it.
   *Enforced:* `tests/presets.test.js` ("print every entry's place…",
   "lets the builder leave a section's places out…"), `tests/cvmodel.test.js` ("a talk's place
-  below its title"), `tests/selection.test.js`, `tests/builder-placement.test.js`.
+  below its title", "the place a title ends with"), `tests/titleplace.test.js`, `tests/selection.test.js`, `tests/builder-placement.test.js`.
 - **FR-025** A section may set `tally: true` to open with its publications'
   headline numbers — how many papers, how many still submitted, how many I wrote
   first and how many a student I supervised led — counted from the records, or

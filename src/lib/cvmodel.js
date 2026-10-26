@@ -163,7 +163,7 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeBelow) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeBelow, titlePlaceOff) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
   // An education entry may have its institution on its own line, below the degree.
   const row = (item) => {
@@ -171,8 +171,12 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
     // A place in the right-hand column moves under the title; an amount, "declined" or "not
     // attended" is not the place and stays.
     const moved = placeBelow && item.location && r.trailing === item.location;
+    // A title that ends in its place, without it, where the section asks.
+    const ending = item.titlePlace && ` (${item.titlePlace})`;
+    const bare = titlePlaceOff && ending && item.title.endsWith(ending) && item.title.slice(0, -ending.length);
     return {
       ...r,
+      ...(bare && { title: bare }),
       ...(moved && { trailing: '', placeBelow: item.location }),
       ...(schoolBelow && item.type === 'education' && { below: true, ...(linkOnDegree && { linkOnDegree: true }) }),
     };
@@ -206,12 +210,13 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationBelow?: Record<string, boolean> }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationBelow?: Record<string, boolean>, titlePlace?: Record<string, boolean> }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
  *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
  *   (with `schoolBelow`); `locationBelow` the sections whose entries print their
- *   place on a line below the title, not in the right-hand column; `funderOff` the ids whose
+ *   place on a line below the title, not in the right-hand column; `titlePlace` the sections
+ *   (`false`) whose entries print the title without the place it ends with; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -250,7 +255,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), opts?.locationBelow?.[s.id] === true),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), opts?.locationBelow?.[s.id] === true, opts?.titlePlace?.[s.id] === false),
     })),
   };
 }

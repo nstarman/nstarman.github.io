@@ -24,6 +24,7 @@ const richSelection = () => encode({
   currency: 'dollar', paperIds: true, schoolBelow: true, linkOnDegree: true,
   funderOff: ['astropy-berkeley-prize'],
   locationBelow: { 'talks-invited': true },
+  titlePlace: { 'talks-invited': false },
   spacing: { education: { value: 2, unit: 'pt' } },
   site: { commit: null, short: null, dirty: false },
   savedAt: '2026-01-01T00:00:00.000Z',
@@ -54,6 +55,7 @@ describe('one model from a selection', () => {
     const talks = model.sections.find((s) => s.id === 'talks-invited').items;
     expect(talks.some((i) => i.placeBelow)).toBe(true);
     expect(talks.every((i) => !i.placeBelow || i.trailing === '')).toBe(true);
+    expect(talks.some((i) => i.id === 'eas-26-s10-lausanne' && i.title === 'EAS 26-S10')).toBe(true);
   });
 
   describe('the command line', () => {

@@ -203,6 +203,34 @@ describe('detail levels', () => {
     expect(find(complete, 'gaia-hackathon').lines.map(text)).toEqual(['Role: LOC']);
   });
 
+  describe('the place a title ends with', () => {
+    const only = new Set(['eas-26-s10-lausanne', 'tevpa-talk', 'cwru-seminar']);
+    const title = (cv, id) => find(cv, id).title;
+    const on = cvModel('complete', only);
+    const off = cvModel('complete', only, undefined, { titlePlace: { 'talks-invited': false } });
+
+    it('is in the title unless the section leaves it out', () => {
+      expect(title(on, 'eas-26-s10-lausanne')).toBe('EAS 26-S10 (Lausanne)');
+      expect(title(off, 'eas-26-s10-lausanne')).toBe('EAS 26-S10');
+    });
+
+    it('takes only the place the record names, and only in that section', () => {
+      // "(Talk)" is a kind label, not a place, and another section is untouched.
+      expect(title(off, 'tevpa-talk')).toBe('TeVPA (Talk)');
+      expect(title(off, 'cwru-seminar')).toBe(title(on, 'cwru-seminar'));
+      const other = cvModel('complete', only, undefined, { titlePlace: { publications: false } });
+      expect(other).toEqual(on);
+    });
+
+    it('changes nothing else of the row, and never empties a title', () => {
+      const { title: _a, ...rest } = find(off, 'eas-26-s10-lausanne');
+      const { title: _b, ...restOn } = find(on, 'eas-26-s10-lausanne');
+      expect(rest).toEqual(restOn);
+      const lone = rowOf({ ...itemById('eas-26-s10-lausanne'), title: '(Lausanne)' }, { name: 'complete' }, { detail: 'full' }, undefined, 0, undefined, true, false);
+      expect(lone.title).toBe('(Lausanne)');
+    });
+  });
+
   it('lets the builder pick individual lines', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
       // Roles merged into one row carry one line each, so keep them apart here.
