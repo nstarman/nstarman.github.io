@@ -145,7 +145,7 @@ cards (`specs/cards/spec.md`).
   page draws that link in the date gutter, on no line); it is not offered, and does nothing, with the university
   on the degree's line. An education entry's homepage link is drawn as a graduation cap, in the PDF and in the
   page's date gutter; every other link, including a position's homepage, keeps its mark. A
-  tick-box in the Mentoring section's own settings cites a mentee's papers by identifier: each
+  tick-box in the Students Advised & Mentored section's (`mentoring`) own settings cites a mentee's papers by identifier: each
   `[…](item:<id>)` in a mentoring entry's lines to a publication prints as
   its DOI (linked to doi.org, with the paper mark, as the Publications section writes it),
   else `arXiv:<id>` (with the arXiv mark), else keeps its words, on
@@ -202,7 +202,7 @@ cards (`specs/cards/spec.md`).
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
   order — is in the global "Settings for every section" panel. An option that applies to one
   section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally and Legend,
-  Education's university below the degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
+  Education's university below the degree, the mentoring section's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
 - **FR-022** CI's "CV PDFs" step (`npm run build:pdf`, `scripts/build-cv-pdfs.sh`)

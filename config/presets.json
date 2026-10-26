@@ -92,7 +92,8 @@
       }
     },
     "mentoring": {
-      "heading": "Mentoring",
+      "heading": "Students Advised & Mentored",
+      "short": "Mentoring",
       "icon": "mentoring",
       "match": {
         "type": "mentoring"
