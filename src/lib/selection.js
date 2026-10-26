@@ -93,11 +93,11 @@ const cleanLocation = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
 
-/** Section id → false, for the sections whose entries print their title without the place
- *  it ends with. Absent, every title prints whole. */
+/** Section id → true, for the sections whose entries keep the place their title ends with,
+ *  "(Lausanne)". Absent, the title is printed without it. */
 const cleanTitlePlace = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
-    .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
+    .filter(([k, v]) => v === true && k.length <= 64).slice(0, 64));
 
 /** Section id → true, for the sections whose entries print their place on a line
  *  of its own below the title, not in the right-hand column. */
@@ -172,7 +172,7 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     location: cleanLocation(location),
     // Sections whose entries print their place below the title. Absent, none does.
     locationBelow: cleanLocationBelow(locationBelow),
-    // Sections whose entries leave the place out of the title. Absent, none does.
+    // Sections whose entries keep the place in the title. Absent, none does.
     titlePlace: cleanTitlePlace(titlePlace),
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)

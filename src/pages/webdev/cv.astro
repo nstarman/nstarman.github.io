@@ -538,12 +538,12 @@ const builderData = {
     const currentLocation = () => Object.fromEntries(locationBoxes()
       .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
     const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
-    // Whether each section's titles keep the place they end with, "(Lausanne)".
+    // Whether each section's titles keep the place they end with, "(Lausanne)"; off by default.
     const titlePlaceBoxes = () => [...document.querySelectorAll('[data-title-place-of]')];
-    /** Section id → false, for the sections whose titles leave their place out. */
+    /** Section id → true, for the sections whose titles keep their place. */
     const currentTitlePlace = () => Object.fromEntries(titlePlaceBoxes()
-      .filter((b) => !b.checked).map((b) => [b.dataset.titlePlaceOf, false]));
-    const setTitlePlace = (tp = {}) => { for (const b of titlePlaceBoxes()) b.checked = tp[b.dataset.titlePlaceOf] !== false; };
+      .filter((b) => b.checked).map((b) => [b.dataset.titlePlaceOf, true]));
+    const setTitlePlace = (tp = {}) => { for (const b of titlePlaceBoxes()) b.checked = tp[b.dataset.titlePlaceOf] === true; };
     // Whether each talks section prints its entries' place below the title. The box is offered
     // only while that section prints places.
     const locationBelowBoxes = () => [...document.querySelectorAll('[data-location-below-of]')];

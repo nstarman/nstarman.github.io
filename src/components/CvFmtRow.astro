@@ -115,8 +115,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       )}
       {/* A talk's title with or without the place it ends with, "(Lausanne)". */}
       {o.titlePlace && (
-        <label class="fmtopt fmtcheck" title="Print each title with the place it ends with, in parentheses">
-          <input type="checkbox" name={`titleplace:${s.id}`} data-title-place-of={s.id} checked />Place in the title</label>
+        <label class="fmtopt fmtcheck" title="Print each title with the place it ends with, in parentheses; unticked, the place is left to the entry's own place">
+          <input type="checkbox" name={`titleplace:${s.id}`} data-title-place-of={s.id} />Place in the title</label>
       )}
       {/* A talk's place on a line below its title, not in the right-hand column; offered
           while the section prints places (the page hides it otherwise). */}

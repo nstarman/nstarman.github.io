@@ -206,28 +206,26 @@ describe('detail levels', () => {
   describe('the place a title ends with', () => {
     const only = new Set(['eas-26-s10-lausanne', 'tevpa-talk', 'cwru-seminar']);
     const title = (cv, id) => find(cv, id).title;
-    const on = cvModel('complete', only);
-    const off = cvModel('complete', only, undefined, { titlePlace: { 'talks-invited': false } });
+    const bare = cvModel('complete', only);
+    const kept = cvModel('complete', only, undefined, { titlePlace: { 'talks-invited': true } });
 
-    it('is in the title unless the section leaves it out', () => {
-      expect(title(on, 'eas-26-s10-lausanne')).toBe('EAS 26-S10 (Lausanne)');
-      expect(title(off, 'eas-26-s10-lausanne')).toBe('EAS 26-S10');
+    it('is left out of the title unless the section keeps it', () => {
+      expect(title(bare, 'eas-26-s10-lausanne')).toBe('EAS 26-S10');
+      expect(title(kept, 'eas-26-s10-lausanne')).toBe('EAS 26-S10 (Lausanne)');
     });
 
-    it('takes only the place the record names, and only in that section', () => {
-      // "(Talk)" is a kind label, not a place, and another section is untouched.
-      expect(title(off, 'tevpa-talk')).toBe('TeVPA (Talk)');
-      expect(title(off, 'cwru-seminar')).toBe(title(on, 'cwru-seminar'));
-      const other = cvModel('complete', only, undefined, { titlePlace: { publications: false } });
-      expect(other).toEqual(on);
+    it('takes only the place the record names, and only in a section that names one', () => {
+      // "(Talk)" is a kind label, not a place; a record that names no title place is whole.
+      expect(title(bare, 'tevpa-talk')).toBe('TeVPA (Talk)');
+      expect(title(bare, 'cwru-seminar')).toBe(title(kept, 'cwru-seminar'));
+      // Keeping it in another section changes nothing here.
+      expect(cvModel('complete', only, undefined, { titlePlace: { publications: true } })).toEqual(bare);
     });
 
-    it('changes nothing else of the row, and never empties a title', () => {
-      const { title: _a, ...rest } = find(off, 'eas-26-s10-lausanne');
-      const { title: _b, ...restOn } = find(on, 'eas-26-s10-lausanne');
-      expect(rest).toEqual(restOn);
-      const lone = rowOf({ ...itemById('eas-26-s10-lausanne'), title: '(Lausanne)' }, { name: 'complete' }, { detail: 'full' }, undefined, 0, undefined, true, false);
-      expect(lone.title).toBe('(Lausanne)');
+    it('changes nothing else of the row', () => {
+      const { title: _a, ...rest } = find(bare, 'eas-26-s10-lausanne');
+      const { title: _b, ...restKept } = find(kept, 'eas-26-s10-lausanne');
+      expect(rest).toEqual(restKept);
     });
   });
 

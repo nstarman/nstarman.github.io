@@ -171,7 +171,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
     // A place in the right-hand column moves under the title; an amount, "declined" or "not
     // attended" is not the place and stays.
     const moved = placeBelow && item.location && r.trailing === item.location;
-    // A title that ends in its place, without it, where the section asks.
+    // A title that ends in its place, without it unless the section keeps it.
     const ending = item.titlePlace && ` (${item.titlePlace})`;
     const bare = titlePlaceOff && ending && item.title.endsWith(ending) && item.title.slice(0, -ending.length);
     return {
@@ -216,7 +216,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
  *   (with `schoolBelow`); `locationBelow` the sections whose entries print their
  *   place on a line below the title, not in the right-hand column; `titlePlace` the sections
- *   (`false`) whose entries print the title without the place it ends with; `funderOff` the ids whose
+ *   (`true`) whose entries keep the place their title ends with, which is otherwise left out; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -255,7 +255,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), opts?.locationBelow?.[s.id] === true, opts?.titlePlace?.[s.id] === false),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), opts?.locationBelow?.[s.id] === true, opts?.titlePlace?.[s.id] !== true),
     })),
   };
 }

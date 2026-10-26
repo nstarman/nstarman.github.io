@@ -101,7 +101,7 @@ fetched fields (`specs/refresh/spec.md`).
   A note that is not a title (a role, a lecturer's post) stays in `details`, so `talk`
   is the only text a renderer quotes. A `titlePlace` is the place a title ends with, in
   parentheses (`Lausanne` for `EAS 26-S10 (Lausanne)`), and the title ends with exactly that text;
-  the CV can print the title without it. *Enforced:* the schema
+  the CV PDF prints the title without it unless the builder keeps it. *Enforced:* the schema
   (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`, `title-place-on-non-presentation.json`),
   `tests/titleplace.test.js` (the title ends with its place), `tests/talktitle.test.js` (no title lost or doubled, a role never a title); review for
   `accepted` without `location`.

@@ -230,12 +230,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).locationBelow).toEqual({});
   });
 
-  it('carries the sections whose titles leave their place out, reading none as on', () => {
+  it('carries the sections whose titles keep their place, reading none as left out', () => {
     const back = (titlePlace) => decode(JSON.stringify(encode({ items: [], titlePlace }))).titlePlace;
-    expect(back({ 'talks-invited': false })).toEqual({ 'talks-invited': false });
+    expect(back({ 'talks-invited': true })).toEqual({ 'talks-invited': true });
     expect(back(undefined)).toEqual({});
-    // Only `false` counts, and an id is held to its limit.
-    expect(back({ a: true, b: 'no', c: 0, ['x'.repeat(65)]: false, ok: false })).toEqual({ ok: false });
+    // Only `true` counts, and an id is held to its limit.
+    expect(back({ a: false, b: 'yes', c: 1, ['x'.repeat(65)]: true, ok: true })).toEqual({ ok: true });
     expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).titlePlace).toEqual({});
   });
 
