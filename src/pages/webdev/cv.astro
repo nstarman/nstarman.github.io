@@ -297,7 +297,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:')) { showLocationBelow(); retire('Places changed — compile again.'); return; }
-      if (t.name?.startsWith('titleplace:')) { retire('Titles changed — compile again.'); return; }
+      if (t.name?.startsWith('titleplace:')) { showTitlePlace(); retire('Titles changed — compile again.'); return; }
       if (t.name?.startsWith('locationbelow:')) { retire('Places changed — compile again.'); return; }
       if (t.name?.startsWith('tally:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
@@ -543,7 +543,14 @@ const builderData = {
     /** Section id → true, for the sections whose titles keep their place. */
     const currentTitlePlace = () => Object.fromEntries(titlePlaceBoxes()
       .filter((b) => b.checked).map((b) => [b.dataset.titlePlaceOf, true]));
-    const setTitlePlace = (tp = {}) => { for (const b of titlePlaceBoxes()) b.checked = tp[b.dataset.titlePlaceOf] === true; };
+    // The preview shows or hides the place at the end of each title as the box says.
+    const showTitlePlace = () => {
+      for (const b of titlePlaceBoxes()) document.getElementById(b.dataset.titlePlaceOf)?.closest('.cvsec')?.classList.toggle('keeptitleplace', b.checked);
+    };
+    const setTitlePlace = (tp = {}) => {
+      for (const b of titlePlaceBoxes()) b.checked = tp[b.dataset.titlePlaceOf] === true;
+      showTitlePlace();
+    };
     // Whether each talks section prints its entries' place below the title. The box is offered
     // only while that section prints places.
     const locationBelowBoxes = () => [...document.querySelectorAll('[data-location-below-of]')];

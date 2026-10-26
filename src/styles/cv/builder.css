@@ -244,5 +244,7 @@
 /* A paper cited by identifier on the builder's page: its mark, text-sized, then the identifier. */
 .pid .ico{width:.9em; height:.9em; fill:currentColor; vertical-align:-.1em}
 /* With "university on its own line", an education entry's institution is a block below the degree. */
+/* A title's place, "(Lausanne)", is shown only in a section whose Place in the title box is ticked. */
+.cvsec:not(.keeptitleplace) .titleplace{display:none}
 #tree.schoolbelow .edusep{display:none}
 #tree.schoolbelow .eduinst{display:block}

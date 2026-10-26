@@ -38,6 +38,10 @@ const inGutter = (l) => l.rel === 'homepage' || item.type === 'presentation';
 const gutterLinks = links(item).filter(inGutter);
 const bodyLinks = links(item).filter((l) => !inGutter(l));
 const byline = item.type === 'publication' ? authors(item, 4) : null;
+// In the builder a title that ends in its place says so, so the section's "Place in the title"
+// box can show or hide it as the PDF will.
+const titleEnd = item.titlePlace ? ` (${item.titlePlace})` : null;
+const titleSplit = pick && titleEnd && item.title.endsWith(titleEnd) && item.title.length > titleEnd.length;
 ---
 <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${member ? ' tl--member' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
      id={`item-${item.id}`}>
@@ -67,7 +71,9 @@ const byline = item.type === 'publication' ? authors(item, 4) : null;
     )}
   </span>
   <span class="what">
-    <strong>{item.title}</strong>
+    <strong>{titleSplit
+      ? <>{item.title.slice(0, -titleEnd.length)}<span class="titleplace">{titleEnd}</span></>
+      : item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
       : <><span class={item.type === 'education' ? 'edusep' : undefined}>, </span><span class={item.type === 'education' ? 'eduinst' : undefined}>{pick && item.institutionNames?.length > 0

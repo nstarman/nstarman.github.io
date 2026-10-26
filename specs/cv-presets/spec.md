@@ -224,7 +224,8 @@ cards (`specs/cards/spec.md`).
   names as `titlePlace`; the CV PDF prints the title without ` (place)`, so a place printed in the
   column or below is not said twice, unless the builder's **Place in the title** (the saved
   `titlePlace`, `true` only, unticked by default, in the section's Items row, offered where an
-  entry names one) keeps it. It changes the CV PDF only; no other renderer or title does, and no
+  entry names one) keeps it, and the builder's preview shows or hides the place at the end of
+  each title as the box says. It changes the CV PDF only; no other renderer or title does, and no
   preset sets it, so the presets' PDFs leave the place out.
   *Enforced:* `tests/presets.test.js` ("print every entry's place…",
   "lets the builder leave a section's places out…"), `tests/cvmodel.test.js` ("a talk's place

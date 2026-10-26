@@ -44,4 +44,16 @@ describe('where a builder option lives', () => {
     expect(global).not.toContain('data-title-place-of');
     expect(section).toContain('s.items.some((i) => i.titlePlace)');
   });
+
+  it("shows or hides a title's place in the preview as the box says", () => {
+    const page = fs.readFileSync(new URL('../src/pages/webdev/cv.astro', import.meta.url), 'utf8');
+    const item = fs.readFileSync(new URL('../src/components/CvTimelineItem.astro', import.meta.url), 'utf8');
+    const css = fs.readFileSync(new URL('../src/styles/cv/builder.css', import.meta.url), 'utf8');
+    // Only the builder's rows split the title; the rule hides the place unless the section keeps it.
+    expect(item).toContain('const titleSplit = pick &&');
+    expect(css).toContain('.cvsec:not(.keeptitleplace) .titleplace{display:none}');
+    // A change to the box, a loaded selection and a preset's start all update the preview.
+    expect(page).toMatch(/startsWith\('titleplace:'\)\) \{ showTitlePlace\(\)/);
+    expect(page).toMatch(/const setTitlePlace = [\s\S]*?showTitlePlace\(\);/);
+  });
 });
