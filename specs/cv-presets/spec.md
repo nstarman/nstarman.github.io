@@ -166,14 +166,15 @@ cards (`specs/cards/spec.md`).
   in the title or not at all (one choice);
   open a publication list with its tally and an h-index
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
-  order, group, locationAt, tally })`. *Enforced:* review.
+  order, group, locationAt, locationDetail, tally })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
   link order), `locationAt` (section id to where its places print: `below` the title, `title` or `none`;
   absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
-  as `below`), page
+  as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
+  state, `country: "code"` writes the country as its code; absent, as written), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
   right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
@@ -192,7 +193,7 @@ cards (`specs/cards/spec.md`).
   (below, right, or on the heading's line), updating as ticks and options change.
   *Enforced:* review.
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
-  Page, Institution names, Currency, the "Select" prefix, the right column's width, section
+  Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width, section
   order — is in the global "Settings for every section" panel. An option that applies to one
   section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally and Legend,
   Education's university below the degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
@@ -226,6 +227,16 @@ cards (`specs/cards/spec.md`).
   title is the event's name and does not carry its place as text. The builder's preview shows each
   place where it will print. Other dated sections keep their Places box (`right` or `none`). No
   preset sets it, so the presets keep the place in the column.
+  How a place prints is a whole-CV choice, **State or province** (shown by default) and **Country**
+  (full by default, or its two-letter code), in the global panel and saved as `locationDetail`. It applies to
+  every place the CV prints, in the column, below the title or on any dated entry, and not to a
+  title's city: `Toronto, ON, Canada` prints `Toronto, Canada`, `Toronto, ON, CA` or `Toronto, CA`; a
+  place with no province or country (`Lausanne, Switzerland` has no province; `Online` has neither)
+  is unchanged as far as it has the part. The codes are in `config/countries.json` (ISO 3166-1
+  alpha-2, and `UK`); a country with none prints as written, and a test fails until it has one.
+  The builder's preview writes places the same way (`formatPlace`, `src/lib/placefmt.js`). No
+  preset sets it. *Enforced:* `tests/placefmt.test.js`, `tests/cvmodel.test.js`
+  ("writes a place as the options ask"), `tests/selection.test.js`, `tests/builder-placement.test.js`.
   *Enforced:* `tests/presets.test.js` ("print every entry's place…",
   "lets the builder leave a section's places out…"), `tests/cvmodel.test.js` ("where a talk's place prints"), `tests/talkplace.test.js`,
   `tests/selection.test.js`, `tests/builder-placement.test.js`.

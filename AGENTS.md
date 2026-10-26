@@ -133,7 +133,9 @@ is what to *do* for each kind of item.
 
 - **A talk or anything with a `location`.** Write a place, not an institution:
   `City, ST, Country` in the US and Canada (`Toronto, ON, Canada`, never
-  `TO, CA`), `City, Country` elsewhere, or `Online`. An `accepted` talk has no
+  `TO, CA`), `City, Country` elsewhere, or `Online`; the CV reads that shape to drop
+  the state or abbreviate the country, so a new country needs its code in
+  `config/countries.json`. An `accepted` talk has no
   location. Then resolve and commit its coordinates, and check the `matched`
   string the script wrote; correct a wrong pin by hand.
 

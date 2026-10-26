@@ -70,7 +70,7 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     )}
   </span>
   <span class="what">
-    {talkPlace && <span class="plc plc--right">{talkPlace}</span>}
+    {talkPlace && <span class="plc plc--right" data-loc={talkPlace}>{talkPlace}</span>}
     <strong>{talkPlace
       ? (item.title.endsWith(')')
         /* Inside a label the title already ends in, "(Talk, Cambridge)". */
@@ -130,7 +130,7 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     {item.status && item.status !== 'published' && (
       <span class="statustag">{item.status}</span>
     )}
-    {talkPlace && <span class="plc plc--below">{talkPlace}</span>}
+    {talkPlace && <span class="plc plc--below" data-loc={talkPlace}>{talkPlace}</span>}
     {lines.map((line, i) => {
       const tier = lineTier(i, baseCount, detailCount);
       const cvs = tier === 'achievement' ? achievementCvs[i - detailCount] ?? [] : null;

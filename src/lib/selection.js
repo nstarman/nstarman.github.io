@@ -95,14 +95,22 @@ const cleanLocationAt = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => PLACES.includes(v) && k.length <= 64).slice(0, 64));
 
+const objectOf = (raw) => (raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {});
+
 /** What older files said, as `locationAt` says it: `location: { id: false }` left places
  *  out (`none`) and `locationBelow: { id: true }` put them below the title. An explicit
  *  `locationAt` wins, and among the old two, leaving them out does. */
-const objectOf = (raw) => (raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {});
 const locationAtOf = (raw) => ({
   ...Object.fromEntries(Object.entries(objectOf(raw.locationBelow)).filter(([k, v]) => v === true && k.length <= 64).map(([k]) => [k, 'below'])),
   ...Object.fromEntries(Object.entries(objectOf(raw.location)).filter(([k, v]) => v === false && k.length <= 64).map(([k]) => [k, 'none'])),
   ...cleanLocationAt(raw.locationAt),
+});
+
+/** How a place prints: `region: false` leaves the province or state out, `country: 'code'` writes
+ *  the country as its code. Either, or both; absent, the place as written. */
+const cleanLocationDetail = (raw) => ({
+  ...(objectOf(raw).region === false && { region: false }),
+  ...(objectOf(raw).country === 'code' && { country: 'code' }),
 });
 
 const cleanOrder = (raw) => (Array.isArray(raw)
@@ -129,7 +137,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -171,6 +179,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // Where each section's entries print their place, if not in the right-hand
     // column: below the title, in it, or nowhere. Absent, the column.
     locationAt: cleanLocationAt(locationAt),
+    // How a place prints: the region left out, the country abbreviated. Absent, as written.
+    locationDetail: cleanLocationDetail(locationDetail),
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
@@ -204,7 +214,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, page, tally, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -264,6 +274,7 @@ export function decode(text) {
     group: cleanGroup(raw.group),
     card: cleanCard(raw.card),
     locationAt: locationAtOf(raw),
+    locationDetail: cleanLocationDetail(raw.locationDetail),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
     namesFor: cleanNamesFor(raw.namesFor),

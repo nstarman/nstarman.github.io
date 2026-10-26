@@ -1,0 +1,13 @@
+{
+  "$comment": "Each country as a record's `location` writes it, mapped to the code the CV prints when its country is abbreviated: ISO 3166-1 alpha-2, and `UK` for the United Kingdom, the form CVs use (ISO's is GB). A country in the records with no entry here prints as written, and tests/placefmt.test.js fails until it is added.",
+  "USA": "US",
+  "UK": "UK",
+  "Canada": "CA",
+  "Spain": "ES",
+  "Denmark": "DK",
+  "Italy": "IT",
+  "Switzerland": "CH",
+  "France": "FR",
+  "Germany": "DE",
+  "Iceland": "IS"
+}

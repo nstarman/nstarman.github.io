@@ -8,6 +8,7 @@
 import person from '/config/person.json';
 import { resolve } from './presets.js';
 import { asIdentifiers } from './refids.js';
+import { formatPlace } from './placefmt.js';
 import { authors, venueLine, dateLabel, links, money, softwarePapers, linkIcon, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
 import { spans, detailLines, achievementLines } from '@nstarkman/data-resolver/inline.js';
 
@@ -99,7 +100,7 @@ function byline(item) {
   return out;
 }
 
-function trailing(item, s, currency) {
+function trailing(item, s, currency, form) {
   // A declined grant still says what it was worth: the amount, then "(declined)".
   if (item.declined) {
     return item.amount && item.type !== 'award' ? `${money(item.amount, currency)} (declined)` : 'declined';
@@ -108,11 +109,11 @@ function trailing(item, s, currency) {
   if (item.amount && item.type !== 'award') {
     return money(item.amount, currency);
   }
-  return s.location === false ? '' : item.location ?? '';
+  return s.location === false || !item.location ? '' : formatPlace(item.location, form);
 }
 
 /** One item as a row of the model. */
-export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true, ids = false) {
+export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true, ids = false, form) {
   const detail = detailLines(item, { complete: cv.includeAll, currency });
   return {
     id: item.id,
@@ -134,7 +135,7 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
             // Marked achievements follow every detail line, and have their own gate.
             ...achievementLines(item, cv.name, { complete: cv.includeAll })
               .filter((_, i) => !keepLine || keepLine(item.id, detail.length + i))],
-    trailing: trailing(item, s, currency),
+    trailing: trailing(item, s, currency, form),
     recipient: item.recipient ?? null,
     recipientInline: cv.recipientInline || (item.recipientInline ?? false),
     status: item.status && item.status !== 'published' ? item.status : null,
@@ -167,19 +168,20 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  *  "Astropy Conference (Talk, Cambridge, MA, USA)". */
 const withPlace = (title, place) => (/\([^()]*\)\s*$/.test(title) ? title.replace(/\)\s*$/, `, ${place})`) : `${title} (${place})`);
 
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt, form) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
   // An education entry may have its institution on its own line, below the degree.
   const row = (item) => {
-    const r = rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds);
+    const r = rowOf(item, cv, s, keepLine, levelOf(item), currency, !funderOff.has(item.id), paperIds, form);
     // The place is printed in one position. In the right-hand column unless the section moves it
     // below the title or into it; an amount, "declined" or "not attended" is not the place and stays.
-    const moved = placeAt && item.location && r.trailing === item.location;
+    const place = item.location && formatPlace(item.location, form);
+    const moved = placeAt && place && r.trailing === place;
     return {
       ...r,
       ...(moved && { trailing: '' }),
-      ...(moved && placeAt === 'below' && { placeBelow: item.location }),
-      ...(moved && placeAt === 'title' && { title: withPlace(r.title, item.location) }),
+      ...(moved && placeAt === 'below' && { placeBelow: place }),
+      ...(moved && placeAt === 'title' && { title: withPlace(r.title, place) }),
       ...(schoolBelow && item.type === 'education' && { below: true, ...(linkOnDegree && { linkOnDegree: true }) }),
     };
   };
@@ -197,7 +199,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
       title: groupTitle(g.items),
       subject: subject(first, levelOf(first)) ? [{ t: institutionOf(first, levelOf(first)), b: false }] : [],
       lines: rows.flatMap((r) => r.lines),
-      trailing: s.location === false ? '' : first.location ?? '',
+      trailing: s.location === false || !first.location ? '' : formatPlace(first.location, form),
       links: home ? [{ rel: home.rel, url: home.url, label: home.label ?? home.rel,
                        icon: linkIcon(first, home) }] : [],
     }];
@@ -212,12 +214,13 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationAt?: Record<string, 'below' | 'title' | 'none'> }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationAt?: Record<string, 'below' | 'title' | 'none'>, locationDetail?: { region?: false, country?: 'code' } }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
  *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
  *   (with `schoolBelow`); `locationAt` where each section's entries print their place — `below` the
- *   title, `title` (in it, in parentheses) or `none` — else the right-hand column; `funderOff` the ids whose
+ *   title, `title` (in it, in parentheses) or `none` — else the right-hand column; `locationDetail` how every place prints (see
+ *   `formatPlace`): `region: false` drops the province or state, `country: 'code'` abbreviates the country; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -258,7 +261,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), ['below', 'title'].find((v) => v === opts?.locationAt?.[s.id])),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), ['below', 'title'].find((v) => v === opts?.locationAt?.[s.id]), opts?.locationDetail),
     })),
   };
 }

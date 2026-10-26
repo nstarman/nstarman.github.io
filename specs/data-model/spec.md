@@ -211,8 +211,10 @@ fetched fields (`specs/refresh/spec.md`).
 ### Places
 
 - **FR-032** `location` is a place, never an institution: `City, ST, Country` in
-  the US and Canada, `City, Country` elsewhere, or `Online`. *Enforced:* review;
-  `scripts/geocode-places.mjs` skips anything else.
+  the US and Canada, `City, Country` elsewhere, or `Online`. The CV reads that shape to
+  leave out the region or abbreviate the country (`specs/cv-presets/spec.md`, FR-024), with
+  each country's code in `config/countries.json`. *Enforced:* review;
+  `scripts/geocode-places.mjs` skips anything else; `tests/placefmt.test.js` (every country has a code).
 - **FR-033** Coordinates live in `config/places.json`, so neither the build nor
   the tests call a geocoder (Article VIII); only `scripts/geocode-places.mjs`
   does (`specs/refresh/spec.md`). A second name for the same campus is

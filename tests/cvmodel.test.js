@@ -186,6 +186,25 @@ describe('detail levels', () => {
       expect(online.title).toBe('Oxford Physics Colloquium (Online)');
     });
 
+    it('writes a place as the options ask: in the column, below and in the title', () => {
+      const detail = (locationDetail, locationAt) => talk(cvModel('complete', only, undefined, { locationDetail, locationAt: locationAt && { 'talks-invited': locationAt } }));
+      expect(detail().trailing).toBe('Jesi, Italy');
+      expect(detail({ country: 'code' }).trailing).toBe('Jesi, IT');
+      expect(detail({ region: false, country: 'code' }, 'below').placeBelow).toBe('Jesi, IT');
+      // In the title it is the same place, written the same way.
+      expect(detail({ region: false, country: 'code' }, 'title').title).toBe('Marche III: Big Bang, Big Stars, Big Computers (Jesi, IT)');
+      expect(detail(undefined, 'title').title).toBe('Marche III: Big Bang, Big Stars, Big Computers (Jesi, Italy)');
+      // A place with a province and country, in the column of another section.
+      const cwru = find(cvModel('complete', new Set(['cwru-seminar']), undefined, { locationDetail: { region: false, country: 'code' } }), 'cwru-seminar');
+      expect(cwru.trailing).toBe('Cleveland, US');
+    });
+
+    it('leaves a note and an amount alone whatever the options', () => {
+      const accepted = { ...itemById('astropy-conference-talk'), kind: 'accepted', location: undefined };
+      const row = rowOf(accepted, { name: 'complete' }, { id: 'talks-invited', detail: 'full' }, undefined, 0, undefined, true, false, { region: false, country: 'code' });
+      expect(row.trailing).toBe('not attended');
+    });
+
     it('joins a label the title already ends in: (Talk, Place), not (Talk) (Place)', () => {
       const tevpa = find(cvModel('complete', new Set(['tevpa-talk']), undefined, { locationAt: { 'talks-contributed': 'title' } }), 'tevpa-talk');
       expect(tevpa.title).toBe('TeVPA (Talk, Valencia, Spain)');

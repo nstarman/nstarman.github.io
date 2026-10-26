@@ -15,7 +15,7 @@ const section = src.slice(0, start);
 const ids = (text) => [...text.matchAll(/\bid="([A-Za-z0-9_-]+)"/g)].map((m) => m[1]);
 
 // Every control for the whole CV. A new one is added here on purpose.
-const WHOLE_CV = ['style', 'format', 'names', 'currency', 'selprefix', 'trailcap', 'fill', 'resetorder'];
+const WHOLE_CV = ['style', 'format', 'names', 'currency', 'locregion', 'loccountry', 'selprefix', 'trailcap', 'fill', 'resetorder'];
 // Controls for one section, and the section whose row holds each.
 const ONE_SECTION = { schoolbelow: "s.id === 'education'", linkondegree: "s.id === 'education'", paperids: "s.id === 'mentoring'" };
 
@@ -53,5 +53,17 @@ describe('where a builder option lives', () => {
     // A change, a loaded selection and a preset's start all update it.
     expect(page).toMatch(/startsWith\('placeat:'\)\) \{ showPlaceAt\(\)/);
     expect(page).toMatch(/const setLocationAt = [\s\S]*?showPlaceAt\(\);/);
+  });
+
+  it("sets how a place prints in the global panel, and in the preview", () => {
+    const page = fs.readFileSync(new URL('../src/pages/webdev/cv.astro', import.meta.url), 'utf8');
+    const item = fs.readFileSync(new URL('../src/components/CvTimelineItem.astro', import.meta.url), 'utf8');
+    expect(ids(global)).toEqual(expect.arrayContaining(['locregion', 'loccountry']));
+    expect(ids(section)).not.toContain('locregion');
+    // The preview's place spans carry the raw place, which the page writes as the options say.
+    expect(item).toContain('data-loc={talkPlace}');
+    expect(page).toContain('formatPlace(p.dataset.loc, form)');
+    expect(page).toMatch(/\$\('loccountry'\)\.addEventListener\('change', \(\) => \{ showLocationDetail\(\)/);
+    expect(page).toMatch(/\$\('loccountry'\)\.value = sel\.locationDetail\.country === 'code'/);
   });
 });

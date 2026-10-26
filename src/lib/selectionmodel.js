@@ -21,6 +21,7 @@ export function modelFromSelection(sel) {
     order: sel.order,
     group: sel.group,
     locationAt: sel.locationAt,
+    locationDetail: sel.locationDetail,
     tally: sel.tally,
     namesFor: sel.namesFor,
     currency: sel.currency ?? undefined,
