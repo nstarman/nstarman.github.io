@@ -113,6 +113,10 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     {item.kind === 'accepted' && <> (accepted, not attended)</>}
     {item.recipient && (
       <span class={`recipient${recipientInline ? ' recipient--inline' : ''}`}>
+        {pick && (
+          <input type="checkbox" class="recipientbox" data-recipient-of={item.id} checked
+                 title="Print the recipient" aria-label={`Print the recipient of ${item.title}`} />
+        )}
         <span class="recipient__text">To {item.recipient}</span>
         {pick && (
           <label class="inlineopt" title="Print on the title line">

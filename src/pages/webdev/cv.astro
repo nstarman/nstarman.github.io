@@ -425,6 +425,7 @@ const builderData = {
         setLocationAt(Object.fromEntries(Object.entries(LOCATION[t.dataset.preset] ?? {}).filter(([, v]) => v === false).map(([k]) => [k, 'none'])));
         setTally(TALLY[t.dataset.preset]);
         setFunderOff(FUNDER_OFF[t.dataset.preset]);
+        setRecipientOff([]);
         applyDetail();
         recount();
         t.setAttribute('aria-pressed', 'true');
@@ -618,6 +619,13 @@ const builderData = {
       const off = new Set(ids);
       for (const b of funderBoxes()) b.checked = !off.has(b.dataset.funderOf);
     };
+    /** The ids of the awards whose recipient line is unticked. */
+    const recipientBoxes = () => [...document.querySelectorAll('[data-recipient-of]')];
+    const currentRecipientOff = () => recipientBoxes().filter((b) => !b.checked).map((b) => b.dataset.recipientOf);
+    const setRecipientOff = (ids = []) => {
+      const off = new Set(ids);
+      for (const b of recipientBoxes()) b.checked = !off.has(b.dataset.recipientOf);
+    };
     /** Entry id → its institution-name level, for the entries not at full. */
     const nameMenus = () => [...document.querySelectorAll('[data-names-of]')];
     const currentNamesFor = () => Object.fromEntries(nameMenus()
@@ -747,7 +755,7 @@ const builderData = {
       prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
       group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(), locationDetail: currentLocationDetail(),
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
-      namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
+      namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
       linkOnDegree: $('linkondegree').checked, tally: currentTally(), site: SITE,
     });
@@ -817,6 +825,7 @@ const builderData = {
       $('currency').value = [...$('currency').options].some((o) => o.value === sel.currency) ? sel.currency : '';
       showCurrency();
       setFunderOff(sel.funderOff);
+      setRecipientOff(sel.recipientOff);
       $('paperids').checked = sel.paperIds;
       showPaperIds();
       $('schoolbelow').checked = sel.schoolBelow;
@@ -894,6 +903,7 @@ const builderData = {
     };
     document.addEventListener('change', (e) => {
       if (e.target.matches?.('[data-funder-of]')) retire('Institution changed — compile again.');
+      if (e.target.matches?.('[data-recipient-of]')) retire('Recipient changed — compile again.');
     });
     // The page cites a mentee's papers as the tick-box says: in words, or by identifier
     // (every entry is on the builder's page, but an off-page one still swaps its text).

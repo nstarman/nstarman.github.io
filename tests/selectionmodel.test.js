@@ -23,6 +23,7 @@ const richSelection = () => encode({
   style: 'default', page: 'letter', trailcap: true, fill: true,
   currency: 'dollar', paperIds: true, schoolBelow: true, linkOnDegree: true,
   funderOff: ['astropy-berkeley-prize'],
+  recipientOff: ['asa-astrostatistics-interest-group-student-paper-finalist'],
   trailcapWidth: 1.9,
   locationAt: { 'talks-invited': 'below' },
   spacing: { education: { value: 2, unit: 'pt' } },
@@ -50,6 +51,7 @@ describe('one model from a selection', () => {
 
   it('carries the settings through', () => {
     const model = modelFromSelection(decode(JSON.stringify(richSelection())));
+    expect(model.sections.flatMap((s) => s.items).find((i) => i.id === 'asa-astrostatistics-interest-group-student-paper-finalist').recipient).toBeNull();
     expect(model).toMatchObject({ style: 'default', format: 'letter', trailcap: true, fill: true, trailcapWidth: 1.9 });
     expect(model.sections.length).toBeGreaterThan(5);
     const talks = model.sections.find((s) => s.id === 'talks-invited').items;

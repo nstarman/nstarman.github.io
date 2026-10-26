@@ -168,7 +168,7 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  *  "Astropy Conference (Talk, Cambridge, MA, USA)". */
 const withPlace = (title, place) => (/\([^()]*\)\s*$/.test(title) ? title.replace(/\)\s*$/, `, ${place})`) : `${title} (${place})`);
 
-function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt, form) {
+function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt, form, recipientOff) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
   // An education entry may have its institution on its own line, below the degree.
   const row = (item) => {
@@ -179,6 +179,8 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
     const moved = placeAt && place && r.trailing === place;
     return {
       ...r,
+      // An award's recipient line, left out where the builder unticks it.
+      ...(recipientOff?.has(item.id) && { recipient: null }),
       ...(moved && { trailing: '' }),
       ...(moved && placeAt === 'below' && { placeBelow: place }),
       ...(moved && placeAt === 'title' && { title: withPlace(r.title, place) }),
@@ -214,13 +216,13 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationAt?: Record<string, 'below' | 'title' | 'none'>, locationDetail?: { region?: false, country?: 'code' } }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], recipientOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationAt?: Record<string, 'below' | 'title' | 'none'>, locationDetail?: { region?: false, country?: 'code' } }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
  *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
  *   (with `schoolBelow`); `locationAt` where each section's entries print their place — `below` the
  *   title, `title` (in it, in parentheses) or `none` — else the right-hand column; `locationDetail` how every place prints (see
- *   `formatPlace`): `region: false` drops the province or state, `country: 'code'` abbreviates the country; `funderOff` the ids whose
+ *   `formatPlace`): `region: false` drops the province or state, `country: 'code'` abbreviates the country; `recipientOff` the ids whose recipient line is left out; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
@@ -261,7 +263,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),
-      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), ['below', 'title'].find((v) => v === opts?.locationAt?.[s.id]), opts?.locationDetail),
+      items: itemsOf(s, cv, keepLine, group, namesFor, opts?.currency, new Set(opts?.funderOff ?? cv.funderOff), Boolean(opts?.paperIds), Boolean(opts?.schoolBelow), Boolean(opts?.linkOnDegree), ['below', 'title'].find((v) => v === opts?.locationAt?.[s.id]), opts?.locationDetail, new Set(opts?.recipientOff ?? [])),
     })),
   };
 }
