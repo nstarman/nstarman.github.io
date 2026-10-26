@@ -206,10 +206,11 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   normal CV and the two-page one is not only which entries appear but how much
  *   each one says, and that is a per-line question: an education entry can want
  *   its thesis and not its fellowships.
- * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, locationBelow?: Record<string, boolean> }} [opts]
+ * @param {{ prefix?: Record<string, string>, group?: Record<string, boolean>, namesFor?: Record<string, number>, currency?: 'us' | 'dollar', funderOff?: string[], paperIds?: boolean, schoolBelow?: boolean, linkOnDegree?: boolean, locationBelow?: Record<string, boolean> }} [opts]
  *   passed to resolve(); `namesFor` is each entry's institution-name level, by
  *   id (see `institutionOf`); `currency` how amounts are written (see `money`); `paperIds` cites a mentee's papers by identifier; `schoolBelow` puts an education
- *   entry's institution on its own line; `locationBelow` the sections whose entries print their
+ *   entry's institution on its own line; `linkOnDegree` ends the degree line with its link icon
+ *   (with `schoolBelow`); `locationBelow` the sections whose entries print their
  *   place on a line below the title, not in the right-hand column; `funderOff` the ids whose
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
