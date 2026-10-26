@@ -9,8 +9,14 @@
   "date": {
     "start": "2025-11"
   },
-  "title": "TevPA",
+  "title": "TeVPA",
   "kind": "invited",
   "location": "Valencia, Spain",
-  "talk": "The Geometry of Dark Matter Halos from Extragalactic Streams"
+  "talk": "The Geometry of Dark Matter Halos from Extragalactic Streams",
+  "links": [
+    {
+      "rel": "event",
+      "url": "https://indico.ific.uv.es/event/7986/"
+    }
+  ]
 }
