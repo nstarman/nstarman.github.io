@@ -253,6 +253,17 @@ describe('tolerating the merely odd', () => {
     expect(sel.locationBelow).toBeUndefined();
   });
 
+  it("carries the capped column's width, holding it to its range and reading none as the usual", () => {
+    const back = (trailcapWidth) => decode(JSON.stringify(encode({ items: [], trailcapWidth }))).trailcapWidth;
+    expect(back(1.9)).toBe(1.9);
+    expect(back(0.5)).toBe(0.5);
+    expect(back(4)).toBe(4);
+    // Out of range, not a number, and the usual width itself are all absence.
+    for (const bad of [0.49, 4.01, -1, 0, 'wide', '1.9', NaN, Infinity, null, undefined, 1.45]) expect(back(bad), String(bad)).toBeNull();
+    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [], trailcapWidth: 9 })).trailcapWidth).toBeNull();
+    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).trailcapWidth).toBeNull();
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

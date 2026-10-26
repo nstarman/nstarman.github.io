@@ -1,4 +1,4 @@
-// The right-hand column's cap (TRAILCAP in cv/cv.typ) must hold two bounds, at the US Letter size:
+// The right-hand column's usual cap (TRAILCAP_DEFAULT in cv/cv.typ) must hold two bounds, at the US Letter size:
 //   - the widest place in the records written shortest (no province or state, the country as its
 //     code) fits, so a CV that abbreviates its places keeps each on one line;
 //   - the widest written in full does not, so the cap still stops a long place taking the width.
@@ -14,8 +14,8 @@ import { createServer } from 'vite';
 const root = path.resolve(import.meta.dirname, '..');
 process.chdir(root);
 
-const cap = Number(fs.readFileSync('cv/cv.typ', 'utf8').match(/#let TRAILCAP = ([0-9.]+)in/)?.[1]);
-if (!cap) { console.error('column cap: TRAILCAP not found in cv/cv.typ'); process.exit(1); }
+const cap = Number(fs.readFileSync('cv/cv.typ', 'utf8').match(/#let TRAILCAP_DEFAULT = ([0-9.]+)in/)?.[1]);
+if (!cap) { console.error('column cap: TRAILCAP_DEFAULT not found in cv/cv.typ'); process.exit(1); }
 
 const vite = await createServer({
   root, configFile: false, logLevel: 'error', appType: 'custom',

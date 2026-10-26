@@ -387,8 +387,10 @@
 // at 12pt the widest is nearly two inches. Not in the flat styles, whose
 // entries do not use a column. The cap is wide enough for the widest place written
 // shortest ("College Station, US": no state, the country as its code) and narrower
-// than the widest in full; scripts/test-column-cap.mjs holds both.
-#let TRAILCAP = 1.45in
+// than the widest in full; scripts/test-column-cap.mjs holds both. The builder's
+// "Cap width" sets another, in inches (`trailcapWidth`).
+#let TRAILCAP_DEFAULT = 1.45in
+#let TRAILCAP = { let w = cv.at("trailcapWidth", default: none); if w == none { TRAILCAP_DEFAULT } else { w * 1in } }
 #let trailcap = cv.at("trailcap", default: false) or letter
 // With `fill` — the builder's "Fill the middle column" — the right-hand column is sized
 // to the figures and places that fit in FITCAP, not to the longest: one long range or place

@@ -176,7 +176,7 @@ cards (`specs/cards/spec.md`).
   as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
   state, `country: "code"` writes the country as its code; absent, as written), page
   format (`page`), tally (`true` or `{ hIndex }` per section), whether the
-  right-hand column is capped (`trailcap`, `true` only), each entry's institution-name
+  right-hand column is capped (`trailcap`, `true` only) and how wide (`trailcapWidth`, inches, absent for 1.45), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
   is switched off (`funderOff`, entry ids; absent is none), whether Education puts the
@@ -193,7 +193,7 @@ cards (`specs/cards/spec.md`).
   (below, right, or on the heading's line), updating as ticks and options change.
   *Enforced:* review.
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
-  Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width, section
+  Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
   order — is in the global "Settings for every section" panel. An option that applies to one
   section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally and Legend,
   Education's university below the degree, Mentoring's papers by identifier — is in that section's own settings row (the sliders
@@ -258,15 +258,17 @@ cards (`specs/cards/spec.md`).
   footer with no running header; the header card's email and website default to
   a line each (a card `order` that is set is kept); the contact block takes its
   own height; and the right-hand column is capped, as the builder's "Cap right
-  column" option does, whether or not it is ticked. The cap is 1.45 in (`TRAILCAP`), one value
-  for both: wide enough for the widest place in the records written shortest ("College Station,
+  column" option does, whether or not it is ticked. The cap is 1.45 in (`TRAILCAP_DEFAULT`) unless the builder's **Cap width** sets another,
+  0.5 to 4 in (saved as `trailcapWidth`, absent for the usual; a value outside the range or not a number
+  reads as the usual), one value for both: wide enough for the widest place in the records written shortest ("College Station,
   US", 1.43 in at 12pt: no province or state, the country as its code), so a CV that shortens its
   places keeps each on one line, and narrower than the widest in full ("College Station, TX, USA",
   1.90 in), which still wraps. In the builder, card links
   still in the other page's usual order take the chosen page's. *Enforced:*
   `tests/presets.test.js` (`cardOrder`), `npm run build:pdf` (the one- and
   two-page counts, and `scripts/test-column-cap.mjs`, which measures every place and holds
-  both bounds of the cap); the rest by review.
+  both bounds of the usual cap), `tests/selection.test.js` (the width's range), `tests/selectionmodel.test.js`;
+  the rest by review.
 
 ## Key Entities
 

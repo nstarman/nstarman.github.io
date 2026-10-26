@@ -38,6 +38,7 @@ export function modelFromSelection(sel) {
   model.style = sel.style ?? 'default';
   model.format = sel.page;
   model.trailcap = sel.trailcap;
+  model.trailcapWidth = sel.trailcapWidth;
   model.fill = sel.fill;
   // Absent, the card as the preset has it.
   model.card = sel.card ?? model.card;
