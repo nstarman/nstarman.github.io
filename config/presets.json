@@ -205,7 +205,7 @@
     "place": { "publications.legend": "title" },
     "recipientInline": true,
     "funderOff": ["nserc-cgs-d", "nserc-cgs-m"],
-    "spacing": { "publications.heading": { "value": 1.4, "unit": "x" }, "talks-invited": { "value": 0.75, "unit": "x" } },
+    "spacing": { "publications.heading": { "value": 1.4, "unit": "x" }, "talks-invited": { "value": 0.6, "unit": "x" } },
     "label": "2P",
     "detail": "summary",
     "sections": [
