@@ -229,8 +229,8 @@ cards (`specs/cards/spec.md`).
   preset sets it, so the presets keep the place in the column.
   How a place prints is a whole-CV choice, **State or province** (shown by default) and **Country**
   (full by default, or its two-letter code), in the global panel and saved as `locationDetail`. It applies to
-  every place the CV prints, in the column, below the title or on any dated entry, and not to a
-  title's city: `Toronto, ON, Canada` prints `Toronto, Canada`, `Toronto, ON, CA` or `Toronto, CA`; a
+  every place the CV prints, in the column, below the title, in the title or on any dated entry:
+  `Toronto, ON, Canada` prints `Toronto, Canada`, `Toronto, ON, CA` or `Toronto, CA`; a
   place with no province or country (`Lausanne, Switzerland` has no province; `Online` has neither)
   is unchanged as far as it has the part. The codes are in `config/countries.json` (ISO 3166-1
   alpha-2, and `UK`); a country with none prints as written, and a test fails until it has one.

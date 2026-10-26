@@ -74,8 +74,8 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     <strong>{talkPlace
       ? (item.title.endsWith(')')
         /* Inside a label the title already ends in, "(Talk, Cambridge)". */
-        ? <>{item.title.slice(0, -1)}<span class="plc plc--title">, {talkPlace}</span>)</>
-        : <>{item.title}<span class="plc plc--title"> ({talkPlace})</span></>)
+        ? <>{item.title.slice(0, -1)}<span class="plc plc--title" data-loc={talkPlace} data-pre=", ">, {talkPlace}</span>)</>
+        : <>{item.title}<span class="plc plc--title" data-loc={talkPlace} data-pre=" (" data-post=")"> ({talkPlace})</span></>)
       : item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>

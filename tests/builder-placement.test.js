@@ -63,6 +63,7 @@ describe('where a builder option lives', () => {
     // The preview's place spans carry the raw place, which the page writes as the options say.
     expect(item).toContain('data-loc={talkPlace}');
     expect(page).toContain('formatPlace(p.dataset.loc, form)');
+    expect(item.match(/plc plc--title" data-loc=\{talkPlace\}/g)).toHaveLength(2);
     expect(page).toMatch(/\$\('loccountry'\)\.addEventListener\('change', \(\) => \{ showLocationDetail\(\)/);
     expect(page).toMatch(/\$\('loccountry'\)\.value = sel\.locationDetail\.country === 'code'/);
   });

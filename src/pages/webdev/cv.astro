@@ -548,10 +548,10 @@ const builderData = {
       ...(!$('locregion').checked && { region: false }),
       ...($('loccountry').value === 'code' && { country: 'code' }),
     });
-    // The preview writes each place as the two options will. A title's city is not one of them.
+    // The preview writes each place as the two options will, in the title too.
     const showLocationDetail = () => {
       const form = currentLocationDetail();
-      for (const p of document.querySelectorAll('.plc[data-loc]')) p.textContent = formatPlace(p.dataset.loc, form);
+      for (const p of document.querySelectorAll('.plc[data-loc]')) p.textContent = `${p.dataset.pre ?? ''}${formatPlace(p.dataset.loc, form)}${p.dataset.post ?? ''}`;
     };
     $('locregion').addEventListener('change', () => { showLocationDetail(); retire('Places changed — compile again.'); });
     $('loccountry').addEventListener('change', () => { showLocationDetail(); retire('Places changed — compile again.'); });
