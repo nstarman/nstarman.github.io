@@ -88,16 +88,22 @@ const cleanTally = (raw) => Object.fromEntries(
       : v && typeof v.hIndex === 'string' && v.hIndex.length <= 64 ? { hIndex: v.hIndex } : null])
     .filter(([, v]) => v !== null));
 
-/** Section id → false, for the sections whose entries leave their place out. */
-const cleanLocation = (raw) => Object.fromEntries(
+/** Section id → where its entries print their place: `below` the title, `title` (in it,
+ *  in parentheses) or `none`. Absent, the right-hand column. One value, so never two places. */
+const PLACES = ['below', 'title', 'none'];
+const cleanLocationAt = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
-    .filter(([k, v]) => v === false && k.length <= 64).slice(0, 64));
+    .filter(([k, v]) => PLACES.includes(v) && k.length <= 64).slice(0, 64));
 
-/** Section id → true, for the sections whose entries print their place on a line
- *  of its own below the title, not in the right-hand column. */
-const cleanLocationBelow = (raw) => Object.fromEntries(
-  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
-    .filter(([k, v]) => v === true && k.length <= 64).slice(0, 64));
+/** What older files said, as `locationAt` says it: `location: { id: false }` left places
+ *  out (`none`) and `locationBelow: { id: true }` put them below the title. An explicit
+ *  `locationAt` wins, and among the old two, leaving them out does. */
+const objectOf = (raw) => (raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {});
+const locationAtOf = (raw) => ({
+  ...Object.fromEntries(Object.entries(objectOf(raw.locationBelow)).filter(([k, v]) => v === true && k.length <= 64).map(([k]) => [k, 'below'])),
+  ...Object.fromEntries(Object.entries(objectOf(raw.location)).filter(([k, v]) => v === false && k.length <= 64).map(([k]) => [k, 'none'])),
+  ...cleanLocationAt(raw.locationAt),
+});
 
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
@@ -123,7 +129,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, location, locationBelow, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -162,10 +168,9 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // What the header card shows, and its links' order. Absent, the card as it
     // comes, which is what every selection saved before the card means.
     card: cleanCard(card),
-    // Sections whose entries leave their place out. Absent, every one prints it.
-    location: cleanLocation(location),
-    // Sections whose entries print their place below the title. Absent, none does.
-    locationBelow: cleanLocationBelow(locationBelow),
+    // Where each section's entries print their place, if not in the right-hand
+    // column: below the title, in it, or nowhere. Absent, the column.
+    locationAt: cleanLocationAt(locationAt),
     // The page format, as the Page menu names it. Absent, the style's default.
     // (`format` is the file's own kind, above.)
     page: typeof page === 'string' && page.length <= 64 ? page : null,
@@ -199,7 +204,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, location, locationBelow, page, tally, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, page, tally, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -258,8 +263,7 @@ export function decode(text) {
     columns: cleanColumns(raw.columns),
     group: cleanGroup(raw.group),
     card: cleanCard(raw.card),
-    location: cleanLocation(raw.location),
-    locationBelow: cleanLocationBelow(raw.locationBelow),
+    locationAt: locationAtOf(raw),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
     namesFor: cleanNamesFor(raw.namesFor),

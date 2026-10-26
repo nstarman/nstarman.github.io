@@ -99,10 +99,13 @@ fetched fields (`specs/refresh/spec.md`).
   `talk` is the title of the talk or poster, a non-empty string without quotation marks
   (renderers add them) and with the inline links `details` allows; no other type has it.
   A note that is not a title (a role, a lecturer's post) stays in `details`, so `talk`
-  is the only text a renderer quotes. *Enforced:* the schema
-  (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`),
-  `tests/talktitle.test.js` (no title lost or doubled, a role never a title); review for
-  `accepted` without `location`.
+  is the only text a renderer quotes. A talk's `title` is the event's name and does not repeat
+  its place: the place is its `location` alone, and the CV prints it where the builder puts it
+  (the right column, below the title or in the title), never in two positions. *Enforced:* the
+  schema (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`),
+  `tests/talktitle.test.js` (no title lost or doubled, a role never a title),
+  `tests/talkplace.test.js` (no title ends in its own location or its city); review for `accepted`
+  without `location`.
 
 ### Publications
 
