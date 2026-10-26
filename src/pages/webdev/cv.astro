@@ -746,7 +746,7 @@ const builderData = {
       heading: currentHeadings(), place: currentPlace(),
       prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
       group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(), locationDetail: currentLocationDetail(),
-      page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked,
+      page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
       linkOnDegree: $('linkondegree').checked, tally: currentTally(), site: SITE,
@@ -811,6 +811,7 @@ const builderData = {
       showLocationDetail();
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
+      trailwInput().value = sel.trailcapWidth ?? '';
       $('fill').checked = sel.fill;
       setNamesFor(sel.namesFor);
       $('currency').value = [...$('currency').options].some((o) => o.value === sel.currency) ? sel.currency : '';
@@ -880,7 +881,11 @@ const builderData = {
     // A compiled PDF belongs to the style it was compiled with. Changing the
     // menu retires it — otherwise Download keeps handing over a file that no
     // longer matches what the menu says, and the preview keeps showing it.
+    // The capped column's width, in inches; empty is the usual width. The number box holds it to its range.
+    const trailwInput = () => document.querySelector('[name="trailw"]');
+    const currentTrailcapWidth = () => { const v = Number.parseFloat(trailwInput().value); return Number.isFinite(v) ? v : null; };
     $('trailcap').addEventListener('change', () => retire('Right column changed — compile again.'));
+    trailwInput().addEventListener('change', () => retire('Right column changed — compile again.'));
     $('fill').addEventListener('change', () => retire('Middle column changed — compile again.'));
     // The page shows amounts as the Currency menu will write them.
     const showCurrency = () => {

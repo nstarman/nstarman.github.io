@@ -95,6 +95,11 @@ const cleanLocationAt = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => PLACES.includes(v) && k.length <= 64).slice(0, 64));
 
+/** The right-hand column's cap, in inches: a number from 0.5 to 4 that is not the usual 1.45 (that
+ *  is absence). Anything else reads as the usual width. */
+export const TRAILCAP_DEFAULT = 1.45;
+const cleanTrailcapWidth = (n) => (typeof n === 'number' && Number.isFinite(n) && n >= 0.5 && n <= 4 && n !== TRAILCAP_DEFAULT ? n : null);
+
 const objectOf = (raw) => (raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {});
 
 /** What older files said, as `locationAt` says it: `location: { id: false }` left places
@@ -137,7 +142,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -186,6 +191,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     page: typeof page === 'string' && page.length <= 64 ? page : null,
     // Whether the right-hand column of dated entries is capped. Absent, it is not.
     trailcap: trailcap === true,
+    // How wide the capped right-hand column may be, in inches. Absent, the usual 1.45.
+    trailcapWidth: cleanTrailcapWidth(trailcapWidth),
     // How much of an entry's institution name prints, by id: 1 shorter, 2
     // shortest. Absent, full.
     namesFor: cleanNamesFor(namesFor),
@@ -277,6 +284,7 @@ export function decode(text) {
     locationDetail: cleanLocationDetail(raw.locationDetail),
     page: typeof raw.page === 'string' && raw.page.length <= 64 ? raw.page : null,
     trailcap: raw.trailcap === true,
+    trailcapWidth: cleanTrailcapWidth(raw.trailcapWidth),
     namesFor: cleanNamesFor(raw.namesFor),
     currency: CURRENCY_STYLES.includes(raw.currency) ? raw.currency : null,
     funderOff: cleanIds(raw.funderOff),
