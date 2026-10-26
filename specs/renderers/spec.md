@@ -154,6 +154,16 @@ snapshots (`specs/refresh/spec.md`).
   copied to `public/cv/`. It fails on an "unknown font family" warning; where `pdffonts` exists,
   on any face in the complete CV outside the vendored ones; and unless `1page` is one page and
   `2page` two. It copies the `np` PDF to `/files/starkman_cv.pdf`. *Enforced:* CI step "CV PDFs".
+- **FR-028** `npm run build:cv -- <selection.json> [out.pdf]` (`scripts/build-cv.mjs`) compiles a saved
+  builder selection without the site, with the Typst arguments of FR-019 (the file defaults to
+  `<selection>.pdf`; `TYPST=` names the binary). Its model is `modelFromSelection(decode(file))`
+  (`src/lib/selectionmodel.js`), the function the builder's Compile also calls on its controls read
+  through `currentSelection()`, the same function Save writes with, so the page and the command draw
+  one selection as one CV; the page builds no model otherwise. `--model` prints the model as JSON and
+  compiles nothing. An empty or unreadable selection exits non-zero with a message and no PDF, and
+  `cv/cv.json` is not left behind. *Enforced:* `tests/selectionmodel.test.js` (the page calls the
+  shared function and no other; it reads every field `decode` returns; the command's model equals the
+  function's; the PDF compiles where Typst is installed).
 
 ### Hosted-sites layout
 
