@@ -156,6 +156,43 @@ describe('detail levels', () => {
     expect(talks.items.some((i) => i.lines.length > 0)).toBe(true);
   });
 
+  describe("a talk's place below its title", () => {
+    const talk = (cv) => all(cv).find((i) => i.id === 'marche-iii-big-bang-big-stars-big-computers-jesi');
+    const only = new Set(['marche-iii-big-bang-big-stars-big-computers-jesi', 'cwru-seminar']);
+    const off = cvModel('complete', only);
+    const on = cvModel('complete', only, undefined, { locationBelow: { 'talks-invited': true } });
+
+    it('moves the place out of the right-hand column', () => {
+      expect(talk(off).trailing).toBe('Jesi, Italy');
+      expect(talk(off).placeBelow).toBeUndefined();
+      expect(talk(on).trailing).toBe('');
+      expect(talk(on).placeBelow).toBe('Jesi, Italy');
+    });
+
+    it('changes only the ticked section and nothing else of the row', () => {
+      const other = cvModel('complete', only, undefined, { locationBelow: { publications: true } });
+      expect(other).toEqual(off);
+      const { trailing: _t, placeBelow: _p, ...rest } = talk(on);
+      const { trailing: _t2, ...restOff } = talk(off);
+      expect(rest).toEqual(restOff);
+    });
+
+    it('prints no line for a talk with no place, and leaves a note where it is', () => {
+      const accepted = itemById('astropy-conference-talk');
+      const cv = { name: 'complete' };
+      const s = { id: 'talks-invited', detail: 'full' };
+      const row = rowOf({ ...accepted, kind: 'accepted', location: undefined }, cv, s);
+      expect(row.trailing).toBe('not attended');
+      expect(row.placeBelow).toBeUndefined();
+    });
+
+    it('leaves the place out when the section prints none', () => {
+      const none = cvModel('complete', only, undefined, { location: { 'talks-invited': false }, locationBelow: { 'talks-invited': true } });
+      expect(talk(none).trailing).toBe('');
+      expect(talk(none).placeBelow).toBeUndefined();
+    });
+  });
+
   it('lets the builder pick individual lines', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
       // Roles merged into one row carry one line each, so keep them apart here.

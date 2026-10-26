@@ -49,6 +49,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
     { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries`,
       // Dated entries have a right-hand column for their place.
       places: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0,
+      // A talk's place can go on a line below its title instead.
+      placeBelow: !all && (s.layout ?? 'timeline') === 'timeline' && s.items.length > 0 && s.items.every((i) => i.type === 'presentation'),
       // A publication list can open with its headline numbers.
       tally: !all && s.layout === 'publications',
       // Education can put the university under the degree.
@@ -108,6 +110,12 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.places && (
         <label class="fmtopt fmtcheck" title={`Print each ${s.heading} entry's place`}>
           <input type="checkbox" name={`location:${s.id}`} data-location-of={s.id} checked />Places</label>
+      )}
+      {/* A talk's place on a line below its title, not in the right-hand column; offered
+          while the section prints places (the page hides it otherwise). */}
+      {o.placeBelow && (
+        <label class="fmtopt fmtcheck" title="Print each talk's place on a line below its title, not in the right-hand column">
+          <input type="checkbox" name={`locationbelow:${s.id}`} data-location-below-of={s.id} />Place below the title</label>
       )}
       {/* Each education entry's university on its own line, below the degree, with no comma. */}
       {o.school && (

@@ -350,6 +350,11 @@
   // Styles with no right-hand column hand the location in here, so it ends the
   // entry's own line instead of trailing the last detail line.
   if tail != none { tail }
+  // A talk's place on a line of its own below the title (`placeBelow`), before the details.
+  if it.at("placeBelow", default: none) != none {
+    linebreak()
+    text(size: look.sub)[#it.placeBelow]
+  }
   if it.recipient != none {
     if it.recipientInline { [, ] } else { linebreak() }
     text(size: look.sub)[#emph[to #it.recipient]]

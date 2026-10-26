@@ -296,7 +296,8 @@ const builderData = {
         return;
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
-      if (t.name?.startsWith('location:')) { retire('Places changed — compile again.'); return; }
+      if (t.name?.startsWith('location:')) { showLocationBelow(); retire('Places changed — compile again.'); return; }
+      if (t.name?.startsWith('locationbelow:')) { retire('Places changed — compile again.'); return; }
       if (t.name?.startsWith('tally:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
@@ -422,6 +423,7 @@ const builderData = {
         // is the Page menu's, as the style is the Style menu's.
         setCard(CARD[t.dataset.preset]);
         setLocation(LOCATION[t.dataset.preset]);
+        setLocationBelow({});
         setTally(TALLY[t.dataset.preset]);
         setFunderOff(FUNDER_OFF[t.dataset.preset]);
         applyDetail();
@@ -534,6 +536,21 @@ const builderData = {
     const currentLocation = () => Object.fromEntries(locationBoxes()
       .filter((b) => !b.checked).map((b) => [b.dataset.locationOf, false]));
     const setLocation = (loc = {}) => { for (const b of locationBoxes()) b.checked = loc[b.dataset.locationOf] ?? true; };
+    // Whether each talks section prints its entries' place below the title. The box is offered
+    // only while that section prints places.
+    const locationBelowBoxes = () => [...document.querySelectorAll('[data-location-below-of]')];
+    /** Section id → true, for the sections whose entries print their place below the title. */
+    const currentLocationBelow = () => Object.fromEntries(locationBelowBoxes()
+      .filter((b) => b.checked).map((b) => [b.dataset.locationBelowOf, true]));
+    const showLocationBelow = () => {
+      for (const b of locationBelowBoxes()) {
+        b.closest('.fmtopt').hidden = !document.querySelector(`[data-location-of="${b.dataset.locationBelowOf}"]`)?.checked;
+      }
+    };
+    const setLocationBelow = (loc = {}) => {
+      for (const b of locationBelowBoxes()) b.checked = loc[b.dataset.locationBelowOf] === true;
+      showLocationBelow();
+    };
     // Whether each publication list opens with a tally, and which h-index it adds.
     const tallyBoxes = () => [...document.querySelectorAll('[data-tally-of]')];
     const hIndexMenu = (id) => document.querySelector(`[data-hindex-of="${id}"]`);
@@ -715,7 +732,7 @@ const builderData = {
       style: $('style').value, spacing: currentSpacing(),
       heading: currentHeadings(), place: currentPlace(),
       prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-      group: currentGroup(), card: currentCard(), location: currentLocation(),
+      group: currentGroup(), card: currentCard(), location: currentLocation(), locationBelow: currentLocationBelow(),
       page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
@@ -776,6 +793,7 @@ const builderData = {
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocation(sel.location);
+      setLocationBelow(sel.locationBelow);
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
       $('fill').checked = sel.fill;
