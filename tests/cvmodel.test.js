@@ -240,6 +240,21 @@ describe('detail levels', () => {
     expect(find(complete, 'gaia-hackathon').lines.map(text)).toEqual(['Role: LOC']);
   });
 
+  it("leaves an award's recipient line out where the builder unticks it, and only there", () => {
+    const only = new Set(['asa-astrostatistics-interest-group-student-paper-finalist', 'astropy-berkeley-prize']);
+    const on = cvModel('complete', only);
+    const off = cvModel('complete', only, undefined, { recipientOff: ['asa-astrostatistics-interest-group-student-paper-finalist'] });
+    expect(find(on, 'asa-astrostatistics-interest-group-student-paper-finalist').recipient).toBe('Nathaniel Starkman');
+    expect(find(off, 'asa-astrostatistics-interest-group-student-paper-finalist').recipient).toBeNull();
+    // Another award keeps its recipient, and the rest of the row is the same.
+    expect(find(off, 'astropy-berkeley-prize').recipient).toBe('the Astropy Collaboration');
+    const { recipient: _a, ...rest } = find(off, 'asa-astrostatistics-interest-group-student-paper-finalist');
+    const { recipient: _b, ...restOn } = find(on, 'asa-astrostatistics-interest-group-student-paper-finalist');
+    expect(rest).toEqual(restOn);
+    // None listed is as before.
+    expect(cvModel('complete', only, undefined, { recipientOff: [] })).toEqual(on);
+  });
+
   it('lets the builder pick individual lines', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
       // Roles merged into one row carry one line each, so keep them apart here.

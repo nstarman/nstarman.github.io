@@ -142,7 +142,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -200,6 +200,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     currency: CURRENCY_STYLES.includes(currency) ? currency : null,
     // Entries whose institution (`funder`) does not print. Absent, every one does.
     funderOff: cleanIds(funderOff),
+    // Entries whose recipient line does not print. Absent, every one does.
+    recipientOff: cleanIds(recipientOff),
     // Whether an entry's text runs out to its own right-hand text. Absent, off.
     fill: fill === true,
     // Whether a mentee's papers are cited by identifier. Absent, in words.
@@ -288,6 +290,7 @@ export function decode(text) {
     namesFor: cleanNamesFor(raw.namesFor),
     currency: CURRENCY_STYLES.includes(raw.currency) ? raw.currency : null,
     funderOff: cleanIds(raw.funderOff),
+    recipientOff: cleanIds(raw.recipientOff),
     fill: raw.fill === true,
     paperIds: raw.paperIds === true,
     schoolBelow: raw.schoolBelow === true,

@@ -26,6 +26,7 @@ export function modelFromSelection(sel) {
     namesFor: sel.namesFor,
     currency: sel.currency ?? undefined,
     funderOff: sel.funderOff,
+    recipientOff: sel.recipientOff,
     paperIds: sel.paperIds,
     schoolBelow: sel.schoolBelow,
     linkOnDegree: sel.linkOnDegree,

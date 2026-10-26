@@ -67,4 +67,16 @@ describe('where a builder option lives', () => {
     expect(page).toMatch(/\$\('loccountry'\)\.addEventListener\('change', \(\) => \{ showLocationDetail\(\)/);
     expect(page).toMatch(/\$\('loccountry'\)\.value = sel\.locationDetail\.country === 'code'/);
   });
+
+  it("ticks an award's recipient in the preview and saves the unticked ones", () => {
+    const page = fs.readFileSync(new URL('../src/pages/webdev/cv.astro', import.meta.url), 'utf8');
+    const item = fs.readFileSync(new URL('../src/components/CvTimelineItem.astro', import.meta.url), 'utf8');
+    const css = fs.readFileSync(new URL('../src/styles/cv/builder.css', import.meta.url), 'utf8');
+    expect(item).toContain('data-recipient-of={item.id}');
+    expect(css).toContain('.recipientbox:not(:checked) + .recipient__text');
+    // Read into the saved selection, restored on load, ticked again by a preset's start.
+    expect(page).toContain('recipientOff: currentRecipientOff()');
+    expect(page).toContain('setRecipientOff(sel.recipientOff)');
+    expect(page).toContain('setRecipientOff([])');
+  });
 });

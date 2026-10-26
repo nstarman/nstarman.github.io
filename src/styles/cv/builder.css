@@ -241,6 +241,9 @@
 .funderopt{cursor:pointer}
 .funderopt input{accent-color:var(--accent); margin:0 .25rem 0 .1rem; vertical-align:middle}
 .funderbox:not(:checked) + .funderopt__name{color:var(--ink-faint); text-decoration:line-through}
+/* An award's recipient line, with a tick-box to print it or not; off, it greys out and is struck through. */
+.recipientbox{accent-color:var(--accent); margin:0 .3rem 0 0; vertical-align:middle}
+.recipientbox:not(:checked) + .recipient__text{color:var(--ink-faint); text-decoration:line-through}
 /* A paper cited by identifier on the builder's page: its mark, text-sized, then the identifier. */
 .pid .ico{width:.9em; height:.9em; fill:currentColor; vertical-align:-.1em}
 /* With "university on its own line", an education entry's institution is a block below the degree. */

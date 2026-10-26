@@ -264,6 +264,14 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).trailcapWidth).toBeNull();
   });
 
+  it('carries the entries whose recipient line is left out, and reads none as all printing', () => {
+    const back = (recipientOff) => decode(JSON.stringify(encode({ items: [], recipientOff }))).recipientOff;
+    expect(back(['a-award', 'b-award', 'a-award'])).toEqual(['a-award', 'b-award']);
+    expect(back(undefined)).toEqual([]);
+    expect(back([1, null, 'ok', 'x'.repeat(65)])).toEqual(['ok']);
+    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).recipientOff).toEqual([]);
+  });
+
   it('carries whether the right column is capped through a round trip, and reads none as not', () => {
     expect(decode(JSON.stringify(encode({ items: [], trailcap: true }))).trailcap).toBe(true);
     expect(decode(JSON.stringify(encode({ items: [] }))).trailcap).toBe(false);

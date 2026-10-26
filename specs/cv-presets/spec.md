@@ -154,7 +154,12 @@ cards (`specs/cards/spec.md`).
   `2page` and `1page` do for the two NSERC graduate scholarships so their lengths
   hold; Start from sets the tick-boxes to the preset's list, and a saved
   selection's own `funderOff` replaces it. That bar keeps Compile PDF, the settings button
-  and Save Selection on one line. A person can: start from any preset
+  and Save Selection on one line. An entry that names a `recipient` has a tick-box
+  beside its "To …" text in the preview, ticked by default; unticked, the PDF prints no recipient
+  line for that entry (saved as `recipientOff`, a list of ids; Start from ticks every box, and no
+  preset lists any), and the preview strikes the text through. The record, the website and the other
+  entries are unchanged. *Enforced:* `tests/cvmodel.test.js` ("leaves an award's recipient line
+  out"), `tests/selection.test.js`, `tests/builder-placement.test.js`. A person can: start from any preset
   (ticks its `memberIds`, its detail level, columns, place, spacing, inline
   recipients; `detailsComplete` lines start unticked unless the preset is
   `includeAll`) or from none; tick entries and individual lines; toggle "Select"
@@ -179,7 +184,8 @@ cards (`specs/cards/spec.md`).
   right-hand column is capped (`trailcap`, `true` only) and how wide (`trailcapWidth`, inches, absent for 1.45), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
-  is switched off (`funderOff`, entry ids; absent is none), whether Education puts the
+  is switched off (`funderOff`, entry ids; absent is none), the awards whose recipient line is left
+  out (`recipientOff`, entry ids; absent is none), whether Education puts the
   university on its own line (`schoolBelow`, `true` only), whether its link icon is on the degree line (`linkOnDegree`, `true` only), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
