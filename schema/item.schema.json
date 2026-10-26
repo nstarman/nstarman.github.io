@@ -484,6 +484,11 @@
           },
           "location": {
             "type": "string"
+          },
+          "talk": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The title of the talk or poster, without quotation marks: renderers add them. Notes that are not the title (a role, a lecturer's post) stay in `details`."
           }
         }
       }

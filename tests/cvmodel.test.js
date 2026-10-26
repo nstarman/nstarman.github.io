@@ -193,6 +193,16 @@ describe('detail levels', () => {
     });
   });
 
+  it("prints a talk's title first, in quotation marks, and a note as it was", () => {
+    expect(text(find(complete, 'eas-26-s10-lausanne').lines[0]))
+      .toBe('“The Geometry of Dark Matter Halos from Extragalactic Streams”');
+    // A title with a note: the title, then the note.
+    expect(find(complete, '30th-texas-symposium-on-relativistic-astrophysics-talk').lines.map(text))
+      .toEqual(['“Resolving the Recombination Visibility Function Width Tension”', 'Awarded best graduate student presentation']);
+    // A note that is not a title is not quoted.
+    expect(find(complete, 'gaia-hackathon').lines.map(text)).toEqual(['Role: LOC']);
+  });
+
   it('lets the builder pick individual lines', () => {
     const onlyFirst = cvModel('complete', undefined, (_id, line) => line === 0,
       // Roles merged into one row carry one line each, so keep them apart here.

@@ -12,6 +12,8 @@
   "title": "Marche III: Big Bang, Big Stars, Big Computers (Jesi)",
   "kind": "invited",
   "location": "Jesi, Italy",
-  "refs": ["public-talk-jesi"],
-  "details": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos"
+  "refs": [
+    "public-talk-jesi"
+  ],
+  "talk": "Energy Structures of Extragalactic Stellar Streams Reveal Dark Matter Halos"
 }

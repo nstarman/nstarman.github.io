@@ -77,7 +77,8 @@ cards (`specs/cards/spec.md`).
 - **FR-014** `memberIds(name)` is what the preset actually renders — after
   limits — including `list:<id>` keys. *Enforced:* `tests/presets.test.js`
   ("reports what a preset renders, not what merely opted in").
-- **FR-015** Detail tiers. An entry's lines are, in this order: its `details`
+- **FR-015** Detail tiers. An entry's lines are, in this order: a presentation's `talk`
+  title, in “quotation marks” (inner double quotes become single), then its `details`
   lines, `Thesis: …`, `Supervisors: …`, then `detailsComplete` lines only when the
   preset is `includeAll`, then a mentee's achievements. Without the builder, the
   detail lines print only where the section's `detail` is `full`; `summary`
@@ -89,10 +90,13 @@ cards (`specs/cards/spec.md`).
   with a middle dot between them (a convention in the data, as in the PhD entry).
   *Enforced:* `tests/cvmodel.test.js` ("detail levels", "prints `detailsComplete`
   in the complete CV and nowhere else", "mentee achievements"),
-  `tests/inline.test.js` ("a line does not end in a period").
+  `tests/inline.test.js` ("a line does not end in a period", "a talk's title"), `tests/cvmodel.test.js`
+  ("prints a talk's title first").
 - **FR-016** The builder ticks lines by index into that one list, so
   `detailsComplete` and achievements are appended, never inserted, and an index
-  means the same line whether or not they are shown. `lineTier` names an index
+  means the same line whether or not they are shown. A talk's title is first because it
+  is what a presentation's first line was before it had a field: a selection that ticked
+  line 0 shows the title. `lineTier` names an index
   `base`, `complete` or `achievement`. *Enforced:* `tests/cvmodel.test.js`
   ("appends a complete-only line last…", "keeps an achievement the builder ticks
   by its own index", "tells achievements from complete-only lines…").
@@ -282,4 +286,6 @@ cards (`specs/cards/spec.md`).
 | `1page` | summary | — | education, positions, grants-major (4), awards-major (4), publications (5, no groupBy), software (6, 3 cols) |
 
 `2page` and `1page` also set `place: { "publications.legend": "title" }`,
-`recipientInline: true` and `spacing: { "publications.heading": 1.4x }`.
+`recipientInline: true` and `spacing: { "publications.heading": 1.4x }`; `2page` also sets
+`"talks-invited": 0.75x`, the space between its invited talks, which the quoted titles' extra
+width (a title that wraps) would otherwise push to a third page.

@@ -106,9 +106,10 @@ snapshots (`specs/refresh/spec.md`).
   `unsettled` (a location `locate` cannot place), `unplaced` (no location), or `accepted`
   (`kind: "accepted"`, left off the map). A pin is a place, sized by area (`radius(n) =
   2.8·√n`); places alphabetical, talks newest first. `unsettled` and `unplaced` are listed under
-  the map as "not placed yet" — never dropped. *Enforced:* `tests/confmap.test.js` ("accounts
+  the map as "not placed yet" — never dropped. Each talk's line names its `talk` title in
+  “quotation marks”, then any `details` note, joined by " — ". *Enforced:* `tests/confmap.test.js` ("accounts
   for every presentation exactly once", "leaves off a talk that was accepted but never given",
-  "refuses a location a geocoder would misread, rather than guessing").
+  "refuses a location a geocoder would misread, rather than guessing", "a talk's title on the map").
 - **FR-013** The collaborator map (`collaboratorMap()` in `collabmap.js`) has one entry per
   person in `config/collaborators.json` with at least one dated, placeable post, plus every
   mentee (with `pins: []` if nothing places); a mentee's `journey` fills posts ORCID lacks. A
