@@ -318,5 +318,5 @@ cards (`specs/cards/spec.md`).
 
 `2page` and `1page` also set `place: { "publications.legend": "title" }`,
 `recipientInline: true` and `spacing: { "publications.heading": 1.4x }`; `2page` also sets
-`"talks-invited": 0.75x`, the space between its invited talks, which the quoted titles' extra
-width (a title that wraps) would otherwise push to a third page.
+`"talks-invited": 0.6x`, the space between its invited talks, which holds it to two pages against
+the quoted titles' extra width (a title that wraps) and the peer-review list's journals.
