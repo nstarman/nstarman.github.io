@@ -12,6 +12,7 @@
 // plain numbers and the maths is testable without a DOM.
 
 import { locate } from '@nstarkman/data-resolver/places.js';
+import { quoted } from '@nstarkman/data-resolver/inline.js';
 import { map, toXY, spread, hueFor } from '@nstarkman/collaborator-map/worldmap.js';
 import { byType, dateLabel, links } from './data.js';
 
@@ -58,9 +59,11 @@ function talkOf(item) {
     title: item.title,
     kind: item.kind,
     kindLabel: KIND[item.kind] ?? item.kind,
-    // What the talk was about, where the record says. Never the location — that
-    // is the pin's job, and printing it twice is how the old records read.
-    details: typeof item.details === 'string' ? item.details : null,
+    // What the talk was about, where the record says: its title in quotation marks,
+    // then any note. Never the location — that is the pin's job, and printing it
+    // twice is how the old records read.
+    details: [item.talk && quoted(item.talk).map((s) => s.t).join(''),
+              typeof item.details === 'string' ? item.details : null].filter(Boolean).join(' — ') || null,
     url: event?.url ?? null,
   };
 }

@@ -4,7 +4,7 @@
 // that cannot both be eyeballed — a mistake here prints raw markup in the PDF.
 
 import { describe, expect, it } from 'vitest';
-import { spans, plain, lines, detailLines, noFinalPeriod, KEEPS_PERIOD, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
+import { spans, plain, lines, detailLines, quoted, noFinalPeriod, KEEPS_PERIOD, plural, ordinal, achievementCvs, achievementTicked } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 describe('spans', () => {
@@ -166,5 +166,36 @@ describe('a line does not end in a period', () => {
   it('puts a middle dot between the PhD fellowships', () => {
     const phd = detailLines(itemById('toronto-phd')).map(text)[0];
     expect(phd).toBe('NSERC CGS-D Fellow 2020–2023 · NSERC CGS-M Fellow 2019–2020');
+  });
+});
+
+describe("a talk's title", () => {
+  const text = (line) => line.map((x) => x.t).join('');
+
+  it('is the first line, in quotation marks, ahead of the notes', () => {
+    const out = detailLines({ talk: 'The Geometry of Halos', details: ['Role: SOC', 'Another note'] });
+    expect(out.map(text)).toEqual(['“The Geometry of Halos”', 'Role: SOC', 'Another note']);
+  });
+
+  it('changes nothing for an entry without one', () => {
+    expect(detailLines({ details: 'only this' }).map(text)).toEqual(['only this']);
+    expect(detailLines({})).toEqual([]);
+  });
+
+  it('drops a final period before the closing mark, and keeps a question mark', () => {
+    expect(text(quoted('A title.'))).toBe('“A title”');
+    expect(text(quoted('Is it dark?'))).toBe('“Is it dark?”');
+    expect(text(quoted('Resolving the tension, et al.'))).toBe('“Resolving the tension, et al.”');
+  });
+
+  it('turns a double quote inside the title into a single one', () => {
+    expect(text(quoted('The "dark" side'))).toBe('“The ‘dark’ side”');
+    expect(text(quoted('The “dark” side'))).toBe('“The ‘dark’ side”');
+  });
+
+  it('keeps a link in the title as a span', () => {
+    const line = quoted('Using [JAX](https://example.org) for streams');
+    expect(line.find((x) => x.url)).toMatchObject({ t: 'JAX', url: 'https://example.org' });
+    expect(text(line)).toBe('“Using JAX for streams”');
   });
 });

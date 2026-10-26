@@ -116,3 +116,20 @@ describe('the conference map', () => {
     }
   });
 });
+
+describe("a talk's title on the map", () => {
+  const talks = [...cmap.pins.flatMap((p) => p.talks), ...cmap.unsettled, ...cmap.unplaced, ...cmap.accepted];
+  const byId = Object.fromEntries(talks.map((t) => [t.id, t]));
+
+  it('shows every talk that has a title, in quotation marks', () => {
+    for (const i of byType('presentation').filter((p) => p.talk)) {
+      expect(byId[i.id].details, i.id).toContain(`“${i.talk.replace(/\.$/, '')}”`);
+    }
+  });
+
+  it('shows a title, then its note, and a note alone as it was', () => {
+    expect(byId['30th-texas-symposium-on-relativistic-astrophysics-talk'].details)
+      .toBe('“Resolving the Recombination Visibility Function Width Tension” — Awarded best graduate student presentation');
+    expect(byId['gaia-hackathon'].details).toBe('Role: LOC');
+  });
+});

@@ -76,15 +76,28 @@ export function lines(long, base = '') {
  * The extra lines go last, after the thesis and supervisors, so a line index
  * means the same thing whether or not they are included — the builder ticks
  * lines by index, and inserting in the middle would silently move its ticks.
+ * A talk's title (`talk`) is the exception that proves it: it comes first, in
+ * quotation marks, because it is what a presentation's first line always was.
  */
 export function detailLines(item, { complete = false, currency, forms = false } = {}) {
   const prose = (long) => amountLines(long, item, { currency, forms }).map(noFinalPeriod);
   return [
+    ...(item.talk ? [quoted(item.talk)] : []),
     ...prose(item.details),
     ...(item.thesis ? [noFinalPeriod(spans(`Thesis: ${item.thesis}`))] : []),
     ...(item.supervisors?.length ? [noFinalPeriod(spans(`Supervisors: ${item.supervisors.join(', ')}`))] : []),
     ...(complete ? prose(item.detailsComplete) : []),
   ];
+}
+
+/**
+ * A title as a line in quotation marks: “…”. The marks belong to the rendering, not the record,
+ * and a double quote inside the title becomes a single one. The closing mark follows the title
+ * without its final period, as any line under a heading has none.
+ */
+export function quoted(title) {
+  const inner = title.replace(/["“]([^"”]*)["”]/g, '‘$1’');
+  return [{ t: '“' }, ...noFinalPeriod(spans(inner)), { t: '”' }];
 }
 
 /**
