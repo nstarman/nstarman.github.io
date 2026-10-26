@@ -143,7 +143,7 @@ const builderData = {
   <script type="application/json" id="builderdata" set:html={JSON.stringify(builderData)}></script>
 
   <script>
-    import { cvModel } from '../../lib/cvmodel.js';
+    import { modelFromSelection } from '../../lib/selectionmodel.js';
     import { encode, decode, loadReport } from '../../lib/selection.js';
     import { plural, achievementTicked } from '@nstarkman/data-resolver/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
@@ -708,14 +708,23 @@ const builderData = {
     const inlineBoxes = () => [...document.querySelectorAll('.inlinebox')];
     const currentInline = () => inlineBoxes().filter((b) => b.checked).map((b) => b.dataset.id);
 
+    /** The controls as a selection document — what Save writes and Compile draws. */
+    const currentSelection = () => encode({
+      items: boxes().filter((b) => b.checked).map((b) => b.value),
+      lines: currentLines(), inline: currentInline(),
+      style: $('style').value, spacing: currentSpacing(),
+      heading: currentHeadings(), place: currentPlace(),
+      prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
+      group: currentGroup(), card: currentCard(), location: currentLocation(),
+      page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked,
+      namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
+      paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
+      linkOnDegree: $('linkondegree').checked, tally: currentTally(), site: SITE,
+    });
+
     const saveSelection = () => {
-      const chosen = boxes().filter((b) => b.checked).map((b) => b.value);
-      const doc = encode({ items: chosen, lines: currentLines(), inline: currentInline(),
-                          style: $('style').value, spacing: currentSpacing(),
-                          heading: currentHeadings(), place: currentPlace(),
-                          prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-                          group: currentGroup(), card: currentCard(), location: currentLocation(),
-                          page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked, namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked, linkOnDegree: $('linkondegree').checked, tally: currentTally(), site: SITE });
+      const doc = currentSelection();
+      const chosen = doc.items;
       // Indented: it is small, and a selection you can read and hand-edit in a
       // text editor is worth more than the bytes saved.
       const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -896,32 +905,13 @@ const builderData = {
     $('card').addEventListener('change', () => retire('Card changed — compile again.'));
 
     $('build').addEventListener('click', async () => {
-      const chosen = new Set(boxes().filter((b) => b.checked).map((b) => b.value));
-      if (!chosen.size) return status('Nothing selected.');
+      const doc = currentSelection();
+      if (!doc.items.length) return status('Nothing selected.');
       $('build').disabled = true;
       try {
-        // Same resolver as the site and the CI PDFs — "complete" is the widest
-        // section set, then the tick-boxes narrow it.
-        const lines = currentLines();
-        const model = cvModel('complete', chosen, (id, i) => lines[id]?.includes(i) ?? false,
-                              { prefix: currentPrefix(), order: currentOrder(), group: currentGroup(),
-                                location: currentLocation(), tally: currentTally(), namesFor: currentNamesFor(), currency: $('currency').value || undefined, funderOff: currentFunderOff(), paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked, linkOnDegree: $('linkondegree').checked });
-        // The template reads this; absent, it compiles the default. The CLI
-        // never writes it, so the pre-built PDFs cannot drift from this menu.
-        const inline = new Set(currentInline());
-        for (const s of model.sections) {
-          for (const it of s.items) if (it.recipient) it.recipientInline = inline.has(it.id);
-        }
-        model.style = $('style').value;
-        model.format = $('format').value || null;
-        model.trailcap = $('trailcap').checked;
-        model.fill = $('fill').checked;
-        model.card = currentCard();
-        model.spacing = currentSpacing();
-        model.heading = currentHeadings();
-        model.place = currentPlace();
-        const cols = currentColumns();
-        for (const s of model.sections) s.columns = cols[s.id] ?? s.columns;
+        // Decoded as a loaded file is, then the model the CLI draws from the
+        // same file: scripts/build-cv.mjs calls the same function.
+        const model = modelFromSelection(decode(JSON.stringify(doc)));
         const pdf = await compilePdf(model, [...FONTS, ...(STYLE_FONTS[model.style] ?? [])], status);
 
         const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
@@ -937,7 +927,7 @@ const builderData = {
           ? 'starkman-cv-custom.pdf' : `starkman-cv-custom-${model.style}.pdf`;
 
         const kb = Math.round(pdf.length / 1024);
-        status(`Built ${chosen.size} entries · ${kb} KB.`);
+        status(`Built ${doc.items.length} entries · ${kb} KB.`);
       } catch (err) {
         console.error(err);
         status(`Compile failed: ${err?.message ?? err}`);

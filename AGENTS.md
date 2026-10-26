@@ -180,6 +180,11 @@ page and the two-page CV is two. An invalid item fails the check rather than
 silently vanishing from a render — the failure this whole setup exists to
 prevent.
 
+To compile a saved builder selection to a PDF without the site, run
+`npm run build:cv -- <selection.json> [out.pdf]` (needs the `typst` binary; `TYPST=` names
+one). It draws the selection as the builder's Compile does
+([`renderers`](specs/renderers/spec.md), FR-028).
+
 Every pull request also gets a live preview URL, posted as a comment.
 
 One check is required to merge: **CI Pass**, which is green only when every
