@@ -5,12 +5,13 @@ import { describe, expect, it } from 'vitest';
 import { byType } from '../src/lib/data.js';
 
 const talks = byType('presentation');
-const city = (location) => location.split(',')[0].trim();
 
 describe("a talk's title", () => {
-  it('does not end in the city of its own location', () => {
+  it('does not end in its own location, whole or just its city', () => {
     for (const i of talks.filter((t) => t.location)) {
-      expect(i.title.endsWith(`(${city(i.location)})`), `${i.id}: ${i.title}`).toBe(false);
+      const city = i.location.split(',')[0].trim();
+      expect(i.title.endsWith(`(${i.location})`), `${i.id}: ${i.title}`).toBe(false);
+      expect(i.title.endsWith(`(${city})`), `${i.id}: ${i.title}`).toBe(false);
     }
   });
 

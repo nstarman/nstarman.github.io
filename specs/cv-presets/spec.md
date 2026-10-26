@@ -219,8 +219,8 @@ cards (`specs/cards/spec.md`).
   position, chosen with the builder's **Place** setting in that section's Items row (the saved
   `locationAt`): **Right column** (the default), **Below the title**, **In the title** or **None**.
   Below puts it, in italics, on a line of its own directly below its title line, before its other
-  lines; In the title adds the city (the text before the first comma) in parentheses, or after a
-  comma inside a label the title already ends in, "(Talk, Cambridge)"; the other positions then
+  lines; In the title adds the whole place, as written, in parentheses ("EAS 26-S10 (Lausanne,
+  Switzerland)"), or after a comma inside a label the title already ends in, "(Talk, Cambridge, MA, USA)"; the other positions then
   print nothing, so a section whose only right-hand text was places has no column. An amount,
   "declined" and "not attended" stay in the column; an entry with no place prints none of these. A
   title is the event's name and does not carry its place as text. The builder's preview shows each

@@ -163,11 +163,9 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
  * row — the roles joined in the title, the dates spanning them, every role's
  * lines beneath.
  */
-/** A place as a title carries it: the city, the text before the first comma. */
-const cityOf = (location) => location.split(',')[0].trim();
-/** A title with its place: "EAS 26-S10 (Lausanne)", and inside a label it already ends in:
- *  "Astropy Conference (Talk, Cambridge)". */
-const withPlace = (title, city) => (/\([^()]*\)\s*$/.test(title) ? title.replace(/\)\s*$/, `, ${city})`) : `${title} (${city})`);
+/** A title with its place: "EAS 26-S10 (Lausanne, Switzerland)", and inside a label it already ends in:
+ *  "Astropy Conference (Talk, Cambridge, MA, USA)". */
+const withPlace = (title, place) => (/\([^()]*\)\s*$/.test(title) ? title.replace(/\)\s*$/, `, ${place})`) : `${title} (${place})`);
 
 function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds, schoolBelow, linkOnDegree, placeAt) {
   const levelOf = (item) => namesFor[item.id] ?? 0;
@@ -181,7 +179,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
       ...r,
       ...(moved && { trailing: '' }),
       ...(moved && placeAt === 'below' && { placeBelow: item.location }),
-      ...(moved && placeAt === 'title' && { title: withPlace(r.title, cityOf(item.location)) }),
+      ...(moved && placeAt === 'title' && { title: withPlace(r.title, item.location) }),
       ...(schoolBelow && item.type === 'education' && { below: true, ...(linkOnDegree && { linkOnDegree: true }) }),
     };
   };

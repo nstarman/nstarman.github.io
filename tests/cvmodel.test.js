@@ -163,7 +163,7 @@ describe('detail levels', () => {
     const at = (v) => talk(cvModel('complete', only, undefined, v && { locationAt: { 'talks-invited': v } }));
     // Everywhere a row could carry the place: the column, a line below, the title.
     const where = (r) => [r.trailing.includes('Jesi') && 'right', r.placeBelow?.includes('Jesi') && 'below',
-      /\(Jesi\)$/.test(r.title) && 'title'].filter(Boolean);
+      /\(Jesi, Italy\)$/.test(r.title) && 'title'].filter(Boolean);
 
     it('is in the right-hand column unless the section says otherwise', () => {
       expect(where(at())).toEqual(['right']);
@@ -176,19 +176,19 @@ describe('detail levels', () => {
       expect(where(at('title'))).toEqual(['title']);
       expect(where(at('none'))).toEqual([]);
       expect(at('below').placeBelow).toBe('Jesi, Italy');
-      expect(at('title').title).toBe('Marche III: Big Bang, Big Stars, Big Computers (Jesi)');
+      expect(at('title').title).toBe('Marche III: Big Bang, Big Stars, Big Computers (Jesi, Italy)');
     });
 
-    it('is the city in a title: the text before the first comma, or the whole of "Online"', () => {
+    it('is the whole place in a title, as written', () => {
       const cita = (v) => find(cvModel('complete', new Set(['cita-seminar', 'oxford-physics-colloquium']), undefined, { locationAt: { 'talks-invited': v } }), 'cita-seminar');
-      expect(cita('title').title).toBe('CITA Seminar (Toronto)');
+      expect(cita('title').title).toBe('CITA Seminar (Toronto, ON, Canada)');
       const online = find(cvModel('complete', new Set(['oxford-physics-colloquium']), undefined, { locationAt: { 'talks-invited': 'title' } }), 'oxford-physics-colloquium');
       expect(online.title).toBe('Oxford Physics Colloquium (Online)');
     });
 
-    it('joins a label the title already ends in: (Talk, City), not (Talk) (City)', () => {
+    it('joins a label the title already ends in: (Talk, Place), not (Talk) (Place)', () => {
       const tevpa = find(cvModel('complete', new Set(['tevpa-talk']), undefined, { locationAt: { 'talks-contributed': 'title' } }), 'tevpa-talk');
-      expect(tevpa.title).toBe('TeVPA (Talk, Valencia)');
+      expect(tevpa.title).toBe('TeVPA (Talk, Valencia, Spain)');
     });
 
     it('changes only the named section and nothing else of the row', () => {

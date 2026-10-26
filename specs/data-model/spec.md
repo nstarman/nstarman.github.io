@@ -104,7 +104,7 @@ fetched fields (`specs/refresh/spec.md`).
   (the right column, below the title or in the title), never in two positions. *Enforced:* the
   schema (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`),
   `tests/talktitle.test.js` (no title lost or doubled, a role never a title),
-  `tests/talkplace.test.js` (no title ends in its own location's city); review for `accepted`
+  `tests/talkplace.test.js` (no title ends in its own location or its city); review for `accepted`
   without `location`.
 
 ### Publications

@@ -39,7 +39,7 @@ const gutterLinks = links(item).filter(inGutter);
 const bodyLinks = links(item).filter((l) => !inGutter(l));
 const byline = item.type === 'publication' ? authors(item, 4) : null;
 // In the builder a talk's place is drawn where its section puts it: in the right-hand column, below
-// the title or in the title (the city, before the first comma). The section's `data-place-at` shows one.
+// the title or in the title (the whole place, in parentheses). The section's `data-place-at` shows one.
 const talkPlace = pick && item.type === 'presentation' && item.location ? item.location : null;
 ---
 <div class={`tl${item.type === 'publication' ? ' tl--pub' : ''}${pick ? ' tl--pick' : ''}${member ? ' tl--member' : ''}${item.status && item.status !== 'published' ? ' tl--unpub' : ''}`}
@@ -74,8 +74,8 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     <strong>{talkPlace
       ? (item.title.endsWith(')')
         /* Inside a label the title already ends in, "(Talk, Cambridge)". */
-        ? <>{item.title.slice(0, -1)}<span class="plc plc--title">, {talkPlace.split(',')[0].trim()}</span>)</>
-        : <>{item.title}<span class="plc plc--title"> ({talkPlace.split(',')[0].trim()})</span></>)
+        ? <>{item.title.slice(0, -1)}<span class="plc plc--title">, {talkPlace}</span>)</>
+        : <>{item.title}<span class="plc plc--title"> ({talkPlace})</span></>)
       : item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
