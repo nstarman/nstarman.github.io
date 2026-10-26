@@ -211,7 +211,7 @@ cards (`specs/cards/spec.md`).
   grant prints its amount then "(declined)"; any other declined entry
   prints "declined". For a section of talks the builder's **Place below the title** (the saved
   `locationBelow`, in that section's Items row, offered while Places is ticked) prints each entry's
-  place on a line of its own directly below its title line, before its other lines, and no longer
+  place, in italics, on a line of its own directly below its title line, before its other lines, and no longer
   in the right-hand column — so a section whose only right-hand text was places has no column; an
   amount, "declined" and "not attended" stay in the column, and an entry with no place prints no
   line. No preset sets it; without it every output is as before.

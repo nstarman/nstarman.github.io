@@ -353,7 +353,7 @@
   // A talk's place on a line of its own below the title (`placeBelow`), before the details.
   if it.at("placeBelow", default: none) != none {
     linebreak()
-    text(size: look.sub)[#it.placeBelow]
+    text(size: look.sub)[#emph[#it.placeBelow]]
   }
   if it.recipient != none {
     if it.recipientInline { [, ] } else { linebreak() }
