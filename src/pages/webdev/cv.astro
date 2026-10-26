@@ -145,6 +145,7 @@ const builderData = {
   <script>
     import { modelFromSelection } from '../../lib/selectionmodel.js';
     import { encode, decode, loadReport } from '../../lib/selection.js';
+    import { formatPlace } from '../../lib/placefmt.js';
     import { plural, achievementTicked } from '@nstarkman/data-resolver/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
     import { readSpacing, writeSpacing } from '../../lib/cvspacing.js';
@@ -542,6 +543,18 @@ const builderData = {
     const showPlaceAt = () => {
       for (const g of placeAtGroups()) document.getElementById(g.dataset.placeAtOf)?.closest('.cvsec')?.setAttribute('data-place-at', placeAtOf(g));
     };
+    /** How every place prints: the region left out (`false`), the country as its code. */
+    const currentLocationDetail = () => ({
+      ...(!$('locregion').checked && { region: false }),
+      ...($('loccountry').value === 'code' && { country: 'code' }),
+    });
+    // The preview writes each place as the two options will, in the title too.
+    const showLocationDetail = () => {
+      const form = currentLocationDetail();
+      for (const p of document.querySelectorAll('.plc[data-loc]')) p.textContent = `${p.dataset.pre ?? ''}${formatPlace(p.dataset.loc, form)}${p.dataset.post ?? ''}`;
+    };
+    $('locregion').addEventListener('change', () => { showLocationDetail(); retire('Places changed — compile again.'); });
+    $('loccountry').addEventListener('change', () => { showLocationDetail(); retire('Places changed — compile again.'); });
     const setLocationAt = (at = {}) => {
       for (const b of locationBoxes()) b.checked = at[b.dataset.locationOf] !== 'none';
       for (const g of placeAtGroups()) {
@@ -732,7 +745,7 @@ const builderData = {
       style: $('style').value, spacing: currentSpacing(),
       heading: currentHeadings(), place: currentPlace(),
       prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
-      group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(),
+      group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(), locationDetail: currentLocationDetail(),
       page: $('format').value || null, trailcap: $('trailcap').checked, fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
@@ -793,6 +806,9 @@ const builderData = {
       setCard(sel.card ?? {});
       // Places, where the file leaves them out; every other section prints them.
       setLocationAt(sel.locationAt);
+      $('locregion').checked = sel.locationDetail.region !== false;
+      $('loccountry').value = sel.locationDetail.country === 'code' ? 'code' : '';
+      showLocationDetail();
       setTally(sel.tally);
       $('trailcap').checked = sel.trailcap;
       $('fill').checked = sel.fill;

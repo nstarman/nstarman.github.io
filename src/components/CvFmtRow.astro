@@ -201,6 +201,17 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
           <option value="dollar">$, CA$</option>
         </select>
       </span>
+      {/* How every place prints: with or without its province or state, its country in full or as its code. */}
+      <span class="fmtsub">Places</span>
+      <span class="fmtline">
+        <label class="fmtopt fmtcheck" title="Print the province or state: Toronto, ON, Canada; unticked, Toronto, Canada">
+          <input type="checkbox" id="locregion" checked />State or province</label>
+        <label class="fmtlab" for="loccountry">Country</label>
+        <select class="btn btn--sel" id="loccountry">
+          <option value="">Full name</option>
+          <option value="code">Abbreviation (CA, US)</option>
+        </select>
+      </span>
       <span class="fmtsub">Selecting</span>
       <span class="fmtline">
         <label class="fmtopt fmtcheck">

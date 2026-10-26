@@ -222,6 +222,18 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], linkOnDegree: 'yes' }))).linkOnDegree).toBe(false);
   });
 
+  it('carries how a place prints, and reads none as written', () => {
+    const back = (locationDetail) => decode(JSON.stringify(encode({ items: [], locationDetail }))).locationDetail;
+    expect(back({ region: false, country: 'code' })).toEqual({ region: false, country: 'code' });
+    expect(back({ region: false })).toEqual({ region: false });
+    expect(back({ country: 'code' })).toEqual({ country: 'code' });
+    expect(back(undefined)).toEqual({});
+    // Only the two non-default values count.
+    expect(back({ region: true, country: 'full', extra: 1 })).toEqual({});
+    expect(back('no')).toEqual({});
+    expect(decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [] })).locationDetail).toEqual({});
+  });
+
   it('reads no place setting as the right-hand column, and holds an id to its limit', () => {
     const file = (extra) => decode(JSON.stringify({ format: 'starkman-cv-selection', version: 1, items: [], ...extra })).locationAt;
     expect(file({})).toEqual({});

@@ -70,12 +70,12 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     )}
   </span>
   <span class="what">
-    {talkPlace && <span class="plc plc--right">{talkPlace}</span>}
+    {talkPlace && <span class="plc plc--right" data-loc={talkPlace}>{talkPlace}</span>}
     <strong>{talkPlace
       ? (item.title.endsWith(')')
         /* Inside a label the title already ends in, "(Talk, Cambridge)". */
-        ? <>{item.title.slice(0, -1)}<span class="plc plc--title">, {talkPlace}</span>)</>
-        : <>{item.title}<span class="plc plc--title"> ({talkPlace})</span></>)
+        ? <>{item.title.slice(0, -1)}<span class="plc plc--title" data-loc={talkPlace} data-pre=", ">, {talkPlace}</span>)</>
+        : <>{item.title}<span class="plc plc--title" data-loc={talkPlace} data-pre=" (" data-post=")"> ({talkPlace})</span></>)
       : item.title}</strong>
     {item.institution && (member
       ? <span class="inst">, {item.institution}</span>
@@ -130,7 +130,7 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
     {item.status && item.status !== 'published' && (
       <span class="statustag">{item.status}</span>
     )}
-    {talkPlace && <span class="plc plc--below">{talkPlace}</span>}
+    {talkPlace && <span class="plc plc--below" data-loc={talkPlace}>{talkPlace}</span>}
     {lines.map((line, i) => {
       const tier = lineTier(i, baseCount, detailCount);
       const cvs = tier === 'achievement' ? achievementCvs[i - detailCount] ?? [] : null;
