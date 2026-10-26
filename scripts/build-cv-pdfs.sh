@@ -69,6 +69,11 @@ if command -v pdffonts >/dev/null; then
   echo "  fonts                        all from public/fonts/"
 fi
 
+# The right-hand column's cap fits the widest place written shortest and still stops the widest in full.
+if command -v node >/dev/null; then
+  TYPST="$TYPST" node scripts/test-column-cap.mjs || exit 1
+fi
+
 # The one-page and two-page CVs are contracts, not aspirations: their whole
 # reason to exist is the length. Content or spacing has pushed them over more
 # than once, and nothing else notices.

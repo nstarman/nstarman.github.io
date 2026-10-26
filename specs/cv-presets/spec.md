@@ -258,10 +258,15 @@ cards (`specs/cards/spec.md`).
   footer with no running header; the header card's email and website default to
   a line each (a card `order` that is set is kept); the contact block takes its
   own height; and the right-hand column is capped, as the builder's "Cap right
-  column" option does, whether or not it is ticked. In the builder, card links
+  column" option does, whether or not it is ticked. The cap is 1.45 in (`TRAILCAP`), one value
+  for both: wide enough for the widest place in the records written shortest ("College Station,
+  US", 1.43 in at 12pt: no province or state, the country as its code), so a CV that shortens its
+  places keeps each on one line, and narrower than the widest in full ("College Station, TX, USA",
+  1.90 in), which still wraps. In the builder, card links
   still in the other page's usual order take the chosen page's. *Enforced:*
   `tests/presets.test.js` (`cardOrder`), `npm run build:pdf` (the one- and
-  two-page counts); the rest by review.
+  two-page counts, and `scripts/test-column-cap.mjs`, which measures every place and holds
+  both bounds of the cap); the rest by review.
 
 ## Key Entities
 

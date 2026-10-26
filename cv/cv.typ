@@ -385,8 +385,10 @@
 // stops at TRAILCAP, and any longer one — "College Station, TX, USA" — wraps
 // onto a second line. The letter format caps it whether or not it is asked to:
 // at 12pt the widest is nearly two inches. Not in the flat styles, whose
-// entries do not use a column.
-#let TRAILCAP = 1.3in
+// entries do not use a column. The cap is wide enough for the widest place written
+// shortest ("College Station, US": no state, the country as its code) and narrower
+// than the widest in full; scripts/test-column-cap.mjs holds both.
+#let TRAILCAP = 1.45in
 #let trailcap = cv.at("trailcap", default: false) or letter
 // With `fill` — the builder's "Fill the middle column" — the right-hand column is sized
 // to the figures and places that fit in FITCAP, not to the longest: one long range or place
