@@ -110,9 +110,9 @@ passes; detail lines match `tests/fixtures/detail-lines-before.json`.
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T029 `npm test` (all seven gates), then `scripts/build-cv-pdfs.sh` and check the one-page CV is one page and the two-page is two.
-- [ ] T030 Compile the owner's saved Hubble selection with `npm run build:cv -- <selection.json> <scratch>.pdf` and check its ticked detail lines print the same text (FR-010); do not overwrite the owner's PDF.
-- [ ] T031 Fold into the area specs (Article X), rewritten as the current contract: `specs/data-model/spec.md` — FR-014 (fellowship is its own type), a new rule for `title` and `role` with its enforcement, the reference table (`fellowship` row; `role` on `award`; `position` without `tier`/`amount`/`funder`); `specs/cv-presets/spec.md` FR-005 (grants-major is grant × fellowship); `specs/renderers/spec.md` — the CV row heading per `contracts/cv-row.md`.
+- [X] T029 `npm test` (all seven gates), then `scripts/build-cv-pdfs.sh` and check the one-page CV is one page and the two-page is two.
+- [X] T030 Compile the owner's saved Hubble selection with `npm run build:cv -- <selection.json> <scratch>.pdf` and check its ticked detail lines print the same text (FR-010); do not overwrite the owner's PDF.
+- [X] T031 Fold into the area specs (Article X), rewritten as the current contract: `specs/data-model/spec.md` — FR-014 (fellowship is its own type), a new rule for `title` and `role` with its enforcement, the reference table (`fellowship` row; `role` on `award`; `position` without `tier`/`amount`/`funder`); `specs/cv-presets/spec.md` FR-005 (grants-major is grant × fellowship); `specs/renderers/spec.md` — the CV row heading per `contracts/cv-row.md`.
 - [ ] T032 Delete `specs/001-title-role-rule/` and `.specify/feature.json`; confirm CI's "Design notes stay on their branch" step would pass (`git ls-files 'specs/0*'` is empty).
 - [ ] T033 Open the PR (title "One meaning for title and role; a fellowship type"), saying it ran `/speckit-specify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-implement`; then close #480, #482 and #483 with a comment linking it.
 

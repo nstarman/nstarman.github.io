@@ -40,10 +40,10 @@ cards (`specs/cards/spec.md`).
   `tests/presets.test.js` ("takes everything for the complete CV…", "only
   includes an item whose cvs list names the preset").
 - **FR-005** The award/grant buckets are `type` × `tier`: `awards-major` (award,
-  major), `grants-major` (grant *or* position, major), `grants-minor` (grant,
-  minor). A `position` with a `tier` (a fellowship) is excluded from `positions`
-  and lands in `grants-major`. *Enforced:* `tests/presets.test.js` ("a
-  fellowship").
+  major), `grants-major` (grant *or* fellowship, major), `grants-minor` (grant,
+  minor). `positions` is every `position`; none carries a tier. *Enforced:*
+  `tests/presets.test.js` ("a fellowship", "every preset lists the same
+  sections as before fellowships had a type").
 - **FR-006** `items` arrive newest-first. `"sort": "tier"` reorders a section by
   `flagship`, `major`, `minor`, `utility`, then `order` (absent = 0), stably.
   `limit` then keeps the first N. *Enforced:* `tests/presets.test.js` ("honours a
@@ -114,6 +114,15 @@ cards (`specs/cards/spec.md`).
 - **FR-019** `cvModel` is the one model the CV pages, `dist/cv/<preset>.json` and
   the builder all use; every row has the fields `cv.typ` reads. *Enforced:*
   `tests/cvmodel.test.js` ("has the fields cv.typ reads…").
+- **FR-028** A row's heading is its title in bold, then `role` if it has one, then
+  who it was with, each once: a position's, education's or teaching entry's
+  institution; a grant's or award's funder; a fellowship's funder, or its host when
+  it has none; a service or outreach entry's organization; media's outlet. A funder
+  switched off (`funderOff`) prints nothing in its place. Presentations, mentoring
+  and publications keep their own lines. The CV pages and the builder draw the same
+  heading (`CvTimelineItem.astro`) as the PDF (`subject()` in `cvmodel.js`).
+  *Enforced:* `tests/cvmodel.test.js` ("prints my role, then who it was with",
+  "says each fellowship once").
 - **FR-020** The CV Builder (`/webdev/cv/`) renders the complete CV with a box on
   every entry and line, seeded from `np`, whose Start-from button shows lit on
   load until the selection changes. Compile PDF (with Download and
@@ -128,7 +137,7 @@ cards (`specs/cards/spec.md`).
   (`schoolBelow`, `true` only; absent is off), whether that entry's link icon ends the degree line rather than
   the university line (`linkOnDegree`, `true` only; absent is the university line), whether a mentee's papers are cited by identifier
   (`paperIds`, `true` only; absent is words), how amounts are written (Currency: USD, CAD /
-  US$, CA$ / $, CA$). An award or grant that names an institution (`funder`)
+  US$, CA$ / $, CA$). An award, grant or fellowship that names an institution (`funder`)
   shows it after its title, with a tick-box that turns it off for that entry. A
   tick-box under Right column ("Fill the middle column") sizes the right-hand column
   to the figures and places that fit in an inch, not to the longest, so one long range
