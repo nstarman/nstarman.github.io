@@ -41,7 +41,31 @@ cards (`specs/cards/spec.md`).
   includes an item whose cvs list names the preset").
 - **FR-005** The award/grant buckets are `type` × `tier`: `awards-major` (award,
   major), `grants-major` (grant *or* fellowship, major), `grants-minor` (grant,
-  minor). `positions` is every `position`; none carries a tier. *Enforced:*
+  minor). `positions` is every `position`; none carries a tier.
+- **FR-005b** Talks and conferences: `talks-invited` (invited, seminar) and
+  `talks-contributed` (contributed, poster, accepted) hold science talks — neither takes a
+  presentation marked `professional`; `conferences-organized` holds every `organizer`;
+  `conferences-attended` every `attended` that is not marked; `talks-professional`
+  (Professional & Software Talks) every marked presentation that is not an `organizer`. Peer
+  Review & Panels is the `peer-review` list; Service & Committees the `service` items.
+  *Enforced:* `tests/presets.test.js` ("a professional talk").
+- **FR-005c** A **section group** (`$groups` in `config/presets.json`: a heading, short name,
+  icon and ordered member sections) prints its members under one heading, each under a
+  sub-heading. One is defined: Professional Activities — Conferences Organized, Conferences
+  Attended, Professional & Software Talks, Peer Review & Panels, Service & Committees. Presets
+  never list a group, so the prebuilt PDFs and `/cv/` pages never group; the builder's **Group
+  Professional Activities** option (global panel, FR-027; off by default) switches it on, saved
+  as the selection's `groups`. Switched on, `resolve(…, { groups })` gathers the members a preset
+  lists, in the group's order, where the first of them stands, each carrying `group: { id,
+  heading, short, icon }`; an empty member is dropped as any section is, and a group with none
+  prints no heading. The group moves as one (at the earliest of its id and its members' in
+  `order`) and its members only among themselves (`gather`, `moveGrouped` in `secorder.js`). The
+  PDF draws the group's heading as a section heading and each member's as a small-caps
+  sub-heading without a rule or mark; the builder draws the same and indents the members in its
+  contents list. A group naming an unknown section, a section in two groups, or a group taking a
+  section's id throws at load. *Enforced:* `tests/presets.test.js` ("a section group"),
+  `tests/secorder.test.js` ("a grouped CV"), `tests/selectionmodel.test.js` ("a section group in
+  a selection"). *Enforced:*
   `tests/presets.test.js` ("a fellowship").
 - **FR-006** `items` arrive newest-first. `"sort": "tier"` reorders a section by
   `flagship`, `major`, `minor`, `utility`, then `order` (absent = 0), stably.
@@ -117,11 +141,12 @@ cards (`specs/cards/spec.md`).
   who it was with, each once: a position's, education's or teaching entry's
   institution; a grant's or award's funder; a fellowship's funder, or its host when
   it has none; a service or outreach entry's organization; media's outlet. A funder
-  switched off (`funderOff`) prints nothing in its place. Presentations, mentoring
+  switched off (`funderOff`) prints nothing in its place. A presentation's is its `role`,
+  then its event ("JAXtronomy Workshop, SOC"), its place where the builder puts it; mentoring
   and publications keep their own lines. The CV pages and the builder draw the same
   heading (`CvTimelineItem.astro`) as the PDF (`subject()` in `cvmodel.js`).
   *Enforced:* `tests/cvmodel.test.js` ("prints my role, then who it was with",
-  "says each fellowship once").
+  "says each fellowship once", "says what I did at a conference I organized").
 - **FR-020** The CV Builder (`/webdev/cv/`) renders the complete CV with a box on
   every entry and line, seeded from `np`, whose Start-from button shows lit on
   load until the selection changes. Compile PDF (with Download and
@@ -181,7 +206,7 @@ cards (`specs/cards/spec.md`).
   from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
   order, group, locationAt, locationDetail, tally })`. *Enforced:* review.
 - **FR-021** A saved selection (`selection.js`, format
-  `starkman-cv-selection`, version 1) records the ticked ids, kept line indices
+  `starkman-cv-selection`, version 2) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
   spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
   link order), `locationAt` (section id to where its places print: `below` the title, `title` or `none`;
@@ -194,7 +219,7 @@ cards (`specs/cards/spec.md`).
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
   is switched off (`funderOff`, entry ids; absent is none), the awards whose recipient line is left
   out (`recipientOff`, entry ids; absent is none), whether Education puts the
-  university on its own line (`schoolBelow`, `true` only), whether its link icon is on the degree line (`linkOnDegree`, `true` only), and the build's commit and dirty flag. `decode` refuses non-JSON, a non-object,
+  university on its own line (`schoolBelow`, `true` only), whether its link icon is on the degree line (`linkOnDegree`, `true` only), the section groups switched on (`groups`, group ids; absent is none), and the build's commit and dirty flag. An older file is brought up to version 2 before it is read, so it prints the lines it printed when saved: for the entries whose "Role:" line became `role`, that line's tick is dropped and later ticks move up one (a talk's title is its line 0); Conferences' section settings and place in `order` go to Organized, Attended and Professional & Software Talks; it is ungrouped. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`
@@ -208,7 +233,7 @@ cards (`specs/cards/spec.md`).
   *Enforced:* review.
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
-  order — is in the global "Settings for every section" panel. An option that applies to one
+  order, Group Professional Activities — is in the global "Settings for every section" panel. An option that applies to one
   section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally and Legend,
   Education's university below the degree, the mentoring section's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder

@@ -92,9 +92,9 @@ starts with "Role:".
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T022 `npm test` (seven gates) and `scripts/build-cv-pdfs.sh`: one-page CV 1 page, two-page 2; no prebuilt PDF has a "Professional Activities" heading.
-- [ ] T023 Look at `/cv/complete/` (no group) and the builder (`/webdev/cv/`) in the preview server: tick the option, check the group, sub-headings, contents list, moving a member and the group, and Compile PDF; untick it and check the CV returns to flat sections.
-- [ ] T024 Fold into the area specs (Article X): `specs/cv-presets/spec.md` — section groups (`$groups`, the builder option and where it lives per FR-027, expansion, order), the new and renamed sections and FR-005, FR-028 for presentations, selection v2 and its migration in FR-021; `specs/data-model/spec.md` — `presentation` `role` and `professional` in the reference table, no "Role:" prefix (with FR-036); `specs/renderers/spec.md` — how the PDF, `/cv/` and the contents list draw a group. AGENTS.md: a talk about software or the community sets `professional: true`; an organizer's role goes in `role`.
+- [X] T022 `npm test` (seven gates) and `scripts/build-cv-pdfs.sh`: one-page CV 1 page, two-page 2; no prebuilt PDF has a "Professional Activities" heading.
+- [X] T023 Look at `/cv/complete/` (no group) and the builder (`/webdev/cv/`) in the preview server: tick the option, check the group, sub-headings, contents list, moving a member and the group, and Compile PDF; untick it and check the CV returns to flat sections.
+- [X] T024 Fold into the area specs (Article X): `specs/cv-presets/spec.md` — section groups (`$groups`, the builder option and where it lives per FR-027, expansion, order), the new and renamed sections and FR-005, FR-028 for presentations, selection v2 and its migration in FR-021; `specs/data-model/spec.md` — `presentation` `role` and `professional` in the reference table, no "Role:" prefix (with FR-036); `specs/renderers/spec.md` — how the PDF, `/cv/` and the contents list draw a group. AGENTS.md: a talk about software or the community sets `professional: true`; an organizer's role goes in `role`.
 - [ ] T025 Delete `specs/001-professional-activities/` and `.specify/feature.json`; `git ls-files 'specs/0*'` empty.
 - [ ] T026 Open the PR ("Professional Activities: a section group; organized vs attended; professional talks"), stating the Spec Kit steps run; rebuild and send the Hubble PDF after it merges.
 
