@@ -332,6 +332,8 @@ describe('the preset it started from', () => {
     expect(round({ preset: '1page' }).preset).toBe('1page');
     expect(round({}).preset).toBeNull();
     expect(round({ preset: 7 }).preset).toBeNull();
+    expect(round({ preset: '' }).preset).toBeNull();
+    expect(round({ preset: 'Not A Key' }).preset).toBeNull();
   });
   it('says when it names no preset', () => {
     const sel = { items: new Set(['x']), style: null, preset: 'nope', site };

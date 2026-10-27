@@ -261,7 +261,7 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
 }
 
 // A name, not a promise that this build has that preset — loadReport says when it does not.
-const presetName = (p) => (typeof p === 'string' && p.length <= 64 ? p : null);
+const presetName = (p) => (typeof p === 'string' && /^[a-z0-9-]{1,64}$/.test(p) ? p : null);
 
 class SelectionError extends Error {}
 
