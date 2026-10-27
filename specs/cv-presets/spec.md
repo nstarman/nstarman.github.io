@@ -41,7 +41,8 @@ cards (`specs/cards/spec.md`).
   includes an item whose cvs list names the preset").
 - **FR-005** The award/grant buckets are `type` × `tier`: `awards-major` (award,
   major), `grants-major` (grant *or* fellowship, major), `grants-minor` (grant,
-  minor). `positions` is every `position`; none carries a tier.
+  minor). `positions` is every `position`; none carries a tier. *Enforced:*
+  `tests/presets.test.js` ("a fellowship").
 - **FR-005b** Talks and conferences: `talks-invited` (invited, seminar) and
   `talks-contributed` (contributed, poster, accepted) hold science talks — neither takes a
   presentation marked `professional`; `conferences-organized` holds every `organizer`;
@@ -65,8 +66,7 @@ cards (`specs/cards/spec.md`).
   contents list. A group naming an unknown section, a section in two groups, or a group taking a
   section's id throws at load. *Enforced:* `tests/presets.test.js` ("a section group"),
   `tests/secorder.test.js` ("a grouped CV"), `tests/selectionmodel.test.js` ("a section group in
-  a selection"). *Enforced:*
-  `tests/presets.test.js` ("a fellowship").
+  a selection").
 - **FR-006** `items` arrive newest-first. `"sort": "tier"` reorders a section by
   `flagship`, `major`, `minor`, `utility`, then `order` (absent = 0), stably.
   `limit` then keeps the first N. *Enforced:* `tests/presets.test.js` ("honours a
