@@ -293,6 +293,13 @@ describe('tolerating the merely odd', () => {
       .toEqual({ a: true, b: { hIndex: 'ads' }, c: true });
   });
 
+  it('keeps the short form and the count\'s place, and drops any other form', () => {
+    const round = (sel) => decode(JSON.stringify(encode({ items: [], ...sel })));
+    expect(round({ tally: { a: { form: 'short' }, b: { of: 'record', form: 'short', hIndex: 'ads' }, c: { form: 'tiny' } } }).tally)
+      .toEqual({ a: { form: 'short' }, b: { of: 'record', form: 'short', hIndex: 'ads' }, c: true });
+    expect(round({ place: { 'publications.tally': 'title' } }).place).toEqual({ 'publications.tally': 'title' });
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

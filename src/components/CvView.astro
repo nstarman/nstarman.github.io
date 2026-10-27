@@ -179,8 +179,9 @@ const mapFor = (s) => {
             row stays one line. */}
         {/* The builder's, where the key sits on the heading's line (the Legend's
             Title place); `syncLegends` shows it there or below. */}
+        {pick && s.layout === 'publications' && <span class="tallyhead" hidden></span>}
         {pick && s.layout === 'publications' && (
-          <span class="keyhead" hidden><span class="keyprev__text">Students I supervised or advised:{' '}
+          <span class="keyhead" hidden><span class="keyprev__text"><span class="keylead">Students I supervised or advised:</span>{' '}
               <span class="stu--undergraduate">undergraduate<sup>†</sup></span>,{' '}
               <span class="stu--graduate">graduate<sup>‡</sup></span>.</span></span>
         )}

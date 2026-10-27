@@ -132,8 +132,8 @@ papers (10 first-author, 5 submitted)" and then the student key; the PDF is two 
 - **FR-007**: The h-index option MUST be unchanged by which papers the count counts.
 - **FR-008**: The count line MUST have a place, as the student key does: on its own line below the
   heading (the default, today's), on its own line at the right, or on the heading's line at its
-  right. On the heading's line with the key also there, the count comes first; with no heading, it
-  takes its own line.
+  right. On the heading's line with the key also there, the count comes first and the key's lead-in
+  shortens to "Students I advised:" so both fit one line; with no heading, it takes its own line.
 - **FR-009**: The count MUST have a short form, "N papers (F first-author, S submitted)", which
   leaves out the student-led number and, with no submitted papers, the ", S submitted"; the long
   form (FR-006) stays the default. An h-index follows either form.

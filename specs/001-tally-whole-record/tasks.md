@@ -38,7 +38,7 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 
 - [X] T005 [US1] In config/presets.json, give the `1page` and `2page` `publications` sections `"tally": { "of": "record" }`
 - [X] T006 [US1] Add a test to tests/presets.test.js: `resolve('1page')` and `resolve('2page')` publications' `tally` equal each other and equal `tally()` of the whole record (SC-001)
-- [ ] T007 [US1] Build the site and the CV PDFs (`npm run build && scripts/build-cv-pdfs.sh`); check both count lines read the same numbers and the page counts are 1 and 2 (SC-003)
+- [X] T007 [US1] Build the site and the CV PDFs (`npm run build && scripts/build-cv-pdfs.sh`); check both count lines read the same numbers and the page counts are 1 and 2 (SC-003)
 
 **Checkpoint**: US1 is shippable alone — the presets carry it; the builder's Start from would print it once US2 lands.
 
@@ -67,20 +67,20 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 **Independent test**: the 2-page PDF's Publications heading line ends "19 papers (10 first-author, 5
 submitted)" then the student key; it is 2 pages, and the 1-page 1.
 
-- [ ] T019 [P] [US3] Add tests to tests/presets.test.js: `tally(pubs, { form: 'short' }).form` is `'short'`; absent or another value, `form` is absent; `resolve('1page')` and `resolve('2page')` set `place['publications.tally']` to `'title'` and their tally's `form` to `'short'`
-- [ ] T020 [P] [US3] Add tests to tests/selection.test.js: `{ form: 'short' }` and `{ of: 'record', form: 'short', hIndex }` round-trip; any other `form` is dropped; `place['publications.tally']` round-trips as `place` does
-- [ ] T021 [US3] In `tally()` in src/lib/presets.js, return `form: 'short'` when asked, nothing otherwise; in `cleanTally` in src/lib/selection.js keep `form` only when it is `"short"`
-- [ ] T022 [US3] In cv/cv.typ: `tallyline` prints the short form ("N papers (F first-author, S submitted)." — ", S submitted" only when S > 0; an h-index after either form) and takes an alignment; `publications()` prints it on its own line unless `place["<id>.tally"]` is `title` and the heading is there, aligned right for `right`; the heading's `aside` holds the count, then the key, when each is placed `title`
-- [ ] T023 [US3] In config/presets.json, give `1page` and `2page` `"form": "short"` in the publications tally and `"publications.tally": "title"` in `place`
-- [ ] T024 [US3] In src/components/CvFmtRow.astro, add a **Short** box (`data-tally-short-of`, disabled until Tally is ticked) after Whole record, and a Tally subject line with a Place slider keyed `<id>.tally` (Below, Right, Title) beside the Legend's; add both to tests/builder-placement.test.js's publication-list assertions
-- [ ] T025 [US3] In src/pages/webdev/cv.astro: `currentTally()` adds `form: 'short'` when Short is ticked, `setTally()` sets it, and Short enables with Tally; `syncLegends` words the preview's count in the short form when ticked and puts it on the heading line (with the key, count first) when its place is Title, as cv.typ does; a change to either retires the compiled PDF
-- [ ] T026 [US3] Build the PDFs: the 2-page is 2 pages, the 1-page 1 (SC-005); in the builder Start from 2P shows Short ticked and the count on the heading line, and Compile matches
+- [X] T019 [P] [US3] Add tests to tests/presets.test.js: `tally(pubs, { form: 'short' }).form` is `'short'`; absent or another value, `form` is absent; `resolve('1page')` and `resolve('2page')` set `place['publications.tally']` to `'title'` and their tally's `form` to `'short'`
+- [X] T020 [P] [US3] Add tests to tests/selection.test.js: `{ form: 'short' }` and `{ of: 'record', form: 'short', hIndex }` round-trip; any other `form` is dropped; `place['publications.tally']` round-trips as `place` does
+- [X] T021 [US3] In `tally()` in src/lib/presets.js, return `form: 'short'` when asked, nothing otherwise; in `cleanTally` in src/lib/selection.js keep `form` only when it is `"short"`
+- [X] T022 [US3] In cv/cv.typ: `tallyline` prints the short form ("N papers (F first-author, S submitted)." — ", S submitted" only when S > 0; an h-index after either form) and takes an alignment; `publications()` prints it on its own line unless `place["<id>.tally"]` is `title` and the heading is there, aligned right for `right`; the heading's `aside` holds the count, then the key, when each is placed `title`
+- [X] T023 [US3] In config/presets.json, give `1page` and `2page` `"form": "short"` in the publications tally and `"publications.tally": "title"` in `place`
+- [X] T024 [US3] In src/components/CvFmtRow.astro, add a **Short** box (`data-tally-short-of`, disabled until Tally is ticked) after Whole record, and a Tally subject line with a Place slider keyed `<id>.tally` (Below, Right, Title) beside the Legend's; add both to tests/builder-placement.test.js's publication-list assertions
+- [X] T025 [US3] In src/pages/webdev/cv.astro: `currentTally()` adds `form: 'short'` when Short is ticked, `setTally()` sets it, and Short enables with Tally; `syncLegends` words the preview's count in the short form when ticked and puts it on the heading line (with the key, count first) when its place is Title, as cv.typ does; a change to either retires the compiled PDF
+- [X] T026 [US3] Build the PDFs: the 2-page is 2 pages, the 1-page 1 (SC-005); in the builder Start from 2P shows Short ticked and the count on the heading line, and Compile matches
 
 ## Phase 6: Polish & landing (constitution Article X)
 
 - [X] T016 Run `npm test` and the quickstart.md checks
-- [ ] T017 Fold into specs/cv-presets/spec.md: FR-025 (`tally` takes `of: "record"` and `form: "short"`; no count includes an in-prep paper; the count's place, `<id>.tally`), FR-021 (the selection's `of`), FR-021a (Start from sets it), FR-027 (Whole record in the publication list's settings row), and the preset table (1page, 2page publications count the record) — as the current contract, not a changelog
-- [ ] T018 Delete specs/001-tally-whole-record/ and .specify/feature.json
+- [X] T017 Fold into specs/cv-presets/spec.md: FR-025 (`tally` takes `of: "record"` and `form: "short"`; no count includes an in-prep paper; the count's place, `<id>.tally`), FR-021 (the selection's `of`), FR-021a (Start from sets it), FR-027 (Whole record in the publication list's settings row), and the preset table (1page, 2page publications count the record) — as the current contract, not a changelog
+- [X] T018 Delete specs/001-tally-whole-record/ and .specify/feature.json
 
 ## Dependencies & execution order
 

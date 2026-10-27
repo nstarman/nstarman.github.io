@@ -92,8 +92,19 @@ describe('tally', () => {
 
   it('opens the short CVs with the whole record, the same on each', () => {
     const of = (name) => resolve(name).sections.find((s) => s.id === 'publications').tally;
-    expect(of('1page')).toEqual(tally(byType('publication')));
+    expect(of('1page')).toEqual(tally(byType('publication'), { form: 'short' }));
     expect(of('2page')).toEqual(of('1page'));
+  });
+
+  it('carries the short form only when asked, and the short CVs set it on the heading line', () => {
+    expect(tally(pubs, { form: 'short' }).form).toBe('short');
+    expect(tally(pubs).form).toBeUndefined();
+    expect(tally(pubs, { form: 'tiny' }).form).toBeUndefined();
+    for (const name of ['1page', '2page']) {
+      const cv = resolve(name);
+      expect(cv.sections.find((s) => s.id === 'publications').tally.form).toBe('short');
+      expect(cv.place['publications.tally']).toBe('title');
+    }
   });
 });
 

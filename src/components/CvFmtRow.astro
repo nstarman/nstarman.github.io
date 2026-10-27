@@ -47,7 +47,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
   {[
     { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
     ...(s.id === 'publications'
-      ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` }]
+      ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` },
+         { sub: 'Tally', place: true, key: `${s.id}.tally`, gap: 'legend', words: `Space below the ${s.heading} tally` }]
       : []),
     { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries`,
       // Dated entries have a right-hand column for their place, which a section of talks
@@ -69,7 +70,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
         <span class="fmtopt fmtopt--place">
           <span class="fmtlab">Place</span>
           <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="3"
-                aria-label={`Where the ${s.heading} legend sits`} data-place-of={o.key}>
+                aria-label={`Where the ${s.heading} ${o.sub.toLowerCase()} sits`} data-place-of={o.key}>
             <label title="On its own line, below the heading">
               <input type="radio" class="posradio" name={`place:${o.key}`} value="below" checked />Below</label>
             <label title="On its own line, below the heading, at its right">
@@ -143,6 +144,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
             <input type="checkbox" name={`tally:${s.id}`} data-tally-of={s.id} />Tally</label>
           <label class="fmtcheck" title={`Count every published and submitted paper, not only those ${s.heading} lists`}>
             <input type="checkbox" name={`tallyrecord:${s.id}`} data-tally-record-of={s.id} disabled />Whole record</label>
+          <label class="fmtcheck" title="The short form: papers, first-author and submitted, leaving the students to the legend">
+            <input type="checkbox" name={`tallyshort:${s.id}`} data-tally-short-of={s.id} disabled />Short</label>
           <select class="btn btn--sel" name={`hindex:${s.id}`} data-hindex-of={s.id} aria-label={`The h-index in the ${s.heading} tally`}>
             <option value="">no h-index</option>
             <option value="ads">h-index: ADS</option>

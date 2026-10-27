@@ -56,9 +56,10 @@ export const SCHOLAR_STALE_DAYS = 183;
  * a student I supervised led — counted from the records, so they cannot fall
  * behind the list beneath them. With `{ hIndex }` naming a source, the
  * h-index too, said with its source, since the sources disagree. A paper in
- * preparation is not one yet, so it is never counted.
+ * preparation is not one yet, so it is never counted. `form: "short"` passes
+ * through, for the template to leave the student-led number to the key.
  */
-export function tally(all, { hIndex } = {}) {
+export function tally(all, { hIndex, form } = {}) {
   const pubs = all.filter((p) => p.status !== 'in-prep');
   const lead = (p) => p.authors?.[0] ?? {};
   return {
@@ -67,6 +68,7 @@ export function tally(all, { hIndex } = {}) {
     first: pubs.filter((p) => lead(p).me).length,
     student: pubs.filter((p) => lead(p).mentee).length,
     h: H_INDEX[hIndex]?.() ?? null,
+    ...(form === 'short' && { form }),
   };
 }
 

@@ -222,7 +222,7 @@ cards (`specs/cards/spec.md`).
   absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
   as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
   state, `country: "code"` writes the country as its code; absent, as written), page
-  format (`page`), tally (`true` or `{ hIndex, of }` per section, `of` only `"record"`; any other `of` counts the list), whether the
+  format (`page`), tally (`true` or `{ hIndex, of, form }` per section, `of` only `"record"` and `form` only `"short"`; any other `of` counts the list and any other `form` is the long one), whether the
   right-hand column is capped (`trailcap`, `true` only) and how wide (`trailcapWidth`, inches, absent for 1.45), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
@@ -238,13 +238,14 @@ cards (`specs/cards/spec.md`).
   the PDF prints there — the tally, where ticked, with its h-index, and the key
   to the students' colours and marks, where a ticked paper has a student in its
   byline — counted from the ticked entries (the tally from the whole record where
-  Whole record is ticked; never a paper in preparation) and placed as the Legend's place says
+  Whole record is ticked; never a paper in preparation), the tally in its short
+  form where Short is ticked and on the heading's line where its place says, and placed as the Legend's place says
   (below, right, or on the heading's line), updating as ticks and options change.
   *Enforced:* review.
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
   order, Group Professional Activities — is in the global "Settings for every section" panel. An option that applies to one
-  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally, Whole record and Legend,
+  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally (with Whole record, Short and its own Place) and Legend,
   Education's university below the degree, the mentoring section's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
@@ -294,13 +295,21 @@ cards (`specs/cards/spec.md`).
   first and how many a student I supervised led — counted from the records. A
   paper in preparation is not counted. `tally: { "of": "record" }` counts the
   whole record — every publication not in preparation — instead of the list's,
-  the same numbers whatever the list shows; the 1-page and 2-page CVs do. `tally:
-  { "hIndex": "ads" | "scholar" | "scholar-since" }` (with or without `of`) adds an h-index,
+  the same numbers whatever the list shows; the 1-page and 2-page CVs do.
+  `form: "short"` prints "N papers (F first-author, S submitted)." — the student-led
+  number left to the key's colours and marks, ", S submitted" only when S > 0.
+  Like the key, the count has a place, `place["<id>.tally"]`: `below` (absent — its
+  own line, at the left), `right` (its own line, at the right) or `title` (the
+  heading's line, at its right, at least an em from the title; with no heading, its
+  own line). Where the key is on the heading's line too, the count comes first and
+  the key's lead-in shortens to "Students I advised:" so both fit one line; the
+  1-page and 2-page CVs put it there in the short form. `tally:
+  { "hIndex": "ads" | "scholar" | "scholar-since" }` (with or without `of` and `form`) adds an h-index,
   said with its source, since the sources disagree: ADS's is computed from the
   records' citation counts, Google Scholar's two are read by hand into
   `config/person.json` (`specs/refresh/spec.md`, FR-024, for how they are kept
-  current). The builder's Tally box, Whole record box (enabled while Tally is
-  ticked) and h-index menu choose the same, over the preset's; Start from sets
+  current). The builder's Tally box, Whole record and Short boxes (enabled while
+  Tally is ticked), h-index menu and the Tally line's Place choose the same, over the preset's; Start from sets
   them as the preset has them. *Enforced:* `tests/presets.test.js` ("tally").
 - **FR-026** The page format is a choice apart from the style and the length:
   the style's default paper, `"a4"` (A4 whatever the style) or `"letter"` (US
@@ -360,8 +369,8 @@ cards (`specs/cards/spec.md`).
 |---|---|---|---|
 | `complete` | full | yes | all 20, incl. `languages`, `courses` |
 | `np` | full | — | 18: all but `languages`, `courses` |
-| `2page` | summary | — | education, positions, grants-major (6), awards-major (6), publications (10, tally of the record), software (8, 4 cols), talks-invited (6), mentoring (5, full), conferences-organized, peer-review, service |
-| `1page` | summary | — | education, positions, grants-major (4), awards-major (4), publications (5, no groupBy, tally of the record), software (6, 3 cols), mentoring (3) |
+| `2page` | summary | — | education, positions, grants-major (6), awards-major (6), publications (10, tally of the record, short, on the heading line), software (8, 4 cols), talks-invited (6), mentoring (5, full), conferences-organized, peer-review, service |
+| `1page` | summary | — | education, positions, grants-major (4), awards-major (4), publications (5, no groupBy, tally of the record, short, on the heading line), software (6, 3 cols), mentoring (3) |
 
 `np`, `2page` and `1page` set `groups: ["professional"]` (FR-005c).
 

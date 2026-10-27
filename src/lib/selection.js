@@ -117,9 +117,10 @@ const cleanCard = (raw) => {
   return out;
 };
 
-/** Section id → true, or { hIndex } naming its source and { of: "record" } to
- *  count the whole record, for the publication lists that open with a tally.
- *  Sources are names, as headings are; any other `of` counts the list. */
+/** Section id → true, or { hIndex } naming its source, { of: "record" } to
+ *  count the whole record and { form: "short" } for the short form, for the
+ *  publication lists that open with a tally. Sources are names, as headings
+ *  are; any other `of` counts the list, any other `form` is the long one. */
 const cleanTally = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k]) => k.length <= 64).slice(0, 64)
@@ -128,9 +129,10 @@ const cleanTally = (raw) => Object.fromEntries(
       if (!v || typeof v !== 'object') return [k, null];
       const t = {
         ...(v.of === 'record' && { of: 'record' }),
+        ...(v.form === 'short' && { form: 'short' }),
         ...(typeof v.hIndex === 'string' && v.hIndex.length <= 64 && { hIndex: v.hIndex }),
       };
-      return [k, Object.keys(t).length ? t : 'of' in v ? true : null];
+      return [k, Object.keys(t).length ? t : 'of' in v || 'form' in v ? true : null];
     })
     .filter(([, v]) => v !== null));
 

@@ -309,7 +309,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
-      if (t.name?.startsWith('tally:') || t.name?.startsWith('tallyrecord:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
+      if (/^(tally|tallyrecord|tallyshort|hindex):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -502,14 +502,15 @@ const builderData = {
       row.querySelector('.fmtopt--headgap').hidden = none;
       const prefix = row.querySelector('.fmtopt--prefix');
       if (prefix) prefix.hidden = none || !row.closest('.pickgroup').querySelector('.groupbox').indeterminate;
-      const place = row.querySelector('.fmtopt--place');
-      if (!place) return;
-      // Title is the last stop, so dropping it moves no other.
-      const title = place.querySelector('input[value="title"]');
-      title.parentElement.hidden = none;
-      place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
-      if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
-      row.querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+      // The legend's and the tally's, each with its own gap.
+      for (const place of row.querySelectorAll('.fmtopt--place')) {
+        // Title is the last stop, so dropping it moves no other.
+        const title = place.querySelector('input[value="title"]');
+        title.parentElement.hidden = none;
+        place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
+        if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
+        place.closest('.fmtline').querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+      }
     };
     // Where a part sits, by its key; a name no stop has is the default.
     const placeGroups = () => [...document.querySelectorAll('[data-place-of]')];
@@ -587,12 +588,16 @@ const builderData = {
     const hIndexMenu = (id) => document.querySelector(`[data-hindex-of="${id}"]`);
     // Whether a tally counts the whole record; only while its Tally is ticked.
     const recordBox = (id) => document.querySelector(`[data-tally-record-of="${id}"]`);
-    const syncRecordBoxes = () => { for (const b of tallyBoxes()) { const r = recordBox(b.dataset.tallyOf); if (r) r.disabled = !b.checked; } };
+    // And whether it is in the short form, the students left to the legend.
+    const shortBox = (id) => document.querySelector(`[data-tally-short-of="${id}"]`);
+    const syncRecordBoxes = () => {
+      for (const b of tallyBoxes()) for (const r of [recordBox(b.dataset.tallyOf), shortBox(b.dataset.tallyOf)]) if (r) r.disabled = !b.checked;
+    };
     document.addEventListener('change', (e) => { if (e.target.matches?.('[data-tally-of]')) syncRecordBoxes(); });
-    /** Section id → true, or { hIndex, of }, for the lists that open with a tally. */
+    /** Section id → true, or { hIndex, of, form }, for the lists that open with a tally. */
     const currentTally = () => Object.fromEntries(tallyBoxes().filter((b) => b.checked).map((b) => {
       const h = hIndexMenu(b.dataset.tallyOf)?.value;
-      const t = { ...(recordBox(b.dataset.tallyOf)?.checked && { of: 'record' }), ...(h && { hIndex: h }) };
+      const t = { ...(recordBox(b.dataset.tallyOf)?.checked && { of: 'record' }), ...(shortBox(b.dataset.tallyOf)?.checked && { form: 'short' }), ...(h && { hIndex: h }) };
       return [b.dataset.tallyOf, Object.keys(t).length ? t : true];
     }));
     // Say so beside a Scholar h-index whose numbers were read long ago: no API
@@ -612,11 +617,14 @@ const builderData = {
         const id = prev.dataset.legendOf, group = prev.closest('.pickgroup');
         const ticked = [...group.querySelectorAll('.itembox:checked')].map((b) => PUBS[b.value]).filter(Boolean);
         const sum = (k) => ticked.reduce((n, p) => n + (p.prep ? 0 : p[k]), 0);
-        const tallyEl = prev.querySelector('.tallyprev');
+        const placeOf = (part) => document.querySelector(`[data-place-of="${id}.${part}"]`)?.querySelector(':checked')?.value ?? 'below';
+        // The tally on its own line or up on the heading's, at the Tally's place.
+        const tallyLine = prev.querySelector('.tallyprev'), tallyHead = group.querySelector('.tallyhead');
         const box = tallyBoxes().find((b) => b.dataset.tallyOf === id);
         const h = box?.checked ? HINDEX[hIndexMenu(id)?.value] : null;
-        tallyEl.hidden = !box?.checked;
-        tallyEl.replaceChildren();
+        const tallyUp = placeOf('tally') === 'title';
+        const tallyEl = tallyUp ? tallyHead : tallyLine;
+        for (const el of [tallyLine, tallyHead]) { el.hidden = true; el.replaceChildren(); }
         if (box?.checked) {
           // The whole record's numbers, or the ticked papers' — never one in preparation.
           const n = recordBox(id)?.checked
@@ -624,9 +632,14 @@ const builderData = {
             : { total: ticked.filter((p) => !p.prep).length, sub: sum('sub'), first: sum('first'), led: sum('led') };
           const strong = document.createElement('strong');
           strong.textContent = `${n.total} papers`;
-          tallyEl.append(strong, `${n.sub ? ` (${n.sub} submitted)` : ''}: ${n.first} first-author${n.led ? `, ${n.led} led by students I supervised` : ''}.${h ? ` h-index ${h.value} (${h.source}).` : ''}`);
+          const hix = h ? ` h-index ${h.value} (${h.source}).` : '';
+          tallyEl.append(strong, shortBox(id)?.checked
+            ? ` (${n.first} first-author${n.sub ? `, ${n.sub} submitted` : ''}).${hix}`
+            : `${n.sub ? ` (${n.sub} submitted)` : ''}: ${n.first} first-author${n.led ? `, ${n.led} led by students I supervised` : ''}.${hix}`);
+          tallyEl.hidden = false;
+          tallyLine.style.textAlign = placeOf('tally') === 'right' ? 'right' : 'left';
         }
-        const place = document.querySelector(`[data-place-of="${id}.legend"]`)?.querySelector(':checked')?.value ?? 'below';
+        const place = placeOf('legend');
         const show = sum('stu') > 0;
         const inHead = place === 'title';
         const key = group.querySelector('.keyprev');
@@ -634,7 +647,9 @@ const builderData = {
         key.hidden = !show || inHead;
         key.style.textAlign = place === 'right' ? 'right' : 'left';
         head.hidden = !show || !inHead;
-        prev.hidden = tallyEl.hidden && key.hidden;
+        // Shorter beside the tally, as the PDF has it.
+        head.querySelector('.keylead').textContent = tallyHead.hidden ? 'Students I supervised or advised:' : 'Students I advised:';
+        prev.hidden = tallyLine.hidden && key.hidden;
       }
     };
     for (const type of ['change', 'click']) document.addEventListener(type, () => requestAnimationFrame(syncLegends));
@@ -671,6 +686,8 @@ const builderData = {
         b.checked = Boolean(v);
         const r = recordBox(b.dataset.tallyOf);
         if (r) r.checked = v?.of === 'record';
+        const sh = shortBox(b.dataset.tallyOf);
+        if (sh) sh.checked = v?.form === 'short';
         const menu = hIndexMenu(b.dataset.tallyOf);
         // One this page does not offer is none.
         if (menu) { menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : ''; warnStale(menu); }
