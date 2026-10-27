@@ -223,3 +223,45 @@ describe('a fellowship', () => {
     expect(byType('position').filter((i) => i.tier).map((i) => i.id)).toEqual([]);
   });
 });
+
+// A section group prints its members under one heading. Presets never group; the builder switches
+// one on (`groups`), and its members gather where the first of them stands, in the group's order.
+describe('a section group', () => {
+  const MEMBERS = ['conferences-organized', 'conferences-attended', 'talks-professional', 'peer-review', 'service'];
+  const ids = (name, opts) => resolve(name, undefined, opts).sections.map((s) => s.id);
+
+  it('is off unless asked for: no section carries one', () => {
+    for (const name of presetNames) expect(resolve(name).sections.filter((s) => s.group)).toEqual([]);
+  });
+
+  it('gathers its members, in its order, where the first of them stands', () => {
+    const on = resolve('complete', undefined, { groups: ['professional'] }).sections;
+    const shown = MEMBERS.filter((id) => on.some((s) => s.id === id));
+    const at = on.findIndex((s) => s.group);
+    expect(on.slice(at, at + shown.length).map((s) => s.id)).toEqual(shown);
+    expect(on.slice(at, at + shown.length).every((s) => s.group.id === 'professional' && s.group.heading === 'Professional Activities')).toBe(true);
+    // Where the first member stood with grouping off.
+    expect(at).toBe(ids('complete').findIndex((id) => MEMBERS.includes(id)));
+  });
+
+  it('groups only the members a preset lists', () => {
+    const on = resolve('2page', undefined, { groups: ['professional'] }).sections.filter((s) => s.group).map((s) => s.id);
+    // An empty member is dropped like any empty section: 2page lists service, but holds none.
+    expect(on).toEqual(ids('2page').filter((id) => MEMBERS.includes(id)));
+    expect(on).toContain('peer-review');
+  });
+
+  it('moves as one when the builder orders it, and its members only among themselves', () => {
+    const first = ids('complete', { groups: ['professional'], order: ['professional'] });
+    expect(first.slice(0, 1)).toEqual([MEMBERS.find((id) => first.includes(id))]);
+    const inside = ids('complete', { groups: ['professional'], order: ['service'] });
+    const g = resolve('complete', undefined, { groups: ['professional'], order: ['service'] }).sections.filter((s) => s.group).map((s) => s.id);
+    expect(g[0]).toBe('service');
+    // A member named in `order` pulls its whole group, not just itself, to the front.
+    expect(inside.slice(0, g.length)).toEqual(g);
+  });
+
+  it('ignores a group id it does not know', () => {
+    expect(ids('complete', { groups: ['nope'] })).toEqual(ids('complete'));
+  });
+});

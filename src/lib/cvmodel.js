@@ -233,6 +233,7 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
+ *   `groups` the section groups switched on (see resolve()), by id.
  */
 export function cvModel(presetName, only, keepLine, opts) {
   // A section whose places are `none` leaves them out, as `location: false` does.
@@ -260,6 +261,9 @@ export function cvModel(presetName, only, keepLine, opts) {
       detail: s.detail,
       dropped: s.dropped,
       tally: s.tally ?? null,
+      // The section group it prints under, when the builder switched one on (`groups`):
+      // `{ id, heading, short, icon }`. Not `groups` below, which is a section's own status runs.
+      group: s.group ?? null,
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
       // Submitted / Accepted / Published, as the LaTeX CV does.

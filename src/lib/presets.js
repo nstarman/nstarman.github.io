@@ -94,6 +94,44 @@ function section(ref) {
   return { id, ...shared, ...(typeof ref === 'string' ? {} : ref) };
 }
 
+/**
+ * A section group is a heading over several sections — Professional Activities over the
+ * conferences, peer review and service — defined once in `$groups`. Presets never list one:
+ * the builder switches a group on (`groups`), and its members then print together under it.
+ */
+const GROUPS = Object.fromEntries(Object.entries(presets.$groups ?? {}).filter(([k]) => !k.startsWith('$')));
+const groupOf = new Map();
+for (const [gid, g] of Object.entries(GROUPS)) {
+  if (presets.$sections[gid]) throw new Error(`CV group "${gid}" takes the id of a section. Rename one in config/presets.json.`);
+  for (const sid of g.sections) {
+    if (!presets.$sections[sid]) throw new Error(`CV group "${gid}" names an unknown section "${sid}".`);
+    if (groupOf.has(sid)) throw new Error(`CV section "${sid}" is in two groups, "${groupOf.get(sid)}" and "${gid}".`);
+    groupOf.set(sid, gid);
+  }
+}
+export const GROUP_IDS = Object.keys(GROUPS);
+
+/**
+ * Gathers each switched-on group's members, in the group's order, at the place of the first
+ * of them, and marks them with the group. Sections of other groups stay where they are.
+ */
+function grouped(sections, groups) {
+  const on = new Set(groups.filter((g) => GROUPS[g]));
+  const out = [];
+  for (const s of sections) {
+    const gid = groupOf.get(s.id);
+    if (!on.has(gid)) { out.push(s); continue; }
+    if (out.some((x) => x.group?.id === gid)) continue;
+    const g = GROUPS[gid];
+    const group = { id: gid, heading: g.heading, short: g.short ?? null, icon: g.icon ?? null };
+    for (const sid of g.sections) {
+      const m = sections.find((x) => x.id === sid);
+      if (m) out.push({ ...m, group });
+    }
+  }
+  return out;
+}
+
 export function preset(name) {
   const spec = presets[name];
   if (!spec) throw new Error(`Unknown CV preset "${name}". Known: ${presetNames.join(', ')}`);
@@ -113,7 +151,7 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {} } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {}, groups = [] } = {}) {
   const spec = preset(name);
 
   const sections = spec.sections.map((section) => {
@@ -224,11 +262,17 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
     funderOff: spec.funderOff ?? [],
     // Gaps the preset sets, keyed as the builder's `spacing`.
     spacing: spec.spacing ?? {},
-    // `order` is the builder's: section ids, first to last. Sections it does not
-    // name keep their place after those it does (the sort is stable).
-    sections: sections
-      .filter((s) => s.items.length > 0 || s.entries?.length > 0)
-      .sort((a, b) => rank(order, a.id) - rank(order, b.id)),
+    // `order` is the builder's: section and group ids, first to last. Sections it does not
+    // name keep their place after those it does (the sort is stable). A group moves as one —
+    // at the earliest of its own id and its members' — and its members move only among
+    // themselves.
+    sections: (() => {
+      const shown = grouped(sections, groups).filter((s) => s.items.length > 0 || s.entries?.length > 0);
+      const top = (s) => (s.group
+        ? Math.min(rank(order, s.group.id), ...shown.filter((x) => x.group?.id === s.group.id).map((x) => rank(order, x.id)))
+        : rank(order, s.id));
+      return shown.sort((a, b) => top(a) - top(b) || (a.group && a.group.id === b.group?.id ? rank(order, a.id) - rank(order, b.id) : 0));
+    })(),
   };
 }
 

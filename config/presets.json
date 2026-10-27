@@ -1,5 +1,14 @@
 {
   "$comment": "CV presets. Each section is defined once in `$sections`: its heading, its icon, and how it selects items. A preset lists the sections it shows, in order, by id, and overrides only what it does differently there, e.g. `{ \"id\": \"publications\", \"limit\": 5 }`; `null` removes a key. `detail` chooses whether an item's `details` field renders — this is what replaced make_short.py stripping % SKIP markers out of the .tex. An item appears in a preset only if the preset name is in its `cvs` array AND it matches a section. A preset with `includeAll` ignores `cvs` entirely and takes every item that matches a section — that is what separates the complete CV from the curated `full` one. A section may give a `short` name, which the contents list uses where it is short of room. A section's heading is written once, in the complete preset's shape; a preset that shows fewer than every item a section could hold gets \"Select \" in front of it, worked out at render time rather than typed in. `card` turns parts of the PDF's header card off by name: `portrait`, `address`, `email`, `website`, `qr`, or a profile by its service, e.g. `\"ads\": false`; everything else shows. The email, the website or a profile set to `\"icon\"` shows its mark without its label, and set to `\"text\"` its label without its mark. `order` lists the email, the website and the profiles in the order they print, `\"/\"` breaking the line; by default the email and the website share a line, or on US Letter take one each, and the profiles take the next. `location: false` on a preset or a section leaves entries' places out; a section's own `location` wins. A section may set `tally: true` to open with its publications' headline numbers, or `tally: { \"hIndex\": \"ads\" }` (or `\"scholar\"`, `\"scholar-since\"`) to add an h-index, said with its source. A preset may list `funderOff`: entries, by id, whose `funder` it leaves out; the builder's own list, when it passes one, replaces it.",
+  "$groups": {
+    "$comment": "A group prints several sections under one heading, each under a sub-heading. Presets never list a group: the CV builder switches one on (a selection's `groups`), and its members then gather, in this order, where the first of them stands.",
+    "professional": {
+      "heading": "Professional Activities",
+      "short": "Professional",
+      "icon": "service",
+      "sections": ["conferences-organized", "conferences-attended", "talks-professional", "peer-review", "service"]
+    }
+  },
   "$sections": {
     "education": {
       "heading": "Education",
@@ -62,7 +71,10 @@
         "kind": [
           "invited",
           "seminar"
-        ]
+        ],
+        "not": {
+          "professional": true
+        }
       }
     },
     "talks-contributed": {
@@ -74,18 +86,43 @@
           "contributed",
           "poster",
           "accepted"
-        ]
+        ],
+        "not": {
+          "professional": true
+        }
       }
     },
-    "conferences": {
-      "heading": "Conferences",
+    "conferences-organized": {
+      "heading": "Conferences Organized",
+      "short": "Organized",
       "icon": "conferences",
       "match": {
         "type": "presentation",
-        "kind": [
-          "organizer",
-          "attended"
-        ]
+        "kind": "organizer"
+      }
+    },
+    "conferences-attended": {
+      "heading": "Conferences Attended",
+      "short": "Attended",
+      "icon": "conferences",
+      "match": {
+        "type": "presentation",
+        "kind": "attended",
+        "not": {
+          "professional": true
+        }
+      }
+    },
+    "talks-professional": {
+      "heading": "Professional & Software Talks",
+      "short": "Professional Talks",
+      "icon": "talks",
+      "match": {
+        "type": "presentation",
+        "professional": true,
+        "not": {
+          "kind": "organizer"
+        }
       }
     },
     "mentoring": {
@@ -104,12 +141,13 @@
       }
     },
     "peer-review": {
-      "heading": "Peer Review",
+      "heading": "Peer Review & Panels",
+      "short": "Peer Review",
       "icon": "publications",
       "list": "peer-review"
     },
     "service": {
-      "heading": "Professional Service",
+      "heading": "Service & Committees",
       "short": "Service",
       "icon": "service",
       "match": {
@@ -163,7 +201,9 @@
       "software",
       "talks-invited",
       "talks-contributed",
-      "conferences",
+      "conferences-organized",
+      "conferences-attended",
+      "talks-professional",
       "mentoring",
       "teaching",
       "peer-review",
@@ -188,7 +228,9 @@
       "software",
       "talks-invited",
       "talks-contributed",
-      "conferences",
+      "conferences-organized",
+      "conferences-attended",
+      "talks-professional",
       "mentoring",
       "teaching",
       "peer-review",
