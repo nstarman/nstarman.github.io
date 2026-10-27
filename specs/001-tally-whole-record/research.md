@@ -44,3 +44,23 @@ Code paths from `cv/short-cv-curation` at `be8fbbb`.
 
 - `1page` and `2page`: `publications` gains `"tally": { "of": "record" }`. Page counts are guarded
   by CI; the line is one line on each.
+
+## R6. The count's place
+
+- **Decision**: the count is a part with a place, keyed `<id>.tally` in the preset's and the
+  selection's existing `place` map, with the student key's three values: `below` (absent — its own
+  line, at the left, as today), `right` (its own line, at the right), `title` (the heading's line, at
+  its right, before the key when the key is there too). No new selection field: `place` already
+  carries any part key (`cleanPlace`).
+- **Measured** (a throwaway `cv.typ` change on the 2-page model): on the heading line, the short count
+  and the full key fit one line; the 2-page CV is 2 pages and the 1-page CV 1.
+- **Alternatives**: always on the heading line (not every CV has room or wants it); one place shared
+  with the key (they are chosen apart).
+
+## R7. The short form
+
+- **Decision**: `tally.form: "short"` prints "N papers (F first-author, S submitted)." — no
+  student-led number, which the key's colours and marks already say; ", S submitted" only when S > 0.
+  `tally()` passes `form` through; `cv.typ` and the preview word it. `cleanTally` keeps only `"short"`.
+- **Alternatives**: a separate section key (`tallyForm`), split from the rest of the count's
+  options for no gain.

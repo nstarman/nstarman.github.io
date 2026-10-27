@@ -10,6 +10,11 @@
 | `{ "of": "record", "hIndex": … }` | the whole record | that source's |
 
 Absent `of` is the list. Any other `of` value is dropped by `decode()` (counts the list).
+`form: "short"` prints the short form (no student-led number); absent, or any other value, the long.
+
+## The count's place
+
+`place["<id>.tally"]`: `below` (absent), `right`, or `title` — as `place["<id>.legend"]` is for the key.
 
 ## The whole record
 
@@ -18,7 +23,8 @@ includes an in-prep paper.
 
 ## Presets
 
-`1page` and `2page` `publications`: `"tally": { "of": "record" }`.
+`1page` and `2page` `publications`: `"tally": { "of": "record", "form": "short" }`, and
+`place["publications.tally"]: "title"`.
 
 ## Selection
 

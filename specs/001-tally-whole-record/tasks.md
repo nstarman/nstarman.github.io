@@ -15,7 +15,7 @@ the record count, and the selection's `of`.
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: can run in parallel (different files, no dependency on an unfinished task)
-- **[Story]**: US1 a short CV states the whole record; US2 I choose it in the builder
+- **[Story]**: US1 a short CV states the whole record; US2 I choose it in the builder; US3 the count takes no line of its own
 
 ## Phase 1: Setup
 
@@ -59,10 +59,27 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 
 **Checkpoint**: both stories work; `npm test` passes.
 
-## Phase 5: Polish & landing (constitution Article X)
+## Phase 5: User Story 3 — the count takes no line of its own (P2)
+
+**Goal**: the count can sit on the heading line, at its right, and in a short form; the 1-page and
+2-page CVs use both and keep their page counts.
+
+**Independent test**: the 2-page PDF's Publications heading line ends "19 papers (10 first-author, 5
+submitted)" then the student key; it is 2 pages, and the 1-page 1.
+
+- [ ] T019 [P] [US3] Add tests to tests/presets.test.js: `tally(pubs, { form: 'short' }).form` is `'short'`; absent or another value, `form` is absent; `resolve('1page')` and `resolve('2page')` set `place['publications.tally']` to `'title'` and their tally's `form` to `'short'`
+- [ ] T020 [P] [US3] Add tests to tests/selection.test.js: `{ form: 'short' }` and `{ of: 'record', form: 'short', hIndex }` round-trip; any other `form` is dropped; `place['publications.tally']` round-trips as `place` does
+- [ ] T021 [US3] In `tally()` in src/lib/presets.js, return `form: 'short'` when asked, nothing otherwise; in `cleanTally` in src/lib/selection.js keep `form` only when it is `"short"`
+- [ ] T022 [US3] In cv/cv.typ: `tallyline` prints the short form ("N papers (F first-author, S submitted)." — ", S submitted" only when S > 0; an h-index after either form) and takes an alignment; `publications()` prints it on its own line unless `place["<id>.tally"]` is `title` and the heading is there, aligned right for `right`; the heading's `aside` holds the count, then the key, when each is placed `title`
+- [ ] T023 [US3] In config/presets.json, give `1page` and `2page` `"form": "short"` in the publications tally and `"publications.tally": "title"` in `place`
+- [ ] T024 [US3] In src/components/CvFmtRow.astro, add a **Short** box (`data-tally-short-of`, disabled until Tally is ticked) after Whole record, and a Tally subject line with a Place slider keyed `<id>.tally` (Below, Right, Title) beside the Legend's; add both to tests/builder-placement.test.js's publication-list assertions
+- [ ] T025 [US3] In src/pages/webdev/cv.astro: `currentTally()` adds `form: 'short'` when Short is ticked, `setTally()` sets it, and Short enables with Tally; `syncLegends` words the preview's count in the short form when ticked and puts it on the heading line (with the key, count first) when its place is Title, as cv.typ does; a change to either retires the compiled PDF
+- [ ] T026 [US3] Build the PDFs: the 2-page is 2 pages, the 1-page 1 (SC-005); in the builder Start from 2P shows Short ticked and the count on the heading line, and Compile matches
+
+## Phase 6: Polish & landing (constitution Article X)
 
 - [X] T016 Run `npm test` and the quickstart.md checks
-- [ ] T017 Fold into specs/cv-presets/spec.md: FR-025 (`tally` takes `of: "record"`; no count includes an in-prep paper), FR-021 (the selection's `of`), FR-021a (Start from sets it), FR-027 (Whole record in the publication list's settings row), and the preset table (1page, 2page publications count the record) — as the current contract, not a changelog
+- [ ] T017 Fold into specs/cv-presets/spec.md: FR-025 (`tally` takes `of: "record"` and `form: "short"`; no count includes an in-prep paper; the count's place, `<id>.tally`), FR-021 (the selection's `of`), FR-021a (Start from sets it), FR-027 (Whole record in the publication list's settings row), and the preset table (1page, 2page publications count the record) — as the current contract, not a changelog
 - [ ] T018 Delete specs/001-tally-whole-record/ and .specify/feature.json
 
 ## Dependencies & execution order
@@ -70,7 +87,8 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 - Phase 2 (T001–T004) blocks both stories; T001 before T002, T003 before T004.
 - US1 (T005–T007) needs only Phase 2.
 - US2 (T008–T015) needs Phase 2; T008 before T009; T011 before T013; T012 before T014. Independent of US1 except that T015's Start from check needs T005.
-- Phase 5 after both.
+- US3 (T019–T026) needs Phase 2; T019 and T020 before T021; T021 before T022–T025; T026 last. T007's page count is met by T023.
+- Phase 6 after all three.
 
 ## Parallel opportunities
 

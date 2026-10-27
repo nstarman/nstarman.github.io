@@ -73,6 +73,31 @@ choice is kept.
 4. **Given** "Start from" the 1-page or 2-page preset, **When** applied, **Then** the count is on
    and set to the whole record, as that preset has it.
 
+---
+
+### User Story 3 - The count takes no line of its own (Priority: P2)
+
+As the CV's owner, I can set the count on the publication list's heading line, at its right — so it
+reads apart from the word "Publications" — and in a short form, "19 papers (10 first-author, 5
+submitted)", leaving the students to the colours and marks the key explains. The 2-page CV, which has
+about two lines to spare, then keeps its two pages with the count on.
+
+**Why this priority**: Without it the 2-page CV runs to a third page with the count on (measured:
+two lines over), and the only other fixes cut an entry.
+
+**Independent Test**: Build the 2-page CV: its Publications heading line reads, at its right, "19
+papers (10 first-author, 5 submitted)" and then the student key; the PDF is two pages.
+
+**Acceptance Scenarios**:
+
+1. **Given** the count placed on the heading line, **When** the key is placed there too, **Then**
+   both sit at the line's right, the count first.
+2. **Given** the count placed on the heading line, **When** the key is below, **Then** the count
+   alone sits at the line's right and the key keeps its own line.
+3. **Given** the short form, **When** an h-index is asked for, **Then** it follows as it does now.
+4. **Given** the builder, **When** I set the count's place and form, **Then** the preview and the
+   compiled PDF agree, Save keeps them, and Start from sets them as the preset has them.
+
 ### Edge Cases
 
 - A list that shows every paper: either setting gives the same numbers.
@@ -82,6 +107,9 @@ choice is kept.
 - The complete and NP CVs: they list every paper, so either setting gives the same numbers; their
   count stops counting in-prep papers (FR-002).
 - A paper that moves from submitted to published: the next build's counts follow the data.
+- The count placed on the heading line of a list printed without a heading: it takes its own line,
+  as the key does there.
+- A short count with no submitted papers: "N papers (F first-author)".
 
 ## Requirements *(mandatory)*
 
@@ -102,11 +130,21 @@ choice is kept.
 - **FR-005**: "Start from" a preset MUST set the count as that preset has it.
 - **FR-006**: The count line's wording MUST be the same whichever it counts.
 - **FR-007**: The h-index option MUST be unchanged by which papers the count counts.
+- **FR-008**: The count line MUST have a place, as the student key does: on its own line below the
+  heading (the default, today's), on its own line at the right, or on the heading's line at its
+  right. On the heading's line with the key also there, the count comes first; with no heading, it
+  takes its own line.
+- **FR-009**: The count MUST have a short form, "N papers (F first-author, S submitted)", which
+  leaves out the student-led number and, with no submitted papers, the ", S submitted"; the long
+  form (FR-006) stays the default. An h-index follows either form.
+- **FR-010**: The 1-page and 2-page presets MUST set the count on the heading's line in the short
+  form; the builder MUST offer both choices in the publication list's own settings row, and a saved
+  selection MUST record them, a file without them reading as the default.
 
 ### Key Entities
 
-- **Count line (tally)**: per publication list; on or off, an optional h-index, and now what it
-  counts — the shown papers or the whole record.
+- **Count line (tally)**: per publication list; on or off, an optional h-index, what it counts —
+  the shown papers or the whole record — its form (long or short), and its place.
 
 ## Success Criteria *(mandatory)*
 
@@ -119,12 +157,14 @@ choice is kept.
   with in-prep papers ticked counts them no longer).
 - **SC-003**: The 1-page and 2-page CVs keep their page counts with the count line added.
 - **SC-004**: In the builder, switching the choice changes the preview and the compiled PDF alike.
+- **SC-005**: With the count on the heading line in the short form, the 2-page CV is two pages and
+  the 1-page CV one, with no entry cut.
 
 ## Assumptions
 
 - "Whole record" is the publications in the data, not an external source (ADS, Scholar).
-- The count line keeps its place (above the list, or on the heading's line as the Legend place
-  says) and its wording; only the numbers change.
+- The count's place and form are chosen apart from the key's; absent, a count prints where and as
+  it does today.
 - #489 (the short-CV curation) lands first; this feature builds on its presets.
 
 ## On landing *(mandatory)*

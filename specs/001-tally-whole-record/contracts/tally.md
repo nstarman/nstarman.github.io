@@ -12,3 +12,15 @@ section's `tally` is set — unchanged wording:
 - Builder: the Tally box, then **Whole record** (only while Tally is ticked), then the h-index menu,
   in the publication list's settings row. Preview and Compile PDF agree; Save keeps it; "Start from"
   sets it as the preset has it; a file without `of` counts the ticked papers.
+
+## Short form and place
+
+> **19 papers** (10 first-author, 5 submitted). h-index N (Source).
+
+- `form: "short"`: no student-led number; ", S submitted" only when S > 0.
+- `place["<id>.tally"]`: `below` its own line at the left (default), `right` its own line at the right,
+  `title` the heading's line at its right, before the student key when that is there too; a list with
+  no heading puts it on its own line.
+- The 1-page and 2-page CVs: whole record, short form, on the heading line.
+- Builder: a **Short** box beside Whole record, and a **Place** for the count (Below, Right, Title)
+  on a Tally line of the publication list's settings row.
