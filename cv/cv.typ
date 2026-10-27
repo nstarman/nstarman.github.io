@@ -307,6 +307,22 @@
   v(if flat { below + 8pt } else { below })
 }
 
+// A member of a section group (Professional Activities), under the group's heading: the
+// section's mark and name in the heading's face, a size down, with no rule, so it reads as
+// belonging to the heading above it rather than as a heading of its own.
+#let subsection(title, mark: none, below: gap("", "heading")) = {
+  v(if tight { 5pt } else { 9pt })
+  let g = if mark == none or flat { none } else { glyph(mark, size: 0.95em, fill: ink) }
+  block(breakable: false, sticky: true)[
+    #set par(justify: false, spacing: 0pt)
+    #text(size: look.size, weight: look.headweight, fill: look.headcolour)[
+      #if g != none [#g #h(2pt)]
+      #if look.smallcaps { smallcaps(title) } else { title }
+    ]
+  ]
+  v(below * 0.6)
+}
+
 // ── spans ─────────────────────────────────────────────────────────────────
 // Emphasis and links arrive as spans, not markup — a literal "*" would print.
 // Submitted / in prep, as the website marks them. Replaces the Submitted and
@@ -557,14 +573,32 @@
 }
 
 // ── body ──────────────────────────────────────────────────────────────────
-// Empty sections are already dropped by the resolver.
+// Empty sections are already dropped by the resolver. A section in a group the builder switched
+// on carries `group`; the group's heading prints once, before its first member, and each member
+// takes a sub-heading.
+#let opened = none
 #for s in cv.sections {
+  let grp = s.at("group", default: none)
+  if grp != none and opened != grp.id {
+    let gchoice = headingof.at(grp.id, default: usual)
+    if gchoice != "none" {
+      section(
+        grp.heading,
+        mark: grp.at("icon", default: none),
+        variant: if gchoice in headings { gchoice } else { usual },
+        below: gap(grp.id + ".heading", "heading"),
+      )
+    }
+  }
+  opened = if grp == none { none } else { grp.id }
   let choice = headingof.at(s.id, default: usual)
   // The legend goes up only onto a heading that is there.
   let keyplace = placeof.at(s.id + ".legend", default: "below")
   let keyup = (s.at("layout", default: none) == "publications" and choice != "none"
     and keyplace == "title" and hasstudents(s))
-  if choice != "none" {
+  if choice != "none" and grp != none {
+    subsection(s.heading, mark: s.at("icon", default: none), below: gap(s.id + ".heading", "heading"))
+  } else if choice != "none" {
     section(
       s.heading,
       mark: s.at("icon", default: none),

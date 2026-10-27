@@ -7,9 +7,10 @@
     "start": "2021-07"
   },
   "title": "ComSciCon GTA 2021",
+  "role": "Organizing Committee",
   "kind": "organizer",
   "location": "Online",
-  "details": "Role: Organizing Committee member for the Toronto ComSciCon – a workshop series for graduate students on science communication skills",
+  "details": "A workshop series for graduate students on science communication skills",
   "links": [
     {
       "rel": "event",

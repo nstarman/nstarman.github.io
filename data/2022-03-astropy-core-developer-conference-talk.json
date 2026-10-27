@@ -9,8 +9,9 @@
     "start": "2022-03"
   },
   "title": "Astropy Core Developer Conference (Talk)",
+  "role": "Maintainer, Cosmology and Units",
   "kind": "attended",
+  "professional": true,
   "location": "Boston, MA, USA",
-  "talk": "The future of interoperability with Python's Protocols",
-  "details": "Role: Core developer, maintainer for Astropy Cosmology and Units"
+  "talk": "The future of interoperability with Python's Protocols"
 }

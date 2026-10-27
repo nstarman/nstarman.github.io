@@ -7,7 +7,7 @@ import CvToc from '../../components/CvToc.astro';
 import CvFmtRow from '../../components/CvFmtRow.astro';
 import CvCardTune from '../../components/CvCardTune.astro';
 import '../../styles/cv/builder.css';
-import { resolve, memberIds, presetNames, preset, cardOrder, H_INDEX_SOURCES, hIndexOf } from '../../lib/presets.js';
+import { resolve, memberIds, presetNames, preset, cardOrder, H_INDEX_SOURCES, hIndexOf, SECTION_GROUPS } from '../../lib/presets.js';
 import { authors } from '../../lib/data.js';
 import { buildInfo } from '../../lib/buildinfo.js';
 import CV_STYLES from '../../../cv/lib/styles.json';
@@ -55,6 +55,10 @@ const builderData = {
   cardOrder: cardOrder(),
   // On US Letter the email and the website take a line each.
   cardOrderLetter: cardOrder(true),
+  // The section groups the Group option gathers under one heading: heading and members.
+  sectionGroups: SECTION_GROUPS,
+  // Which groups each preset has on by default, so "Start from" sets the Group option as it does.
+  presetGroups: Object.fromEntries(presetNames.map((n) => [n, preset(n).groups])),
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
@@ -149,10 +153,10 @@ const builderData = {
     import { plural, achievementTicked } from '@nstarkman/data-resolver/inline.js';
     import { compilePdf } from '../../lib/typstcompile.js';
     import { readSpacing, writeSpacing } from '../../lib/cvspacing.js';
-    import { move, holdDrag } from '../../lib/secorder.js';
+    import { move, holdDrag, gather, moveGrouped, GROUP } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -342,15 +346,17 @@ const builderData = {
         $(t.getAttribute('aria-controls')).hidden = !open;
       }
       if (t.dataset.move !== undefined) {
-        const head = t.closest('.cvsec').querySelector('.cvsection');
+        const onGroup = t.dataset.group !== undefined;
+        const head = onGroup ? t.closest('.cvgrouphead').querySelector('.cvsection') : t.closest('.cvsec').querySelector('.cvsection');
         const at = head.getBoundingClientRect().top;
-        setOrder(move(currentOrder(), head.id, Number(t.dataset.move)));
+        const dir = Number(t.dataset.move);
+        setOrder(grouping() ? moveGrouped(currentOrder(), onGroup ? GROUP : head.id, dir, MEMBERS) : move(currentOrder(), head.id, dir));
         // The section moved under the pointer; bring it back, so a second press
         // moves it again rather than something else.
         scrollBy(0, head.getBoundingClientRect().top - at);
         retire('Order changed — compile again.');
         // The button the press landed on may now be disabled, and focus with it.
-        if (t.disabled) t.closest('.cvsec').querySelector('.secmove button:not(:disabled)')?.focus();
+        if (t.disabled) (t.closest('.cvgrouphead') ?? t.closest('.cvsec')).querySelector('.secmove button:not(:disabled)')?.focus();
       }
       if (t.id === 'resetorder') {
         setOrder(FIRST_ORDER);
@@ -359,7 +365,10 @@ const builderData = {
       // "Start from" starts from the preset's sections in its own order, the
       // rest after them as they usually come; All and None, the usual order.
       if (t.dataset.all !== undefined) setOrder(FIRST_ORDER);
-      if (t.dataset.preset) setOrder([...SECTION_ORDER[t.dataset.preset], ...FIRST_ORDER]);
+      if (t.dataset.preset) {
+        if ($('groupsections')) $('groupsections').checked = (PRESET_GROUPS[t.dataset.preset] ?? []).includes(GROUP_ID);
+        setOrder([...SECTION_ORDER[t.dataset.preset], ...FIRST_ORDER]);
+      }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
@@ -688,9 +697,36 @@ const builderData = {
     const talks = document.querySelector('#tree .cvtalks');
     const talksExtras = [...talks.children].filter((c) => !c.matches('.cvsec'));
 
+    // ── section groups ──────────────────────────────────────────────────
+    // "Group Professional Activities" gathers its sections under one heading. The heading is the
+    // page's own, made once here: it is not a section, so the order and the compile never see it.
+    const GROUP_ID = 'professional';
+    const MEMBERS = SECTION_GROUPS[GROUP_ID]?.sections ?? [];
+    const grouping = () => $('groupsections')?.checked === true;
+    const groupHead = (() => {
+      const head = document.createElement('div');
+      head.className = 'cvsechead cvgrouphead';
+      const h = document.createElement('h3');
+      h.className = 'cvsection cvgroup';
+      h.id = GROUP_ID;
+      h.textContent = SECTION_GROUPS[GROUP_ID]?.heading ?? '';
+      const moves = document.querySelector('#tree .secmove')?.cloneNode(true);
+      if (moves) {
+        moves.setAttribute('aria-label', `Move ${h.textContent}`);
+        const [up, down] = moves.querySelectorAll('button');
+        up.setAttribute('aria-label', `Move ${h.textContent} up`);
+        down.setAttribute('aria-label', `Move ${h.textContent} down`);
+        up.dataset.group = down.dataset.group = '';
+      }
+      head.append(h, ...(moves ? [moves] : []));
+      return head;
+    })();
+
     /** Lay the page, the contents list and the move buttons out in `ids`'
      *  order; a section the list does not name goes last, as the compile has it. */
     const setOrder = (ids) => {
+      // Grouped, the members stand together, where the first of them does — as the compile has it.
+      if (grouping()) ids = gather(ids, MEMBERS);
       const rank = (id) => { const i = ids.indexOf(id); return i < 0 ? ids.length : i; };
       const sorted = sections().sort((a, b) => rank(secId(a)) - rank(secId(b)));
       const tree = $('tree');
@@ -703,18 +739,33 @@ const builderData = {
         else if (run.length) break;
       }
       if (run.length) { run[0].before(talks); talks.append(...run, ...talksExtras); }
+      // The group's heading, before its first member, while the option is on; its members read
+      // as sub-sections, and move only among themselves.
+      groupHead.remove();
+      // A group of one is just that section, as the compile has it.
+      const inGroup = grouping() ? sorted.filter((s) => MEMBERS.includes(secId(s))) : [];
+      const members = inGroup.length > 1 ? inGroup : [];
+      if (members.length) members[0].before(groupHead);
+      const ends = (list, s) => [list[0] === s, list.at(-1) === s];
+      const units = sorted.filter((s) => !members.includes(s) || s === members[0]);
       sorted.forEach((s, i) => {
         s.classList.toggle('cvsec--first', i === 0);
         s.classList.toggle('cvsec--last', i === sorted.length - 1);
+        s.classList.toggle('cvsec--sub', members.includes(s));
         const [up, down] = s.querySelectorAll('.secmove button');
-        up.disabled = i === 0;
-        down.disabled = i === sorted.length - 1;
+        [up.disabled, down.disabled] = members.includes(s) ? ends(members, s)
+          : grouping() && members.length ? ends(units, s) : [i === 0, i === sorted.length - 1];
       });
+      if (members.length) {
+        const [up, down] = groupHead.querySelectorAll('.secmove button');
+        [up.disabled, down.disabled] = ends(units, members[0]);
+      }
       // Nothing to reset while it is as the page began.
       $('resetorder').disabled = sorted.every((s, i) => secId(s) === FIRST_ORDER[i]);
       if (toc) {
         const lis = new Map([...toc.children].map((li) => [li.querySelector('a').dataset.sec, li]));
         toc.append(...sorted.map((s) => lis.get(secId(s))));
+        for (const s of sorted) lis.get(secId(s))?.classList.toggle('cvtoc--sub', members.includes(s));
       }
     };
     setOrder(currentOrder());
@@ -752,7 +803,7 @@ const builderData = {
       lines: currentLines(), inline: currentInline(),
       style: $('style').value, spacing: currentSpacing(),
       heading: currentHeadings(), place: currentPlace(),
-      prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(),
+      prefix: currentPrefix(), order: currentOrder(), columns: currentColumns(), groups: grouping() ? [GROUP_ID] : [],
       group: currentGroup(), card: currentCard(), locationAt: currentLocationAt(), locationDetail: currentLocationDetail(),
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
@@ -805,6 +856,7 @@ const builderData = {
       for (const g of placeGroups()) setPlace(g, sel.place[g.dataset.placeOf]);
       for (const g of columnGroups()) setColumns(g, sel.columns[g.dataset.columnsOf]);
       for (const row of document.querySelectorAll('.fmtrow')) syncFmt(row);
+      if ($('groupsections')) $('groupsections').checked = sel.groups.includes(GROUP_ID);
       setOrder(sel.order.length ? sel.order : FIRST_ORDER);
       // The page format first, as the card's usual order follows it. A format
       // this page does not offer is the style's default.
@@ -924,6 +976,7 @@ const builderData = {
       $('linkondegree').closest('.fmtopt').hidden = !$('schoolbelow').checked;
     };
     $('schoolbelow').addEventListener('change', () => { showSchoolBelow(); retire('Education changed — compile again.'); });
+    $('groupsections')?.addEventListener('change', () => { setOrder(currentOrder()); retire('Grouping changed — compile again.'); });
     $('linkondegree').addEventListener('change', () => retire('Education changed — compile again.'));
     $('currency').addEventListener('change', () => { showCurrency(); retire('Currency changed — compile again.'); });
     // The settings menu sets every entry's institution name; an entry's own menu

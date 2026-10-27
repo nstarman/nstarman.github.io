@@ -108,3 +108,13 @@ describe('one model from a selection', () => {
     }, 120_000);
   });
 });
+
+describe('a section group in a selection', () => {
+  const sel = (groups) => decode(JSON.stringify(encode({ items: memberIds('np'), lines: {}, groups, site: {} })));
+  it('groups the compiled model only when switched on', () => {
+    expect(modelFromSelection(sel([])).sections.some((s) => s.group)).toBe(false);
+    const grouped = modelFromSelection(sel(['professional'])).sections.filter((s) => s.group);
+    expect(grouped.length).toBeGreaterThan(0);
+    expect(grouped.every((s) => s.group.heading === 'Professional Activities')).toBe(true);
+  });
+});

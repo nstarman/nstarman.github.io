@@ -233,3 +233,10 @@ summary.cvsechead:hover .cvsection{color:var(--accent)}
 .tlgroup--sep .tl--member .inst{display:inline}
 .tlgroup--sep .tl--member .gutterlinks{display:revert}
 .tlgroup--sep .tl--member .what{padding-left:0}
+
+/* A section group (Professional Activities): its heading is a section heading; its members read
+   as sub-sections under it — a smaller, small-caps name and no rule, as the PDF draws them. The
+   builder adds the same classes as its Group option changes. */
+.cvsec--sub .cvsechead{margin-top:.7rem; border-bottom:0; padding-bottom:0}
+.cvsec--sub .cvsechead .cvsection{font-size:.88rem; font-variant:small-caps; letter-spacing:.02em; color:var(--muted, var(--ink))}
+.cvtoc li.cvtoc--sub{padding-left:.9em; font-size:.92em}

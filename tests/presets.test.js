@@ -223,3 +223,71 @@ describe('a fellowship', () => {
     expect(byType('position').filter((i) => i.tier).map((i) => i.id)).toEqual([]);
   });
 });
+
+// A section group prints its members under one heading. Presets never group; the builder switches
+// one on (`groups`), and its members gather where the first of them stands, in the group's order.
+describe('a section group', () => {
+  const MEMBERS = ['conferences-organized', 'conferences-attended', 'talks-professional', 'peer-review', 'service'];
+  const ids = (name, opts) => resolve(name, undefined, opts).sections.map((s) => s.id);
+
+  it('is on by default only where a preset says so: np, 2page and 1page, not complete', () => {
+    expect(resolve('complete').sections.filter((s) => s.group)).toEqual([]);
+    for (const name of ['np', '2page', '1page']) {
+      expect(preset(name).groups).toEqual(['professional']);
+      // Grouped wherever two or more members hold something; one alone stays a plain section.
+      const members = resolve(name).sections.filter((s) => MEMBERS.includes(s.id));
+      expect(members.every((s) => (members.length > 1 ? s.group?.id === 'professional' : !s.group)), name).toBe(true);
+    }
+    expect(resolve('np').sections.filter((s) => s.group).length).toBeGreaterThan(1);
+    // The builder's choice wins, either way.
+    expect(resolve('np', undefined, { groups: [] }).sections.some((s) => s.group)).toBe(false);
+  });
+
+  it('gathers its members, in its order, where the first of them stands', () => {
+    const on = resolve('complete', undefined, { groups: ['professional'] }).sections;
+    const shown = MEMBERS.filter((id) => on.some((s) => s.id === id));
+    const at = on.findIndex((s) => s.group);
+    expect(on.slice(at, at + shown.length).map((s) => s.id)).toEqual(shown);
+    expect(on.slice(at, at + shown.length).every((s) => s.group.id === 'professional' && s.group.heading === 'Professional Activities')).toBe(true);
+    // Where the first member stood with grouping off.
+    expect(at).toBe(ids('complete').findIndex((id) => MEMBERS.includes(id)));
+  });
+
+  it('is just its one member when only one is left: no umbrella over a single sub-heading', () => {
+    const one = resolve('complete', new Set(['list:peer-review']), { groups: ['professional'] }).sections;
+    expect(one.map((s) => s.id)).toEqual(['peer-review']);
+    expect(one[0].group).toBeUndefined();
+  });
+
+  it('groups only the members a preset lists and holds', () => {
+    const on = resolve('np', undefined, { groups: ['professional'] }).sections.filter((s) => s.group).map((s) => s.id);
+    expect(on).toEqual(ids('np', { groups: [] }).filter((id) => MEMBERS.includes(id)));
+    // 2page lists peer review and service but holds no service, so one member is left: no group.
+    expect(resolve('2page', undefined, { groups: ['professional'] }).sections.some((s) => s.group)).toBe(false);
+  });
+
+  it('moves as one when the builder orders it, and its members only among themselves', () => {
+    const first = ids('complete', { groups: ['professional'], order: ['professional'] });
+    expect(first.slice(0, 1)).toEqual([MEMBERS.find((id) => first.includes(id))]);
+    const inside = ids('complete', { groups: ['professional'], order: ['service'] });
+    const g = resolve('complete', undefined, { groups: ['professional'], order: ['service'] }).sections.filter((s) => s.group).map((s) => s.id);
+    expect(g[0]).toBe('service');
+    // A member named in `order` pulls its whole group, not just itself, to the front.
+    expect(inside.slice(0, g.length)).toEqual(g);
+  });
+
+  it('ignores a group id it does not know', () => {
+    expect(ids('complete', { groups: ['nope'] })).toEqual(ids('complete', { groups: [] }));
+  });
+});
+
+describe('a professional talk', () => {
+  const where = (id) => resolve('complete').sections.filter((s) => s.items.some((i) => i.id === id)).map((s) => s.id);
+  it('lists under Professional & Software Talks, and nowhere else', () => {
+    for (const id of ['from-jax-to-galax', 'astropy-core-developer-conference-talk', 'astropy-conference-talk']) expect(where(id)).toEqual(['talks-professional']);
+  });
+  it('is never among the science talks or the conferences attended', () => {
+    const science = resolve('complete').sections.filter((s) => ['talks-invited', 'talks-contributed', 'conferences-attended'].includes(s.id));
+    expect(science.flatMap((s) => s.items).filter((i) => i.professional).map((i) => i.id)).toEqual([]);
+  });
+});

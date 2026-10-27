@@ -13,7 +13,45 @@ import { plural } from '@nstarkman/data-resolver/inline.js';
 import { readSavedSpacing } from './cvspacing.js';
 
 export const FORMAT = 'starkman-cv-selection';
-export const VERSION = 1;
+export const VERSION = 2;
+
+// What changed under a saved file between versions, as data, so decode() can bring an old file up
+// to now and it prints what it printed when it was saved.
+//
+// 2: an organized conference's role moved from its first detail line ("Role: SOC") into `role`, so
+//    the line went and those after it each moved up one; Conferences split into Organized, Attended
+//    and Professional & Software Talks; section groups (`groups`) arrived, off for an old file.
+//    The index is the line's among all the entry's lines, where a talk's title is line 0.
+const V2_LINE_GONE = {
+  'jaxtronomy-workshop': 0, 'division-of-dynamical-astronomy-56': 0, 'astropy-coordination-meeting': 0,
+  'astrophysics-and-space-science-in-marche-iii-big-bang-big-st': 0, 'gaia-hackathon': 0, 'gaia-hackathon-2': 0,
+  'astropy-core-developer-conference-talk': 1,
+};
+const V2_SPLIT = { conferences: ['conferences-organized', 'conferences-attended', 'talks-professional'] };
+// Settings keyed by section id, and those keyed `<id>.<part>`.
+const BY_SECTION = ['heading', 'locationAt', 'location', 'locationBelow', 'prefix', 'columns', 'tally'];
+const BY_PART = ['spacing', 'place'];
+
+function toV2(raw) {
+  // A malformed list is left as it is, for decode() to refuse as it would any other.
+  const ok = raw.lines && typeof raw.lines === 'object' && !Array.isArray(raw.lines);
+  const lines = ok ? { ...raw.lines } : raw.lines;
+  for (const [id, gone] of ok ? Object.entries(V2_LINE_GONE) : []) {
+    if (!Array.isArray(lines[id])) continue;
+    const moved = lines[id].filter((n) => Number.isInteger(n) && n !== gone).map((n) => (n > gone ? n - 1 : n));
+    if (moved.length) lines[id] = moved; else delete lines[id];
+  }
+  const split = (key) => {
+    const [id, ...part] = key.split('.');
+    return V2_SPLIT[id]?.map((to) => [to, ...part].join('.')) ?? [key];
+  };
+  const renamed = (obj) => Object.fromEntries(Object.entries(objectOf(obj)).flatMap(([k, v]) => split(k).map((to) => [to, v])));
+  const out = { ...raw, version: 2, lines };
+  for (const f of [...BY_SECTION, ...BY_PART]) if (raw[f] !== undefined) out[f] = renamed(raw[f]);
+  if (Array.isArray(raw.order)) out.order = raw.order.flatMap((id) => (typeof id === 'string' ? split(id) : [id]));
+  return out;
+}
+const MIGRATIONS = { 1: toV2 };
 
 // Nothing legitimate approaches these; they stop a malformed or malicious file
 // from being expanded into millions of DOM lookups.
@@ -118,6 +156,9 @@ const cleanLocationDetail = (raw) => ({
   ...(objectOf(raw).country === 'code' && { country: 'code' }),
 });
 
+/** Section groups switched on, by id. An id this build does not define is ignored by the resolver. */
+const cleanGroups = (raw) => [...new Set(Array.isArray(raw) ? raw.filter((k) => typeof k === 'string' && /^[a-z0-9-]{1,64}$/.test(k)) : [])].slice(0, 16);
+
 const cleanOrder = (raw) => (Array.isArray(raw)
   ? [...new Set(raw.filter((s) => typeof s === 'string' && s.length <= 64))].slice(0, 64)
   : []);
@@ -142,7 +183,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -178,6 +219,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     columns: cleanColumns(columns),
     // Institutions whose roles are grouped, or not, against the records' say.
     group: cleanGroup(group),
+    // Section groups switched on — Professional Activities as one heading. Absent, none.
+    groups: cleanGroups(groups),
     // What the header card shows, and its links' order. Absent, the card as it
     // comes, which is what every selection saved before the card means.
     card: cleanCard(card),
@@ -243,6 +286,8 @@ export function decode(text) {
   if (!Number.isInteger(raw.version) || raw.version > VERSION) {
     fail(`That selection was saved by a newer version of this page (v${raw.version}).`);
   }
+  // An older file is brought up to this version, step by step, before it is read.
+  for (let v = raw.version; v < VERSION; v++) raw = MIGRATIONS[v]?.(raw) ?? raw;
   if (!Array.isArray(raw.items)) fail('That selection has no entry list.');
   if (raw.items.length > MAX_ITEMS) fail('That selection is implausibly large.');
 
@@ -281,6 +326,7 @@ export function decode(text) {
     order: cleanOrder(raw.order),
     columns: cleanColumns(raw.columns),
     group: cleanGroup(raw.group),
+    groups: cleanGroups(raw.groups),
     card: cleanCard(raw.card),
     locationAt: locationAtOf(raw),
     locationDetail: cleanLocationDetail(raw.locationDetail),

@@ -114,3 +114,14 @@ describe('a role', () => {
     expect(items.filter((i) => i.role && repeats(i.title, i.role)).map((i) => `${i.id}: "${i.role}" in "${i.title}"`)).toEqual([]);
   });
 });
+
+// A role is `role` (FR-036), not a detail line that says "Role:" — the CV prints the field on the
+// heading line, so a line saying it too would print it twice.
+describe('a detail line', () => {
+  it('never starts with "Role:"', () => {
+    const lines = (v) => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
+    const bad = items.flatMap((i) => [...lines(i.details), ...lines(i.detailsComplete)]
+      .filter((l) => /^\s*Role:/.test(l)).map((l) => `${i.id}: ${l}`));
+    expect(bad).toEqual([]);
+  });
+});

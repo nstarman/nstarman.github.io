@@ -10,6 +10,7 @@
   },
   "title": "Astropy Conference (Talk)",
   "kind": "contributed",
+  "professional": true,
   "location": "Cambridge, MA, USA",
   "talk": "An Interoperable Future with Astropy"
 }

@@ -64,7 +64,7 @@ deserve a file. They live in `data/lists/<id>.json` against
 
 An entry is one line of prose and may carry `[text](url)` exactly as an item's
 `details` does. A preset section renders one by naming it instead of matching:
-`"peer-review": { "heading": "Peer Review", "icon": "publications", "list": "peer-review" }`.
+`"peer-review": { "heading": "Peer Review & Panels", "icon": "publications", "list": "peer-review" }`.
 
 **`data/*.json` is items only.** Configuration lives outside that namespace, in
 `config/` — currently `config/presets.json`, which defines the CV presets.
@@ -140,6 +140,11 @@ is what to *do* for each kind of item.
   node scripts/sync-software-figures.mjs
   ```
 
+- **A conference or a talk.** A conference I organized is `kind: "organizer"`
+  with my part in `role` ("SOC", "LOC", "Organizing Committee"), never a
+  "Role: …" detail line — the tests reject one. A talk about software or the
+  community rather than science sets `"professional": true`, and lists under
+  Professional & Software Talks instead of with the science talks.
 - **A talk or anything with a `location`.** Write a place, not an institution:
   `City, ST, Country` in the US and Canada (`Toronto, ON, Canada`, never
   `TO, CA`), `City, Country` elsewhere, or `Online`; the CV reads that shape to drop

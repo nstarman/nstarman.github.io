@@ -15,7 +15,7 @@ const section = src.slice(0, start);
 const ids = (text) => [...text.matchAll(/\bid="([A-Za-z0-9_-]+)"/g)].map((m) => m[1]);
 
 // Every control for the whole CV. A new one is added here on purpose.
-const WHOLE_CV = ['style', 'format', 'names', 'currency', 'locregion', 'loccountry', 'trailwbox', 'selprefix', 'trailcap', 'fill', 'resetorder'];
+const WHOLE_CV = ['style', 'format', 'names', 'currency', 'locregion', 'loccountry', 'trailwbox', 'selprefix', 'trailcap', 'fill', 'resetorder', 'groupsections'];
 // Controls for one section, and the section whose row holds each.
 const ONE_SECTION = { schoolbelow: "s.id === 'education'", linkondegree: "s.id === 'education'", paperids: "s.id === 'mentoring'" };
 

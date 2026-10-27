@@ -112,13 +112,17 @@ fetched fields (`specs/refresh/spec.md`).
   (accepted, never given). An `accepted` talk has no `location`. A `presentation`'s
   `talk` is the title of the talk or poster, a non-empty string without quotation marks
   (renderers add them) and with the inline links `details` allows; no other type has it.
-  A note that is not a title (a role, a lecturer's post) stays in `details`, so `talk`
-  is the only text a renderer quotes. A talk's `title` is the event's name and does not repeat
+  My part in the event (SOC, LOC, an organizing committee) is its `role` (FR-036), never a
+  detail line; another note that is not a title (a lecturer's post) stays in `details`, so `talk`
+  is the only text a renderer quotes. `professional: true` marks a talk about software or the
+  community rather than science; it then lists under Professional & Software Talks, not with the
+  science talks (`specs/cv-presets/spec.md`, FR-005b). A talk's `title` is the event's name and does not repeat
   its place: the place is its `location` alone, and the CV prints it where the builder puts it
   (the right column, below the title or in the title), never in two positions. *Enforced:* the
   schema (`presentation-without-kind.json`, `talk-on-non-presentation.json`, `talk-empty.json`),
   `tests/talktitle.test.js` (no title lost or doubled, a role never a title),
-  `tests/talkplace.test.js` (no title ends in its own location or its city); review for `accepted`
+  `tests/talkplace.test.js` (no title ends in its own location or its city),
+  `tests/integrity.test.js` ("a detail line never starts with Role:"); review for `accepted`
   without `location`.
 
 ### Publications
@@ -265,7 +269,7 @@ fetched fields (`specs/refresh/spec.md`).
 | `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles` |
 | `fellowship` | `tier` | `institution`, `institutionNames`, `funder`, `role`, `amount`, `declined`, `location` |
 | `award`, `grant` | `tier` | `amount`, `declined`, `funder`, `role`, `recipient`, `recipientInline` |
-| `presentation` | `kind` | `event`, `location`, `talk` |
+| `presentation` | `kind` | `event`, `location`, `talk`, `role`, `professional` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs`, and for a profile `person`, `slug`, `photo`, `badge`, `research`, `journey`, `achievements` |
 | `teaching` | — | `institution`, `course`, `role` |
 | `service`, `outreach` | — | `organization`, `role`, `kind` (`invited` · `contributed`), `location` |

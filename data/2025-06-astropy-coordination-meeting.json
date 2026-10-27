@@ -9,9 +9,9 @@
     "start": "2025-06"
   },
   "title": "Astropy Coordination Meeting",
+  "role": "SOC",
   "kind": "organizer",
   "location": "Santa Cruz, CA, USA",
-  "details": "Role: SOC",
   "links": [
     {
       "rel": "event",

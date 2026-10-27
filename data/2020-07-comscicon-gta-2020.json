@@ -7,9 +7,10 @@
     "start": "2020-07"
   },
   "title": "ComSciCon GTA 2020",
+  "role": "Organizing Committee",
   "kind": "organizer",
   "location": "Online",
-  "details": "Role: Organizing Committee member for Toronto’s first ComSciCon",
+  "details": "Toronto’s first ComSciCon",
   "links": [
     {
       "rel": "event",

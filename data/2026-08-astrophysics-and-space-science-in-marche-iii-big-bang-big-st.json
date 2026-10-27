@@ -9,8 +9,8 @@
     "start": "2026-08"
   },
   "title": "Astrophysics and Space Science in Marche III: Big Bang, Big Stars, Big Computers",
+  "role": "SOC",
   "kind": "organizer",
   "location": "Jesi, Italy",
-  "refs": ["public-talk-jesi"],
-  "details": "Role: SOC"
+  "refs": ["public-talk-jesi"]
 }

@@ -9,9 +9,10 @@
     "start": "2026-09"
   },
   "title": "Astropy 2026 Conference",
+  "role": "Coordination Committee and Strategic Planning Committee",
   "kind": "organizer",
   "location": "Online",
-  "details": "Role: Coordination Committee and Strategic Planning Committee; moderated online discussion and helped moderate the AI sessions.",
+  "details": "Moderated online discussion and helped moderate the AI sessions.",
   "refs": [
     "astropy-coordinator-developer"
   ]
