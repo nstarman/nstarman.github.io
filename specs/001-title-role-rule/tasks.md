@@ -67,8 +67,8 @@ Postdoctoral Fellow, Brinson Foundation"; Massey and Pacific repeat nothing.
 
 **Independent test**: a fixture item whose `role` repeats its `title` fails, naming the item.
 
-- [ ] T017 [US2] In `tests/integrity.test.js`, add "no role repeats its title": tokenize `title` and `role` (lowercase, split on non-alphanumerics), stem each token by dropping a trailing `ship` then a trailing `s`, and fail when the role's whole token sequence occurs contiguously in the title's; one failure per item, naming its id (research.md R2). Include unit cases: "Prize Fellow"/"Brinson Prize Fellowship" fails, "Junior Fellow"/"Massey Junior Fellow" fails, "Postdoctoral Fellow"/"Brinson Prize Fellowship" passes, "Co-I"/"JWST GO 10246: …" passes.
-- [ ] T018 [P] [US2] In `AGENTS.md` §2 "Write the item", add the rule in two sentences — `title` is the thing's name; `role` is my part in it, left out when the title is already my part, never repeating it — and add `fellowship` to the type bullets (a fellowship sets `tier`, its host in `institution`, its funder in `funder`).
+- [X] T017 [US2] In `tests/integrity.test.js`, add "no role repeats its title": tokenize `title` and `role` (lowercase, split on non-alphanumerics), stem each token by dropping a trailing `ship` then a trailing `s`, and fail when the role's whole token sequence occurs contiguously in the title's; one failure per item, naming its id (research.md R2). Include unit cases: "Prize Fellow"/"Brinson Prize Fellowship" fails, "Junior Fellow"/"Massey Junior Fellow" fails, "Postdoctoral Fellow"/"Brinson Prize Fellowship" passes, "Co-I"/"JWST GO 10246: …" passes.
+- [X] T018 [P] [US2] In `AGENTS.md` §2 "Write the item", add the rule in two sentences — `title` is the thing's name; `role` is my part in it, left out when the title is already my part, never repeating it — and add `fellowship` to the type bullets (a fellowship sets `tier`, its host in `institution`, its funder in `funder`).
 
 **Checkpoint**: the test passes on the data from US1 and would have failed on `main`.
 

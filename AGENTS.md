@@ -108,6 +108,15 @@ is what to *do* for each kind of item.
   ([`specs/cv-presets/spec.md`](specs/cv-presets/spec.md)). Use the coarsest
   date you know. `links[].rel` is a closed set; needing a new one is a schema
   change, not a data change.
+- **Title and role.** `title` is the name of the thing — a job title for a
+  plain job, otherwise the program, fellowship, grant, award, course, committee,
+  package or event. My part in it ("Postdoctoral Fellow", "Co-I", "TA",
+  "Volunteer") goes in `role`, left out when the title already is my part; a
+  role that repeats its title fails the tests. Rows print title, role, then who.
+- **A fellowship.** Named, awarded support held by me is `type: "fellowship"`,
+  never a `position` (a post) or a `grant` (funding for a project): `tier`, the
+  host in `institution`, who awards it in `funder`, and a `role`. A fellowship
+  that pays for a post refs it, and the post refs it back.
 - **A publication.** Write every author, in order, as `{ "family", "given" }`
   with `"me": true` on mine — never a display string, never "et al.". Set
   `entryType` (not derivable from `status`) and `venue` in BibTeX's own names.

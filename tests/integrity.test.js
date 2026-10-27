@@ -90,3 +90,27 @@ describe('the database', () => {
     });
   });
 });
+
+// `title` is the thing's name and `role` my part in it (specs/data-model/spec.md), so a role
+// that only repeats the title says nothing: "Brinson Prize Fellowship, Prize Fellow". Words are
+// compared stemmed — "fellowship" is "fellow" — and the whole role must appear, in order, to fail.
+const words = (s) => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).map((w) => w.replace(/ship$/, '').replace(/s$/, ''));
+const repeats = (title, role) => {
+  const t = words(title), r = words(role);
+  return r.length > 0 && t.some((_, i) => r.every((w, j) => t[i + j] === w));
+};
+
+describe('a role', () => {
+  it('is caught when it repeats its title', () => {
+    expect(repeats('Brinson Prize Fellowship', 'Prize Fellow')).toBe(true);
+    expect(repeats('Massey Junior Fellow', 'Junior Fellow')).toBe(true);
+    expect(repeats('Postdoctoral Fellowship Program', 'Fellow')).toBe(true);
+    expect(repeats('Brinson Prize Fellowship', 'Postdoctoral Fellow')).toBe(false);
+    expect(repeats('JWST GO 10246: Exploring the Accretion History', 'Co-I')).toBe(false);
+    expect(repeats('AST 101: The Sun and its Neighbours', 'TA')).toBe(false);
+  });
+
+  it('never repeats its title in the data', () => {
+    expect(items.filter((i) => i.role && repeats(i.title, i.role)).map((i) => `${i.id}: "${i.role}" in "${i.title}"`)).toEqual([]);
+  });
+});
