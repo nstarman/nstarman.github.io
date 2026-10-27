@@ -34,27 +34,31 @@ lines stay ticked."
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Professional work reads as one block (Priority: P1)
+### User Story 1 - Professional work reads as one block, when I ask for it (Priority: P1)
 
-As the CV's owner, I see a single **Professional Activities** heading on the CV, and under it
-smaller headings — Conferences Organized, Conferences Attended, Professional & Software Talks,
+As the CV's owner, I tick **Group Professional Activities** in the builder, and my CV then shows a
+single **Professional Activities** heading and under it smaller headings — Conferences Organized, Conferences Attended, Professional & Software Talks,
 Peer Review & Panels, Service & Committees — each with entries laid out as any section's, date
 column and all.
 
 **Why this priority**: It is the organization the owner asked for, and every other story fills
 it.
 
-**Independent Test**: Render the complete CV and the `np` CV: one "Professional Activities"
-heading appears; its sub-headings follow in the preset's order; nothing in them appears elsewhere.
+**Independent Test**: In the builder, tick the option on the complete CV: one "Professional
+Activities" heading appears with its sub-headings in order. The prebuilt PDFs and `/cv/` pages,
+where the option is off, show the same sections as top-level sections.
 
 **Acceptance Scenarios**:
 
-1. **Given** a preset that lists the group, **When** any CV renders, **Then** it prints one
-   group heading, then each non-empty sub-section under its own sub-heading, in the preset's order.
-2. **Given** a preset in which every sub-section of the group is empty, **When** it renders,
-   **Then** the group heading is left out, as an empty section is today.
-3. **Given** the PDF, the `/cv/<preset>/` page and the builder, **When** each draws the group,
-   **Then** headings, sub-headings, order and entries match.
+1. **Given** the option ticked, **When** the CV renders, **Then** it prints one group heading at
+   the place of the first of its sections, then each non-empty sub-section under its own
+   sub-heading, in the group's order.
+2. **Given** the option off (the default, and every preset and prebuilt PDF), **When** a CV
+   renders, **Then** the five sections print as ordinary sections, where the preset lists them.
+3. **Given** the option ticked and every sub-section empty, **When** it renders, **Then** no group
+   heading prints.
+4. **Given** a saved selection with the option ticked, **When** it is compiled (Compile PDF or
+   `npm run build:cv`), **Then** the PDF matches the builder's view.
 
 ---
 
@@ -121,8 +125,8 @@ printed detail lines are the same text.
 
 ### Edge Cases
 
-- A short preset (`2page`, `1page`) that keeps only some sub-sections prints the group with just
-  those; one with none prints no group.
+- A short preset (`2page`) with the option on groups just the members it lists; one listing none
+  (`1page`) prints no group.
 - A presentation marked professional *and* organizer: it is a conference I organized and lists
   in Conferences Organized; the professional mark only moves talks (contributed, invited,
   seminar, attended-with-talk).
@@ -131,7 +135,8 @@ printed detail lines are the same text.
 - The builder's section order (`order`) names a sub-section: it moves within its group; the group
   moves as one unit among sections.
 - A sub-section switched off in the builder: the group prints without it.
-- The `/cv/` page's contents list: the group appears once, its sub-sections indented beneath.
+- The builder's contents list with the option on: the group appears once, its sub-sections
+  indented beneath.
 - A role line naming two roles ("Coordination Committee and Strategic Planning Committee;
   moderated online discussion…"): the roles go to `role`, the rest stays a detail line.
 - `Massey Telescope Public Talk Series` is deleted by PR #487; if that lands first, it is not
@@ -141,21 +146,24 @@ printed detail lines are the same text.
 
 ### Functional Requirements
 
-- **FR-001**: A preset MUST be able to list a **section group** in place of a section: a heading
-  (and short name, icon) and an ordered list of sub-sections, each a section as defined today.
-- **FR-002**: A group MUST render as one heading followed by each non-empty sub-section under a
-  sub-heading, entries laid out as that sub-section's own layout; a group with no non-empty
-  sub-section MUST be omitted.
-- **FR-003**: The PDF, the `/cv/<preset>/` pages and the builder MUST draw a group with the same
-  headings, sub-headings, order and entries.
-- **FR-004**: In the builder, sub-sections MUST be orderable within their group and switchable
-  like sections; the group MUST move as one unit; a saved selection MUST record this and
-  reproduce it.
-- **FR-005**: The `complete` and `np` presets MUST list a group "Professional Activities" with
-  sub-sections, in this order: Conferences Organized (`organizer`), Conferences Attended
-  (`attended`), Professional & Software Talks (presentations marked professional), Peer Review &
-  Panels (the `peer-review` list), Service & Committees (`service`). The `2page` preset MUST list
-  the group with the sub-sections it lists today (Peer Review & Panels, Service & Committees).
+- **FR-001**: Configuration MUST be able to define a **section group**: a heading (and short
+  name, icon) and an ordered list of member sections, each a section as defined today. One group
+  is defined: "Professional Activities" — Conferences Organized (`organizer`), Conferences
+  Attended (`attended`), Professional & Software Talks (presentations marked professional), Peer
+  Review & Panels (the `peer-review` list), Service & Committees (`service`).
+- **FR-002**: Grouping MUST be a builder option, **Group Professional Activities**, in the global
+  panel (it applies to the whole CV, cv-presets FR-027), off by default. Presets and the prebuilt
+  PDFs and `/cv/` pages MUST NOT group.
+- **FR-003**: With the option on, the group MUST render as one heading at the place of its first
+  listed member, followed by each non-empty member under a sub-heading, in the group's order,
+  entries laid out as that section's own layout; with no non-empty member, no group heading.
+- **FR-004**: With the option on, the builder's view and the compiled PDF MUST draw the same
+  headings, sub-headings, order and entries; members MUST be orderable within the group and
+  switchable like sections, and the group MUST move as one unit. A saved selection MUST record the
+  option and reproduce it.
+- **FR-005**: Every preset MUST list the five member sections as ordinary sections where it lists
+  their predecessors today: `complete` and `np` all five where Conferences, Peer Review and
+  Professional Service stand; `2page` Peer Review & Panels and Service & Committees, as today.
 - **FR-006**: A presentation MUST be able to carry a professional mark; a marked presentation that
   is not `organizer` MUST list in Professional & Software Talks and in no science talk section.
 - **FR-007**: A presentation MUST accept `role`, meaning my part in the event (data-model
@@ -187,8 +195,8 @@ printed detail lines are the same text.
 
 ### Measurable Outcomes
 
-- **SC-001**: The complete CV has exactly one "Professional Activities" heading, with five
-  sub-headings in the order of FR-005.
+- **SC-001**: With the option on, the complete CV has exactly one "Professional Activities"
+  heading with five sub-headings in the group's order; with it off (every prebuilt PDF), none.
 - **SC-002**: 100% of `organizer` presentations list in Conferences Organized with a role on the
   heading line; 0 detail lines in the data start with "Role:" (today: 18).
 - **SC-003**: The two professional talks appear only in Professional & Software Talks.

@@ -1,6 +1,7 @@
 # Contract: how a CV draws Professional Activities
 
-The same in the PDF, on `/cv/<preset>/` and in the builder.
+With **Group Professional Activities** ticked in the builder (off by default; presets and the
+prebuilt PDFs and `/cv/` pages never group), the builder's view and its compiled PDF draw:
 
 ```
 PROFESSIONAL ACTIVITIES                              ← section heading (style's usual, icon, rule)
@@ -23,7 +24,8 @@ PROFESSIONAL ACTIVITIES                              ← section heading (style'
   builder's `order` say (research.md R2).
 - An empty sub-section is left out; a group with none is left out.
 - A sub-section keeps its own layout (timeline, list) and every per-section setting.
-- `/cv/` contents list: "Professional" once, its sub-sections' short names beneath, indented.
+- With it off, the five are ordinary sections where the preset or `order` puts them.
+- Contents list (builder, option on): "Professional" once, its sub-sections' short names beneath.
 - Anchors: the group `#cv-professional`; sub-sections keep `#cv-<section id>`.
 - Builder: the group heading has its own move buttons and heading menu (`none` hides only the
   group heading); each sub-section moves within the group and keeps its checkbox and settings.

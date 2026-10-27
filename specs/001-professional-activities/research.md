@@ -5,10 +5,12 @@ Code paths from `main` at `c736942`.
 ## R1. How a group is represented
 
 - **Decision**: `config/presets.json` gains `$groups`, each `{ heading, short?, icon?, sections:
-  [section ids] }`. A preset's `sections` list may name a group id (or `{ "id": <group>,
-  "sections": [...] }` to list a subset, as `2page` does). `resolve()` (src/lib/presets.js)
-  expands a group in place into its sub-sections, each resolved exactly as a section is today and
-  carrying `group: { id, heading, short, icon }`. Output stays a flat `sections` array.
+  [section ids] }`. Presets list only sections, never a group. `resolve(name, only, { …, groups })`
+  takes the group ids the builder switched on (default `[]`); for each, the member sections the
+  preset lists are gathered, in the group's order, at the place of the first of them, each
+  carrying `group: { id, heading, short, icon }`. Output stays a flat `sections` array. The
+  option is a selection field `groups: ["professional"]` and a checkbox in the builder's global
+  panel (cv-presets FR-027).
 - **Rationale**: every consumer — `cvmodel.js`, `cv/cv.typ`, `CvView.astro`, `CvToc`, the builder —
   already walks a flat list; a `group` property on consecutive sections is the smallest change each
   must learn (open a group heading when `group.id` changes; draw the section heading as a
@@ -55,9 +57,9 @@ Code paths from `main` at `c736942`.
 
 `talks-invited` and `talks-contributed` gain `not: { professional: true }`. `conferences` is
 removed. Group `professional`: heading "Professional Activities", short "Professional", icon
-`service`; sub-sections in the order above. `complete` and `np` list the group where
-`conferences` stood, and drop `peer-review` and `service` from their top level; `2page` lists
-`{ "id": "professional", "sections": ["peer-review", "service"] }` where those two stood.
+`service`; members in the order above. `complete` and `np` list `conferences-organized`,
+`conferences-attended`, `talks-professional` where `conferences` stood; `peer-review` and
+`service` stay where they are; `2page` is unchanged.
 
 `matches()` already supports `not` and array values; a boolean field compares with `includes`, so
 `professional: true` works as is.
@@ -94,17 +96,17 @@ FR-036 test would fail. 7 items lose line 0; every other line keeps its index.
 - **Decision**: bump `VERSION` in `src/lib/selection.js` to 2; `decode()` migrates a v1 file:
   - `lines`: for the 7 items of R6 that lose line 0, drop 0 and shift each other index down by one.
   - section-keyed settings (`heading`, `locationAt`, `prefix`, `columns`, `tally`, and the
-    `<id>.…` keys of `spacing` and `place`): copy `conferences`'s value to `conferences-organized`
-    and `conferences-attended`; in `order`, replace `conferences` with `professional` and drop
-    `peer-review` and `service` from the top level (they now move inside the group), keeping the
-    first position any of them held.
+    `<id>.…` keys of `spacing` and `place`): copy `conferences`'s value to
+    `conferences-organized`, `conferences-attended` and `talks-professional`; in `order`, replace
+    `conferences` with those three, in that order.
+  - `groups` is absent in v1 and stays absent (off); the owner turns it on in the builder.
   - The table lives beside `decode()` as `MIGRATIONS[1]`, data rather than code paths.
 - **Rationale**: the builder and `build-cv.mjs` both read through `decode()`, so every old file —
   the Hubble one and any other — is migrated on load, with nothing to remember to run.
-- The owner's Hubble file is also rewritten as v2 (by loading and re-encoding), so it reads plainly.
+- The owner's Hubble file is rewritten as v2 (by loading and re-encoding) with
+  `groups: ["professional"]`, as the owner asked.
 
 ## R8. Pages and counts
 
-- `2page` gains a group heading above two sub-headings: about one line more than today. CI's
-  page-count check guards it; if it overflows, the plan's fallback is `heading: none` on the group
-  for `2page` (a per-preset override, R1).
+- Presets do not group, so the prebuilt `1page` and `2page` keep their layout; only headings
+  change ("Peer Review & Panels", "Service & Committees"). CI's page-count check guards it.

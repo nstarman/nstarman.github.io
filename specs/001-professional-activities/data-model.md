@@ -33,7 +33,7 @@ No string in any item's `details` starts with "Role:". A test enforces it.
 
 - A group id may not equal a section id.
 - Every id in a group's `sections` is a `$sections` id; a section belongs to at most one group.
-- A preset lists a group by id, or as `{ "id", "sections": [subset, in group order], …overrides }`.
+- Presets never list a group. Grouping is switched on per CV by the builder (`groups`).
 
 ### `$sections` changes
 
@@ -53,8 +53,8 @@ Sections of one group are consecutive and ordered per research.md R2.
 
 ## Saved selection (v2)
 
-Same shape as v1. `decode()` migrates a v1 file per research.md R7; `encode()` writes v2. `order`
-may name a group id.
+v1's fields plus `groups`: the group ids switched on (absent or `[]` = none). `decode()` migrates
+a v1 file per research.md R7; `encode()` writes v2. With a group on, `order` may name its id.
 
 ## Migration of data
 

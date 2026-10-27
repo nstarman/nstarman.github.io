@@ -6,11 +6,13 @@
 
 ## Summary
 
-Add section groups to presets — a heading over consecutive sub-sections — expanded by `resolve()`
-into the flat section list every renderer already walks, each grouped section tagged with its
-group. Split Conferences into Organized and Attended, add Professional & Software Talks for
-presentations marked `professional`, rename Peer Review and Service, and put the five under a
-"Professional Activities" group in `complete`, `np` and `2page`. Give `presentation` a `role`,
+Add section groups — a heading over consecutive member sections — defined in the presets file
+and switched on per CV by a builder option, **Group Professional Activities** (off by default, so
+presets and the prebuilt PDFs never group). `resolve()` gathers a switched-on group's members into
+the flat section list every renderer already walks, each tagged with its group. Split Conferences
+into Organized and Attended, add Professional & Software Talks for presentations marked
+`professional`, and rename Peer Review and Service; every preset lists them as ordinary
+sections. Give `presentation` a `role`,
 migrate the 17 "Role: …" detail lines, and bump the saved-selection format to v2 with a migration
 in `decode()` so old selections print the same lines (research.md R1–R8).
 
@@ -49,7 +51,7 @@ their page counts (SC-006); a v1 selection prints the same detail lines (SC-004)
 | IV. Closed vocabularies change only through the schema | PASS | No closed vocabulary changes (`kind` untouched). `professional` and `role` on `presentation` enter the schema with their renderers in the same PR. |
 | V. Data is honest | PASS | Roles and remainders keep the record's own words; "Core Developer" is not invented away — the title already states it (R6). |
 | VI. BibTeX matching ADS/SciX | N/A | No publication changes. |
-| VII. Renderers read; they do not decide | PASS | Grouping and membership are in presets; renderers draw `group` as given. |
+| VII. Renderers read; they do not decide | PASS | Membership is in the presets file and whether to group is the selection's (`groups`); renderers draw `group` as given. |
 | VIII. Failures are loud | PASS | A group naming an unknown section, or a section in two groups, throws at load; a "Role:" prefix fails a test; a selection newer than v2 is refused. |
 | IX. Gates are mandatory | PASS | Each new rule gets a test (group expansion and order, selection migration, Role: prefix, professional matching); `npm test` and page counts must pass. |
 | X. Specs describe the system as it is | PASS | On landing, cv-presets (groups, sections, FR-028 for presentations, selection v2), data-model (presentation fields, Role: rule) and renderers (group drawing, contents list) are rewritten; the folder is deleted. |
@@ -82,10 +84,11 @@ config/presets.json      # $groups; new/renamed sections; presets list the group
 src/lib/presets.js       # group expansion in resolve(); ordering by group; load-time checks
 src/lib/secorder.js      # move() within a group / a group as a unit
 src/lib/cvmodel.js       # passes `group`; presentation heading prints role
-src/lib/selection.js     # VERSION 2; MIGRATIONS[1] applied in decode()
+src/lib/selection.js     # VERSION 2; `groups`; MIGRATIONS[1] applied in decode()
+src/lib/selectionmodel.js   # passes `groups` to resolve() (builder Compile and build:cv)
 cv/cv.typ                # group heading + subsection()
 src/components/CvView.astro, CvToc.astro, CvTimelineItem.astro
-src/pages/webdev/cv.astro   # group controls in the builder
+src/pages/webdev/cv.astro   # the Group Professional Activities checkbox; group controls
 src/styles/cv/page.css, builder.css
 tests/presets.test.js, secorder.test.js, selection.test.js, cvmodel.test.js, integrity.test.js
 specs/cv-presets/spec.md, specs/data-model/spec.md, specs/renderers/spec.md, AGENTS.md
