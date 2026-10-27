@@ -4,9 +4,7 @@
   "type": "award",
   "tier": "major",
   "cvs": [
-    "np",
-    "2page",
-    "1page"
+    "np"
   ],
   "date": {
     "start": "2025-01"
