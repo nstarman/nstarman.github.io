@@ -23,10 +23,10 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 
 ## Phase 2: Foundational (blocks both stories)
 
-- [ ] T001 Add a test to the "tally" describe in tests/presets.test.js: `tally()` given a list with an `in-prep` paper counts neither it in total nor in first-author or student-led (FR-002)
-- [ ] T002 In `tally()` in src/lib/presets.js, drop every publication whose `status` is `"in-prep"` before counting; its JSDoc says so
-- [ ] T003 Add tests to tests/presets.test.js: a section `tally: { of: "record" }` over a 5-paper `only` gives the whole record's numbers (every publication whose `status` is not `in-prep` — 19 today); `{ of: "record", hIndex: "ads" }` keeps the h-index; `true` and `{ hIndex }` give the list's numbers as before (SC-002, FR-007)
-- [ ] T004 In `resolve()` in src/lib/presets.js, when the section's or the builder's tally has `of: "record"`, call `tally()` with every `publication` item instead of `picked`; update the comment above it to name `of`
+- [X] T001 Add a test to the "tally" describe in tests/presets.test.js: `tally()` given a list with an `in-prep` paper counts neither it in total nor in first-author or student-led (FR-002)
+- [X] T002 In `tally()` in src/lib/presets.js, drop every publication whose `status` is `"in-prep"` before counting; its JSDoc says so
+- [X] T003 Add tests to tests/presets.test.js: a section `tally: { of: "record" }` over a 5-paper `only` gives the whole record's numbers (every publication whose `status` is not `in-prep` — 19 today); `{ of: "record", hIndex: "ads" }` keeps the h-index; `true` and `{ hIndex }` give the list's numbers as before (SC-002, FR-007)
+- [X] T004 In `resolve()` in src/lib/presets.js, when the section's or the builder's tally has `of: "record"`, call `tally()` with every `publication` item instead of `picked`; update the comment above it to name `of`
 
 **Checkpoint**: `npx vitest run tests/presets.test.js` passes.
 
@@ -36,8 +36,8 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 
 **Independent test**: `pdftotext` of each built PDF shows the same "19 papers (5 submitted): …" line; one page and two pages.
 
-- [ ] T005 [US1] In config/presets.json, give the `1page` and `2page` `publications` sections `"tally": { "of": "record" }`
-- [ ] T006 [US1] Add a test to tests/presets.test.js: `resolve('1page')` and `resolve('2page')` publications' `tally` equal each other and equal `tally()` of the whole record (SC-001)
+- [X] T005 [US1] In config/presets.json, give the `1page` and `2page` `publications` sections `"tally": { "of": "record" }`
+- [X] T006 [US1] Add a test to tests/presets.test.js: `resolve('1page')` and `resolve('2page')` publications' `tally` equal each other and equal `tally()` of the whole record (SC-001)
 - [ ] T007 [US1] Build the site and the CV PDFs (`npm run build && scripts/build-cv-pdfs.sh`); check both count lines read the same numbers and the page counts are 1 and 2 (SC-003)
 
 **Checkpoint**: US1 is shippable alone — the presets carry it; the builder's Start from would print it once US2 lands.
@@ -48,20 +48,20 @@ No setup: no new module, dependency or file layout (plan, Structure Decision).
 
 **Independent test**: in `/webdev/cv/`, Start from 1P shows Tally and Whole record ticked and a preview of 19; unticking Whole record shows the ticked count; Compile PDF matches; Save then load keeps it.
 
-- [ ] T008 [P] [US2] Add tests to tests/selection.test.js: `encode`/`decode` keep `{ of: "record" }` and `{ of: "record", hIndex }` by section; any other `of` (`"list"`, `7`, `""`) is dropped, leaving `true` or `{ hIndex }`; a file without `of` decodes as before
-- [ ] T009 [US2] In `cleanTally` in src/lib/selection.js, keep `of` only when it is `"record"`, alongside `hIndex`; a value of `{}` after cleaning is `true`; update its comment
-- [ ] T010 [P] [US2] Add the Whole record option to the per-section list in tests/builder-placement.test.js (cv-presets FR-027: the publication list's own settings row)
-- [ ] T011 [US2] In src/components/CvFmtRow.astro, after the Tally checkbox, add `<input type="checkbox" name={`tallyrecord:${s.id}`} data-tally-record-of={s.id} />Whole record` in a label, disabled until Tally is ticked
-- [ ] T012 [US2] In src/pages/webdev/cv.astro's page data, add `record` (the whole record's numbers from `tally()` over every publication) and a `prep` flag per `PUBS` entry
-- [ ] T013 [US2] In src/pages/webdev/cv.astro, make `currentTally()` add `of: "record"` when its section's Whole record box is ticked; `setTally()` tick it from a preset's or a file's `of`; the box enables and disables with its Tally box
-- [ ] T014 [US2] In `syncLegends` in src/pages/webdev/cv.astro, leave `prep` papers out of a ticked count and print `record` when Whole record is ticked
-- [ ] T015 [US2] Run the builder (`npm run dev`, `/webdev/cv/`) through the independent test above; no console errors
+- [X] T008 [P] [US2] Add tests to tests/selection.test.js: `encode`/`decode` keep `{ of: "record" }` and `{ of: "record", hIndex }` by section; any other `of` (`"list"`, `7`, `""`) is dropped, leaving `true` or `{ hIndex }`; a file without `of` decodes as before
+- [X] T009 [US2] In `cleanTally` in src/lib/selection.js, keep `of` only when it is `"record"`, alongside `hIndex`; a value of `{}` after cleaning is `true`; update its comment
+- [X] T010 [P] [US2] Add the Whole record option to the per-section list in tests/builder-placement.test.js (cv-presets FR-027: the publication list's own settings row)
+- [X] T011 [US2] In src/components/CvFmtRow.astro, after the Tally checkbox, add `<input type="checkbox" name={`tallyrecord:${s.id}`} data-tally-record-of={s.id} />Whole record` in a label, disabled until Tally is ticked
+- [X] T012 [US2] In src/pages/webdev/cv.astro's page data, add `record` (the whole record's numbers from `tally()` over every publication) and a `prep` flag per `PUBS` entry
+- [X] T013 [US2] In src/pages/webdev/cv.astro, make `currentTally()` add `of: "record"` when its section's Whole record box is ticked; `setTally()` tick it from a preset's or a file's `of`; the box enables and disables with its Tally box
+- [X] T014 [US2] In `syncLegends` in src/pages/webdev/cv.astro, leave `prep` papers out of a ticked count and print `record` when Whole record is ticked
+- [X] T015 [US2] Run the builder (`npm run dev`, `/webdev/cv/`) through the independent test above; no console errors
 
 **Checkpoint**: both stories work; `npm test` passes.
 
 ## Phase 5: Polish & landing (constitution Article X)
 
-- [ ] T016 Run `npm test` and the quickstart.md checks
+- [X] T016 Run `npm test` and the quickstart.md checks
 - [ ] T017 Fold into specs/cv-presets/spec.md: FR-025 (`tally` takes `of: "record"`; no count includes an in-prep paper), FR-021 (the selection's `of`), FR-021a (Start from sets it), FR-027 (Whole record in the publication list's settings row), and the preset table (1page, 2page publications count the record) — as the current contract, not a changelog
 - [ ] T018 Delete specs/001-tally-whole-record/ and .specify/feature.json
 

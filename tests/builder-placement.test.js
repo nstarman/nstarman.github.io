@@ -33,6 +33,11 @@ describe('where a builder option lives', () => {
     }
   });
 
+  it("offers a publication list's Whole record beside its Tally, in that list's row only", () => {
+    expect(section).toMatch(/data-tally-of=\{s\.id\}[\s\S]*?data-tally-record-of=\{s\.id\}[\s\S]*?data-hindex-of/);
+    expect(global).not.toContain('data-tally-record-of');
+  });
+
   it("offers a talks section's place as one choice, in that section's row only", () => {
     expect(section).toContain('data-place-at-of');
     expect(global).not.toContain('data-place-at-of');

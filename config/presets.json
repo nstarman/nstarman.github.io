@@ -262,7 +262,8 @@
       },
       {
         "id": "publications",
-        "limit": 10
+        "limit": 10,
+        "tally": { "of": "record" }
       },
       {
         "id": "software",
@@ -305,7 +306,8 @@
       {
         "id": "publications",
         "groupBy": null,
-        "limit": 5
+        "limit": 5,
+        "tally": { "of": "record" }
       },
       {
         "id": "software",

@@ -141,6 +141,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
         <span class="fmtopt">
           <label class="fmtcheck" title={`Open ${s.heading} with its counts`}>
             <input type="checkbox" name={`tally:${s.id}`} data-tally-of={s.id} />Tally</label>
+          <label class="fmtcheck" title={`Count every published and submitted paper, not only those ${s.heading} lists`}>
+            <input type="checkbox" name={`tallyrecord:${s.id}`} data-tally-record-of={s.id} disabled />Whole record</label>
           <select class="btn btn--sel" name={`hindex:${s.id}`} data-hindex-of={s.id} aria-label={`The h-index in the ${s.heading} tally`}>
             <option value="">no h-index</option>
             <option value="ads">h-index: ADS</option>

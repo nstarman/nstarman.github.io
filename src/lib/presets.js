@@ -55,9 +55,11 @@ export const SCHOLAR_STALE_DAYS = 183;
  * many papers, how many still submitted, how many I wrote first, and how many
  * a student I supervised led — counted from the records, so they cannot fall
  * behind the list beneath them. With `{ hIndex }` naming a source, the
- * h-index too, said with its source, since the sources disagree.
+ * h-index too, said with its source, since the sources disagree. A paper in
+ * preparation is not one yet, so it is never counted.
  */
-export function tally(pubs, { hIndex } = {}) {
+export function tally(all, { hIndex } = {}) {
+  const pubs = all.filter((p) => p.status !== 'in-prep');
   const lead = (p) => p.authors?.[0] ?? {};
   return {
     total: pubs.length,
@@ -236,11 +238,13 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
       page: section.page ?? null,
       items: picked,
       dropped, // surfaced rather than silently truncated
-      // `true` for the counts, or `{ hIndex }` to add one; the builder's say, by
+      // `true` for the counts, or `{ hIndex }` to add one, and `of: "record"` to
+      // count every publication rather than the list's; the builder's say, by
       // section id, before the preset's.
       tally: (() => {
         const t = tallied[section.id] ?? section.tally;
-        return t ? tally(picked, t === true ? {} : t) : null;
+        if (!t) return null;
+        return tally(t.of === 'record' ? items.filter((i) => i.type === 'publication') : picked, t === true ? {} : t);
       })(),
     };
   });
