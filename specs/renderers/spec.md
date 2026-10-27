@@ -156,7 +156,8 @@ snapshots (`specs/refresh/spec.md`).
   on any face in the complete CV outside the vendored ones; and unless `1page` is one page and
   `2page` two. It copies the `np` PDF to `/files/starkman_cv.pdf`. *Enforced:* CI step "CV PDFs".
 - **FR-028** `npm run build:cv -- <selection.json> [out.pdf]` (`scripts/build-cv.mjs`) compiles a saved
-  builder selection without the site, with the template, fonts and Typst arguments of FR-019 (`TYPST=`
+  builder selection without the site, through the builder's own `modelFromSelection` (so laid out as the
+  selection's `preset`, cv-presets FR-020), with the template, fonts and Typst arguments of FR-019 (`TYPST=`
   names the binary). The output defaults to `<selection>.pdf` beside the file, and both paths are
   taken from where the command was run. `--model` prints the render model as JSON and compiles
   nothing. A selection with nothing ticked, an unreadable or newer-format file, a missing Typst, a

@@ -183,7 +183,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, preset, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -255,8 +255,13 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
+    // The preset it was started from, whose layout it prints in. Absent, the complete CV's.
+    preset: presetName(preset),
   };
 }
+
+// A name, not a promise that this build has that preset — loadReport says when it does not.
+const presetName = (p) => (typeof p === 'string' && /^[a-z0-9-]{1,64}$/.test(p) ? p : null);
 
 class SelectionError extends Error {}
 
@@ -266,7 +271,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, preset, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -342,6 +347,7 @@ export function decode(text) {
     schoolBelow: raw.schoolBelow === true,
     linkOnDegree: raw.linkOnDegree === true,
     tally: cleanTally(raw.tally),
+    preset: presetName(raw.preset),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,
@@ -356,9 +362,10 @@ export function decode(text) {
  * entries in `known` and was built from `here` (buildInfo()).
  *
  * @param {boolean} styleKnown whether the page offers the file's style
+ * @param {boolean} [presetKnown] whether the file's preset is one this build has
  * @returns {{ message: string, missing: string[] }}
  */
-export function loadReport(sel, known, here, styleKnown) {
+export function loadReport(sel, known, here, styleKnown, presetKnown = true) {
   const missing = [...sel.items].filter((id) => !known.has(id));
   const restored = sel.items.size - missing.length;
   const parts = [`Loaded ${plural(restored, 'entry', 'entries')}.`];
@@ -366,6 +373,9 @@ export function loadReport(sel, known, here, styleKnown) {
   // would silently come out in a different design otherwise.
   if (!styleKnown) {
     parts.push(`Its style "${sel.style ?? 'default'}" is not one this page offers; using Default.`);
+  }
+  if (sel.preset && !presetKnown) {
+    parts.push(`Its preset "${sel.preset}" is not one this page has; laid out as the complete CV.`);
   }
   // The commit is why the file carries one. If entries have gone missing,
   // the fix is mechanical, so say what it is rather than only that it broke.

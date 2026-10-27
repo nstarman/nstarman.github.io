@@ -31,6 +31,8 @@ export function modelFromSelection(sel) {
     paperIds: sel.paperIds,
     schoolBelow: sel.schoolBelow,
     linkOnDegree: sel.linkOnDegree,
+    // Laid out as the preset it was started from; absent or unknown, as the complete CV.
+    layout: sel.preset,
   });
   // The template reads these; absent, it draws the default.
   for (const s of model.sections) {

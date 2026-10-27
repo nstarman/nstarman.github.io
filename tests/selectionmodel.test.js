@@ -11,6 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { decode, encode } from '../src/lib/selection.js';
 import { modelFromSelection } from '../src/lib/selectionmodel.js';
 import { memberIds } from '../src/lib/presets.js';
+import { cvModel } from '../src/lib/cvmodel.js';
 
 const page = fs.readFileSync(new URL('../src/pages/webdev/cv.astro', import.meta.url), 'utf8');
 const shared = fs.readFileSync(new URL('../src/lib/selectionmodel.js', import.meta.url), 'utf8');
@@ -57,6 +58,38 @@ describe('one model from a selection', () => {
     const talks = model.sections.find((s) => s.id === 'talks-invited').items;
     expect(talks.some((i) => i.placeBelow)).toBe(true);
     expect(talks.every((i) => !i.placeBelow || i.trailing === '')).toBe(true);
+  });
+
+  describe('the preset it started from', () => {
+    const fromPreset = (name, extra = []) => modelFromSelection(decode(JSON.stringify(encode({
+      items: [...memberIds(name), ...extra], lines: {}, preset: name, site: {}, savedAt: 'x',
+    }))));
+    // What lays a section out, by id, for the sections that print something.
+    const layout = (m) => Object.fromEntries(m.sections
+      .filter((s) => s.items.length || s.entries.length)
+      .map((s) => [s.id, { items: s.items.map((i) => i.id), groups: s.groups }]));
+
+    it.each(['complete', 'np', '2page', '1page'])('lays %s out as its own PDF', (name) => {
+      const want = cvModel(name);
+      const got = fromPreset(name);
+      expect({ preset: got.preset, label: got.label, detail: got.detail })
+        .toEqual({ preset: want.preset, label: want.label, detail: want.detail });
+      expect(layout(got)).toEqual(layout(want));
+    });
+
+    it('still prints an entry in a section the preset lacks', () => {
+      const m = fromPreset('1page', ['eas-26-s10-lausanne']);
+      expect(m.sections.find((s) => s.id === 'talks-invited').items.map((i) => i.id)).toEqual(['eas-26-s10-lausanne']);
+      expect(m.sections.find((s) => s.id === 'publications').groups).toEqual([]);
+    });
+
+    it('lays a file with no preset, or an unknown one, out as the complete CV', () => {
+      for (const preset of [undefined, 'nope']) {
+        const m = modelFromSelection(decode(JSON.stringify(encode({ items: memberIds('1page'), lines: {}, preset, site: {} }))));
+        expect(m.preset).toBe('complete');
+        expect(m.sections.find((s) => s.id === 'publications').groups.length).toBeGreaterThan(0);
+      }
+    });
   });
 
   describe('the command line', () => {
