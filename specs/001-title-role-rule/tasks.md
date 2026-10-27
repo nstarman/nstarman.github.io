@@ -81,11 +81,11 @@ Postdoctoral Fellow, Brinson Foundation"; Massey and Pacific repeat nothing.
 **Independent test**: every preset's sections equal `tests/fixtures/sections-before.json`;
 no `position` has `tier`.
 
-- [ ] T019 [P] [US3] Retype to `fellowship`, nothing else changing but `institution`: `data/*-nserc-cgs-d.json` and `data/*-nserc-cgs-m.json` (add `"institution": "University of Toronto"`), `data/*-nserc-pdf.json`, `data/2018-09-university-of-toronto-graduate-fellowship-per-annum.json`.
-- [ ] T020 [US3] In `schema/item.schema.json`, remove `tier`, `amount` and `funder` from the `position` branch and reject them there; add `schema/invalid/position-with-tier.json`.
-- [ ] T021 [US3] In `config/presets.json`, set `grants-major.match.type` to `["grant", "fellowship"]` and remove `positions.match.not` (no position carries a tier).
-- [ ] T022 [US3] Rewrite `tests/presets.test.js` "a fellowship" (line 210): assert the seven ids are `fellowship` and sit in `grants-major`, and that no `position` has `tier`; add "every preset lists the same sections as before", comparing against `tests/fixtures/sections-before.json`.
-- [ ] T023 [P] [US3] Update `tests/research-kit.test.js:115` if its `byType('grant')[0]` now picks a different item; keep it testing a `grant`.
+- [X] T019 [P] [US3] Retype to `fellowship`, nothing else changing but `institution`: `data/*-nserc-cgs-d.json` and `data/*-nserc-cgs-m.json` (add `"institution": "University of Toronto"`), `data/*-nserc-pdf.json`, `data/2018-09-university-of-toronto-graduate-fellowship-per-annum.json`.
+- [X] T020 [US3] In `schema/item.schema.json`, remove `tier`, `amount` and `funder` from the `position` branch and reject them there; add `schema/invalid/position-with-tier.json`.
+- [X] T021 [US3] In `config/presets.json`, set `grants-major.match.type` to `["grant", "fellowship"]` and remove `positions.match.not` (no position carries a tier).
+- [X] T022 [US3] Rewrite `tests/presets.test.js` "a fellowship" (line 210): assert the seven ids are `fellowship` and sit in `grants-major`, and that no `position` has `tier`; add "every preset lists the same sections as before", comparing against `tests/fixtures/sections-before.json`.
+- [X] T023 [P] [US3] Update `tests/research-kit.test.js:115` if its `byType('grant')[0]` now picks a different item; keep it testing a `grant`.
 
 **Checkpoint**: SC-002 and SC-003 hold.
 
