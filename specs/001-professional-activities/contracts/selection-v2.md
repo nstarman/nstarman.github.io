@@ -10,8 +10,9 @@ unchanged:
 
 1. **Detail lines** — for each of `jaxtronomy-workshop`, `division-of-dynamical-astronomy-56`,
    `astropy-coordination-meeting`, `astrophysics-and-space-science-in-marche-iii-big-bang-big-st`,
-   `gaia-hackathon`, `gaia-hackathon-2`, `astropy-core-developer-conference-talk`: drop index 0,
-   subtract 1 from every other index. An item left with none has no entry.
+   `gaia-hackathon`, `gaia-hackathon-2`: drop index 0, subtract 1 from every later index; for
+   `astropy-core-developer-conference-talk`, whose line 0 is its talk's title, the same with index
+   1. An item left with none has no entry.
 2. **Section settings** — a value keyed `conferences` (in `heading`, `locationAt`, `prefix`,
    `columns`, `tally`) is copied to `conferences-organized`, `conferences-attended` and
    `talks-professional`; a key `conferences.<part>` in `spacing` or `place` likewise; the

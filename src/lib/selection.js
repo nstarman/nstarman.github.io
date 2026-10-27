@@ -19,13 +19,14 @@ export const VERSION = 2;
 // to now and it prints what it printed when it was saved.
 //
 // 2: an organized conference's role moved from its first detail line ("Role: SOC") into `role`, so
-//    those entries' later lines each moved up one; Conferences split into Organized, Attended and
-//    Professional & Software Talks; section groups (`groups`) arrived, off for an old file.
-const V2_FIRST_LINE_GONE = [
-  'jaxtronomy-workshop', 'division-of-dynamical-astronomy-56', 'astropy-coordination-meeting',
-  'astrophysics-and-space-science-in-marche-iii-big-bang-big-st', 'gaia-hackathon', 'gaia-hackathon-2',
-  'astropy-core-developer-conference-talk',
-];
+//    the line went and those after it each moved up one; Conferences split into Organized, Attended
+//    and Professional & Software Talks; section groups (`groups`) arrived, off for an old file.
+//    The index is the line's among all the entry's lines, where a talk's title is line 0.
+const V2_LINE_GONE = {
+  'jaxtronomy-workshop': 0, 'division-of-dynamical-astronomy-56': 0, 'astropy-coordination-meeting': 0,
+  'astrophysics-and-space-science-in-marche-iii-big-bang-big-st': 0, 'gaia-hackathon': 0, 'gaia-hackathon-2': 0,
+  'astropy-core-developer-conference-talk': 1,
+};
 const V2_SPLIT = { conferences: ['conferences-organized', 'conferences-attended', 'talks-professional'] };
 // Settings keyed by section id, and those keyed `<id>.<part>`.
 const BY_SECTION = ['heading', 'locationAt', 'location', 'locationBelow', 'prefix', 'columns', 'tally'];
@@ -35,9 +36,9 @@ function toV2(raw) {
   // A malformed list is left as it is, for decode() to refuse as it would any other.
   const ok = raw.lines && typeof raw.lines === 'object' && !Array.isArray(raw.lines);
   const lines = ok ? { ...raw.lines } : raw.lines;
-  for (const id of ok ? V2_FIRST_LINE_GONE : []) {
+  for (const [id, gone] of ok ? Object.entries(V2_LINE_GONE) : []) {
     if (!Array.isArray(lines[id])) continue;
-    const moved = lines[id].filter((n) => Number.isInteger(n) && n > 0).map((n) => n - 1);
+    const moved = lines[id].filter((n) => Number.isInteger(n) && n !== gone).map((n) => (n > gone ? n - 1 : n));
     if (moved.length) lines[id] = moved; else delete lines[id];
   }
   const split = (key) => {

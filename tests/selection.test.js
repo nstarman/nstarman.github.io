@@ -348,6 +348,12 @@ describe('a v1 file', () => {
     expect([...out.lines.get('toronto-phd')]).toEqual([0, 2]);
   });
 
+  it('counts a talk\u2019s title as its line 0: the role line it drops is the one after', () => {
+    const lines = (ns) => decode(v1({ lines: { 'astropy-core-developer-conference-talk': ns } })).lines.get('astropy-core-developer-conference-talk');
+    expect(lines([1])).toBeUndefined();
+    expect([...lines([0, 1])]).toEqual([0]);
+  });
+
   it('gives Conferences’ settings and place to the three sections it split into, ungrouped', () => {
     const out = decode(v1({
       heading: { conferences: 'rule', service: 'rule' },
