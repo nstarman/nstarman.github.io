@@ -308,13 +308,15 @@
 }
 
 // A member of a section group (Professional Activities), under the group's heading: the
-// section's name in the heading's face, a size down, with no mark and no rule, so it reads as
+// section's mark and name in the heading's face, a size down, with no rule, so it reads as
 // belonging to the heading above it rather than as a heading of its own.
-#let subsection(title, below: gap("", "heading")) = {
+#let subsection(title, mark: none, below: gap("", "heading")) = {
   v(if tight { 5pt } else { 9pt })
+  let g = if mark == none or flat { none } else { glyph(mark, size: 0.95em, fill: ink) }
   block(breakable: false, sticky: true)[
     #set par(justify: false, spacing: 0pt)
     #text(size: look.size, weight: look.headweight, fill: look.headcolour)[
+      #if g != none [#g #h(2pt)]
       #if look.smallcaps { smallcaps(title) } else { title }
     ]
   ]
@@ -595,7 +597,7 @@
   let keyup = (s.at("layout", default: none) == "publications" and choice != "none"
     and keyplace == "title" and hasstudents(s))
   if choice != "none" and grp != none {
-    subsection(s.heading, below: gap(s.id + ".heading", "heading"))
+    subsection(s.heading, mark: s.at("icon", default: none), below: gap(s.id + ".heading", "heading"))
   } else if choice != "none" {
     section(
       s.heading,

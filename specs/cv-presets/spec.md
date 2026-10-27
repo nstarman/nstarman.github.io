@@ -53,17 +53,19 @@ cards (`specs/cards/spec.md`).
 - **FR-005c** A **section group** (`$groups` in `config/presets.json`: a heading, short name,
   icon and ordered member sections) prints its members under one heading, each under a
   sub-heading. One is defined: Professional Activities — Conferences Organized, Conferences
-  Attended, Professional & Software Talks, Peer Review & Panels, Service & Committees. Presets
-  never list a group, so the prebuilt PDFs and `/cv/` pages never group; the builder's **Group
-  Professional Activities** option (global panel, FR-027; off by default) switches it on, saved
-  as the selection's `groups`. Switched on, `resolve(…, { groups })` gathers the members a preset
+  Attended, Professional & Software Talks, Peer Review & Panels, Service & Committees. A preset
+  turns groups on by default with `groups` — `np`, `2page` and `1page` group Professional
+  Activities; `complete` does not — and its PDF and `/cv/` page then draw the group. The builder's
+  **Group Professional Activities** option (global panel, FR-027) switches it on or off for a
+  CV, saved as the selection's `groups`; "Start from" a preset sets it as that preset has it.
+  Switched on, `resolve(…, { groups })` (absent, the preset's own) gathers the members a preset
   lists, in the group's order, where the first of them stands, each carrying `group: { id,
-  heading, short, icon }`; an empty member is dropped as any section is, and a group with none
-  prints no heading. The group moves as one (at the earliest of its id and its members' in
+  heading, short, icon }`; an empty member is dropped as any section is, and a group left with
+  fewer than two members prints no group heading — its one member is an ordinary section. The group moves as one (at the earliest of its id and its members' in
   `order`) and its members only among themselves (`gather`, `moveGrouped` in `secorder.js`). The
   PDF draws the group's heading as a section heading and each member's as a small-caps
-  sub-heading without a rule or mark; the builder draws the same and indents the members in its
-  contents list. A group naming an unknown section, a section in two groups, or a group taking a
+  sub-heading with the section's icon and no rule; the `/cv/` pages and the builder draw the same
+  and indent the members under the group in their contents list. A group naming an unknown section, a section in two groups, or a group taking a
   section's id throws at load. *Enforced:* `tests/presets.test.js` ("a section group"),
   `tests/secorder.test.js` ("a grouped CV"), `tests/selectionmodel.test.js` ("a section group in
   a selection").

@@ -216,6 +216,7 @@
     ]
   },
   "np": {
+    "groups": ["professional"],
     "label": "NP",
     "detail": "full",
     "spacing": { "publications": { "value": 1.5, "unit": "x" } },
@@ -241,6 +242,7 @@
     ]
   },
   "2page": {
+    "groups": ["professional"],
     "place": { "publications.legend": "title" },
     "recipientInline": true,
     "funderOff": ["nserc-cgs-d", "nserc-cgs-m"],
@@ -282,6 +284,7 @@
     ]
   },
   "1page": {
+    "groups": ["professional"],
     "place": { "publications.legend": "title" },
     "recipientInline": true,
     "funderOff": ["nserc-cgs-d", "nserc-cgs-m"],

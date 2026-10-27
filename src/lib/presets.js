@@ -137,7 +137,7 @@ function grouped(sections, groups) {
 export function preset(name) {
   const spec = presets[name];
   if (!spec) throw new Error(`Unknown CV preset "${name}". Known: ${presetNames.join(', ')}`);
-  return { ...spec, sections: spec.sections.map(section) };
+  return { ...spec, groups: spec.groups ?? [], sections: spec.sections.map(section) };
 }
 
 /**
@@ -153,8 +153,10 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {}, groups = [] } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {}, groups } = {}) {
   const spec = preset(name);
+  // The builder's choice of groups, else the preset's own.
+  groups ??= spec.groups ?? [];
 
   const sections = spec.sections.map((section) => {
     // A list section has no items — it renders its entries verbatim — so the
@@ -269,7 +271,10 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
     // at the earliest of its own id and its members' — and its members move only among
     // themselves.
     sections: (() => {
-      const shown = grouped(sections, groups).filter((s) => s.items.length > 0 || s.entries?.length > 0);
+      const kept = grouped(sections, groups).filter((s) => s.items.length > 0 || s.entries?.length > 0);
+      // A group of one is just that section: an umbrella over a single sub-heading says nothing.
+      const size = (gid) => kept.filter((x) => x.group?.id === gid).length;
+      const shown = kept.map((s) => (s.group && size(s.group.id) < 2 ? { ...s, group: undefined } : s));
       const top = (s) => (s.group
         ? Math.min(rank(order, s.group.id), ...shown.filter((x) => x.group?.id === s.group.id).map((x) => rank(order, x.id)))
         : rank(order, s.id));

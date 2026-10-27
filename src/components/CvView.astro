@@ -103,8 +103,16 @@ const mapFor = (s) => {
     const Wrap = collapsed ? 'details' : 'div';
     const Head = collapsed ? 'summary' : 'div';
     const selectable = pick && s.items.length > 0;
-    return (
-    <Wrap data-talks={isTalks(s) ? '' : undefined} class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${s.id === 'publications' ? ' cvsec--hasmap' : ''}`}>
+    // A section group a preset has on (Professional Activities): its heading before its first
+    // member, each member a sub-section. The builder draws its own, as its option changes.
+    const opens = s.group && cv.sections[i - 1]?.group?.id !== s.group.id;
+    return (<>
+    {opens && (
+      <div class="cvsechead cvgrouphead">
+        <h3 class="cvsection cvgroup" id={s.group.id}>{s.group.heading}</h3>
+      </div>
+    )}
+    <Wrap data-talks={isTalks(s) ? '' : undefined} class={`cvsec${i === 0 ? ' cvsec--first' : ''}${i === cv.sections.length - 1 ? ' cvsec--last' : ''}${selectable ? ' pickgroup' : ''}${s.id === 'publications' ? ' cvsec--hasmap' : ''}${s.group ? ' cvsec--sub' : ''}`}>
       <Head class="cvsechead">
         {selectable && (
           <input type="checkbox" class="groupbox"
@@ -300,7 +308,7 @@ const mapFor = (s) => {
           everything else rather than following the reader down the page. */}
       {s.id === 'publications' && <CollabMini ids={s.items.map((item) => item.id)} />}
     </Wrap>
-    );
+    </>);
   });
   // A run of talk sections shares one wrapper, so the conference map in it
   // sticks through all of them and stops after the last. A preset may split

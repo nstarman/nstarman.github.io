@@ -57,6 +57,8 @@ const builderData = {
   cardOrderLetter: cardOrder(true),
   // The section groups the Group option gathers under one heading: heading and members.
   sectionGroups: SECTION_GROUPS,
+  // Which groups each preset has on by default, so "Start from" sets the Group option as it does.
+  presetGroups: Object.fromEntries(presetNames.map((n) => [n, preset(n).groups])),
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
@@ -154,7 +156,7 @@ const builderData = {
     import { move, holdDrag, gather, moveGrouped, GROUP } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -363,7 +365,10 @@ const builderData = {
       // "Start from" starts from the preset's sections in its own order, the
       // rest after them as they usually come; All and None, the usual order.
       if (t.dataset.all !== undefined) setOrder(FIRST_ORDER);
-      if (t.dataset.preset) setOrder([...SECTION_ORDER[t.dataset.preset], ...FIRST_ORDER]);
+      if (t.dataset.preset) {
+        if ($('groupsections')) $('groupsections').checked = (PRESET_GROUPS[t.dataset.preset] ?? []).includes(GROUP_ID);
+        setOrder([...SECTION_ORDER[t.dataset.preset], ...FIRST_ORDER]);
+      }
       if (t.dataset.all !== undefined) {
         boxes().forEach((b) => (b.checked = t.dataset.all === '1'));
         recount();
@@ -737,7 +742,9 @@ const builderData = {
       // The group's heading, before its first member, while the option is on; its members read
       // as sub-sections, and move only among themselves.
       groupHead.remove();
-      const members = grouping() ? sorted.filter((s) => MEMBERS.includes(secId(s))) : [];
+      // A group of one is just that section, as the compile has it.
+      const inGroup = grouping() ? sorted.filter((s) => MEMBERS.includes(secId(s))) : [];
+      const members = inGroup.length > 1 ? inGroup : [];
       if (members.length) members[0].before(groupHead);
       const ends = (list, s) => [list[0] === s, list.at(-1) === s];
       const units = sorted.filter((s) => !members.includes(s) || s === members[0]);
