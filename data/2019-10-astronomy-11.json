@@ -7,9 +7,10 @@
     "start": "2019-10"
   },
   "title": ".Astronomy 11",
+  "role": "LOC",
   "kind": "organizer",
   "location": "Toronto, ON, Canada",
-  "details": "Role: Local Organizing Committee member and lead workshop on scientific plotting",
+  "details": "Led a workshop on scientific plotting",
   "links": [
     {
       "rel": "event",

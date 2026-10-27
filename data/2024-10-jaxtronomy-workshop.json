@@ -9,9 +9,9 @@
     "start": "2024-10"
   },
   "title": "JAXtronomy Workshop",
+  "role": "SOC",
   "kind": "organizer",
   "location": "New York, NY, USA",
-  "details": "Role: SOC",
   "links": [
     {
       "rel": "event",

@@ -9,9 +9,9 @@
     "start": "2026-01"
   },
   "title": "Gaia Hackathon",
+  "role": "LOC",
   "kind": "organizer",
   "location": "Cambridge, MA, USA",
-  "details": "Role: LOC",
   "links": [
     {
       "rel": "event",

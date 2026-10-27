@@ -86,6 +86,13 @@ describe('the model', () => {
     expect(row({ type: 'media', outlet: 'New Scientist' })).toBe('New Scientist');
   });
 
+  it('says what I did at a conference I organized, on its heading line', () => {
+    const line = (id) => { const r = find(complete, id); return `${r.title}, ${text(r.subject)}`; };
+    expect(line('jaxtronomy-workshop')).toBe('JAXtronomy Workshop, SOC');
+    expect(line('astronomy-11')).toBe('.Astronomy 11, LOC');
+    expect(text(find(complete, 'astronomy-11').lines[0])).toBe('Led a workshop on scientific plotting');
+  });
+
   it('says each fellowship once: its name, my part, who awarded it', () => {
     const line = (id) => { const r = find(complete, id); return `${r.title}, ${text(r.subject)}`; };
     expect(line('brinson-prize-fellowship')).toBe('Brinson Prize Fellowship, Postdoctoral Fellow, Brinson Foundation');
@@ -260,7 +267,7 @@ describe('detail levels', () => {
     expect(find(complete, '30th-texas-symposium-on-relativistic-astrophysics-talk').lines.map(text))
       .toEqual(['“Resolving the Recombination Visibility Function Width Tension”', 'Awarded best graduate student presentation']);
     // A note that is not a title is not quoted.
-    expect(find(complete, 'gaia-hackathon').lines.map(text)).toEqual(['Role: LOC']);
+    expect(find(complete, 'astronomy-11').lines.map(text)).toEqual(['Led a workshop on scientific plotting']);
   });
 
   it("leaves an award's recipient line out where the builder unticks it, and only there", () => {

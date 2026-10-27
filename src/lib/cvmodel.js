@@ -53,8 +53,9 @@ function subject(item, names = 0, funder = true) {
   switch (item.type) {
     case 'publication':
       return [];
+    // My part in it, if I had one — "SOC" at a conference I organized — then the event.
     case 'presentation':
-      return plain(item.event ?? '');
+      return plain([item.role, item.event].filter(Boolean).join(', '));
     case 'mentoring': {
       const who = item.student === item.title ? null : item.student;
       return plain([who, item.institution && `(${institutionOf(item, names)})`].filter(Boolean).join(' '));

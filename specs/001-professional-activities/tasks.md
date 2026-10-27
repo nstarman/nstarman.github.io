@@ -61,11 +61,11 @@ heading and five sub-headings; the prebuilt PDFs show none.
 **Independent test**: every `organizer` presentation reads "<title>, <role>"; no detail line
 starts with "Role:".
 
-- [ ] T012 [US2] In `src/lib/cvmodel.js` `subject()` and `src/components/CvTimelineItem.astro`: a presentation's heading prints title, then `role`, then its event/place as today ("JAXtronomy Workshop, SOC").
-- [ ] T013 [P] [US2] Migrate per research.md R6, removing line 0 and setting `role`: `data/*-jaxtronomy-workshop.json`, `data/*-division-of-dynamical-astronomy-56.json`, `data/*-astropy-coordination-meeting.json`, `data/*-astrophysics-and-space-science-in-marche-iii-*.json` (role "SOC"); `data/*-gaia-hackathon.json`, `data/*-gaia-hackathon-2.json` (role "LOC"); `data/*-astropy-core-developer-conference-talk.json` (role "Maintainer, Cosmology and Units"). A `details` left empty is removed.
-- [ ] T014 [P] [US2] Migrate per research.md R6, setting `role` and rewriting line 0 in place: `astronomy-11` (LOC; "Led a workshop on scientific plotting"), `comscicon-gta-2020` (Organizing Committee; "Toronto's first ComSciCon"), `comscicon-gta-2021` (Organizing Committee; "A workshop series for graduate students on science communication skills"), `astropy-2026-conference` (Coordination Committee and Strategic Planning Committee; "Moderated online discussion and helped moderate the AI sessions"), `sigma-nu-alumni-advisory-board` (Member; "Sustainability and Chapter Operations committees").
-- [ ] T015 [P] [US2] Drop the "Role: " prefix in place, capitalizing the first letter: `ta-ast101-the-sun-and-its-neighbours`, `ta-ast201-stars-and-galaxies`, `lead-observer-ast101-325` (line 0); `nsf-reu-classe-participant-at-cornell`, `source-participant-at-case-western-reserve-university-cwru` (line 1).
-- [ ] T016 [US2] In `tests/integrity.test.js`, add "no detail line starts with Role:" over `details` and `detailsComplete`; in `tests/cvmodel.test.js`, assert the JAXtronomy and .Astronomy 11 headings; fix any test that read a migrated line (`grep -rn "Role:" tests/`).
+- [X] T012 [US2] In `src/lib/cvmodel.js` `subject()` and `src/components/CvTimelineItem.astro`: a presentation's heading prints title, then `role`, then its event/place as today ("JAXtronomy Workshop, SOC").
+- [X] T013 [P] [US2] Migrate per research.md R6, removing line 0 and setting `role`: `data/*-jaxtronomy-workshop.json`, `data/*-division-of-dynamical-astronomy-56.json`, `data/*-astropy-coordination-meeting.json`, `data/*-astrophysics-and-space-science-in-marche-iii-*.json` (role "SOC"); `data/*-gaia-hackathon.json`, `data/*-gaia-hackathon-2.json` (role "LOC"); `data/*-astropy-core-developer-conference-talk.json` (role "Maintainer, Cosmology and Units"). A `details` left empty is removed.
+- [X] T014 [P] [US2] Migrate per research.md R6, setting `role` and rewriting line 0 in place: `astronomy-11` (LOC; "Led a workshop on scientific plotting"), `comscicon-gta-2020` (Organizing Committee; "Toronto's first ComSciCon"), `comscicon-gta-2021` (Organizing Committee; "A workshop series for graduate students on science communication skills"), `astropy-2026-conference` (Coordination Committee and Strategic Planning Committee; "Moderated online discussion and helped moderate the AI sessions"), `sigma-nu-alumni-advisory-board` (Member; "Sustainability and Chapter Operations committees").
+- [X] T015 [P] [US2] Drop the "Role: " prefix in place, capitalizing the first letter: `ta-ast101-the-sun-and-its-neighbours`, `ta-ast201-stars-and-galaxies`, `lead-observer-ast101-325` (line 0); `nsf-reu-classe-participant-at-cornell`, `source-participant-at-case-western-reserve-university-cwru` (line 1).
+- [X] T016 [US2] In `tests/integrity.test.js`, add "no detail line starts with Role:" over `details` and `detailsComplete`; in `tests/cvmodel.test.js`, assert the JAXtronomy and .Astronomy 11 headings; fix any test that read a migrated line (`grep -rn "Role:" tests/`).
 
 **Checkpoint**: SC-002 holds; the FR-036 repetition test passes on the new roles.
 
@@ -75,8 +75,8 @@ starts with "Role:".
 
 **Independent test**: the two talks appear only in Professional & Software Talks.
 
-- [ ] T017 [US3] Set `"professional": true` in `data/2024-05-from-jax-to-galax.json` and `data/2022-03-astropy-core-developer-conference-talk.json`.
-- [ ] T018 [US3] In `tests/presets.test.js`: in `complete`, both ids are in `talks-professional` and in no other section; no presentation marked professional is in `talks-invited`, `talks-contributed` or `conferences-attended`.
+- [X] T017 [US3] Set `"professional": true` in `data/2024-05-from-jax-to-galax.json` and `data/2022-03-astropy-core-developer-conference-talk.json`.
+- [X] T018 [US3] In `tests/presets.test.js`: in `complete`, both ids are in `talks-professional` and in no other section; no presentation marked professional is in `talks-invited`, `talks-contributed` or `conferences-attended`.
 
 ---
 

@@ -265,3 +265,14 @@ describe('a section group', () => {
     expect(ids('complete', { groups: ['nope'] })).toEqual(ids('complete'));
   });
 });
+
+describe('a professional talk', () => {
+  const where = (id) => resolve('complete').sections.filter((s) => s.items.some((i) => i.id === id)).map((s) => s.id);
+  it('lists under Professional & Software Talks, and nowhere else', () => {
+    for (const id of ['from-jax-to-galax', 'astropy-core-developer-conference-talk']) expect(where(id)).toEqual(['talks-professional']);
+  });
+  it('is never among the science talks or the conferences attended', () => {
+    const science = resolve('complete').sections.filter((s) => ['talks-invited', 'talks-contributed', 'conferences-attended'].includes(s.id));
+    expect(science.flatMap((s) => s.items).filter((i) => i.professional).map((i) => i.id)).toEqual([]);
+  });
+});
