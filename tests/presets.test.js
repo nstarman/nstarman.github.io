@@ -262,8 +262,9 @@ describe('a section group', () => {
   it('groups only the members a preset lists and holds', () => {
     const on = resolve('np', undefined, { groups: ['professional'] }).sections.filter((s) => s.group).map((s) => s.id);
     expect(on).toEqual(ids('np', { groups: [] }).filter((id) => MEMBERS.includes(id)));
-    // 2page lists peer review and service but holds no service, so one member is left: no group.
-    expect(resolve('2page', undefined, { groups: ['professional'] }).sections.some((s) => s.group)).toBe(false);
+    // 2page lists organized conferences, peer review and service but holds no service: two
+    // members, so they group, and service is not among them.
+    expect(resolve('2page').sections.filter((s) => s.group).map((s) => s.id)).toEqual(['conferences-organized', 'peer-review']);
   });
 
   it('moves as one when the builder orders it, and its members only among themselves', () => {

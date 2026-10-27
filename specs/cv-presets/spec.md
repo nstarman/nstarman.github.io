@@ -346,10 +346,12 @@ cards (`specs/cards/spec.md`).
 
 | Preset | detail | includeAll | sections (overrides) |
 |---|---|---|---|
-| `complete` | full | yes | all 18, incl. `languages`, `courses` |
-| `np` | full | — | 16: all but `languages`, `courses` |
-| `2page` | summary | — | education, positions, grants-major (6), awards-major (6), publications (10), software (8, 4 cols), talks-invited (8, full), mentoring (5, full), peer-review, service |
-| `1page` | summary | — | education, positions, grants-major (4), awards-major (4), publications (5, no groupBy), software (6, 3 cols) |
+| `complete` | full | yes | all 20, incl. `languages`, `courses` |
+| `np` | full | — | 18: all but `languages`, `courses` |
+| `2page` | summary | — | education, positions, grants-major (6), awards-major (6), publications (10), software (8, 4 cols), talks-invited (6), mentoring (5, full), conferences-organized, peer-review, service |
+| `1page` | summary | — | education, positions, grants-major (4), awards-major (4), publications (5, no groupBy), software (6, 3 cols), mentoring (3) |
+
+`np`, `2page` and `1page` set `groups: ["professional"]` (FR-005c).
 
 `2page` and `1page` also set `place: { "publications.legend": "title" }`,
 `recipientInline: true` and `spacing: { "publications.heading": 1.4x }`; `2page` also sets

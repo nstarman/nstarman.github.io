@@ -4,7 +4,8 @@
   "type": "mentoring",
   "cvs": [
     "np",
-    "2page"
+    "2page",
+    "1page"
   ],
   "date": {
     "start": "2025-06",
@@ -54,8 +55,7 @@
       "date": "2025-07",
       "title": "Leadership Alliance National Symposium, July 23–25",
       "cvs": [
-        "np",
-        "2page"
+        "np"
       ]
     },
     {
@@ -63,8 +63,7 @@
       "date": "2025-11",
       "title": "2025 NSBP-NSHP Joint Annual Conference, November 19–23",
       "cvs": [
-        "np",
-        "2page"
+        "np"
       ]
     },
     {
@@ -74,8 +73,7 @@
       "event": "2026 APS Global Physics Summit, March 14–20",
       "url": "https://meetings-archive.aps.org/smt/2026/apr-d80/4/",
       "cvs": [
-        "np",
-        "2page"
+        "np"
       ]
     }
   ],
