@@ -205,8 +205,15 @@ cards (`specs/cards/spec.md`).
   a section's places out, or, for a section of talks, print each place in the right column, below the title,
   in the title or not at all (one choice);
   open a publication list with its tally and an h-index
-  from a source of their choosing; save and load a selection. Compile calls `cvModel('complete', ticked, keepLine, { prefix,
-  order, group, locationAt, locationDetail, tally })`. *Enforced:* review.
+  from a source of their choosing; save and load a selection. Compile (`modelFromSelection`, shared
+  with `npm run build:cv`) resolves the ticks against `complete` — the widest section set, and the
+  detail lines the ticks index — and lays the result out as the preset the selection was started
+  from: its page budget (`cv.typ`'s one-page spacing), detail level, label, and, for each section that
+  preset has, its `groupBy`; a section it lacks keeps `complete`'s, so a ticked entry outside the
+  preset's sections still prints. Start from a preset and Compile with nothing changed therefore
+  gives that preset's PDF, page for page. The preset is the one the page opens on (NP) until Start
+  from or loading a file sets it; the last wins. *Enforced:* `tests/selectionmodel.test.js` ("lays
+  … out as its own PDF", "still prints an entry in a section the preset lacks").
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 2) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
@@ -221,7 +228,7 @@ cards (`specs/cards/spec.md`).
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
   is switched off (`funderOff`, entry ids; absent is none), the awards whose recipient line is left
   out (`recipientOff`, entry ids; absent is none), whether Education puts the
-  university on its own line (`schoolBelow`, `true` only), whether its link icon is on the degree line (`linkOnDegree`, `true` only), the section groups switched on (`groups`, group ids; absent is none), and the build's commit and dirty flag. An older file is brought up to version 2 before it is read, so it prints the lines it printed when saved: for the entries whose "Role:" line became `role`, that line's tick is dropped and later ticks move up one (a talk's title is its line 0); Conferences' section settings and place in `order` go to Organized, Attended and Professional & Software Talks; it is ungrouped. `decode` refuses non-JSON, a non-object,
+  university on its own line (`schoolBelow`, `true` only), whether its link icon is on the degree line (`linkOnDegree`, `true` only), the section groups switched on (`groups`, group ids; absent is none), the preset it was started from (`preset`, a preset key; absent — every file saved before it — or naming no preset, it lays out as `complete`, and `loadReport` says so of an unknown one), and the build's commit and dirty flag. An older file is brought up to version 2 before it is read, so it prints the lines it printed when saved: for the entries whose "Role:" line became `role`, that line's tick is dropped and later ticks move up one (a talk's title is its line 0); Conferences' section settings and place in `order` go to Organized, Attended and Professional & Software Talks; it is ungrouped. `decode` refuses non-JSON, a non-object,
   another format, a newer version, a missing or oversized (> 5000) entry list and
   a malformed line map, each with a readable message; it drops unknown fields
   and bad values, and returns an unknown style rather than refusing. `loadReport`
