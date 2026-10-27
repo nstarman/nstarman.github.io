@@ -243,7 +243,7 @@
   },
   "2page": {
     "groups": ["professional"],
-    "place": { "publications.legend": "title" },
+    "place": { "publications.legend": "title", "publications.tally": "title" },
     "recipientInline": true,
     "funderOff": ["nserc-cgs-d", "nserc-cgs-m"],
     "spacing": { "publications.heading": { "value": 1.4, "unit": "x" }, "talks-invited": { "value": 0.6, "unit": "x" } },
@@ -262,7 +262,8 @@
       },
       {
         "id": "publications",
-        "limit": 10
+        "limit": 10,
+        "tally": { "of": "record", "form": "short" }
       },
       {
         "id": "software",
@@ -285,7 +286,7 @@
   },
   "1page": {
     "groups": ["professional"],
-    "place": { "publications.legend": "title" },
+    "place": { "publications.legend": "title", "publications.tally": "title" },
     "recipientInline": true,
     "funderOff": ["nserc-cgs-d", "nserc-cgs-m"],
     "spacing": { "publications.heading": { "value": 1.4, "unit": "x" } },
@@ -305,7 +306,8 @@
       {
         "id": "publications",
         "groupBy": null,
-        "limit": 5
+        "limit": 5,
+        "tally": { "of": "record", "form": "short" }
       },
       {
         "id": "software",

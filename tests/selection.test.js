@@ -285,6 +285,21 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).tally).toEqual({});
   });
 
+  it('keeps a tally of the whole record, and drops any other `of`', () => {
+    const round = (tally) => decode(JSON.stringify(encode({ items: [], tally }))).tally;
+    expect(round({ a: { of: 'record' }, b: { of: 'record', hIndex: 'ads' } }))
+      .toEqual({ a: { of: 'record' }, b: { of: 'record', hIndex: 'ads' } });
+    expect(round({ a: { of: 'list' }, b: { of: 7, hIndex: 'ads' }, c: { of: '' } }))
+      .toEqual({ a: true, b: { hIndex: 'ads' }, c: true });
+  });
+
+  it('keeps the short form and the count\'s place, and drops any other form', () => {
+    const round = (sel) => decode(JSON.stringify(encode({ items: [], ...sel })));
+    expect(round({ tally: { a: { form: 'short' }, b: { of: 'record', form: 'short', hIndex: 'ads' }, c: { form: 'tiny' } } }).tally)
+      .toEqual({ a: { form: 'short' }, b: { of: 'record', form: 'short', hIndex: 'ads' }, c: true });
+    expect(round({ place: { 'publications.tally': 'title' } }).place).toEqual({ 'publications.tally': 'title' });
+  });
+
   it('refuses an absurdly long style name', () => {
     expect(read({ style: 'x'.repeat(65) }).style).toBeNull();
   });

@@ -7,8 +7,8 @@ import CvToc from '../../components/CvToc.astro';
 import CvFmtRow from '../../components/CvFmtRow.astro';
 import CvCardTune from '../../components/CvCardTune.astro';
 import '../../styles/cv/builder.css';
-import { resolve, memberIds, presetNames, preset, cardOrder, H_INDEX_SOURCES, hIndexOf, SECTION_GROUPS } from '../../lib/presets.js';
-import { authors } from '../../lib/data.js';
+import { resolve, memberIds, presetNames, preset, cardOrder, H_INDEX_SOURCES, hIndexOf, SECTION_GROUPS, tally } from '../../lib/presets.js';
+import { authors, byType } from '../../lib/data.js';
 import { buildInfo } from '../../lib/buildinfo.js';
 import CV_STYLES from '../../../cv/lib/styles.json';
 
@@ -40,14 +40,17 @@ const builderData = {
   // What the publication lists' preview line needs from each paper — whether it
   // is submitted, I lead it, a student leads it, a student is in its byline —
   // and each source's h-index, so the tally and the key can be shown as the
-  // ticks change.
+  // ticks change; in preparation, it is not counted.
   pubs: Object.fromEntries(cv.sections.filter((s) => s.layout === 'publications').flatMap((s) => s.items.map((i) => [i.id, {
+    prep: i.status === 'in-prep',
     sub: i.status === 'submitted' ? 1 : 0,
     first: i.authors?.[0]?.me ? 1 : 0,
     led: i.authors?.[0]?.mentee ? 1 : 0,
     stu: authors(i, 6).shown.some((a) => a.student) ? 1 : 0,
   }]))),
   hIndex: Object.fromEntries(H_INDEX_SOURCES.map((k) => [k, hIndexOf(k)])),
+  // The whole record's numbers, for a tally that counts it rather than the ticks.
+  record: tally(byType('publication')),
   membership,
   // Each preset's card, which the card's controls start from; and the card's
   // links in their usual order, for a selection that does not say.
@@ -62,7 +65,7 @@ const builderData = {
   // Each preset's sections, in its order, and whether each prints places.
   sectionOrder: Object.fromEntries(presetNames.map((n) => [n, resolve(n).sections.map((s) => s.id)])),
   location: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(resolve(n).sections.map((s) => [s.id, s.location]))])),
-  // And its tallies, as the preset writes them: true, or { hIndex }.
+  // And its tallies, as the preset writes them: true, or { hIndex, of }.
   tally: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(preset(n).sections
     .filter((s) => typeof s === 'object' && s.tally).map((s) => [s.id, s.tally]))])),
   // The entries whose institution each preset leaves out.
@@ -156,7 +159,7 @@ const builderData = {
     import { move, holdDrag, gather, moveGrouped, GROUP } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, record: RECORD, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     const boxes = () => [...document.querySelectorAll('.itembox')];
@@ -306,7 +309,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
-      if (t.name?.startsWith('tally:') || t.name?.startsWith('hindex:')) { retire('Tally changed — compile again.'); return; }
+      if (/^(tally|tallyrecord|tallyshort|hindex):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -499,14 +502,15 @@ const builderData = {
       row.querySelector('.fmtopt--headgap').hidden = none;
       const prefix = row.querySelector('.fmtopt--prefix');
       if (prefix) prefix.hidden = none || !row.closest('.pickgroup').querySelector('.groupbox').indeterminate;
-      const place = row.querySelector('.fmtopt--place');
-      if (!place) return;
-      // Title is the last stop, so dropping it moves no other.
-      const title = place.querySelector('input[value="title"]');
-      title.parentElement.hidden = none;
-      place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
-      if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
-      row.querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+      // The legend's and the tally's, each with its own gap.
+      for (const place of row.querySelectorAll('.fmtopt--place')) {
+        // Title is the last stop, so dropping it moves no other.
+        const title = place.querySelector('input[value="title"]');
+        title.parentElement.hidden = none;
+        place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
+        if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
+        place.closest('.fmtline').querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+      }
     };
     // Where a part sits, by its key; a name no stop has is the default.
     const placeGroups = () => [...document.querySelectorAll('[data-place-of]')];
@@ -582,10 +586,19 @@ const builderData = {
     // Whether each publication list opens with a tally, and which h-index it adds.
     const tallyBoxes = () => [...document.querySelectorAll('[data-tally-of]')];
     const hIndexMenu = (id) => document.querySelector(`[data-hindex-of="${id}"]`);
-    /** Section id → true, or { hIndex }, for the lists that open with a tally. */
+    // Whether a tally counts the whole record; only while its Tally is ticked.
+    const recordBox = (id) => document.querySelector(`[data-tally-record-of="${id}"]`);
+    // And whether it is in the short form, the students left to the legend.
+    const shortBox = (id) => document.querySelector(`[data-tally-short-of="${id}"]`);
+    const syncRecordBoxes = () => {
+      for (const b of tallyBoxes()) for (const r of [recordBox(b.dataset.tallyOf), shortBox(b.dataset.tallyOf)]) if (r) r.disabled = !b.checked;
+    };
+    document.addEventListener('change', (e) => { if (e.target.matches?.('[data-tally-of]')) syncRecordBoxes(); });
+    /** Section id → true, or { hIndex, of, form }, for the lists that open with a tally. */
     const currentTally = () => Object.fromEntries(tallyBoxes().filter((b) => b.checked).map((b) => {
       const h = hIndexMenu(b.dataset.tallyOf)?.value;
-      return [b.dataset.tallyOf, h ? { hIndex: h } : true];
+      const t = { ...(recordBox(b.dataset.tallyOf)?.checked && { of: 'record' }), ...(shortBox(b.dataset.tallyOf)?.checked && { form: 'short' }), ...(h && { hIndex: h }) };
+      return [b.dataset.tallyOf, Object.keys(t).length ? t : true];
     }));
     // Say so beside a Scholar h-index whose numbers were read long ago: no API
     // refreshes them, so the date is the only way to know.
@@ -603,18 +616,30 @@ const builderData = {
       for (const prev of document.querySelectorAll('[data-legend-of]')) {
         const id = prev.dataset.legendOf, group = prev.closest('.pickgroup');
         const ticked = [...group.querySelectorAll('.itembox:checked')].map((b) => PUBS[b.value]).filter(Boolean);
-        const sum = (k) => ticked.reduce((n, p) => n + p[k], 0);
-        const tallyEl = prev.querySelector('.tallyprev');
+        const sum = (k) => ticked.reduce((n, p) => n + (p.prep ? 0 : p[k]), 0);
+        const placeOf = (part) => document.querySelector(`[data-place-of="${id}.${part}"]`)?.querySelector(':checked')?.value ?? 'below';
+        // The tally on its own line or up on the heading's, at the Tally's place.
+        const tallyLine = prev.querySelector('.tallyprev'), tallyHead = group.querySelector('.tallyhead');
         const box = tallyBoxes().find((b) => b.dataset.tallyOf === id);
         const h = box?.checked ? HINDEX[hIndexMenu(id)?.value] : null;
-        tallyEl.hidden = !box?.checked;
-        tallyEl.replaceChildren();
+        const tallyUp = placeOf('tally') === 'title';
+        const tallyEl = tallyUp ? tallyHead : tallyLine;
+        for (const el of [tallyLine, tallyHead]) { el.hidden = true; el.replaceChildren(); }
         if (box?.checked) {
+          // The whole record's numbers, or the ticked papers' — never one in preparation.
+          const n = recordBox(id)?.checked
+            ? { total: RECORD.total, sub: RECORD.submitted, first: RECORD.first, led: RECORD.student }
+            : { total: ticked.filter((p) => !p.prep).length, sub: sum('sub'), first: sum('first'), led: sum('led') };
           const strong = document.createElement('strong');
-          strong.textContent = `${ticked.length} papers`;
-          tallyEl.append(strong, `${sum('sub') ? ` (${sum('sub')} submitted)` : ''}: ${sum('first')} first-author${sum('led') ? `, ${sum('led')} led by students I supervised` : ''}.${h ? ` h-index ${h.value} (${h.source}).` : ''}`);
+          strong.textContent = `${n.total} papers`;
+          const hix = h ? ` h-index ${h.value} (${h.source}).` : '';
+          tallyEl.append(strong, shortBox(id)?.checked
+            ? ` (${n.first} first-author${n.sub ? `, ${n.sub} submitted` : ''}).${hix}`
+            : `${n.sub ? ` (${n.sub} submitted)` : ''}: ${n.first} first-author${n.led ? `, ${n.led} led by students I supervised` : ''}.${hix}`);
+          tallyEl.hidden = false;
+          tallyLine.style.textAlign = placeOf('tally') === 'right' ? 'right' : 'left';
         }
-        const place = document.querySelector(`[data-place-of="${id}.legend"]`)?.querySelector(':checked')?.value ?? 'below';
+        const place = placeOf('legend');
         const show = sum('stu') > 0;
         const inHead = place === 'title';
         const key = group.querySelector('.keyprev');
@@ -622,7 +647,9 @@ const builderData = {
         key.hidden = !show || inHead;
         key.style.textAlign = place === 'right' ? 'right' : 'left';
         head.hidden = !show || !inHead;
-        prev.hidden = tallyEl.hidden && key.hidden;
+        // Shorter beside the tally, as the PDF has it.
+        head.querySelector('.keylead').textContent = tallyHead.hidden ? 'Students I supervised or advised:' : 'Students I advised:';
+        prev.hidden = tallyLine.hidden && key.hidden;
       }
     };
     for (const type of ['change', 'click']) document.addEventListener(type, () => requestAnimationFrame(syncLegends));
@@ -657,10 +684,15 @@ const builderData = {
       for (const b of tallyBoxes()) {
         const v = t[b.dataset.tallyOf];
         b.checked = Boolean(v);
+        const r = recordBox(b.dataset.tallyOf);
+        if (r) r.checked = v?.of === 'record';
+        const sh = shortBox(b.dataset.tallyOf);
+        if (sh) sh.checked = v?.form === 'short';
         const menu = hIndexMenu(b.dataset.tallyOf);
         // One this page does not offer is none.
         if (menu) { menu.value = [...menu.options].some((o) => o.value === v?.hIndex) ? v.hIndex : ''; warnStale(menu); }
       }
+      syncRecordBoxes();
       syncLegends();
     };
     requestAnimationFrame(syncLegends);

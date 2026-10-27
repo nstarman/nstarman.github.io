@@ -301,7 +301,8 @@
       #if g != none [#g #h(2pt)]
       #if look.smallcaps { smallcaps(title) } else { title }
     ]
-    #(headings.at(variant))(if aside == none { words } else { words + h(1fr) + aside })
+    // At least an em between the title and its aside, so the aside never reads as part of it.
+    #(headings.at(variant))(if aside == none { words } else { words + h(1em) + h(1fr) + aside })
   ]
   // The reference leaves a full line under a heading's rule.
   v(if flat { below + 8pt } else { below })
@@ -492,26 +493,36 @@
 // The key to those colours and marks, for a section with a student of mine
 // in a byline.
 #let hasstudents(section) = section.items.any(i => i.byline.any(s => s.at("student", default: none) != none))
-#let studentkey = text(size: 9pt, fill: faint)[Students I supervised or advised:
+// Shorter where it shares the heading's line with the count, so both fit one line.
+#let studentkey(short: false) = text(size: 9pt, fill: faint)[#if short [Students I advised:] else [Students I supervised or advised:]
   #text(fill: stucolour.undergraduate)[undergraduate#super(stumark.undergraduate)],
   #text(fill: stucolour.graduate)[graduate#super(stumark.graduate)].]
 
 // The list's headline numbers, where the preset or the builder asks for them —
 // the line a reader takes in before the list itself — and the h-index with its
-// source, where one is asked for.
-#let tallyline(t) = block(sticky: true, below: gap("publications.legend", "legend"), text(size: look.sub)[
-  #strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#if t.at("h", default: none) != none [ h-index #t.h.value (#t.h.source).]
-])
+// source, where one is asked for. The short form leaves the student-led number
+// to the key's colours and marks.
+// One line each, or the markup's line breaks would pad the words with spaces.
+#let tallywords(t) = {
+  let hix = if t.at("h", default: none) != none [ h-index #t.h.value (#t.h.source).]
+  if t.at("form", default: none) == "short" {
+    [#strong[#t.total papers] (#t.first first-author#if t.submitted > 0 [, #t.submitted submitted]).#hix]
+  } else {
+    [#strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#hix]
+  }
+}
+#let tallyline(t, at: left) = block(sticky: true, width: 100%, below: gap("publications.tally", "legend"),
+  align(at, text(size: look.sub, tallywords(t))))
 
-// `legend` is the key's alignment on its own line, or `none` where it has
-// gone up onto the heading's.
-#let publications(section, legend: left) = {
-  if section.at("tally", default: none) != none { tallyline(section.tally) }
+// `legend` is the key's alignment on its own line, and `count` the tally's, or
+// `none` where it has gone up onto the heading's.
+#let publications(section, legend: left, count: left) = {
+  if count != none and section.at("tally", default: none) != none { tallyline(section.tally, at: count) }
   if legend != none and hasstudents(section) {
     // Sticky, so a wider gap below it can never strand it at a page foot;
     // full width, or an auto block shrinks to the key and it cannot go right.
     block(sticky: true, width: 100%, {
-      align(legend, studentkey)
+      align(legend, studentkey())
       v(gap(section.id + ".legend", "legend"))
     })
   }
@@ -596,6 +607,10 @@
   let keyplace = placeof.at(s.id + ".legend", default: "below")
   let keyup = (s.at("layout", default: none) == "publications" and choice != "none"
     and keyplace == "title" and hasstudents(s))
+  // And the count, before the key where both go up.
+  let countplace = placeof.at(s.id + ".tally", default: "below")
+  let countup = (s.at("layout", default: none) == "publications" and choice != "none"
+    and countplace == "title" and s.at("tally", default: none) != none)
   if choice != "none" and grp != none {
     subsection(s.heading, mark: s.at("icon", default: none), below: gap(s.id + ".heading", "heading"))
   } else if choice != "none" {
@@ -604,7 +619,11 @@
       mark: s.at("icon", default: none),
       variant: if choice in headings { choice } else { usual },
       below: gap(s.id + ".heading", "heading"),
-      aside: if keyup { studentkey } else { none },
+      aside: if keyup or countup {
+        if countup { text(size: 9pt, fill: faint, tallywords(s.tally)) }
+        if keyup and countup { h(0.8em) }
+        if keyup { studentkey(short: countup) }
+      } else { none },
     )
   } else {
     v(if tight { 8pt } else { 15pt })
@@ -614,7 +633,9 @@
   } else if "layout" in s and s.layout == "grid" {
     softgrid(s.items, gap(s.id, "grid"), s.at("columns", default: 3))
   } else if "layout" in s and s.layout == "publications" {
-    publications(s, legend: if keyup { none } else if keyplace == "right" { right } else { left })
+    publications(s,
+      legend: if keyup { none } else if keyplace == "right" { right } else { left },
+      count: if countup { none } else if countplace == "right" { right } else { left })
   } else {
     entries(s.items, gap(s.id, "entries"))
   }

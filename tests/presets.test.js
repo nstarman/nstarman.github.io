@@ -74,6 +74,38 @@ describe('tally', () => {
     expect(pubsOf({ tally: { publications: true } }).tally.total).toBe(pubsOf().items.length);
     expect(pubsOf({ tally: { publications: { hIndex: 'ads' } } }).tally.h.source).toBe('ADS');
   });
+
+  it('never counts a paper in preparation', () => {
+    const prep = { authors: [me, mentee], status: 'in-prep' };
+    expect(tally([...pubs, prep, { ...prep, authors: [mentee] }])).toEqual(tally(pubs));
+  });
+
+  it('counts the whole record with `of: "record"`, whatever the list shows', () => {
+    const record = tally(byType('publication'));
+    expect(record.total).toBe(byType('publication').filter((p) => p.status !== 'in-prep').length);
+    const only = new Set(byType('publication').slice(0, 5).map((p) => p.id));
+    const pubsOf = (t) => resolve('complete', only, { tally: { publications: t } }).sections.find((s) => s.id === 'publications');
+    expect(pubsOf({ of: 'record' }).tally).toEqual(record);
+    expect(pubsOf({ of: 'record', hIndex: 'ads' }).tally.h.source).toBe('ADS');
+    expect(pubsOf(true).tally).toEqual(tally(pubsOf(true).items));
+  });
+
+  it('opens the short CVs with the whole record, the same on each', () => {
+    const of = (name) => resolve(name).sections.find((s) => s.id === 'publications').tally;
+    expect(of('1page')).toEqual(tally(byType('publication'), { form: 'short' }));
+    expect(of('2page')).toEqual(of('1page'));
+  });
+
+  it('carries the short form only when asked, and the short CVs set it on the heading line', () => {
+    expect(tally(pubs, { form: 'short' }).form).toBe('short');
+    expect(tally(pubs).form).toBeUndefined();
+    expect(tally(pubs, { form: 'tiny' }).form).toBeUndefined();
+    for (const name of ['1page', '2page']) {
+      const cv = resolve(name);
+      expect(cv.sections.find((s) => s.id === 'publications').tally.form).toBe('short');
+      expect(cv.place['publications.tally']).toBe('title');
+    }
+  });
 });
 
 describe('funderOff', () => {

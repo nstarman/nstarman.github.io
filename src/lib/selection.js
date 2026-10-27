@@ -117,13 +117,23 @@ const cleanCard = (raw) => {
   return out;
 };
 
-/** Section id → true, or { hIndex } naming its source, for the publication
- *  lists that open with a tally. Sources are names, as headings are. */
+/** Section id → true, or { hIndex } naming its source, { of: "record" } to
+ *  count the whole record and { form: "short" } for the short form, for the
+ *  publication lists that open with a tally. Sources are names, as headings
+ *  are; any other `of` counts the list, any other `form` is the long one. */
 const cleanTally = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k]) => k.length <= 64).slice(0, 64)
-    .map(([k, v]) => [k, v === true ? true
-      : v && typeof v.hIndex === 'string' && v.hIndex.length <= 64 ? { hIndex: v.hIndex } : null])
+    .map(([k, v]) => {
+      if (v === true) return [k, true];
+      if (!v || typeof v !== 'object') return [k, null];
+      const t = {
+        ...(v.of === 'record' && { of: 'record' }),
+        ...(v.form === 'short' && { form: 'short' }),
+        ...(typeof v.hIndex === 'string' && v.hIndex.length <= 64 && { hIndex: v.hIndex }),
+      };
+      return [k, Object.keys(t).length ? t : 'of' in v || 'form' in v ? true : null];
+    })
     .filter(([, v]) => v !== null));
 
 /** Section id → where its entries print their place: `below` the title, `title` (in it,

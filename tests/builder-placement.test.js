@@ -33,6 +33,13 @@ describe('where a builder option lives', () => {
     }
   });
 
+  it("offers a publication list's Whole record beside its Tally, in that list's row only", () => {
+    expect(section).toMatch(/data-tally-of=\{s\.id\}[\s\S]*?data-tally-record-of=\{s\.id\}[\s\S]*?data-tally-short-of=\{s\.id\}[\s\S]*?data-hindex-of/);
+    for (const attr of ['data-tally-record-of', 'data-tally-short-of']) expect(global).not.toContain(attr);
+    // The tally's place is a subject of the publication list's row, as the legend's is.
+    expect(section).toContain("{ sub: 'Tally', place: true, key: `${s.id}.tally`");
+  });
+
   it("offers a talks section's place as one choice, in that section's row only", () => {
     expect(section).toContain('data-place-at-of');
     expect(global).not.toContain('data-place-at-of');
