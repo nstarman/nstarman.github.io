@@ -20,6 +20,7 @@ export function modelFromSelection(sel) {
     prefix: sel.prefix,
     order: sel.order,
     group: sel.group,
+    groups: sel.groups,
     locationAt: sel.locationAt,
     locationDetail: sel.locationDetail,
     tally: sel.tally,

@@ -110,6 +110,8 @@ for (const [gid, g] of Object.entries(GROUPS)) {
   }
 }
 export const GROUP_IDS = Object.keys(GROUPS);
+/** The groups as the builder needs them: heading and members, by id. */
+export const SECTION_GROUPS = GROUPS;
 
 /**
  * Gathers each switched-on group's members, in the group's order, at the place of the first

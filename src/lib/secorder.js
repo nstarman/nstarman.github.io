@@ -15,6 +15,38 @@ export function move(order, id, dir) {
 }
 
 /**
+ * `ids` with a section group's members together, where the first of them stands, in the order
+ * `ids` has them — what the compile does when the group is switched on (presets.js `grouped`).
+ */
+export function gather(ids, members) {
+  const at = ids.findIndex((id) => members.includes(id));
+  if (at < 0) return ids;
+  const rest = ids.filter((id) => !members.includes(id));
+  const inside = ids.filter((id) => members.includes(id));
+  const before = ids.slice(0, at).filter((id) => !members.includes(id)).length;
+  return [...rest.slice(0, before), ...inside, ...rest.slice(before)];
+}
+
+/**
+ * One step for a grouped CV: a member moves only among the group's members; anything else —
+ * another section, or the group itself (`id` = `GROUP`) — moves past the whole group as one.
+ * `order` has the members together (see `gather`).
+ */
+export const GROUP = '\u0000group';
+export function moveGrouped(order, id, dir, members) {
+  if (members.includes(id)) {
+    const moved = move(order.filter((x) => members.includes(x)), id, dir);
+    let k = 0;
+    return order.map((x) => (members.includes(x) ? moved[k++] : x));
+  }
+  const units = order.reduce((u, x) => {
+    const unit = members.includes(x) ? GROUP : x;
+    return unit === GROUP && u.at(-1) === GROUP ? u : [...u, unit];
+  }, []);
+  return move(units, id, dir).flatMap((u) => (u === GROUP ? order.filter((x) => members.includes(x)) : [u]));
+}
+
+/**
  * Lets the items of a list (`ol > li`) be dragged into a new order after a long
  * hold, so a plain tap still follows the link and a plain swipe still scrolls
  * the strip. The list runs down on the rail and across on the narrow-screen

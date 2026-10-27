@@ -258,3 +258,10 @@
 .cvsec[data-place-at="title"] .plc--title{display:inline}
 #tree.schoolbelow .edusep{display:none}
 #tree.schoolbelow .eduinst{display:block}
+
+/* A section group (Professional Activities), while the builder's option is on: its heading is a
+   section heading; its members read as sub-sections under it — a smaller, small-caps name and no
+   rule, as the PDF draws them. */
+#tree .cvsec--sub .cvsechead{margin-top:.7rem; border-bottom:0; padding-bottom:0}
+#tree .cvsec--sub .cvsechead .cvsection{font-size:.88rem; font-variant:small-caps; letter-spacing:.02em; color:var(--muted, var(--ink))}
+.cvtoc li.cvtoc--sub{padding-left:.9em; font-size:.92em}

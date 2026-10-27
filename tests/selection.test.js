@@ -325,3 +325,49 @@ describe('loadReport', () => {
       + 'That build had uncommitted changes.');
   });
 });
+
+describe('section groups', () => {
+  it('keeps the groups switched on, and none when absent', () => {
+    expect(decode(JSON.stringify(encode({ items: ['x'], lines: {}, groups: ['professional'], site }))).groups).toEqual(['professional']);
+    expect(decode(JSON.stringify(encode({ items: ['x'], lines: {}, site }))).groups).toEqual([]);
+    expect(decode(JSON.stringify(encode({ items: ['x'], lines: {}, groups: ['Bad Id', 7, 'professional'], site }))).groups).toEqual(['professional']);
+  });
+});
+
+// A file saved before an organized conference's role left its first detail line ("Role: SOC")
+// must print the same lines now: its ticks move up with the lines (selection v2).
+describe('a v1 file', () => {
+  const v1 = (extra) => JSON.stringify({ format: FORMAT, version: 1, items: ['jaxtronomy-workshop', 'toronto-phd'], ...extra });
+
+  it('is read as this version', () => expect(VERSION).toBe(2));
+
+  it('moves the ticks of an entry whose first line left, and drops one that ticked only it', () => {
+    const out = decode(v1({ lines: { 'jaxtronomy-workshop': [0, 1, 3], 'gaia-hackathon': [0], 'toronto-phd': [0, 2] } }));
+    expect([...out.lines.get('jaxtronomy-workshop')]).toEqual([0, 2]);
+    expect(out.lines.has('gaia-hackathon')).toBe(false);
+    expect([...out.lines.get('toronto-phd')]).toEqual([0, 2]);
+  });
+
+  it('gives Conferences’ settings and place to the three sections it split into, ungrouped', () => {
+    const out = decode(v1({
+      heading: { conferences: 'rule', service: 'rule' },
+      locationAt: { conferences: 'none' },
+      spacing: { 'conferences.heading': { value: 1.2, unit: 'x' } },
+      order: ['education', 'conferences', 'service', 'peer-review'],
+    }));
+    for (const id of ['conferences-organized', 'conferences-attended', 'talks-professional']) {
+      expect(out.heading[id]).toBe('rule');
+      expect(out.locationAt[id]).toBe('none');
+      expect(out.spacing[`${id}.heading`]).toEqual({ value: 1.2, unit: 'x' });
+    }
+    expect(out.heading.conferences).toBeUndefined();
+    expect(out.order).toEqual(['education', 'conferences-organized', 'conferences-attended', 'talks-professional', 'service', 'peer-review']);
+    expect(out.groups).toEqual([]);
+  });
+
+  it('leaves a v2 file as it is, and refuses a v3', () => {
+    const v2 = JSON.stringify({ format: FORMAT, version: 2, items: ['x'], lines: { 'jaxtronomy-workshop': [0] }, order: ['conferences'] });
+    expect([...decode(v2).lines.get('jaxtronomy-workshop')]).toEqual([0]);
+    expect(() => decode(JSON.stringify({ format: FORMAT, version: 3, items: [] }))).toThrow(/newer version/);
+  });
+});
