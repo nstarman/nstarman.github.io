@@ -6,7 +6,7 @@
 // One model, two renderers.
 
 import person from '/config/person.json';
-import { resolve } from './presets.js';
+import { resolve, preset, presetNames } from './presets.js';
 import { asIdentifiers } from './refids.js';
 import { formatPlace } from './placefmt.js';
 import { authors, venueLine, dateLabel, links, money, softwarePapers, linkIcon, institutionGroups, groupedByDefault, groupDate, groupTitle } from './data.js';
@@ -234,7 +234,8 @@ function itemsOf(s, cv, keepLine, group, namesFor, currency, funderOff, paperIds
  *   `funder` does not print — the builder's list, else the preset's;
  *   `group` is the builder's choice, by institution, of
  *   whether its roles print as one row — absent, the records' `groupRoles` say
- *   `groups` the section groups switched on (see resolve()), by id.
+ *   `groups` the section groups switched on (see resolve()), by id; `layout` a preset to lay it out
+ *   as, when not `presetName`.
  */
 export function cvModel(presetName, only, keepLine, opts) {
   // A section whose places are `none` leaves them out, as `location: false` does.
@@ -244,11 +245,16 @@ export function cvModel(presetName, only, keepLine, opts) {
   // The institution-name level of each entry, by id: 0 full (the default), 1
   // shorter, 2 shortest.
   const namesFor = opts?.namesFor ?? {};
+  // The preset whose layout it prints in, when not the one it resolved against — the
+  // builder's "Start from": its page budget, detail level and, for the sections it has,
+  // how a list groups. Which entries print stays the resolved preset's.
+  const layout = presetNames.includes(opts?.layout) ? { name: opts.layout, ...preset(opts.layout) } : null;
+  const groupBy = (s) => (layout?.sections.find((t) => t.id === s.id) ?? s).groupBy ?? null;
 
   return {
-    preset: cv.name,
-    label: cv.label,
-    detail: cv.detail,
+    preset: layout?.name ?? cv.name,
+    label: layout?.label ?? cv.label,
+    detail: layout?.detail ?? cv.detail,
     card: cv.card,
     place: cv.place,
     spacing: cv.spacing,
@@ -268,7 +274,7 @@ export function cvModel(presetName, only, keepLine, opts) {
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
       // Submitted / Accepted / Published, as the LaTeX CV does.
-      groups: s.groupBy ? groupsOf(s.items, s.groupBy).map((g) => ({
+      groups: groupBy(s) ? groupsOf(s.items, groupBy(s)).map((g) => ({
         label: g.label,
         ids: g.items.map((i) => i.id),
       })) : [],

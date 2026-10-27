@@ -189,6 +189,10 @@ const builderData = {
       for (const b of markBoxes('text')) b.checked = at(b.value) !== false && at(b.value) !== 'icon';
       $('card').dispatchEvent(new CustomEvent('card:order', { detail: card.order ?? usualOrder() }));
     };
+    /** The preset the selection was started from — what Compile lays it out as. The page
+     *  opens on one; Start from and loading a file change it. */
+    const PRESETS = [...document.querySelectorAll('[data-preset]')].map((b) => b.dataset.preset);
+    let base = document.querySelector('[data-preset][aria-pressed="true"]')?.dataset.preset ?? 'complete';
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
     const unmarkStart = () => {
@@ -404,6 +408,7 @@ const builderData = {
           : `${on} packages with a paper.`);
       }
       if (t.dataset.preset) {
+        base = t.dataset.preset;
         const ids = new Set(MEMBERSHIP[t.dataset.preset] ?? []);
         boxes().forEach((b) => (b.checked = ids.has(b.value)));
         // A preset is not only which entries appear but how much each says, so
@@ -808,7 +813,7 @@ const builderData = {
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
-      linkOnDegree: $('linkondegree').checked, tally: currentTally(), site: SITE,
+      linkOnDegree: $('linkondegree').checked, tally: currentTally(), preset: base, site: SITE,
     });
 
     const saveSelection = () => {
@@ -886,8 +891,12 @@ const builderData = {
       // A gap the file does not set, or sets out of bounds, is the default.
       for (const f of spacingFields()) writeSpacing(f, sel.spacing[keyOf(f)] ?? null);
 
+      // Laid out as the file's preset; an older file, or one naming a preset this build
+      // lacks, as the complete CV.
+      base = PRESETS.includes(sel.preset) ? sel.preset : 'complete';
+
       const known = new Set(boxes().map((b) => b.value));
-      const { message, missing } = loadReport(sel, known, SITE, haveStyle);
+      const { message, missing } = loadReport(sel, known, SITE, haveStyle, !sel.preset || PRESETS.includes(sel.preset));
       status(message);
       if (missing.length) console.warn('Entries not present in this build:', missing);
     };

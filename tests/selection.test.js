@@ -326,6 +326,21 @@ describe('loadReport', () => {
   });
 });
 
+describe('the preset it started from', () => {
+  const round = (over) => decode(JSON.stringify(encode({ items: ['x'], lines: {}, site, ...over })));
+  it('keeps a preset name, and none when absent or not a name', () => {
+    expect(round({ preset: '1page' }).preset).toBe('1page');
+    expect(round({}).preset).toBeNull();
+    expect(round({ preset: 7 }).preset).toBeNull();
+  });
+  it('says when it names no preset', () => {
+    const sel = { items: new Set(['x']), style: null, preset: 'nope', site };
+    expect(loadReport(sel, new Set(['x']), site, true, false).message)
+      .toBe('Loaded 1 entry. Its preset "nope" is not one this page has; laid out as the complete CV.');
+    expect(loadReport(sel, new Set(['x']), site, true, true).message).toBe('Loaded 1 entry.');
+  });
+});
+
 describe('section groups', () => {
   it('keeps the groups switched on, and none when absent', () => {
     expect(decode(JSON.stringify(encode({ items: ['x'], lines: {}, groups: ['professional'], site }))).groups).toEqual(['professional']);
