@@ -98,11 +98,11 @@ no `position` has `tier`.
 **Independent test**: each migrated row prints as in `contracts/cv-row.md`; the T017 test
 passes; detail lines match `tests/fixtures/detail-lines-before.json`.
 
-- [ ] T024 [P] [US4] Teaching — set `title`/`role` per data-model.md: `data/*-ta-ast101-the-sun-and-its-neighbours.json`, `data/*-ta-ast201-stars-and-galaxies.json`, `data/*-lead-observer-ast101-325.json`, `data/*-grader-honors-mechanics.json`, `data/*-physics-instructor-ib-physics.json`.
-- [ ] T025 [P] [US4] Service — `data/*-executive-board-member-for-chabad-at-cwru.json`, `data/*-masseyscope-committee-member.json`, per data-model.md.
-- [ ] T026 [P] [US4] Outreach — `data/*-astronomy-on-tap-toronto-volunteer.json`, `data/*-astrotours-planetarium-presenter.json`, `data/*-astrotours-toronto-outreach-volunteer.json`, `data/*-astrotours-telescope-organizer.json`, `data/*-massey-telescopes-outreach-coordinator.json`, `data/*-planet-party-toronto-volunteer.json`, per data-model.md.
-- [ ] T027 [P] [US4] Awards — `data/*-asa-astrostatistics-interest-group-student-paper-finalist.json` (title "ASA Astrostatistics Interest Group Student Paper Competition", role "Finalist"); `data/*-goldwater-scholarship-honorable-mention.json` and `-2.json` (title "Goldwater Scholarship", role "Honorable Mention", ⚑ owner to confirm).
-- [ ] T028 [US4] Add a test in `tests/cvmodel.test.js` that every item in `tests/fixtures/detail-lines-before.json` still yields the same `detailLines()` (FR-010); then fix any test that asserted an old title of these items (`grep -rn` each old title in `tests/`).
+- [X] T024 [P] [US4] Teaching — set `title`/`role` per data-model.md: `data/*-ta-ast101-the-sun-and-its-neighbours.json`, `data/*-ta-ast201-stars-and-galaxies.json`, `data/*-lead-observer-ast101-325.json`, `data/*-grader-honors-mechanics.json`, `data/*-physics-instructor-ib-physics.json`.
+- [X] T025 [P] [US4] Service — `data/*-executive-board-member-for-chabad-at-cwru.json`, `data/*-masseyscope-committee-member.json`, per data-model.md.
+- [X] T026 [P] [US4] Outreach — `data/*-astronomy-on-tap-toronto-volunteer.json`, `data/*-astrotours-planetarium-presenter.json`, `data/*-astrotours-toronto-outreach-volunteer.json`, `data/*-astrotours-telescope-organizer.json`, `data/*-massey-telescopes-outreach-coordinator.json`, `data/*-planet-party-toronto-volunteer.json`, per data-model.md.
+- [X] T027 [P] [US4] Awards — `data/*-asa-astrostatistics-interest-group-student-paper-finalist.json` (title "ASA Astrostatistics Interest Group Student Paper Competition", role "Finalist"); `data/*-goldwater-scholarship-honorable-mention.json` and `-2.json` (title "Goldwater Scholarship", role "Honorable Mention", ⚑ owner to confirm).
+- [X] T028 [US4] Add a test in `tests/cvmodel.test.js` that every item in `tests/fixtures/detail-lines-before.json` still yields the same `detailLines()` (FR-010); then fix any test that asserted an old title of these items (`grep -rn` each old title in `tests/`).
 
 **Checkpoint**: the rule is true of all data.
 
