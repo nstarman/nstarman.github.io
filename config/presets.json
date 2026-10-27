@@ -42,7 +42,7 @@
       "heading": "Grants & Fellowships",
       "icon": "grants",
       "match": {
-        "type": ["grant", "position"],
+        "type": ["grant", "position", "fellowship"],
         "tier": "major"
       }
     },

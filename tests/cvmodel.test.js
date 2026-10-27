@@ -70,6 +70,22 @@ describe('the model', () => {
       .subject.map((s) => s.t).join('')).toBe('Lead');
   });
 
+  it('prints my role, then who it was with, for every type', () => {
+    const row = (item, funder = true) => text(rowOf({ date: { start: '2020' }, title: 'T', ...item }, { name: 'np' }, { detail: 'full' }, undefined, 0, undefined, funder).subject);
+    expect(row({ type: 'position', institution: 'MIT Kavli' })).toBe('MIT Kavli');
+    expect(row({ type: 'fellowship', role: 'Postdoctoral Fellow', institution: 'MIT Kavli', funder: 'Brinson Foundation' })).toBe('Postdoctoral Fellow, Brinson Foundation');
+    expect(row({ type: 'fellowship', role: 'Postdoctoral Fellow', institution: 'MIT Kavli', funder: 'Brinson Foundation' }, false)).toBe('Postdoctoral Fellow');
+    // A fellowship with no funder names its host.
+    expect(row({ type: 'fellowship', institution: 'Massey College' })).toBe('Massey College');
+    expect(row({ type: 'grant', role: 'Co-I', funder: 'STScI' })).toBe('Co-I, STScI');
+    expect(row({ type: 'award', role: 'Finalist', funder: 'ASA' })).toBe('Finalist, ASA');
+    expect(row({ type: 'award', role: 'Finalist', funder: 'ASA' }, false)).toBe('Finalist');
+    expect(row({ type: 'teaching', role: 'TA', institution: 'University of Toronto' })).toBe('TA, University of Toronto');
+    expect(row({ type: 'outreach', role: 'Volunteer', organization: 'Dunlap Institute' })).toBe('Volunteer, Dunlap Institute');
+    expect(row({ type: 'service', organization: 'Massey College' })).toBe('Massey College');
+    expect(row({ type: 'media', outlet: 'New Scientist' })).toBe('New Scientist');
+  });
+
   it('says what a declined grant was worth, in the currency style', () => {
     const id = 'nserc-pdf';
     const only = new Set([id]);

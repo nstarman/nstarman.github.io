@@ -29,6 +29,7 @@
         "software",
         "education",
         "position",
+        "fellowship",
         "award",
         "grant",
         "presentation",
@@ -62,7 +63,7 @@
       "description": "`start` also prefixes the filename, so correcting it renames the file."
     },
     "title": {
-      "description": "The headline. For a publication, the paper title; for an award, its name.",
+      "description": "The name of the thing this records: a job title for a plain job; otherwise the program, fellowship, grant, award, course, committee, package or event. A publication's title is the paper's. My part in it goes in `role`, not here.",
       "type": "string",
       "minLength": 2
     },
@@ -298,7 +299,7 @@
             "description": "The package's figure, for its card where a card shows one — its logo, say. The topic is `software`, which /research/ does not list."
           },
           "role": {
-            "type": "string"
+            "$ref": "#/$defs/role"
           },
           "doi": {
             "$ref": "#/$defs/doi"
@@ -373,7 +374,7 @@
             "minItems": 1
           },
           "role": {
-            "type": "string"
+            "$ref": "#/$defs/role"
           },
           "location": {
             "type": "string"
@@ -394,6 +395,58 @@
           "groupRoles": {
             "type": "boolean",
             "description": "Print this role together with the others at the same institution that set this too, as one row — \"Coordinator & Core Developer, Astropy\". Only roles that opt in are grouped."
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "fellowship"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "tier"
+        ],
+        "properties": {
+          "tier": {
+            "description": "Named, awarded support held by me sits with Grants & Fellowships (major) or Small Grants (minor), as a grant does.",
+            "enum": [
+              "major",
+              "minor"
+            ]
+          },
+          "institution": {
+            "description": "The host where it was held — MIT Kavli for the Brinson. Printed when the funder is switched off or absent.",
+            "type": "string"
+          },
+          "institutionNames": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1
+          },
+          "funder": {
+            "description": "Who awards it — the Brinson Foundation. Printed after the role.",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/$defs/role"
+          },
+          "amount": {
+            "$ref": "#/$defs/amount"
+          },
+          "declined": {
+            "type": "boolean",
+            "default": false
+          },
+          "location": {
+            "type": "string"
           }
         }
       }
@@ -435,8 +488,7 @@
             "type": "string"
           },
           "role": {
-            "description": "My part in it, for a grant held by a team — e.g. Co-Investigator on a telescope program. Printed before the funder.",
-            "type": "string"
+            "$ref": "#/$defs/role"
           },
           "recipient": {
             "description": "Who received it, when that is not the CV's owner — a team award belongs on the CV but must not read as a personal one.",
@@ -724,7 +776,7 @@
             "type": "string"
           },
           "role": {
-            "type": "string"
+            "$ref": "#/$defs/role"
           }
         }
       }
@@ -749,7 +801,7 @@
             "type": "string"
           },
           "role": {
-            "type": "string"
+            "$ref": "#/$defs/role"
           },
           "location": {
             "type": "string",
@@ -813,6 +865,11 @@
     }
   ],
   "$defs": {
+    "role": {
+      "description": "My part in the thing the title names — Postdoctoral Fellow, Co-I, TA, Volunteer, lead developer. Leave it out when the title already is my part; it never repeats the title.",
+      "type": "string",
+      "minLength": 1
+    },
     "highlight": {
       "description": "A card in Research Highlights: a picture, a title and a few sentences.",
       "type": "object",

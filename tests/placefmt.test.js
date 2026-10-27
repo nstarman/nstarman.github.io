@@ -38,7 +38,7 @@ describe('formatPlace', () => {
 });
 
 describe('the countries in the records', () => {
-  const places = [...new Set(['presentation', 'education', 'position', 'outreach', 'service', 'teaching', 'award', 'grant'].flatMap(byType)
+  const places = [...new Set(['presentation', 'education', 'position', 'fellowship', 'outreach', 'service', 'teaching', 'award', 'grant'].flatMap(byType)
     .map((i) => i.location).filter(Boolean))];
 
   it('each have a code', () => {

@@ -20,8 +20,8 @@ constitution Article IX (new logic leaves a test).
 
 **Purpose**: freeze what must not change, before any data moves.
 
-- [ ] T001 Write `tests/fixtures/sections-before.json`: for each preset in `config/presets.json` (`np`, `2page`, `1page`, `complete`), map each section id to the ordered list of item ids it resolves to on `main` (via `src/lib/presets.js`). Generate it with a one-off node script run from the current tree before T005; commit the fixture, not the script.
-- [ ] T002 [P] Write `tests/fixtures/detail-lines-before.json`: for every item in data-model.md's migration tables, its `detailLines()` text (`@nstarkman/data-resolver/inline.js`, `{ complete: true }`), so FR-010 can be checked line by line.
+- [X] T001 Write `tests/fixtures/sections-before.json`: for each preset in `config/presets.json` (`np`, `2page`, `1page`, `complete`), map each section id to the ordered list of item ids it resolves to on `main` (via `src/lib/presets.js`). Generate it with a one-off node script run from the current tree before T005; commit the fixture, not the script.
+- [X] T002 [P] Write `tests/fixtures/detail-lines-before.json`: for every item in data-model.md's migration tables, its `detailLines()` text (`@nstarkman/data-resolver/inline.js`, `{ complete: true }`), so FR-010 can be checked line by line.
 
 ---
 
@@ -30,15 +30,15 @@ constitution Article IX (new logic leaves a test).
 **Purpose**: the schema and the renderers learn `fellowship` and the one row rule. No data
 changes yet, so every gate still passes at the end of this phase.
 
-- [ ] T003 Add `fellowship` to the `type` enum in `schema/item.schema.json`, with an `allOf` branch: `tier` required (`major` · `minor`); optional `institution`, `institutionNames`, `funder`, `role`, `amount`, `declined`, `location`, each defined as on `grant`/`position`.
-- [ ] T004 In `schema/item.schema.json`, give `role` on `award` and on every type that accepts it (`position`, `fellowship`, `grant`, `award`, `teaching`, `service`, `outreach`, `software`) the one description from `contracts/schema.md`; give `title` in the envelope its description from the same file.
-- [ ] T005 Add `schema/invalid/fellowship-without-tier.json` (a `fellowship` with no `tier`) and confirm `tests/schema.test.js` rejects it.
-- [ ] T006 In `config/presets.json`, set `grants-major.match.type` to `["grant", "position", "fellowship"]` (the `position` entry is removed in T021).
-- [ ] T007 In `src/lib/cvmodel.js` `subject()`, implement the row rule of research.md R3 and `contracts/cv-row.md`: `[role, who]` joined by ", " for `position`, `education`, `fellowship`, `grant`, `award`, `teaching`, `service`, `outreach`, `media`, with `who` per type; a fellowship's `who` is its funder unless `funderOff`, else its `institution`. Leave `presentation`, `mentoring`, `publication` as they are.
-- [ ] T008 [P] In `src/components/CvTimelineItem.astro:92`, include `fellowship` in the types whose funder the builder can switch off.
-- [ ] T009 [P] In `src/pages/index.astro:17`, add `fellowship` to Background's `byType(...)`, keeping the `2page` filter.
-- [ ] T010 [P] In `tests/placefmt.test.js:41`, add `fellowship` to the type list.
-- [ ] T011 Add row-wording tests to `tests/cvmodel.test.js` for each row of `contracts/cv-row.md`, using inline item objects (not data), including a fellowship with `funderOff` falling back to its host.
+- [X] T003 Add `fellowship` to the `type` enum in `schema/item.schema.json`, with an `allOf` branch: `tier` required (`major` · `minor`); optional `institution`, `institutionNames`, `funder`, `role`, `amount`, `declined`, `location`, each defined as on `grant`/`position`.
+- [X] T004 In `schema/item.schema.json`, give `role` on `award` and on every type that accepts it (`position`, `fellowship`, `grant`, `award`, `teaching`, `service`, `outreach`, `software`) the one description from `contracts/schema.md`; give `title` in the envelope its description from the same file.
+- [X] T005 Add `schema/invalid/fellowship-without-tier.json` (a `fellowship` with no `tier`) and confirm `tests/schema.test.js` rejects it.
+- [X] T006 In `config/presets.json`, set `grants-major.match.type` to `["grant", "position", "fellowship"]` (the `position` entry is removed in T021).
+- [X] T007 In `src/lib/cvmodel.js` `subject()`, implement the row rule of research.md R3 and `contracts/cv-row.md`: `[role, who]` joined by ", " for `position`, `education`, `fellowship`, `grant`, `award`, `teaching`, `service`, `outreach`, `media`, with `who` per type; a fellowship's `who` is its funder unless `funderOff`, else its `institution`. Leave `presentation`, `mentoring`, `publication` as they are.
+- [X] T008 [P] In `src/components/CvTimelineItem.astro:92`, include `fellowship` in the types whose funder the builder can switch off.
+- [X] T009 [P] In `src/pages/index.astro:17`, add `fellowship` to Background's `byType(...)`, keeping the `2page` filter.
+- [X] T010 [P] In `tests/placefmt.test.js:41`, add `fellowship` to the type list.
+- [X] T011 Add row-wording tests to `tests/cvmodel.test.js` for each row of `contracts/cv-row.md`, using inline item objects (not data), including a fellowship with `funderOff` falling back to its host.
 
 **Checkpoint**: `npm test` passes with no data changed.
 

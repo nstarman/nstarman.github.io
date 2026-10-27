@@ -77,7 +77,9 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
         ? <>{item.title.slice(0, -1)}<span class="plc plc--title" data-loc={talkPlace} data-pre=", ">, {talkPlace}</span>)</>
         : <>{item.title}<span class="plc plc--title" data-loc={talkPlace} data-pre=" (" data-post=")"> ({talkPlace})</span></>)
       : item.title}</strong>
-    {item.institution && (member
+    {/* My part in it, then who it was with — as the PDF's row (cvmodel.js). */}
+    {item.role && <>, {item.role}</>}
+    {item.institution && !(item.type === 'fellowship' && item.funder) && (member
       ? <span class="inst">, {item.institution}</span>
       : <><span class={item.type === 'education' ? 'edusep' : undefined}>, </span><span class={item.type === 'education' ? 'eduinst' : undefined}>{pick && item.institutionNames?.length > 0
           /* The builder's: the institution's name is its own menu, so it is said once. */
@@ -88,12 +90,14 @@ const talkPlace = pick && item.type === 'presentation' && item.location ? item.l
               {item.institutionNames.length > 1 && <option value="2">{item.institutionNames.at(-1)}</option>}
             </select>
           : item.institution}</span></>)}
-    {/* The builder's: the institution an award or grant names, and whether it prints. */}
-    {pick && item.funder && ['award', 'grant'].includes(item.type) && (
+    {/* The builder's: the institution an award, grant or fellowship names, and whether it prints. */}
+    {pick && item.funder && ['award', 'grant', 'fellowship'].includes(item.type) && (
       <label class="funderopt" title="Print this institution after the title">, <input type="checkbox" class="funderbox"
              data-funder-of={item.id} checked
              aria-label={`Print ${item.funder} after ${item.title}`} /><span class="funderopt__name">{item.funder}</span></label>
     )}
+    {/* A fellowship's funder stands where a post's institution does, so it prints everywhere. */}
+    {!pick && item.type === 'fellowship' && item.funder && <>, {item.funder}</>}
     {item.event && <>, {item.event}</>}
     {item.type === 'publication' && (
       <> — <Byline shown={byline.shown} />{byline.etal && <>, et al</>}
