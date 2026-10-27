@@ -59,16 +59,23 @@ function subject(item, names = 0, funder = true) {
       const who = item.student === item.title ? null : item.student;
       return plain([who, item.institution && `(${institutionOf(item, names)})`].filter(Boolean).join(' '));
     }
-    // location belongs in the right-hand column; repeating it here printed it twice
-    case 'education':
-    case 'position':
-      return plain([item.role, institutionOf(item, names)].filter(Boolean).join(', '));
-    // A team grant says what my part was — "Co-Investigator, STScI".
-    case 'grant':
-      return plain([item.role, funder && item.funder].filter(Boolean).join(', '));
+    // Every other row is my part, then who it was with — "Postdoctoral Fellow, Brinson
+    // Foundation", "TA, University of Toronto". Location belongs in the right-hand column;
+    // repeating it here printed it twice.
     default:
-      return plain(item.institution ? institutionOf(item, names) : item.organization ?? item.outlet ?? (funder && item.funder) ?? '');
+      return plain([item.role, whoOf(item, names, funder)].filter(Boolean).join(', '));
   }
+}
+
+/**
+ * Who an entry was with. A fellowship names its funder, or its host when it has none; a grant
+ * only its funder; the rest their institution, organization or outlet, and an award its funder.
+ * A funder switched off prints nothing in its place.
+ */
+function whoOf(item, names, funder) {
+  if (item.type === 'grant' || (item.type === 'fellowship' && item.funder)) return funder && item.funder;
+  if (item.institution) return institutionOf(item, names);
+  return item.organization ?? item.outlet ?? (funder && item.funder);
 }
 
 /**

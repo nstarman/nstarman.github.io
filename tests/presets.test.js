@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { presetNames, preset, resolve, memberIds, CARD_PARTS, cardOrder, tally, H_INDEX_SOURCES, SCHOLAR_STALE_DAYS } from '../src/lib/presets.js';
 import person from '../config/person.json';
-import { items } from '../src/lib/data.js';
+import { items, byType, resolve as itemById } from '../src/lib/data.js';
 
 describe('the presets', () => {
   it('are the four lengths the site offers; the page is a choice apart', () => {
@@ -208,11 +208,18 @@ describe('section order', () => {
 });
 
 describe('a fellowship', () => {
-  it('is a position that sits with Grants & Fellowships, not Professional Appointments', () => {
+  const FELLOWSHIPS = ['brinson-prize-fellowship', 'pacific-postdoc-program', 'massey-junior-fellow', 'nserc-cgs-d', 'nserc-cgs-m', 'nserc-pdf', 'university-of-toronto-graduate-fellowship-per-annum'];
+
+  it('is its own type, with Grants & Fellowships, not Professional Appointments', () => {
     const where = (id) => resolve('complete').sections.find((s) => s.items.some((i) => i.id === id))?.id;
-    for (const id of ['massey-junior-fellow', 'brinson-prize-fellowship', 'pacific-postdoc-program']) {
-      expect(where(id)).toBe('grants-major');
+    for (const id of FELLOWSHIPS) {
+      expect(itemById(id).type, id).toBe('fellowship');
+      expect(where(id), id).toBe('grants-major');
     }
     expect(where('mit-postdoc')).toBe('positions');
+  });
+
+  it('leaves no position carrying a tier: a post is not awarded', () => {
+    expect(byType('position').filter((i) => i.tier).map((i) => i.id)).toEqual([]);
   });
 });

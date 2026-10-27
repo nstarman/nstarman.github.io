@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "brinson-prize-fellowship",
-  "type": "position",
+  "type": "fellowship",
   "cvs": [
     "np",
     "2page",
@@ -11,8 +11,9 @@
     "start": "2024-02"
   },
   "title": "Brinson Prize Fellowship",
-  "institution": "Brinson Foundation",
-  "role": "Prize Fellow",
+  "institution": "MIT Kavli Institute for Astrophysics and Space Research",
+  "funder": "Brinson Foundation",
+  "role": "Postdoctoral Fellow",
   "tier": "major",
   "amount": {
     "currency": "USD",

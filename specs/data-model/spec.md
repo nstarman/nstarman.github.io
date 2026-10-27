@@ -46,6 +46,17 @@ fetched fields (`specs/refresh/spec.md`).
   `cvs`, `featured`, `shortTitle`, `nickTitle` (≤ 32 characters), `summary`,
   `details`, `detailsComplete`, `links`, `refs`, `tags` and `internal`.
   `internal` is never rendered. *Enforced:* the schema.
+- **FR-036** `title` is the name of the thing an item records: a job title for a
+  plain job; otherwise the program, fellowship, grant, award, course, committee,
+  package or event ("AST 101: The Sun and its Neighbours", "Brinson Prize
+  Fellowship"). `role` is my part in it, with that one meaning on every type that
+  accepts it ("Postdoctoral Fellow", "Co-I", "TA", "Volunteer", "lead developer"),
+  left out where the title already is my part ("Postdoctoral Associate", Astropy's
+  "Coordinator"). A role never repeats its title: compared word by word, stemmed
+  ("fellowship" is "fellow"), the whole role may not occur in order inside the
+  title. *Enforced:* `tests/integrity.test.js` ("a role … never repeats its
+  title"); the schema defines `role` once (`$defs/role`), so its description
+  is the same on every type, but cannot compare it with `title`.
 - **FR-007** `summary`, `details` and `detailsComplete` are three tiers, widest
   first; where each renders is `specs/cv-presets/spec.md`. `details` may be a
   string or one string per line; `detailsComplete` is appended after `details`,
@@ -79,13 +90,16 @@ fetched fields (`specs/refresh/spec.md`).
   listed there; a field outside its type's list is rejected. *Enforced:* the
   schema; `tests/data.test.js` ("byType … every type in the database is one the
   schema allows").
-- **FR-014** `tier` (`major` · `minor`) is required on an `award` or `grant`
-  and sorts it, with `type`, into a CV section: an `award` is an honour or
-  prize, a `grant` is funding. A fellowship is a `position` that was awarded:
-  it sets `tier` and sits with Grants & Fellowships while staying a position.
-  Which `type` × `tier` pairs have a section is `specs/cv-presets/spec.md`.
-  *Enforced:* the schema (`award-without-tier.json`); `tests/presets.test.js`
-  ("is a position that sits with Grants & Fellowships").
+- **FR-014** `tier` (`major` · `minor`) is required on an `award`, `grant` or
+  `fellowship` and sorts it, with `type`, into a CV section: an `award` is an
+  honour or prize, a `grant` is funding for a project, a `fellowship` is named,
+  awarded support held by me — its host in `institution`, who awards it in
+  `funder`. A `position` is a post and never carries `tier`, `amount` or
+  `funder`. A fellowship that pays for a post refs it, and the post refs it back
+  (Brinson ↔ `mit-postdoc`). Which `type` × `tier` pairs have a section is
+  `specs/cv-presets/spec.md`. *Enforced:* the schema (`award-without-tier.json`,
+  `fellowship-without-tier.json`, `position-with-tier.json`);
+  `tests/presets.test.js` ("a fellowship").
 - **FR-015** A `position` with `groupRoles` prints with every other role at the
   same `institution` that sets it, as one row. *Enforced:* `tests/cvmodel.test.js`.
 - **FR-016** A `software` item's `group` is its area on `/software/` by purpose
@@ -248,8 +262,9 @@ fetched fields (`specs/refresh/spec.md`).
 | `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citeslug`, `citations`, `authorPosition`, `preliminaryOf`, `highlight` |
 | `software` | `tier`, `group` | `repo`, `authors`, `version`, `role`, `doi`, `order`, `highlight` |
 | `education` | `institution` | `institutionNames`, `degree`, `thesis`, `supervisors`, `location` |
-| `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles`, `tier`, `amount`, `funder` |
-| `award`, `grant` | `tier` | `amount`, `declined`, `funder`, `recipient`, `recipientInline` |
+| `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles` |
+| `fellowship` | `tier` | `institution`, `institutionNames`, `funder`, `role`, `amount`, `declined`, `location` |
+| `award`, `grant` | `tier` | `amount`, `declined`, `funder`, `role`, `recipient`, `recipientInline` |
 | `presentation` | `kind` | `event`, `location`, `talk` |
 | `mentoring` | `student` | `institution`, `coSupervisors`, `outputs`, and for a profile `person`, `slug`, `photo`, `badge`, `research`, `journey`, `achievements` |
 | `teaching` | — | `institution`, `course`, `role` |

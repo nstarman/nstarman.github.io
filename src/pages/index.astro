@@ -14,7 +14,7 @@ const pubs = featured('publication').slice(0, 5);
 
 // Background is a summary, not a listing: the same items the two-page CV keeps,
 // so undergraduate summer positions stay on the CV where they belong.
-const background = [...byType('position'), ...byType('education')]
+const background = [...byType('position'), ...byType('fellowship'), ...byType('education')]
   .filter((i) => (i.cvs ?? []).includes('2page'));
 // Roles at one institution that opt in with `groupRoles` read as one place,
 // as on the CV — so the Astropy committees sit under Astropy.

@@ -6,7 +6,8 @@
   "date": {
     "start": "2015-08"
   },
-  "title": "Grader: Honors Mechanics",
+  "title": "Honors Mechanics",
+  "role": "Grader",
   "institution": "CWRU",
   "details": "Graded assignments and exams"
 }

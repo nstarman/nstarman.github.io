@@ -45,7 +45,7 @@ snapshots (`specs/refresh/spec.md`).
 
 - **FR-003** `/` (`index.astro`) shows `config/person.json`'s name, role, contacts and bio; the
   first five `featured` publications as `PRESET.home` cards; a Background timeline of the
-  `position` and `education` items whose `cvs` include `2page`, grouped by `institutionGroups`;
+  `position`, `fellowship` and `education` items whose `cvs` include `2page`, grouped by `institutionGroups`;
   and the software lead and `major` packages (`SoftwareSection tail={false}`). *Enforced:* build;
   review.
 - **FR-004** `/publications/` lists every publication but `in-prep`, newest first, with a year
