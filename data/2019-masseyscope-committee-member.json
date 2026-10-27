@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/item.schema.json",
   "id": "masseyscope-committee-member",
-  "type": "service",
+  "type": "outreach",
   "cvs": [
     "np"
   ],
@@ -9,8 +9,11 @@
     "start": "2019",
     "end": "2024"
   },
-  "title": "MasseyScope Committee",
-  "role": "Member",
+  "title": "MasseyScope",
+  "role": "Outreach Coordinator (2019–2022), Committee Member (2019–2024)",
   "organization": "Massey College",
-  "details": "Organizing astronomy outreach with a focus on underprivileged communities"
+  "details": [
+    "Organizing astronomy outreach with a focus on underprivileged communities",
+    "Co-hosted the 2020 Massey Telescope Public Talk Series and gave a talk in it on Ojibwe (First Nation) constellations"
+  ]
 }
