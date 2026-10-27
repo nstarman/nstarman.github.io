@@ -206,8 +206,8 @@ describe('detail levels', () => {
     });
 
     it('joins a label the title already ends in: (Talk, Place), not (Talk) (Place)', () => {
-      const tevpa = find(cvModel('complete', new Set(['tevpa-talk']), undefined, { locationAt: { 'talks-contributed': 'title' } }), 'tevpa-talk');
-      expect(tevpa.title).toBe('TeVPA (Talk, Valencia, Spain)');
+      const cosmo = find(cvModel('complete', new Set(['cosmology-2025-talk']), undefined, { locationAt: { 'talks-contributed': 'title' } }), 'cosmology-2025-talk');
+      expect(cosmo.title).toBe('Cosmology 2025 (Talk, Portoferraio, Italy)');
     });
 
     it('changes only the named section and nothing else of the row', () => {
