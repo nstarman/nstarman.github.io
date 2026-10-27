@@ -86,6 +86,13 @@ describe('the model', () => {
     expect(row({ type: 'media', outlet: 'New Scientist' })).toBe('New Scientist');
   });
 
+  it('says each fellowship once: its name, my part, who awarded it', () => {
+    const line = (id) => { const r = find(complete, id); return `${r.title}, ${text(r.subject)}`; };
+    expect(line('brinson-prize-fellowship')).toBe('Brinson Prize Fellowship, Postdoctoral Fellow, Brinson Foundation');
+    expect(line('massey-junior-fellow')).toBe('Junior Fellowship, Massey College');
+    expect(line('pacific-postdoc-program')).toMatch(/^Pacific Postdoc Program, Visiting Fellow, Dark Universe Science Center/);
+  });
+
   it('says what a declined grant was worth, in the currency style', () => {
     const id = 'nserc-pdf';
     const only = new Set([id]);

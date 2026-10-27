@@ -51,11 +51,11 @@ changes yet, so every gate still passes at the end of this phase.
 **Independent test**: the complete CV's Brinson row reads "Brinson Prize Fellowship,
 Postdoctoral Fellow, Brinson Foundation"; Massey and Pacific repeat nothing.
 
-- [ ] T012 [P] [US1] `data/2024-02-brinson-prize-fellowship.json`: `type` → `fellowship`; `role` → `"Postdoctoral Fellow"`; `institution` → `"MIT Kavli Institute for Astrophysics and Space Research"`; add `"funder": "Brinson Foundation"`. Keep `id`, `tier`, `amount`, `details`, `refs`, `links`.
-- [ ] T013 [P] [US1] `data/2026-10-pacific-postdoc-program.json`: `type` → `fellowship`; `title` → `"Pacific Postdoc Program"`; `role` → `"Visiting Fellow"` (⚑ owner to confirm in review). Keep `institution`, `funder`, `details`.
-- [ ] T014 [P] [US1] `data/2019-09-massey-junior-fellow.json`: `type` → `fellowship`; `title` → `"Junior Fellowship"`; remove `role`. Keep `institution` ("Massey College"), `tier`, `details`.
-- [ ] T015 [US1] Update `tests/cvmodel.test.js:139` and any test reading these three items' `type`, `role` or row text, so they assert the new wording.
-- [ ] T016 [US1] Run `npx vitest run tests/presets.test.js tests/cvmodel.test.js`; Grants & Fellowships still lists the three (via T006).
+- [X] T012 [P] [US1] `data/2024-02-brinson-prize-fellowship.json`: `type` → `fellowship`; `role` → `"Postdoctoral Fellow"`; `institution` → `"MIT Kavli Institute for Astrophysics and Space Research"`; add `"funder": "Brinson Foundation"`. Keep `id`, `tier`, `amount`, `details`, `refs`, `links`.
+- [X] T013 [P] [US1] `data/2026-10-pacific-postdoc-program.json`: `type` → `fellowship`; `title` → `"Pacific Postdoc Program"`; `role` → `"Visiting Fellow"` (⚑ owner to confirm in review). Keep `institution`, `funder`, `details`.
+- [X] T014 [P] [US1] `data/2019-09-massey-junior-fellow.json`: `type` → `fellowship`; `title` → `"Junior Fellowship"`; remove `role`. Keep `institution` ("Massey College"), `tier`, `details`.
+- [X] T015 [US1] Update `tests/cvmodel.test.js:139` and any test reading these three items' `type`, `role` or row text, so they assert the new wording.
+- [X] T016 [US1] Run `npx vitest run tests/presets.test.js tests/cvmodel.test.js`; Grants & Fellowships still lists the three (via T006).
 
 **Checkpoint**: US1 deliverable — the repeated rows are gone.
 
