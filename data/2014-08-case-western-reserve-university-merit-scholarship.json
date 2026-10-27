@@ -2,9 +2,7 @@
   "$schema": "../schema/item.schema.json",
   "id": "case-western-reserve-university-merit-scholarship",
   "type": "award",
-  "cvs": [
-    "2page"
-  ],
+  "cvs": [],
   "date": {
     "start": "2014-08",
     "end": "2018"

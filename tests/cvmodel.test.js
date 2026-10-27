@@ -179,11 +179,11 @@ describe('detail levels', () => {
   });
 
   it('keeps it where a section overrides the preset', () => {
-    // Invited Talks is `detail: full` on the two-page CV: a talk that names a
-    // city and not its subject is an itinerary.
-    const talks = twoPage.sections.find((s) => s.id === 'talks-invited');
-    expect(talks.detail).toBe('full');
-    expect(talks.items.some((i) => i.lines.length > 0)).toBe(true);
+    // Students Advised is `detail: full` on the two-page CV: a student's name without
+    // the project says nothing about the mentoring.
+    const mentoring = twoPage.sections.find((s) => s.id === 'mentoring');
+    expect(mentoring.detail).toBe('full');
+    expect(mentoring.items.some((i) => i.lines.length > 0)).toBe(true);
   });
 
   describe("where a talk's place prints", () => {
