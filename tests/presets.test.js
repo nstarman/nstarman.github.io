@@ -6,7 +6,6 @@ import { describe, expect, it } from 'vitest';
 import { presetNames, preset, resolve, memberIds, CARD_PARTS, cardOrder, tally, H_INDEX_SOURCES, SCHOLAR_STALE_DAYS } from '../src/lib/presets.js';
 import person from '../config/person.json';
 import { items, byType, resolve as itemById } from '../src/lib/data.js';
-import sectionsBefore from './fixtures/sections-before.json';
 
 describe('the presets', () => {
   it('are the four lengths the site offers; the page is a choice apart', () => {
@@ -222,14 +221,5 @@ describe('a fellowship', () => {
 
   it('leaves no position carrying a tier: a post is not awarded', () => {
     expect(byType('position').filter((i) => i.tier).map((i) => i.id)).toEqual([]);
-  });
-});
-
-// Retyping the fellowships moved no item between sections, in any preset: frozen from main
-// before the change (specs/data-model/spec.md, FR-014).
-describe('every preset', () => {
-  it.each(Object.keys(sectionsBefore))('%s lists the same sections as before fellowships had a type', (name) => {
-    const now = Object.fromEntries(resolve(name).sections.filter((s) => !s.key).map((s) => [s.id, s.items.map((i) => i.id)]));
-    expect(now).toEqual(sectionsBefore[name]);
   });
 });

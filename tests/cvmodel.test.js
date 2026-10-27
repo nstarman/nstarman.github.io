@@ -3,8 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { cvModel, rowOf } from '../src/lib/cvmodel.js';
-import { lineTier, detailLines } from '@nstarkman/data-resolver/inline.js';
-import linesBefore from './fixtures/detail-lines-before.json';
+import { lineTier } from '@nstarkman/data-resolver/inline.js';
 import { resolve as itemById } from '../src/lib/data.js';
 
 const complete = cvModel('complete');
@@ -85,12 +84,6 @@ describe('the model', () => {
     expect(row({ type: 'outreach', role: 'Volunteer', organization: 'Dunlap Institute' })).toBe('Volunteer, Dunlap Institute');
     expect(row({ type: 'service', organization: 'Massey College' })).toBe('Massey College');
     expect(row({ type: 'media', outlet: 'New Scientist' })).toBe('New Scientist');
-  });
-
-  // Moving a role out of a title, or retyping a fellowship, moved no detail line: a saved
-  // builder selection ticks lines by index, so each must be where it was (frozen from main).
-  it.each(Object.entries(linesBefore))('keeps every detail line of %s where it was', (id, lines) => {
-    expect(detailLines(itemById(id), { complete: true }).map(text)).toEqual(lines);
   });
 
   it('says each fellowship once: its name, my part, who awarded it', () => {

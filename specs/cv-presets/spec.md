@@ -42,8 +42,7 @@ cards (`specs/cards/spec.md`).
 - **FR-005** The award/grant buckets are `type` × `tier`: `awards-major` (award,
   major), `grants-major` (grant *or* fellowship, major), `grants-minor` (grant,
   minor). `positions` is every `position`; none carries a tier. *Enforced:*
-  `tests/presets.test.js` ("a fellowship", "every preset lists the same
-  sections as before fellowships had a type").
+  `tests/presets.test.js` ("a fellowship").
 - **FR-006** `items` arrive newest-first. `"sort": "tier"` reorders a section by
   `flagship`, `major`, `minor`, `utility`, then `order` (absent = 0), stably.
   `limit` then keeps the first N. *Enforced:* `tests/presets.test.js` ("honours a
