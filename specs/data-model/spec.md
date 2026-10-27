@@ -54,8 +54,9 @@ fetched fields (`specs/refresh/spec.md`).
   left out where the title already is my part ("Postdoctoral Associate", Astropy's
   "Coordinator"). A role never repeats its title: compared word by word, stemmed
   ("fellowship" is "fellow"), the whole role may not occur in order inside the
-  title. *Enforced:* the schema's one `role` definition (`$defs/role`);
-  `tests/integrity.test.js` ("a role … never repeats its title").
+  title. *Enforced:* `tests/integrity.test.js` ("a role … never repeats its
+  title"); the schema defines `role` once (`$defs/role`), so its description
+  is the same on every type, but cannot compare it with `title`.
 - **FR-007** `summary`, `details` and `detailsComplete` are three tiers, widest
   first; where each renders is `specs/cv-presets/spec.md`. `details` may be a
   string or one string per line; `detailsComplete` is appended after `details`,

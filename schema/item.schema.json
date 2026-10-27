@@ -410,7 +410,7 @@
             ]
           },
           "institution": {
-            "description": "The host where it was held — MIT Kavli for the Brinson. Printed when the funder is switched off or absent.",
+            "description": "The host where it was held — MIT Kavli for the Brinson. Printed only when the fellowship has no funder; a funder switched off prints nothing in its place.",
             "type": "string"
           },
           "institutionNames": {
