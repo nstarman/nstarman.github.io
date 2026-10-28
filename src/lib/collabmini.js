@@ -49,7 +49,7 @@ export function miniMap(ids) {
     ].filter((q) => !q.assist && inCv(q)).map((q) => [q.id, q.date])).entries()]
       .sort(([, a], [, b]) => b.localeCompare(a))
       .map(([id]) => id);
-    return { c, name: lastFirst(person.name), places: [...at.values()], papers };
+    return { c, name: lastFirst(person.name), me: person.me, places: [...at.values()], papers };
   }).filter((e) => e.places.length > 0 && (!ids || e.papers.length > 0));
 
   // Surname first, so the picker reads like an index rather than a list of
@@ -71,6 +71,7 @@ export function miniMap(ids) {
     trails: entries
       .filter((e) => e.places.length > 1)
       .map((e) => ({ c: e.c, points: e.places.map((pl) => `${pl.x},${pl.y}`).join(' ') })),
-    label: `${entries.length} collaborators`,
+    // The site's author is on the map beside them, but not counted among them.
+    label: `${entries.filter((e) => !e.me).length} collaborators`,
   };
 }

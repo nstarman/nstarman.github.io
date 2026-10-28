@@ -29,14 +29,16 @@ const OUT = 'config/collaborators.json';
 const API = 'https://pub.orcid.org/v3.0';
 
 /** Every ORCID that appears as an author in the database, or on a paper that
- *  acknowledges him, with a display name. */
+ *  acknowledges him, with a display name. The site's own author is in too
+ *  (`me` in data/), marked in `mine`: the maps place the author beside the co-authors. */
+const mine = new Set();
 function collaborators() {
   const found = new Map();
   const acks = JSON.parse(fs.readFileSync('config/acknowledgements.json', 'utf8')).papers;
   for (const rec of [...readItems().map((r) => r.item), ...acks]) {
     for (const a of rec.authors ?? []) {
-      // His own record is the site's, not a collaborator's.
-      if (a.me || !a.orcid) continue;
+      if (!a.orcid) continue;
+      if (a.me) mine.add(a.orcid);
       const name = [a.given, a.family].filter(Boolean).join(' ');
       // Longest spelling wins: bylines abbreviate ("F. Lelli") and the fuller
       // form is the more useful label.
@@ -180,7 +182,7 @@ for (const [id, name] of [...found].sort((a, b) => a[1].localeCompare(b[1]))) {
   } catch (err) {
     console.error(`  ${name}: ${err.message}`);
   }
-  people.push({ orcid: id, name, affiliations });
+  people.push({ orcid: id, name, ...(mine.has(id) && { me: true }), affiliations });
   await sleep(250);
 }
 
