@@ -10,7 +10,7 @@ import { miniMap } from '../src/lib/collabmini.js';
 // A mentee with nothing placeable is on the full map but has no dot here.
 const people = collaboratorMap();
 const placed = people.filter((p) => p.pins.length > 0);
-const { entries, dots, trails } = miniMap();
+const { entries, dots, trails, label } = miniMap();
 // Every entry keeps the index of the person it came from; the picker's order
 // is not that index, which is the point of the test below.
 const who = (e) => people[e.c];
@@ -19,6 +19,11 @@ describe('the CV gutter map', () => {
   it('keeps one entry per collaborator', () => {
     expect(entries.length).toBe(placed.length);
     expect(new Set(entries.map((e) => e.c)).size).toBe(placed.length);
+  });
+
+  it('places the site\'s author on it but counts only the collaborators', () => {
+    expect(entries.filter((e) => e.me)).toHaveLength(1);
+    expect(label).toBe(`${entries.length - 1} collaborators`);
   });
 
   it('lists them surname-first, in that order', () => {

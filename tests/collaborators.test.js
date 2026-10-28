@@ -17,14 +17,14 @@ describe('the collaborator database', () => {
     const authored = new Set();
     const acks = acknowledgements.papers;
     for (const rec of items) {
-      for (const a of rec.authors ?? []) if (a.orcid && !a.me) authored.add(a.orcid);
+      for (const a of rec.authors ?? []) if (a.orcid) authored.add(a.orcid);
     }
     for (const rec of acks) for (const a of rec.authors) if (a.orcid) authored.add(a.orcid);
     expect(doc.people.filter((p) => !authored.has(p.orcid)).map((p) => p.name)).toEqual([]);
   });
 
-  it('never lists him as his own collaborator', () => {
-    expect(doc.people.some((p) => p.orcid === '0000-0003-3954-3291')).toBe(false);
+  it('lists the site\'s author once, marked `me`, for the maps to place beside the co-authors', () => {
+    expect(doc.people.filter((p) => p.me).map((p) => p.orcid)).toEqual(['0000-0003-3954-3291']);
   });
 
   it('has no affiliation that ends before it starts', () => {

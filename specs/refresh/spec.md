@@ -105,14 +105,16 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   once").
 - **FR-011** `scripts/collect-collaborators.mjs` writes
   `config/collaborators.json` from public ORCID employments and educations of
-  every non-`me` author with an `orcid` in `data/` or in
-  `config/acknowledgements.json`; only the ORCID iD is sent. An unreadable or
+  every author with an `orcid` in `data/` or in
+  `config/acknowledgements.json`, the site's own author included and marked
+  `me: true` (placed on the maps, not counted as a collaborator); only the ORCID
+  iD is sent. An unreadable or
   empty record is an empty `affiliations`, never a guess. Institution spellings
   are made to agree (case/punctuation, and containment only within one
   country), and each gets one city. `--new` looks up only people not yet in the
   file. *Enforced:* `tests/collaborators.test.js` ("has one entry per ORCID",
-  "only lists people who actually appear as authors", "never lists him as his
-  own collaborator", "gives each institution exactly one place", "spells each
+  "only lists people who actually appear as authors", "lists the site's author
+  once, marked `me`, for the maps to place beside the co-authors", "gives each institution exactly one place", "spells each
   institution one way", "sorts each history newest first").
 - **FR-012** The yearly collaborator refresh changes recorded history, so it
   opens an **issue**, not a PR: labelled `collaborators`, titled

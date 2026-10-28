@@ -2065,6 +2065,103 @@
       ]
     },
     {
+      "orcid": "0000-0003-3954-3291",
+      "name": "Nathaniel Starkman",
+      "me": true,
+      "affiliations": [
+        {
+          "organization": "MIT",
+          "city": "Cambridge",
+          "region": null,
+          "country": "US",
+          "role": "Postdoctoral Fellow",
+          "kind": "employment",
+          "start": "2024-10",
+          "end": null
+        },
+        {
+          "organization": "Case Western Reserve University",
+          "city": "Cleveland",
+          "region": "OH",
+          "country": "US",
+          "role": "Visiting Researcher",
+          "kind": "employment",
+          "start": "2024",
+          "end": "2027"
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "PhD Candidate",
+          "kind": "employment",
+          "start": "2018-09",
+          "end": "2024-08"
+        },
+        {
+          "organization": "University of Toronto",
+          "city": "Toronto",
+          "region": "ON",
+          "country": "CA",
+          "role": "PhD",
+          "kind": "education",
+          "start": "2018-09",
+          "end": "2024-09"
+        },
+        {
+          "organization": "Case Western Reserve University",
+          "city": "Cleveland",
+          "region": "OH",
+          "country": "US",
+          "role": "Associate Researcher",
+          "kind": "employment",
+          "start": "2017-05",
+          "end": "2018-05"
+        },
+        {
+          "organization": "CLASSE REU",
+          "city": "Ithaca",
+          "region": "New York",
+          "country": "US",
+          "role": "REU research associate",
+          "kind": "employment",
+          "start": "2016-05",
+          "end": "2016-08"
+        },
+        {
+          "organization": "Prof. John Ruhl, South Pole Telescope",
+          "city": "Cleveland",
+          "region": "Ohio",
+          "country": "US",
+          "role": "Associate Researcher",
+          "kind": "employment",
+          "start": "2015-05",
+          "end": "2015-08"
+        },
+        {
+          "organization": "Case Western Reserve University",
+          "city": "Cleveland",
+          "region": "OH",
+          "country": "US",
+          "role": "Bachelor of Science",
+          "kind": "education",
+          "start": "2014-08",
+          "end": "2018-05"
+        },
+        {
+          "organization": "European Organization for Nuclear Research",
+          "city": "Geneve",
+          "region": "Genève",
+          "country": "CH",
+          "role": "outreach assistant",
+          "kind": "employment",
+          "start": "2012-08",
+          "end": "2013-08"
+        }
+      ]
+    },
+    {
       "orcid": "0009-0003-7613-3109",
       "name": "Neil Ash",
       "affiliations": []

@@ -20,12 +20,12 @@ import { byType, venueUrl, links, assists, primaryLink, config } from '@nstarkma
 export { map, project, toXY, KM_PER_UNIT, MAX_DRIFT_MILES, MAX_PIN_DRIFT };
 
 /** Papers we co-wrote, and papers of theirs that thank me (`assist`), by the
- *  author's ORCID. */
+ *  author's ORCID; under my own ORCID, all of mine. */
 function papersByAuthor() {
   const out = new Map();
   for (const pub of byType('publication')) {
     for (const a of pub.authors ?? []) {
-      if (a.me || !a.orcid) continue;
+      if (!a.orcid) continue;
       if (!out.has(a.orcid)) out.set(a.orcid, []);
       // The publications page carries no per-item anchor, so a paper links to
       // itself: the journal where it is published, the preprint otherwise, and
@@ -109,7 +109,7 @@ export function collaboratorMap(menteeList = mentees()) {
   const byKey = new Map(menteeList.map((m) => [menteeKey(m), m]));
 
   const entries = config.collaborators.people.map((c) => ({
-    orcid: c.orcid, name: c.name, affiliations: c.affiliations, m: byKey.get(c.orcid),
+    orcid: c.orcid, name: c.name, me: c.me, affiliations: c.affiliations, m: byKey.get(c.orcid),
   }));
   for (const m of menteeList) {
     if (!entries.some((e) => e.m === m)) {
@@ -140,6 +140,7 @@ export function collaboratorMap(menteeList = mentees()) {
       key: person.orcid ?? menteeKey(m),
       orcid: person.orcid,
       name: person.name,
+      ...(person.me && { me: true }),
       pins,
       // Only papers that landed inside a known post can be pinned; the rest are
       // still collaborations, and saying so beats pretending they do not exist.

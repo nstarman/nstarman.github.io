@@ -1,5 +1,5 @@
 {
-  "$comment": "Coordinates for every place the site pins — collaborator institutions and presentation locations alike — resolved once with scripts/geocode-places.mjs and committed so the site and CI never call a geocoder. `matched` is what the geocoder thought it found — check it before trusting a pin. Safe to correct by hand: the script only fills in what is missing. A name that is the same campus as another is `{ \"sameAs\": \"<other name>\" }` rather than a second copy of the coordinates; read places through src/lib/places.js. Keep one entry per campus: tests/places.test.js fails on two entries with the same coordinates.",
+  "$comment": "Coordinates for every place the site pins — collaborator institutions and presentation locations alike — resolved once with scripts/geocode-places.mjs and committed so the site and CI never call a geocoder. `matched` is what the geocoder thought it found — check it before trusting a pin. Safe to correct by hand: the script only fills in what is missing. A name that is the same campus as another is `{ \"sameAs\": \"<other name>\" }` rather than a second copy of the coordinates; read places through packages/data-resolver/src/places.js. Keep one entry per campus: tests/places.test.js fails on two entries with the same coordinates.",
   "source": "https://nominatim.openstreetmap.org (ODbL)",
   "places": {
     "A Coruña, Spain": {
@@ -102,6 +102,11 @@
       "lon": 104.0648,
       "matched": "by hand: Chengdu, Sichuan, China (city centre; the school was not found)"
     },
+    "CLASSE REU": {
+      "lat": 42.4534,
+      "lon": -76.4735,
+      "matched": "Set by hand: Cornell Laboratory for Accelerator-based Sciences and Education, Cornell University, Ithaca, New York, United States"
+    },
     "Cleveland, OH, USA": {
       "lat": 41.4997,
       "lon": -81.6937,
@@ -131,6 +136,11 @@
       "lat": 54.7761,
       "lon": -1.5733,
       "matched": "hand-placed: Durham city — the geocoder returned the County Durham centroid, 17 km away"
+    },
+    "European Organization for Nuclear Research": {
+      "lat": 46.2338,
+      "lon": 6.0532,
+      "matched": "Set by hand: CERN, Meyrin site, Route de Meyrin, Meyrin, Geneva, Switzerland"
     },
     "European Southern Observatory": {
       "lat": 48.2596,
@@ -166,6 +176,11 @@
       "lat": 34.1061,
       "lon": -117.7087,
       "matched": "Harvey Mudd College, North Mills Avenue, Claremont, Los Angeles County, California, 91711, United States"
+    },
+    "Howard University": {
+      "lat": 38.9221,
+      "lon": -77.0196,
+      "matched": "Howard University, 2400, 6th Street Northwest, Ward 1, Washington, District of Columbia, 20059, United States"
     },
     "Hunter College": {
       "lat": 40.7683,
@@ -275,6 +290,9 @@
       "lon": -122.1835,
       "matched": "Mills College at Northeastern University, 5000, MacArthur Boulevard, Seminary Park, Oakland, Alameda County, California, 94613, United States"
     },
+    "MIT": {
+      "sameAs": "Massachusetts Institute of Technology"
+    },
     "MMT Observatory": {
       "lat": 31.6883,
       "lon": -110.885,
@@ -364,6 +382,9 @@
       "lat": 40.3497,
       "lon": -74.6597,
       "matched": "Princeton, Mercer County, New Jersey, United States"
+    },
+    "Prof. John Ruhl, South Pole Telescope": {
+      "sameAs": "Case Western Reserve University"
     },
     "Reykjavik, Iceland": {
       "lat": 64.146,
@@ -710,11 +731,6 @@
       "lat": 41.3136,
       "lon": -72.9232,
       "matched": "Yale University, Trumbull Street, Dixwell, New Haven, South Central Connecticut Planning Region, Connecticut, 06511, United States"
-    },
-    "Howard University": {
-      "lat": 38.9221,
-      "lon": -77.0196,
-      "matched": "Howard University, 2400, 6th Street Northwest, Ward 1, Washington, District of Columbia, 20059, United States"
     }
   }
 }
