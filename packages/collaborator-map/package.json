@@ -1,6 +1,6 @@
 {
   "name": "@nstarkman/collaborator-map",
-  "version": "20261023.0.1",
+  "version": "20261028.0.0",
   "description": "The nstarkman.space collaborator map, drawn from a research store.",
   "type": "module",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "astro": "^7"
   },
   "dependencies": {
-    "@nstarkman/data-resolver": "20261023.0.1"
+    "@nstarkman/data-resolver": "20261028.0.0"
   },
   "publishConfig": {
     "access": "public",

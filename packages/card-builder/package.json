@@ -1,6 +1,6 @@
 {
   "name": "@nstarkman/card-builder",
-  "version": "20261023.0.1",
+  "version": "20261028.0.0",
   "description": "The nstarkman.space card and publication entry, drawn from a research store.",
   "type": "module",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "astro": "^7"
   },
   "dependencies": {
-    "@nstarkman/collaborator-map": "20261023.0.1",
-    "@nstarkman/data-resolver": "20261023.0.1",
+    "@nstarkman/collaborator-map": "20261028.0.0",
+    "@nstarkman/data-resolver": "20261028.0.0",
     "temml": "^0.14.0"
   },
   "publishConfig": {
