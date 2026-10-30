@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/item.schema.json",
+  "id": "billy-liu-cornell",
+  "type": "mentoring",
+  "cvs": [
+    "np"
+  ],
+  "date": {
+    "start": "2026"
+  },
+  "title": "Billy Liu (Cornell)",
+  "details": "Stellar stream detection in Rubin LSST data",
+  "student": "Billy Liu (Cornell)",
+  "links": [
+    {
+      "rel": "homepage",
+      "url": "https://physics.cornell.edu/billy-liu"
+    }
+  ],
+  "slug": "billy-liu",
+  "person": {
+    "family": "Liu",
+    "given": "Billy",
+    "level": "graduate"
+  },
+  "journey": [
+    {
+      "organization": "Cornell University",
+      "city": "Ithaca",
+      "region": "NY",
+      "country": "US",
+      "start": "2026",
+      "role": "PhD student"
+    }
+  ]
+}
