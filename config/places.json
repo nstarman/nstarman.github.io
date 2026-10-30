@@ -122,6 +122,9 @@
       "lon": -73.9625,
       "matched": "Columbia University, West 109th Street, Manhattan Valley, Manhattan Community Board 7, Manhattan, New York County, New York, 10027, United States"
     },
+    "Cornell University": {
+      "sameAs": "CLASSE REU"
+    },
     "Copenhagen, Denmark": {
       "lat": 55.6867,
       "lon": 12.5701,
