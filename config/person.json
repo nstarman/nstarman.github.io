@@ -43,8 +43,8 @@
   "institutionRest": "Kavli Institute for Astrophysics",
   "github": "nstarman",
   "bio": [
-    "I am a computational astrophysicist researching dark matter — what it is, and how it shapes galaxies — mostly by using stellar streams to constrain their gravitational potentials, in the Milky Way and far beyond it with large-scale surveys.",
-    "When a star cluster is torn apart by its host galaxy, the debris can trace a long, thin stream. Properties of the stream — its path, shape, width, etc — are all sensitive to properties of the host, including its dark matter. I develop and apply novel methods to study these streams and learn about the dark matter; I also build much of the software powering these methods and analyses. I am also a core developer of Astropy, helping to power all of astronomy."
+    "I am a computational astrophysicist studying dark matter: what it is, and how it is distributed in galaxies. I measure it mostly with stellar streams, in the Milky Way and, with large surveys, in thousands of galaxies beyond it.",
+    "When a star cluster or dwarf galaxy is pulled apart by its host galaxy, its stars spread out into a long, thin stream. The stream’s path, width and density depend on the host’s gravitational field, including its dark matter. I develop statistical and machine-learning methods to find streams, model them and infer that field, and I write much of the open-source software these analyses run on. I am also a core developer of Astropy, the community Python library for astronomy, where I lead the cosmology module and serve on the Coordination Committee."
   ],
   "contacts": [
     {

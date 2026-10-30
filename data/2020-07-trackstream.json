@@ -28,7 +28,7 @@
       "sha": "19809435cdab30f649e3735e1cfe7e6d05db6869"
     },
     "alt": "The trackstream logo: a ring of grey stars, a circular stellar stream, with a black railway track laid along three quarters of it, broken at the bottom by a dark progenitor.",
-    "description": "Characterizes a stellar stream's track, arm by arm and with uncertainties, from minimal prior knowledge. Astropy-powered."
+    "description": "Characterizes a stellar stream's track, arm by arm and with uncertainties, from minimal prior knowledge. Built on Astropy."
   },
   "refs": [
     "characterizing-stream-tracks"

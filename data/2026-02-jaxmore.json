@@ -31,6 +31,6 @@
       "sha": "ac34529ba640fba7f13768bfb9ab65f4c8e696ef"
     },
     "alt": "The jaxmore logo: JAX's, its letters built from coloured rhombi, with the J's stem crossed by a dark-grey bar of the same rhombi into a big plus.",
-    "description": "There's more to JAX: the utilities you keep re-writing, such as a vmap with static arguments, a reverse-mode-friendly bounded while loop, and scan-based training loops."
+    "description": "Utilities missing from JAX that you keep rewriting: a vmap with static arguments, a bounded while loop that works with reverse-mode differentiation, and scan-based training loops."
   }
 }
