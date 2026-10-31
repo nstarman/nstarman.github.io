@@ -598,7 +598,7 @@
   "citations": 5947,
   "links": [
     {
-      "rel": "repo",
+      "rel": "syw",
       "url": "https://github.com/astropy/astropy-v5.0-paper"
     },
     {

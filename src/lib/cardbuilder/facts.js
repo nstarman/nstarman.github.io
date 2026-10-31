@@ -14,7 +14,7 @@ import {
 // key's links share its pill, so one that covers two places names both. The
 // card's name, though, keeps the key.
 const PLACES = { 'arxiv.org': 'arXiv', 'github.com': 'GitHub', 'zenodo.org': 'Zenodo', 'pypi.org': 'PyPI', 'openreview.net': 'OpenReview', 'ui.adsabs.harvard.edu': 'ADS' };
-const BY_PLACE = ['code', 'repo', 'preprint', 'data', 'doi'];
+const BY_PLACE = ['code', 'repo', 'syw', 'preprint', 'data', 'doi'];
 export const linkPlace = (l) => {
   if (relKey(l) === 'ads') return 'ADS';
   if (!BY_PLACE.includes(l.rel)) return l.rel;

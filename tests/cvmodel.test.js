@@ -147,6 +147,13 @@ describe('the model', () => {
     expect(find(m, 'mit-postdoc').links.find((l) => l.rel === 'homepage').icon).toBe('link');
   });
 
+  it('draws a showyourwork repository with its mark, named in words', () => {
+    const m = cvModel('complete', new Set(['characterizing-stream-tracks']));
+    const syw = find(m, 'characterizing-stream-tracks').links.find((l) => l.rel === 'syw');
+    expect(syw.icon).toBe('syw');
+    expect(syw.label).toBe('showyourwork');
+  });
+
   it('marks the link icon for the degree line only with the institution below', () => {
     const only = new Set(['toronto-phd', 'mit-postdoc']);
     const on = cvModel('complete', only, undefined, { schoolBelow: true, linkOnDegree: true });

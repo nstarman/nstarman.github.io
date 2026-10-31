@@ -40,7 +40,7 @@ const widths = fc.integer({ min: 120, max: 1200 });
 const tiers = fc.constantFrom('flagship', 'major');
 const themes = fc.constantFrom('light', 'dark');
 const label = fc.oneof(fc.stringMatching(/^[0-9]{4}$/), fc.stringMatching(/^[0-9]{1,3}(\.[0-9])?k?$/));
-const KEYS = ['paper', 'doi', 'preprint', 'repo', 'code', 'docs', 'data', 'slides', 'ads', 'homepage', 'event', 'stars'];
+const KEYS = ['paper', 'doi', 'preprint', 'repo', 'syw', 'code', 'docs', 'data', 'slides', 'ads', 'homepage', 'event', 'stars'];
 const url = fc.stringMatching(/^[a-z0-9&=?\-_/]{0,30}$/).map((p) => `https://example.test/${p}`);
 const links = fc.uniqueArray(fc.constantFrom(...KEYS), { minLength: 0, maxLength: KEYS.length }).chain((keys) => fc.tuple(...keys.map((key) => fc.record({
   key: fc.constant(key), url, label: fc.constant(null), year: key === 'paper' || key === 'doi' ? fc.option(label, { nil: null }) : fc.constant(null), count: key === 'stars' ? label : fc.constant(null),

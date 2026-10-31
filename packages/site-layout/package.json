@@ -1,6 +1,6 @@
 {
   "name": "@nstarkman/site-layout",
-  "version": "20261022.0.1",
+  "version": "20261022.0.2",
   "description": "The nstarkman.space page layout, for sites hosted at nstarkman.space/<repo>/.",
   "type": "module",
   "license": "MIT",
