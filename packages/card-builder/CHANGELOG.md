@@ -3,6 +3,12 @@
 Versions are dates, `YYYYMMDD.0.N`; the four research-kit packages are released together at one
 version. A breaking change says how to migrate.
 
+## 20261028.0.1
+
+### Added
+
+- `syw` is a button a card can be cut to, like `repo`: a paper's showyourwork repository.
+
 ## 20261028.0.0
 
 ### Changed
