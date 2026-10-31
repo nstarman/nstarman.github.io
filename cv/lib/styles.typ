@@ -43,6 +43,7 @@
   zenodo: (FA, "\u{F1C0}"), // \faIcon{database}, as in the LaTeX header
   paper: (FA, "\u{F15C}"), // file-alt
   repo: (FA, "\u{F6E3}"), // hammer — the reproducible-paper mark
+  syw: (FA, "\u{F6E3}"), // a showyourwork repository: the same hammer (no font has its mark)
   github: (FAB, "\u{F09B}"),
   code: (FA, "\u{F121}"),
   docs: (FA, "\u{F05A}"), // info-circle

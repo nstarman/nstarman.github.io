@@ -70,9 +70,10 @@ fetched fields (`specs/refresh/spec.md`).
   `{ start, end }` renders "2018 – 2024". *Enforced:* the schema
   (`end-and-present.json`, `bad-date.json`); `tests/data.test.js` ("dateLabel").
 - **FR-010** `links` is a list of `{ rel, url, … }` with `rel` from a closed set:
-  `paper`, `preprint`, `doi`, `repo`, `code`, `docs`, `data`, `slides`, `event`,
-  `homepage`. A new value is a schema change plus every renderer in one PR
-  (Article IV). `repo` is a paper's repository; `code` is the software itself.
+  `paper`, `preprint`, `doi`, `repo`, `syw`, `code`, `docs`, `data`, `slides`,
+  `event`, `homepage`. A new value is a schema change plus every renderer in one PR
+  (Article IV). `repo` is a paper's repository; `syw` is a paper's repository built
+  with showyourwork (drawn with its "s" mark); `code` is the software itself.
   *Enforced:* the schema (`unknown-link-rel.json`); review for the renderers.
 - **FR-011** `refs` are bare ids of other items, and every one resolves. A media
   entry refs the paper it covered; a talk the paper it presented; a paper the

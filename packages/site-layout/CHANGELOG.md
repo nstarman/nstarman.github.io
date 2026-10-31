@@ -3,6 +3,10 @@
 Versions are dates, `YYYYMMDD.0.N`: `N` counts the fixes to that release. Each date is a new
 release with no compatibility promise across dates; a breaking change says how to migrate.
 
+## 20261022.0.2
+
+- Icon sprite: showyourwork's "s", `i-syw`, for a paper's showyourwork repository.
+
 ## 20261022.0.1
 
 - Icon sprite: a globe, `i-globe`, for a website link.

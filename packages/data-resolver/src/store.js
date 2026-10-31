@@ -330,7 +330,7 @@ export function createStore({ items: given, lists = new Map(), config }) {
 
   // Order links land in. The paper itself leads: the article at the journal,
   // then the records of it, then everything that is code or data.
-  const REL_ORDER = ['paper', 'doi', 'ads', 'preprint', 'repo', 'code',
+  const REL_ORDER = ['paper', 'doi', 'ads', 'preprint', 'syw', 'repo', 'code',
                      'docs', 'data', 'slides', 'event', 'homepage'];
 
   /**
@@ -344,7 +344,7 @@ export function createStore({ items: given, lists = new Map(), config }) {
   // closed vocabulary, so a new rel is a visible gap rather than a silent
   // fallback everywhere.
   const REL_ICON = {
-    ads: 'ads', preprint: 'arxiv', paper: 'paper', doi: 'paper', repo: 'repo',
+    ads: 'ads', preprint: 'arxiv', paper: 'paper', doi: 'paper', repo: 'repo', syw: 'syw',
     code: 'github', stars: 'star', docs: 'docs', data: 'data', slides: 'slides',
     event: 'link', homepage: 'link',
   };
@@ -392,6 +392,7 @@ export function createStore({ items: given, lists = new Map(), config }) {
     }
     for (const l of out) {
       if ((l.rel === 'paper' || l.rel === 'doi') && !l.label && item.doi) l.label = item.doi;
+      if (l.rel === 'syw' && !l.label) l.label = 'showyourwork';  // its name, not the bare "syw"
     }
 
     const rank = (l) => {

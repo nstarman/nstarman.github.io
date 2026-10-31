@@ -51,6 +51,12 @@
       "orcid": "0000-0003-2806-1414"
     }
   ],
+  "links": [
+    {
+      "rel": "syw",
+      "url": "https://github.com/nstarman/paper-stream-convexities-1"
+    }
+  ],
   "refs": [
     "potamides",
     "phasecurvefit",

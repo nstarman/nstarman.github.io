@@ -1,6 +1,6 @@
 {
   "name": "@nstarkman/research-kit",
-  "version": "20261028.0.0",
+  "version": "20261028.0.1",
   "description": "The nstarkman.space card, collaborator map and data resolver, at one version.",
   "type": "module",
   "license": "MIT",
@@ -22,9 +22,9 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@nstarkman/data-resolver": "20261028.0.0",
-    "@nstarkman/card-builder": "20261028.0.0",
-    "@nstarkman/collaborator-map": "20261028.0.0"
+    "@nstarkman/data-resolver": "20261028.0.1",
+    "@nstarkman/card-builder": "20261028.0.1",
+    "@nstarkman/collaborator-map": "20261028.0.1"
   },
   "publishConfig": {
     "access": "public",
