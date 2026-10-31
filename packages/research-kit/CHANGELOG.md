@@ -11,6 +11,8 @@ version. A breaking change says how to migrate.
   `@nstarkman/site-layout` 20261022.0.2) and labelled "showyourwork" (`@nstarkman/data-resolver`,
   `@nstarkman/card-builder` 20261028.0.1). A paper site needs both packages at these versions, then
   a refreshed snapshot (`syw-site card`) to show it.
+- A paper with its own site (a `homepage` link) has **Details ›** to it instead of **Context ›**
+  (`@nstarkman/card-builder` 20261028.0.1).
 
 ## 20261028.0.0
 

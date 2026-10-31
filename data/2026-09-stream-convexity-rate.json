@@ -55,6 +55,11 @@
     {
       "rel": "syw",
       "url": "https://github.com/nstarman/paper-stream-convexities-1"
+    },
+    {
+      "rel": "homepage",
+      "url": "https://nstarkman.space/paper-stream-convexities-1/",
+      "label": "The paper's site"
     }
   ],
   "refs": [

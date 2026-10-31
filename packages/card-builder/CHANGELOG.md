@@ -7,7 +7,10 @@ version. A breaking change says how to migrate.
 
 ### Added
 
-- `syw` is a button a card can be cut to, like `repo`: a paper's showyourwork repository.
+- `syw` is a button a card can be cut to, like `repo`: a paper's showyourwork repository. The site's
+  Research carousel shows it.
+- A paper with its own site (a `homepage` link) has **Details ›** to it where its card would link
+  **Context ›** to its research topic (`paperSiteHref`).
 
 ## 20261028.0.0
 

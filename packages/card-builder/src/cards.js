@@ -22,7 +22,7 @@ export const SITE_PRESETS = [
   // The paper's own links: a carousel card leaves the data (Zenodo) and the
   // package's docs to the entry on /publications/, which its title links to —
   // the paper button is the way out to the journal.
-  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-students:photo-buttons:paper,doi,preprint,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
+  { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-students:photo-buttons:paper,doi,preprint,syw,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
   // Its figure is no link: on /publications/ that would be to itself.
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   // A paper's own site (syw-site, at nstarkman.space/<repo>/) opens with its entry as
@@ -98,6 +98,9 @@ export const titleStatus = (item) => (item.type === 'publication' && ['submitted
 export const hasStatus = (item) => !!titleStatus(item);
 /** Context links to the item's topic on /research/, so only a topic it shows. */
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
+/** A paper's own site (syw-site, at nstarkman.space/<repo>/): its `homepage` link. Its card's
+ *  context link goes there instead, as Details: the site says more than the topic does. */
+export const paperSiteHref = (item) => (item.type === 'publication' ? links(item).find((l) => l.rel === 'homepage')?.url ?? null : null);
 
 /** The star count, as a button's label: 657 → "657", 1234 → "1.2k". */
 export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
@@ -178,7 +181,7 @@ export const embedHref = (item) => (primaryLink(item) ?? links(item)[0])?.url ??
  *  embed page's card, which draws every part for a name to choose from. */
 export function cardFacts(item, every = false) {
   return {
-    every, type: item.type, figure: hasFigure(item), place: hasPosition(item), year: hasYear(item), context: hasContext(item),
+    every, type: item.type, figure: hasFigure(item), place: hasPosition(item), year: hasYear(item), context: hasContext(item) || !!paperSiteHref(item),
     role: hasRole(item), students: hasStudents(item), venue: hasVenue(item), status: hasStatus(item), tstatus: !!titleStatus(item), split: !!splitTitle(item),
     byline: item.type === 'publication', lead: hasPosition(item) && authorPosition(item) === 1,
     varxiv: item.type === 'publication' && !venueLine(item), refs: item.type === 'highlight' ? item.refs.length : 0,
