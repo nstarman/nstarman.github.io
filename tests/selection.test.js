@@ -293,6 +293,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [], spacing }))).spacing).toEqual(spacing);
   });
 
+  it('carries the run headings\' size through a round trip, dropping one out of range', () => {
+    const round = (runSize) => decode(JSON.stringify(encode({ items: [], runSize }))).runSize;
+    expect(round({ publications: 1.3, a: 0.5, b: 2.5, c: '1.2' })).toEqual({ publications: 1.3 });
+    expect(round(undefined)).toEqual({});
+  });
+
   it('carries the refereed split through a round trip, dropping any other value', () => {
     const round = (refereed) => decode(JSON.stringify(encode({ items: [], refereed }))).refereed;
     expect(round({ publications: 'split', a: true, b: 'yes' })).toEqual({ publications: 'split' });

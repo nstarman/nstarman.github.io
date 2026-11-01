@@ -321,7 +321,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
-      if (/^(tally|tallyrecord|tallyshort|hindex|refereed):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
+      if (/^(tally|tallyrecord|tallyshort|hindex|refereed|runsize):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { showList(t.closest('[data-columns-of]')); retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -458,6 +458,7 @@ const builderData = {
         setLocationAt(Object.fromEntries(Object.entries(LOCATION[t.dataset.preset] ?? {}).filter(([, v]) => v === false).map(([k]) => [k, 'none'])));
         setTally(TALLY[t.dataset.preset]);
         setRefereed(REFEREED[t.dataset.preset]);
+        setRunSize();
         setFunderOff(FUNDER_OFF[t.dataset.preset]);
         setRecipientOff([]);
         applyDetail();
@@ -629,6 +630,11 @@ const builderData = {
       for (const b of document.querySelectorAll('[data-refereed-of]')) b.checked = r[b.dataset.refereedOf] === 'split';
       syncLegends();
     };
+    /** Section id → how large its run headings print, for the lists whose Size is set. */
+    const runSizeBoxes = () => [...document.querySelectorAll('[data-runsize-of]')];
+    const currentRunSize = () => Object.fromEntries(runSizeBoxes()
+      .map((b) => [b.dataset.runsizeOf, Number.parseFloat(b.value)]).filter(([, v]) => Number.isFinite(v)));
+    const setRunSize = (r = {}) => { for (const b of runSizeBoxes()) b.value = r[b.dataset.runsizeOf] ?? ''; };
     // Say so beside a Scholar h-index whose numbers were read long ago: no API
     // refreshes them, so the date is the only way to know.
     const warnStale = (menu) => {
@@ -876,7 +882,7 @@ const builderData = {
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
-      linkOnDegree: $('linkondegree').checked, tally: currentTally(), refereed: currentRefereed(), preset: base, site: SITE,
+      linkOnDegree: $('linkondegree').checked, tally: currentTally(), refereed: currentRefereed(), runSize: currentRunSize(), preset: base, site: SITE,
     });
 
     const saveSelection = () => {
@@ -939,6 +945,7 @@ const builderData = {
       showLocationDetail();
       setTally(sel.tally);
       setRefereed(sel.refereed);
+      setRunSize(sel.runSize);
       $('trailcap').checked = sel.trailcap;
       trailwInput().value = sel.trailcapWidth ?? '';
       $('fill').checked = sel.fill;

@@ -133,7 +133,8 @@ cards (`specs/cards/spec.md`).
   their status runs, where the section has `groupBy`), then the `"proceedings"`,
   then the rest; the first run of each kind carries a `heading` — Refereed
   Journal Articles, Refereed Proceedings, Other — which the PDF prints over it,
-  bold and a size up from the entries (1.1× the body), numbering running on
+  bold and a size up from the entries — 1.1× the body, or the selection's
+  `runSize[<id>]` (0.8–2; the Size box in the list's Runs row) — numbering running on
   across them; a kind with no papers prints nothing. The space before a run
   heading is the spacing key `<id>.run` (gap kind `run` in `cv/lib/gaps.json`),
   set from the list's "Runs" spacing row in the builder like its Legend and Tally.
@@ -242,7 +243,7 @@ cards (`specs/cards/spec.md`).
   absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
   as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
   state, `country: "code"` writes the country as its code; absent, as written), page
-  format (`page`), tally (`true` or `{ hIndex, of, form }` per section, `of` only `"record"` and `form` only `"short"`; any other `of` counts the list and any other `form` is the long one), the lists split by refereeing (`refereed`, section id to `"split"`; any other value is dropped), whether the
+  format (`page`), tally (`true` or `{ hIndex, of, form }` per section, `of` only `"record"` and `form` only `"short"`; any other `of` counts the list and any other `form` is the long one), the lists split by refereeing (`refereed`, section id to `"split"`; any other value is dropped), how large their run headings print (`runSize`, section id to a multiple of the body from 0.8 to 2; any other value is dropped), whether the
   right-hand column is capped (`trailcap`, `true` only) and how wide (`trailcapWidth`, inches, absent for 1.45), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
@@ -265,7 +266,7 @@ cards (`specs/cards/spec.md`).
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
   order, Group Professional Activities — is in the global "Settings for every section" panel. An option that applies to one
-  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally (with Whole record, Short and its own Place), Split by refereeing and Legend,
+  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally (with Whole record, Short and its own Place), Split by refereeing, its Runs' spacing and Size, and Legend,
   Education's university below the degree, the mentoring section's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
