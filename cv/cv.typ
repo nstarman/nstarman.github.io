@@ -359,8 +359,11 @@
 #let entrybody(it, tail: none) = {
   // A label the title ends in — "(Talk)", "(Poster)", or "(Workshop)", or "(Talk, Cambridge, MA,
   // USA)" once the place joins it — says what kind of entry it is, not its name, so it is not bold.
+  // A mentee's title bolds only their name: "*Taisiia Karasova* (MIT) with Prof. Lina Necib (MIT)".
+  let name = it.at("name", default: none)
   let m = it.title.match(regex("^(.+?) (\((?:Talk|Poster|Workshop)(?:, [^()]*)?\))$"))
-  if m == none { strong(it.title) } else [#strong(m.captures.at(0)) #m.captures.at(1)]
+  if name != none [#strong(name)#it.title.slice(name.len())]
+  else if m == none { strong(it.title) } else [#strong(m.captures.at(0)) #m.captures.at(1)]
   // With the institution below, the link icon may end the degree line (`linkOnDegree`).
   if it.at("linkOnDegree", default: false) and it.links.len() > 0 [ #trail(it.links)]
   // An education entry may have its institution on its own line, below the degree (`below`).

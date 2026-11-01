@@ -417,6 +417,14 @@ describe('every item', () => {
     const mentoring = complete.sections.find((s) => s.id === 'mentoring');
     for (const i of mentoring.items) expect(text(i.subject)).not.toBe(i.title);
   });
+
+  it("bolds a mentee's name alone, not the institutions after it", () => {
+    const mentoring = complete.sections.find((s) => s.id === 'mentoring');
+    const row = (id) => mentoring.items.find((i) => i.id === id);
+    expect(row('taisiia-karasova-mit-with-prof-lina-necib-mit').name).toBe('Taisiia Karasova');
+    expect(row('billy-liu-cornell').name).toBe('Zihan (Billy) Liu');
+    expect(row('massey-tutoring-program').name).toBeNull();
+  });
 });
 
 describe('mentee achievements', () => {
