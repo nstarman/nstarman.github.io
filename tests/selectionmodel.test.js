@@ -142,6 +142,15 @@ describe('one model from a selection', () => {
   });
 });
 
+describe('the size of refereed run headings', () => {
+  it('reaches the model only where the selection sets it', () => {
+    const pubs = (extra) => modelFromSelection(decode(JSON.stringify(encode({ items: memberIds('complete'), refereed: { publications: 'split' }, ...extra }))))
+      .sections.find((s) => s.id === 'publications');
+    expect('runSize' in pubs()).toBe(false);
+    expect(pubs({ runSize: { publications: 1.3 } }).runSize).toBe(1.3);
+  });
+});
+
 describe('a section group in a selection', () => {
   const sel = (groups) => decode(JSON.stringify(encode({ items: memberIds('np'), lines: {}, groups, site: {} })));
   it('groups the compiled model only when switched on', () => {

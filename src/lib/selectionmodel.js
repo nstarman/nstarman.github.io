@@ -39,6 +39,7 @@ export function modelFromSelection(sel) {
   for (const s of model.sections) {
     for (const it of s.items) if (it.recipient) it.recipientInline = sel.inline.has(it.id);
     s.columns = sel.columns[s.id] ?? s.columns;
+    if (sel.runSize[s.id]) s.runSize = sel.runSize[s.id];
   }
   model.style = sel.style ?? 'default';
   model.format = sel.page;
