@@ -26,10 +26,7 @@
   "tags": [
     "jax"
   ],
-  "details": [
-    "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions.",
-    "Used by galax."
-  ],
+  "details": "Special functions for JAX, following the scipy.special API: functions JAX lacks, such as the modified Bessel K and the polylogarithm, fixes where it returns wrong values, and hand-written derivatives where its own are slow or nan.",
   "highlight": {
     "topic": "software",
     "image": "highlights/spexial.svg",

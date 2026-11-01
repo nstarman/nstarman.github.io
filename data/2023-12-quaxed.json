@@ -22,10 +22,7 @@
   "tags": [
     "jax"
   ],
-  "details": [
-    "Drop-in jax.numpy and friends, already wrapped for dispatch over abstract array types.",
-    "Built on quax, and used by unxt, coordinax, and galax."
-  ],
+  "details": "jax.numpy, jax.lax, and other JAX libraries, pre-wrapped with quax so they accept custom array types directly.",
   "highlight": {
     "topic": "software",
     "image": "highlights/quaxed.webp",

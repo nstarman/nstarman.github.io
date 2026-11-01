@@ -14,7 +14,7 @@
   "title": "quax",
   "summary": "Multiple dispatch in JAX",
   "details": [
-    "Custom array-ish types that work with JAX primitives — the substrate the rest of the stack builds on.",
+    "Multiple dispatch over array types in JAX, so custom arrays (sparse, structured, or carrying units) run through existing JAX programs.",
     "Took over maintenance from its author, Patrick Kidger, and extended it."
   ],
   "highlight": {

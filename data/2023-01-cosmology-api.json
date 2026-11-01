@@ -23,7 +23,10 @@
     "description": "The Cosmology API standard: Python protocols that let code work with any cosmology library implementing them, from Astropy to CLASS and CAMB."
   },
   "repo": "cosmology-api/cosmology.api",
-  "details": "A typed Python API standard for cosmology objects, adopting through Astropy's interoperability effort.",
+  "details": [
+    "Standard Python interfaces for cosmology codes, so one piece of code works with Astropy, CLASS, CAMB, or any library that follows them, with no run-time dependency.",
+    "Being adopted through Astropy's interoperability effort."
+  ],
   "role": "lead developer",
   "doi": "10.5281/zenodo.8331505",
   "authors": [

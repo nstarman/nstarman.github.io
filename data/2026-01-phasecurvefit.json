@@ -27,7 +27,7 @@
     "jax"
   ],
   "details": [
-    "Fit a curve through phase-space points — streams, orbits, trajectories.",
+    "Orders samples along a curve in phase space and fits a smooth track through them, using velocities as well as positions so curves that cross or fold back stay on the right strand.",
     "Designed and wrote the package, and leads its development.",
     "Accepted by pyOpenSci, with a JOSS submission in progress."
   ],
