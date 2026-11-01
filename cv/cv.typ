@@ -321,7 +321,7 @@
       #if look.smallcaps { smallcaps(title) } else { title }
     ]
   ]
-  v(below * 0.6)
+  v(below)
 }
 
 // ── spans ─────────────────────────────────────────────────────────────────
