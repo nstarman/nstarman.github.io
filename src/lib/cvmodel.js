@@ -133,6 +133,15 @@ function menteeName(item) {
 /** One item as a row of the model. */
 export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true, ids = false, form) {
   const detail = detailLines(item, { complete: cv.includeAll, currency });
+  const shaped = links(item).map((l) => ({
+    rel: l.rel,
+    url: l.url,
+    label: l.label ?? l.rel,
+    icon: linkIcon(item, l),
+  }));
+  // A talk's own slides or poster belong to its title, the first line, while that line prints.
+  const talkShown = Boolean(item.talk) && (keepLine ? keepLine(item.id, 0) : s.detail === 'full');
+  const onTalk = (l) => talkShown && l.rel === 'slides';
   return {
     id: item.id,
     // The PDF spells the month where a record has one; ranges stay years.
@@ -163,17 +172,13 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
     // a few points at the end of a line instead of a line of their own —
     // which is why the short presets can carry them again.
     links: (() => {
-      const own = links(item).map((l) => ({
-        rel: l.rel,
-        url: l.url,
-        label: l.label ?? l.rel,
-        icon: linkIcon(item, l),
-      }));
+      const own = shaped.filter((l) => !onTalk(l));
       const papers = item.type === 'software' ? papersOf(item) : [];
       // Second, so the grid still titles the package with its repository
       // and the papers lead the trail.
       return papers.length ? [own[0], ...papers, ...own.slice(1)].filter(Boolean) : own;
     })(),
+    talkLinks: shaped.filter(onTalk),
   };
 }
 
