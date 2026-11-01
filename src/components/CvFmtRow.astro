@@ -48,7 +48,7 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
   {[
     { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
     ...(s.id === 'publications'
-      ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` },
+      ? [{ sub: 'Legend', place: true, onTally: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` },
          { sub: 'Tally', place: true, key: `${s.id}.tally`, gap: 'legend', words: `Space below the ${s.heading} tally` },
          { sub: 'Runs', key: `${s.id}.run`, gap: 'run', runSize: !all, words: `Space before each ${s.heading} run heading, where the list is split by refereeing` }]
       : []),
@@ -71,12 +71,17 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
       {o.place && (
         <span class="fmtopt fmtopt--place">
           <span class="fmtlab">Place</span>
-          <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="3"
+          <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops={o.onTally ? 4 : 3}
                 aria-label={`Where the ${s.heading} ${o.sub.toLowerCase()} sits`} data-place-of={o.key}>
             <label title="On its own line, below the heading">
               <input type="radio" class="posradio" name={`place:${o.key}`} value="below" checked />Below</label>
             <label title="On its own line, below the heading, at its right">
               <input type="radio" class="posradio" name={`place:${o.key}`} value="right" />Right</label>
+            {/* The legend can run on after the tally, in its paragraph. */}
+            {o.onTally && (
+              <label title="After the tally, on its line">
+                <input type="radio" class="posradio" name={`place:${o.key}`} value="tally" />Tally</label>
+            )}
             <label title="On the heading's line, at its right">
               <input type="radio" class="posradio" name={`place:${o.key}`} value="title" />Title</label>
           </span>
