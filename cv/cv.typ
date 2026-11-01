@@ -516,11 +516,13 @@
 // to the key's colours and marks.
 // One line each, or the markup's line breaks would pad the words with spaces.
 #let tallywords(t) = {
+  // How many in refereed journals, where the list is split by refereeing.
+  let jn = t.at("journal", default: none)
   let hix = if t.at("h", default: none) != none [ h-index #t.h.value (#t.h.source).]
   if t.at("form", default: none) == "short" {
-    [#strong[#t.total papers] (#t.first first-author#if t.submitted > 0 [, #t.submitted submitted]).#hix]
+    [#strong[#t.total papers] (#if jn != none [#jn in refereed journals, ]#t.first first-author#if t.submitted > 0 [, #t.submitted submitted]).#hix]
   } else {
-    [#strong[#t.total papers]#if t.submitted > 0 [ (#t.submitted submitted)]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#hix]
+    [#strong[#t.total papers]#if jn != none or t.submitted > 0 [ (#if jn != none [#jn in refereed journals]#if jn != none and t.submitted > 0 [, ]#if t.submitted > 0 [#t.submitted submitted])]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#hix]
   }
 }
 #let tallyline(t, at: left) = block(sticky: true, width: 100%, below: gap("publications.tally", "legend"),
@@ -547,6 +549,11 @@
     let n = total + 1
     for g in groups {
       let picked = section.items.filter(i => i.id in g.ids)
+      // A run of a list split by refereeing opens with its kind; sticky, so it never ends a page.
+      if g.at("heading", default: none) != none and picked.len() > 0 {
+        block(sticky: true, above: 4pt, below: 5pt,
+          text(size: look.sub, weight: "bold", fill: look.headcolour, g.heading))
+      }
       for it in picked {
         n -= 1
         publication(n, it, numwidth)

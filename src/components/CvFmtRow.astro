@@ -157,6 +157,11 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
           <span class="fmtstale" data-scholar-stale data-asof={person.metrics?.googleScholar?.asOf} data-days={SCHOLAR_STALE_DAYS} hidden role="status">Scholar numbers read {person.metrics?.googleScholar?.asOf}: update them</span>
         </span>
       )}
+      {/* The list in runs by how its papers are refereed: journals, proceedings, other. */}
+      {o.tally && (
+        <label class="fmtopt fmtcheck" title={`Print ${s.heading} in runs: refereed journal articles, refereed proceedings, other`}>
+          <input type="checkbox" name={`refereed:${s.id}`} data-refereed-of={s.id} />Split by refereeing</label>
+      )}
       {/* "Select Publications" when only some are ticked — or not.
           A list section is taken whole, so never says it. */}
       {o.style && !all && s.items.length > 0 && (

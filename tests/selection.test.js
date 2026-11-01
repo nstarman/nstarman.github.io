@@ -288,6 +288,12 @@ describe('tolerating the merely odd', () => {
     expect(decode(JSON.stringify(encode({ items: [] }))).tally).toEqual({});
   });
 
+  it('carries the refereed split through a round trip, dropping any other value', () => {
+    const round = (refereed) => decode(JSON.stringify(encode({ items: [], refereed }))).refereed;
+    expect(round({ publications: 'split', a: true, b: 'yes' })).toEqual({ publications: 'split' });
+    expect(round(undefined)).toEqual({});
+  });
+
   it('keeps a tally of the whole record, and drops any other `of`', () => {
     const round = (tally) => decode(JSON.stringify(encode({ items: [], tally }))).tally;
     expect(round({ a: { of: 'record' }, b: { of: 'record', hIndex: 'ads' } }))

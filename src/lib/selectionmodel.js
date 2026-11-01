@@ -24,6 +24,7 @@ export function modelFromSelection(sel) {
     locationAt: sel.locationAt,
     locationDetail: sel.locationDetail,
     tally: sel.tally,
+    refereed: sel.refereed,
     namesFor: sel.namesFor,
     currency: sel.currency ?? undefined,
     funderOff: sel.funderOff,

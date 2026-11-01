@@ -188,12 +188,17 @@ const CURRENCY_STYLES = ['us', 'dollar'];
 /** A list of entry ids, each a short string, once. */
 const cleanIds = (raw) => [...new Set(Array.isArray(raw) ? raw.filter((k) => typeof k === 'string' && k.length <= 64) : [])].slice(0, 256);
 
+/** Section id → `split`, for the publication lists printed in runs by how they are refereed. */
+const cleanRefereed = (raw) => Object.fromEntries(
+  Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
+    .filter(([k, v]) => v === 'split' && k.length <= 64).slice(0, 64));
+
 /** Entry id → its institution-name level, 1 or 2; full is the absence. */
 const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, preset, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, refereed, preset, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -265,6 +270,8 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     // Publication lists that open with a tally, and the h-index it adds.
     // Absent, none does.
     tally: cleanTally(tally),
+    // Publication lists split into refereed-journal, proceedings and other runs. Absent, none is.
+    refereed: cleanRefereed(refereed),
     // The preset it was started from, whose layout it prints in. Absent, the complete CV's.
     preset: presetName(preset),
   };
@@ -281,7 +288,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, preset, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, refereed, preset, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -357,6 +364,7 @@ export function decode(text) {
     schoolBelow: raw.schoolBelow === true,
     linkOnDegree: raw.linkOnDegree === true,
     tally: cleanTally(raw.tally),
+    refereed: cleanRefereed(raw.refereed),
     preset: presetName(raw.preset),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {

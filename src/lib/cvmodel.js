@@ -33,6 +33,27 @@ function groupsOf(items, field) {
 }
 
 /**
+ * A publication list split by how its papers are refereed: the journal papers,
+ * in their own runs (by `groupBy`, when the section has one), then the
+ * proceedings, then the rest. The first run of each kind carries its heading;
+ * a kind with no papers prints nothing.
+ */
+const REFEREED_RUNS = [
+  ['journal', 'Refereed Journal Articles'],
+  ['proceedings', 'Refereed Proceedings'],
+  [false, 'Other'],
+];
+
+function refereedRuns(items, field) {
+  return REFEREED_RUNS.flatMap(([value, heading]) => {
+    const picked = items.filter((i) => i.refereed === value);
+    if (!picked.length) return [];
+    const runs = value === 'journal' && field ? groupsOf(picked, field) : [{ label: heading, items: picked }];
+    return runs.map((g, n) => ({ ...g, ...(n === 0 && { heading }) }));
+  });
+}
+
+/**
  * The line under the title, as bold/plain spans. Spans rather than a marked-up
  * string because Typst prints a literal "*" — emphasis has to be structure, not
  * syntax, if the same model is to feed both HTML and PDF.
@@ -291,10 +312,14 @@ export function cvModel(presetName, only, keepLine, opts) {
       // Which subsections to draw, and in what order. `groupBy` has been sitting
       // in presets.json unread — the publications list is meant to break into
       // Submitted / Accepted / Published, as the LaTeX CV does.
-      groups: groupBy(s) ? groupsOf(s.items, groupBy(s)).map((g) => ({
+      // `refereed: "split"` breaks it first by how its papers are refereed,
+      // each kind's first run carrying the sub-heading the PDF prints.
+      groups: (s.refereed === 'split' ? refereedRuns(s.items, groupBy(s))
+        : groupBy(s) ? groupsOf(s.items, groupBy(s)) : []).map((g) => ({
         label: g.label,
         ids: g.items.map((i) => i.id),
-      })) : [],
+        ...(g.heading && { heading: g.heading }),
+      })),
       // A list section's entries are prose, not records — spans so a link in
       // one survives into the PDF.
       entries: (s.entries ?? []).map((e) => spans(e)),

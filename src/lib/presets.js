@@ -58,8 +58,10 @@ export const SCHOLAR_STALE_DAYS = 183;
  * h-index too, said with its source, since the sources disagree. A paper in
  * preparation is not one yet, so it is never counted. `form: "short"` passes
  * through, for the template to leave the student-led number to the key.
+ * `refereed: "split"` adds how many are in refereed journals, for a list
+ * printed in runs by how its papers are refereed.
  */
-export function tally(all, { hIndex, form } = {}) {
+export function tally(all, { hIndex, form, refereed } = {}) {
   const pubs = all.filter((p) => p.status !== 'in-prep');
   const lead = (p) => p.authors?.[0] ?? {};
   return {
@@ -69,6 +71,7 @@ export function tally(all, { hIndex, form } = {}) {
     student: pubs.filter((p) => lead(p).mentee).length,
     h: H_INDEX[hIndex]?.() ?? null,
     ...(form === 'short' && { form }),
+    ...(refereed === 'split' && { journal: pubs.filter((p) => p.refereed === 'journal').length }),
   };
 }
 
@@ -157,7 +160,7 @@ const rank = (order, id) => { const i = order.indexOf(id); return i < 0 ? order.
 const TIERS = ['flagship', 'major', 'minor', 'utility'];
 const byTier = (a, b) => rank(TIERS, a.tier) - rank(TIERS, b.tier) || (a.order ?? 0) - (b.order ?? 0);
 
-export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {}, groups } = {}) {
+export function resolve(name, only, { prefix = {}, order = [], location = {}, tally: tallied = {}, refereed: split = {}, groups } = {}) {
   const spec = preset(name);
   // The builder's choice of groups, else the preset's own.
   groups ??= spec.groups ?? [];
@@ -243,10 +246,14 @@ export function resolve(name, only, { prefix = {}, order = [], location = {}, ta
       // `true` for the counts, or `{ hIndex }` to add one, and `of: "record"` to
       // count every publication rather than the list's; the builder's say, by
       // section id, before the preset's.
+      // `split` prints a publication list in runs by how its papers are
+      // refereed; the builder's say, by section id, before the preset's.
+      refereed: split[section.id] ?? section.refereed ?? null,
       tally: (() => {
         const t = tallied[section.id] ?? section.tally;
         if (!t) return null;
-        return tally(t.of === 'record' ? items.filter((i) => i.type === 'publication') : picked, t === true ? {} : t);
+        const refereed = split[section.id] ?? section.refereed;
+        return tally(t.of === 'record' ? items.filter((i) => i.type === 'publication') : picked, { ...(t === true ? {} : t), refereed });
       })(),
     };
   });
