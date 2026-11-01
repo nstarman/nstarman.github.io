@@ -120,6 +120,16 @@ function trailing(item, s, currency, form) {
   return s.location === false || !item.location ? '' : formatPlace(item.location, form);
 }
 
+/** The part of a mentee's title that is their name, through the family name so a nickname inside
+ *  it stays — "Zihan (Billy) Liu" — when more follows it; else null. */
+function menteeName(item) {
+  const family = item.type === 'mentoring' ? item.person?.family : null;
+  const at = family ? item.title.indexOf(family) : -1;
+  if (at < 0) return null;
+  const end = at + family.length;
+  return end < item.title.length ? item.title.slice(0, end) : null;
+}
+
 /** One item as a row of the model. */
 export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true, ids = false, form) {
   const detail = detailLines(item, { complete: cv.includeAll, currency });
@@ -128,6 +138,8 @@ export function rowOf(item, cv, s, keepLine, names = 0, currency, funder = true,
     // The PDF spells the month where a record has one; ranges stay years.
     when: dateLabel(item, { month: true }),
     title: item.title,
+    // A mentee's row bolds their name alone, not the institutions and co-supervisor after it.
+    name: menteeName(item),
     subject: subject(item, names, funder),
     byline: item.type === 'publication' ? byline(item) : [],
     venue: item.type === 'publication' ? venueLine(item) : null,

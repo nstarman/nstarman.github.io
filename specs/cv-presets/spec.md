@@ -140,7 +140,8 @@ cards (`specs/cards/spec.md`).
   the builder all use; every row has the fields `cv.typ` reads. *Enforced:*
   `tests/cvmodel.test.js` ("has the fields cv.typ reads…").
 - **FR-028** A row's heading is its title in bold — in the PDF, a label the title ends in,
-  "(Talk)", "(Poster)", or "(Workshop)", in regular weight — then `role` if it has one, then
+  "(Talk)", "(Poster)", or "(Workshop)", in regular weight, and of a mentee's title only their
+  name in bold ("**Taisiia Karasova** (MIT) with Prof. Lina Necib (MIT)") — then `role` if it has one, then
   who it was with, each once: a position's, education's or teaching entry's
   institution; a grant's or award's funder; a fellowship's funder, or its host when
   it has none; a service or outreach entry's organization; media's outlet. A funder
@@ -149,7 +150,8 @@ cards (`specs/cards/spec.md`).
   and publications keep their own lines. The CV pages and the builder draw the same
   heading (`CvTimelineItem.astro`) as the PDF (`subject()` in `cvmodel.js`).
   *Enforced:* `tests/cvmodel.test.js` ("prints my role, then who it was with",
-  "says each fellowship once", "says what I did at a conference I organized").
+  "says each fellowship once", "says what I did at a conference I organized",
+  "bolds a mentee's name alone").
 - **FR-020** The CV Builder (`/webdev/cv/`) renders the complete CV with a box on
   every entry and line, seeded from `np`, whose Start-from button shows lit on
   load until the selection changes. Compile PDF (with Download and
