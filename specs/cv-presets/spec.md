@@ -261,7 +261,7 @@ cards (`specs/cards/spec.md`).
   byline — counted from the ticked entries (the tally from the whole record where
   Whole record is ticked; never a paper in preparation), the tally in its short
   form where Short is ticked and on the heading's line where its place says, and placed as the Legend's place says
-  (below, right, or on the heading's line), updating as ticks and options change.
+  (below, right, after the tally, or on the heading's line), updating as ticks and options change.
   *Enforced:* review.
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
@@ -326,8 +326,11 @@ cards (`specs/cards/spec.md`).
   own line, at the left), `right` (its own line, at the right) or `title` (the
   heading's line, at its right, at least an em from the title; with no heading, its
   own line). Where the key is on the heading's line too, the count comes first and
-  the key's lead-in shortens to "Students I advised:" so both fit one line; the
-  1-page and 2-page CVs put it there in the short form. `tally:
+  the key's lead-in shortens to "Students I advised:" so both fit one line. The
+  key's place, `place["<id>.legend"]`, may also be `tally`: it runs on after a
+  tally printed below the heading, in the tally's paragraph and alignment, its own
+  spacing unused; with no tally there, it is `below`. The
+  1-page and 2-page CVs put the count on the heading's line, in the short form. `tally:
   { "hIndex": "ads" | "scholar" | "scholar-since" }` (with or without `of` and `form`) adds an h-index,
   said with its source, since the sources disagree: ADS's is computed from the
   records' citation counts, Google Scholar's two are read by hand into
