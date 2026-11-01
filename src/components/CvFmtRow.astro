@@ -39,7 +39,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
   {/* One line per thing formatted — its heading, the student legend
       that opens Publications, its entries — the subject in bold,
       then its options. Each spacing is one key of the template's
-      `spacing`: `<id>.heading`, `<id>.legend`, and the section's id
+      `spacing`: `<id>.heading`, `<id>.legend`, `<id>.tally`, `<id>.run` (before
+      each run heading of a list split by refereeing), and the section's id
       for its entries; the legend's place is `<id>.legend` of its
       `place`. An option hides where it would do nothing: the
       heading's spacing and the legend's Title place with no heading, the
@@ -48,7 +49,8 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
     { sub: 'Heading', style: true, key: `${s.id}.heading`, gap: 'heading', words: `Space below the ${s.heading} heading` },
     ...(s.id === 'publications'
       ? [{ sub: 'Legend', place: true, key: `${s.id}.legend`, gap: 'legend', words: `Space below the ${s.heading} legend of student marks` },
-         { sub: 'Tally', place: true, key: `${s.id}.tally`, gap: 'legend', words: `Space below the ${s.heading} tally` }]
+         { sub: 'Tally', place: true, key: `${s.id}.tally`, gap: 'legend', words: `Space below the ${s.heading} tally` },
+         { sub: 'Runs', key: `${s.id}.run`, gap: 'run', words: `Space before each ${s.heading} run heading, where the list is split by refereeing` }]
       : []),
     { sub: 'Items', key: s.id, gap: entryGap(s), columns: s.layout === 'grid' && !all, words: `Space between ${s.heading} entries`,
       // Dated entries have a right-hand column for their place, which a section of talks
