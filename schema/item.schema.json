@@ -157,7 +157,8 @@
         "required": [
           "authors",
           "status",
-          "entryType"
+          "entryType",
+          "refereed"
         ],
         "properties": {
           "authors": {
@@ -228,6 +229,10 @@
               "accepted",
               "published"
             ]
+          },
+          "refereed": {
+            "description": "How the work is refereed: `journal` — published, accepted, submitted or written for a refereed journal (JOSS included); `proceedings` — a peer-reviewed conference or workshop paper; `false` — not refereed (a meeting report, a white paper). Never emitted to BibTeX. A CV may split its publications by it.",
+            "enum": ["journal", "proceedings", false]
           },
           "entryType": {
             "description": "BibTeX entry type. Not derivable from `status` alone — a published conference paper is @inproceedings, a preprint is @misc.",

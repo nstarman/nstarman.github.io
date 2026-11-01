@@ -1,1 +1,1 @@
-{"id":"month-no-year","type":"publication","entryType":"article","date":{"start":"2025"},"title":"A Title","status":"published","authors":[{"family":"A","given":"B"}],"venue":{"month":"03"}}
+{"id":"month-no-year","type":"publication","entryType":"article","date":{"start":"2025"},"title":"A Title","status":"published","refereed":"journal","authors":[{"family":"A","given":"B"}],"venue":{"month":"03"}}

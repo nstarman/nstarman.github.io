@@ -368,6 +368,24 @@ describe('publications', () => {
     expect(grouped.length).toBe(pubs.items.length);
   });
 
+  it('splits by refereeing only when asked: journal runs by status, then proceedings, then other', () => {
+    expect(pubs.groups.some((g) => 'heading' in g)).toBe(false);
+    expect(pubs.tally?.journal).toBeUndefined();
+    const split = cvModel('complete', undefined, undefined, { refereed: { publications: 'split' }, tally: { publications: true } })
+      .sections.find((s) => s.id === 'publications');
+    const headed = split.groups.filter((g) => g.heading).map((g) => g.heading);
+    expect(headed).toEqual(['Refereed Journal Articles', 'Refereed Proceedings', 'Other']);
+    const ids = (h) => split.groups[split.groups.findIndex((g) => g.heading === h)].ids;
+    expect(ids('Refereed Proceedings')).toEqual(['pinns-neurips']);
+    expect(ids('Other')).toEqual(['data-infrastructure-report']);
+    // The journal runs keep their status order, and every paper is in one run.
+    const journal = split.groups.slice(0, split.groups.findIndex((g) => g.heading === 'Refereed Proceedings'));
+    expect(journal.map((g) => g.label)).toEqual(pubs.groups.map((g) => g.label).filter((l) => journal.some((g) => g.label === l)));
+    expect(split.groups.flatMap((g) => g.ids).sort()).toEqual(split.items.map((i) => i.id).sort());
+    const counted = split.items.filter((i) => i.status !== 'in-prep');
+    expect(split.tally.journal).toBe(counted.filter((i) => itemById(i.id).refereed === 'journal').length);
+  });
+
   it('names every citation link rather than leaving a bare glyph', () => {
     const cite = ['ads', 'arxiv', 'paper', 'doi'];
     for (const p of pubs.items) {

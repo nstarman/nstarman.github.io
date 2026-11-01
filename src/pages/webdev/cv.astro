@@ -44,13 +44,14 @@ const builderData = {
   pubs: Object.fromEntries(cv.sections.filter((s) => s.layout === 'publications').flatMap((s) => s.items.map((i) => [i.id, {
     prep: i.status === 'in-prep',
     sub: i.status === 'submitted' ? 1 : 0,
+    journal: i.refereed === 'journal' ? 1 : 0,
     first: i.authors?.[0]?.me ? 1 : 0,
     led: i.authors?.[0]?.mentee ? 1 : 0,
     stu: authors(i, 6).shown.some((a) => a.student) ? 1 : 0,
   }]))),
   hIndex: Object.fromEntries(H_INDEX_SOURCES.map((k) => [k, hIndexOf(k)])),
   // The whole record's numbers, for a tally that counts it rather than the ticks.
-  record: tally(byType('publication')),
+  record: tally(byType('publication'), { refereed: 'split' }),
   membership,
   // Each preset's card, which the card's controls start from; and the card's
   // links in their usual order, for a selection that does not say.
@@ -68,6 +69,9 @@ const builderData = {
   // And its tallies, as the preset writes them: true, or { hIndex, of }.
   tally: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(preset(n).sections
     .filter((s) => typeof s === 'object' && s.tally).map((s) => [s.id, s.tally]))])),
+  // And which publication lists it splits by refereeing.
+  refereed: Object.fromEntries(presetNames.map((n) => [n, Object.fromEntries(preset(n).sections
+    .filter((s) => s.refereed).map((s) => [s.id, s.refereed]))])),
   // The entries whose institution each preset leaves out.
   funderOff: Object.fromEntries(presetNames.map((n) => [n, preset(n).funderOff ?? []])),
   detail: Object.fromEntries(presetNames.map((n) => [n, preset(n).detail])),
@@ -159,7 +163,7 @@ const builderData = {
     import { move, holdDrag, gather, moveGrouped, GROUP } from '../../lib/secorder.js';
 
     const $ = (id) => document.getElementById(id);
-    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, record: RECORD, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
+    const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, record: RECORD, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, refereed: REFEREED, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
     // An entry drawn twice (Software's cards and its List rows) has a second, mirroring box.
@@ -317,7 +321,7 @@ const builderData = {
       }
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
-      if (/^(tally|tallyrecord|tallyshort|hindex):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
+      if (/^(tally|tallyrecord|tallyshort|hindex|refereed):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
       if (t.name?.startsWith('columns:')) { showList(t.closest('[data-columns-of]')); retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
@@ -453,6 +457,7 @@ const builderData = {
         setCard(CARD[t.dataset.preset]);
         setLocationAt(Object.fromEntries(Object.entries(LOCATION[t.dataset.preset] ?? {}).filter(([, v]) => v === false).map(([k]) => [k, 'none'])));
         setTally(TALLY[t.dataset.preset]);
+        setRefereed(REFEREED[t.dataset.preset]);
         setFunderOff(FUNDER_OFF[t.dataset.preset]);
         setRecipientOff([]);
         applyDetail();
@@ -616,6 +621,14 @@ const builderData = {
       const t = { ...(recordBox(b.dataset.tallyOf)?.checked && { of: 'record' }), ...(shortBox(b.dataset.tallyOf)?.checked && { form: 'short' }), ...(h && { hIndex: h }) };
       return [b.dataset.tallyOf, Object.keys(t).length ? t : true];
     }));
+    /** Section id → `split`, for the publication lists printed in runs by refereeing. */
+    const refereedBox = (id) => document.querySelector(`[data-refereed-of="${id}"]`);
+    const currentRefereed = () => Object.fromEntries([...document.querySelectorAll('[data-refereed-of]')]
+      .filter((b) => b.checked).map((b) => [b.dataset.refereedOf, 'split']));
+    const setRefereed = (r = {}) => {
+      for (const b of document.querySelectorAll('[data-refereed-of]')) b.checked = r[b.dataset.refereedOf] === 'split';
+      syncLegends();
+    };
     // Say so beside a Scholar h-index whose numbers were read long ago: no API
     // refreshes them, so the date is the only way to know.
     const warnStale = (menu) => {
@@ -644,14 +657,16 @@ const builderData = {
         if (box?.checked) {
           // The whole record's numbers, or the ticked papers' — never one in preparation.
           const n = recordBox(id)?.checked
-            ? { total: RECORD.total, sub: RECORD.submitted, first: RECORD.first, led: RECORD.student }
-            : { total: ticked.filter((p) => !p.prep).length, sub: sum('sub'), first: sum('first'), led: sum('led') };
+            ? { total: RECORD.total, sub: RECORD.submitted, first: RECORD.first, led: RECORD.student, journal: RECORD.journal }
+            : { total: ticked.filter((p) => !p.prep).length, sub: sum('sub'), first: sum('first'), led: sum('led'), journal: sum('journal') };
+          // How many in refereed journals, only where the list is split by refereeing.
+          const jn = refereedBox(id)?.checked ? `${n.journal} in refereed journals` : '';
           const strong = document.createElement('strong');
           strong.textContent = `${n.total} papers`;
           const hix = h ? ` h-index ${h.value} (${h.source}).` : '';
           tallyEl.append(strong, shortBox(id)?.checked
-            ? ` (${n.first} first-author${n.sub ? `, ${n.sub} submitted` : ''}).${hix}`
-            : `${n.sub ? ` (${n.sub} submitted)` : ''}: ${n.first} first-author${n.led ? `, ${n.led} led by students I supervised` : ''}.${hix}`);
+            ? ` (${jn ? `${jn}, ` : ''}${n.first} first-author${n.sub ? `, ${n.sub} submitted` : ''}).${hix}`
+            : `${jn || n.sub ? ` (${[jn, n.sub ? `${n.sub} submitted` : ''].filter(Boolean).join(', ')})` : ''}: ${n.first} first-author${n.led ? `, ${n.led} led by students I supervised` : ''}.${hix}`);
           tallyEl.hidden = false;
           tallyLine.style.textAlign = placeOf('tally') === 'right' ? 'right' : 'left';
         }
@@ -861,7 +876,7 @@ const builderData = {
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
-      linkOnDegree: $('linkondegree').checked, tally: currentTally(), preset: base, site: SITE,
+      linkOnDegree: $('linkondegree').checked, tally: currentTally(), refereed: currentRefereed(), preset: base, site: SITE,
     });
 
     const saveSelection = () => {
@@ -923,6 +938,7 @@ const builderData = {
       $('loccountry').value = sel.locationDetail.country === 'code' ? 'code' : '';
       showLocationDetail();
       setTally(sel.tally);
+      setRefereed(sel.refereed);
       $('trailcap').checked = sel.trailcap;
       trailwInput().value = sel.trailcapWidth ?? '';
       $('fill').checked = sel.fill;
