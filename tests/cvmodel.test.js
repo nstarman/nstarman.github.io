@@ -425,6 +425,17 @@ describe('every item', () => {
     expect(row('billy-liu-cornell').name).toBe('Zihan (Billy) Liu');
     expect(row('massey-tutoring-program').name).toBeNull();
   });
+
+  it('ends a talk title with its slides or poster, not the heading', () => {
+    const item = itemById('iaus379-dynamical-masses-of-local-group-galaxies-poster');
+    const shown = rowOf(item, { name: 'complete' }, { id: 'talks-contributed', detail: 'full' });
+    expect(shown.talkLinks.map((l) => l.url)).toEqual(['https://doi.org/10.5281/zenodo.8378003']);
+    expect(shown.links.map((l) => l.url)).toEqual(['https://iaus379.aip.de']);
+    // With the talk's line not printed, the link stays on the heading.
+    const hidden = rowOf(item, { name: 'complete' }, { id: 'talks-contributed', detail: 'summary' });
+    expect(hidden.talkLinks).toEqual([]);
+    expect(hidden.links).toHaveLength(2);
+  });
 });
 
 describe('mentee achievements', () => {

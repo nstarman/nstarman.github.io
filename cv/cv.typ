@@ -382,9 +382,11 @@
     if it.recipientInline { [, ] } else { linebreak() }
     text(size: look.sub)[#emph[to #it.recipient]]
   }
-  for l in it.lines {
+  for (i, l) in it.lines.enumerate() {
     linebreak()
     text(size: look.sub)[#linked(l)]
+    // A talk's slides or poster end its title, the first line (`talkLinks`).
+    if i == 0 and it.at("talkLinks", default: ()).len() > 0 [ #trail(it.talkLinks)]
   }
 }
 

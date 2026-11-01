@@ -148,10 +148,12 @@ cards (`specs/cards/spec.md`).
   switched off (`funderOff`) prints nothing in its place. A presentation's is its `role`,
   then its event ("JAXtronomy Workshop, SOC"), its place where the builder puts it; mentoring
   and publications keep their own lines. The CV pages and the builder draw the same
-  heading (`CvTimelineItem.astro`) as the PDF (`subject()` in `cvmodel.js`).
+  heading (`CvTimelineItem.astro`) as the PDF (`subject()` in `cvmodel.js`). In the PDF a
+  presentation's `slides` links — its slides or poster — end its talk-title line instead of
+  the heading, while that line prints.
   *Enforced:* `tests/cvmodel.test.js` ("prints my role, then who it was with",
   "says each fellowship once", "says what I did at a conference I organized",
-  "bolds a mentee's name alone").
+  "bolds a mentee's name alone", "ends a talk title with its slides or poster").
 - **FR-020** The CV Builder (`/webdev/cv/`) renders the complete CV with a box on
   every entry and line, seeded from `np`, whose Start-from button shows lit on
   load until the selection changes. Compile PDF (with Download and
