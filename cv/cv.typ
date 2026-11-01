@@ -549,10 +549,11 @@
     let n = total + 1
     for g in groups {
       let picked = section.items.filter(i => i.id in g.ids)
-      // A run of a list split by refereeing opens with its kind; sticky, so it never ends a page.
+      // A run of a list split by refereeing opens with its kind, a size up from the entries
+      // and with the space before it the builder's `<id>.run`; sticky, so it never ends a page.
       if g.at("heading", default: none) != none and picked.len() > 0 {
-        block(sticky: true, above: 4pt, below: if tight { 7pt } else { 9pt },
-          text(size: look.sub, weight: "bold", fill: look.headcolour, g.heading))
+        block(sticky: true, above: gap(section.id + ".run", "run"), below: if tight { 7pt } else { 9pt },
+          text(size: look.size * 1.1, weight: "bold", fill: look.headcolour, g.heading))
       }
       for it in picked {
         n -= 1
