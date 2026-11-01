@@ -178,7 +178,7 @@ const cleanColumns = (raw) => {
   const out = {};
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return out;
   for (const [id, n] of Object.entries(raw)) {
-    if (Number.isInteger(n) && n >= 2 && n <= 5 && n !== 3) out[id] = n;
+    if (Number.isInteger(n) && n >= 1 && n <= 5 && n !== 3) out[id] = n;
   }
   return out;
 };

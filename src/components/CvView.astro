@@ -239,6 +239,7 @@ const mapFor = (s) => {
         /* Software: the same s-portrait-summary cards the software page's long tail uses. The
            packages carry no dates worth a gutter, and the published-vs-other
            split lived on the papers, which the publication list already holds. */
+        <div class="softview" data-soft-of={s.id}>
         <div class="soft soft--mini">
           {s.items.map((item) => (
             <Card item={item} preset={PRESET.softwareMinor} id={`item-${item.id}`}>
@@ -252,6 +253,19 @@ const mapFor = (s) => {
               )}
             </Card>
           ))}
+        </div>
+        {/* The builder's: the list the Columns slider's List stop prints instead — dated rows,
+            each detail line its own tick. Shown in the cards' place while List is chosen. */}
+        {pick && (
+          <div class="timeline softrows">
+            {s.items.map((item) => (
+              <CvTimelineItem item={item} pick mirror picked={isPicked(item.id)}
+                              lines={detail(item)} baseCount={baseLines(item)} detailCount={detailCount(item)}
+                              achievementCvs={achievementCvs(item)} level={level} startPreset={startPreset}
+                              completeLines={completeLines} />
+            ))}
+          </div>
+        )}
         </div>
       ) : (
       <div class="timeline">

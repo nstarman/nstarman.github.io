@@ -162,7 +162,14 @@ const builderData = {
     const { funderOff: FUNDER_OFF, pubs: PUBS, hIndex: HINDEX, record: RECORD, membership: MEMBERSHIP, card: CARD, cardOrder: CARD_ORDER, cardOrderLetter: CARD_ORDER_LETTER, sectionOrder: SECTION_ORDER, sectionGroups: SECTION_GROUPS, presetGroups: PRESET_GROUPS, location: LOCATION, tally: TALLY, detail: DETAIL, unabridged: UNABRIDGED, columns: PRESET_COLUMNS, place: PLACE, recipientInline: RECIPIENT_INLINE, spacing: SPACING, site: SITE, fonts: FONTS, styleFonts: STYLE_FONTS,
             headings: HEADINGS } =
       JSON.parse($('builderdata').textContent);
-    const boxes = () => [...document.querySelectorAll('.itembox')];
+    // An entry drawn twice (Software's cards and its List rows) has a second, mirroring box.
+    const boxes = () => [...document.querySelectorAll('.itembox:not(.itemmirror)')];
+    const syncMirrors = () => {
+      for (const m of document.querySelectorAll('.itemmirror')) {
+        const b = document.querySelector(`.itembox:not(.itemmirror)[value="${CSS.escape(m.value)}"]`);
+        if (b) m.checked = b.checked;
+      }
+    };
     // The card's parts, each on or off; and each link's icon and text, a link
     // keeping only one of them printing that alone, and neither, nothing.
     const cardBoxes = () => [...document.querySelectorAll('#card input:not([name])')];
@@ -245,6 +252,7 @@ const builderData = {
     const recount = () => {
       retire('Selection changed — compile again.');
       unmarkStart();
+      syncMirrors();
       const on = boxes().filter((b) => b.checked).length;
       $('count').textContent = `${on} / ${boxes().length}`;
       // a group box reflects its children rather than driving them
@@ -310,7 +318,7 @@ const builderData = {
       if (t.name?.startsWith('prefix:')) { retire('Heading changed — compile again.'); return; }
       if (t.name?.startsWith('location:') || t.name?.startsWith('placeat:')) { showPlaceAt(); retire('Places changed — compile again.'); return; }
       if (/^(tally|tallyrecord|tallyshort|hindex):/.test(t.name ?? '')) { retire('Tally changed — compile again.'); return; }
-      if (t.name?.startsWith('columns:')) { retire('Columns changed — compile again.'); return; }
+      if (t.name?.startsWith('columns:')) { showList(t.closest('[data-columns-of]')); retire('Columns changed — compile again.'); return; }
       if (t.name?.startsWith('place:')) {
         syncFmt(t.closest('.fmtrow'));
         retire('Placement changed — compile again.');
@@ -329,6 +337,10 @@ const builderData = {
         t.closest('.recipient').classList.toggle('recipient--inline', t.checked);
         retire('Recipient placement changed — compile again.');
         return;
+      }
+      if (t.classList?.contains('itemmirror')) {
+        const b = document.querySelector(`.itembox:not(.itemmirror)[value="${CSS.escape(t.value)}"]`);
+        if (b) b.checked = t.checked;
       }
       if (t.classList?.contains('groupbox')) {
         const on = t.checked;
@@ -401,7 +413,7 @@ const builderData = {
         const group = t.closest('.pickgroup');
         const all = t.dataset.papersel === 'all';
         let on = 0;
-        for (const b of group.querySelectorAll('.itembox')) {
+        for (const b of group.querySelectorAll('.itembox:not(.itemmirror)')) {
           const keep = all || b.dataset.paper !== undefined;
           b.checked = keep;
           if (keep) on += 1;
@@ -529,7 +541,11 @@ const builderData = {
       const radios = [...group.querySelectorAll('input')];
       const want = radios.some((r) => r.value === String(n)) ? String(n) : '3';
       for (const r of radios) r.checked = r.value === want;
+      showList(group);
     };
+    /** Software's List stop draws its dated rows, with their line ticks, in the cards' place. */
+    const showList = (group) => document.querySelector(`[data-soft-of="${group.dataset.columnsOf}"]`)
+      ?.classList.toggle('softview--list', group.querySelector(':checked')?.value === '1');
     /** Section id → columns, for the grids not at the usual 3. */
     const currentColumns = () => Object.fromEntries(columnGroups()
       .map((g) => [g.dataset.columnsOf, Number(g.querySelector(':checked')?.value)])

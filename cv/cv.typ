@@ -369,7 +369,10 @@
   // An education entry may have its institution on its own line, below the degree (`below`).
   if it.subject.len() > 0 { if it.at("below", default: false) [#linebreak()#bolded(it.subject)] else [, #bolded(it.subject)] }
   if it.status != none [ #text(size: 9pt, style: "italic", fill: faint)[(#it.status)]]
-  if it.links.len() > 0 and not it.at("linkOnDegree", default: false) [ #trail(it.links)]
+  // A package's links end its line at the right margin, as a paper's code and data marks do.
+  if it.links.len() > 0 and not it.at("linkOnDegree", default: false) {
+    if it.at("linksRight", default: false) [ #h(1fr) #trail(it.links)] else [ #trail(it.links)]
+  }
   // Styles with no right-hand column hand the location in here, so it ends the
   // entry's own line instead of trailing the last detail line.
   if tail != none { tail }
@@ -638,6 +641,12 @@
   }
   if "layout" in s and s.layout == "list" {
     plainlist(s.entries, gap(s.id, "list"))
+  } else if "layout" in s and s.layout == "grid" and s.at("columns", default: 3) == 1 {
+    // One column has the width for what the grid leaves out: dates, role, and details. A package
+    // with no details shown keeps the grid's one-line summary.
+    entries(s.items.map(it => it + (linksRight: true) + if it.lines.len() == 0 and it.summary != none {
+      (lines: (((t: it.summary),),))
+    } else { (:) }), gap(s.id, "entries"))
   } else if "layout" in s and s.layout == "grid" {
     softgrid(s.items, gap(s.id, "grid"), s.at("columns", default: 3))
   } else if "layout" in s and s.layout == "publications" {

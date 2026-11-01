@@ -204,7 +204,10 @@ cards (`specs/cards/spec.md`).
   recipients; `detailsComplete` lines start unticked unless the preset is
   `includeAll`) or from none; tick entries and individual lines; toggle "Select"
   on a partly ticked section; group or ungroup an institution's roles; reorder
-  sections (buttons, or a long-hold drag); set grid columns, heading style,
+  sections (buttons, or a long-hold drag); set grid columns — or, at the slider's List stop,
+  print Software as dated rows, each with its role, its links at the right margin, and its ticked
+  detail lines (its summary where none is ticked), drawn in the builder as rows with a tick per
+  line in place of the cards — heading style,
   spacing, legend place, recipient-inline, PDF style and page format (the style's
   default paper, A4 or US Letter); turn header-card parts off and reorder its links; leave
   a section's places out, or, for a section of talks, print each place in the right column, below the title,
@@ -222,7 +225,7 @@ cards (`specs/cards/spec.md`).
 - **FR-021** A saved selection (`selection.js`, format
   `starkman-cv-selection`, version 2) records the ticked ids, kept line indices
   per id (deduplicated, sorted, empties dropped), inline recipients, style,
-  spacing, headings, place, prefix, order, columns (only 2–5 and not 3), group, card (parts and
+  spacing, headings, place, prefix, order, columns (only 1–5 and not 3; 1 is List), group, card (parts and
   link order), `locationAt` (section id to where its places print: `below` the title, `title` or `none`;
   absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
   as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
