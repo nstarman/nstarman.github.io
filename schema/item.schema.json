@@ -168,7 +168,7 @@
             "$ref": "#/$defs/authors"
           },
           "funding": {
-            "description": "What funded the paper, as its acknowledgements say: one entry per award, funder first. A paper's site lists it under Funding. `recipients` are authors' family names (none: the work as a whole); `grant` is my own record of the award, where I hold it.",
+            "description": "What funded the paper, as its acknowledgements say: one entry per award, funder first. A paper's site lists it under Funding. `recipients` are the award's holders among the authors (its PI, or the fellow), by family name: not who was paid from it; none when no author holds it. `grant` is my own record of the award, where I hold it.",
             "type": "array",
             "minItems": 1,
             "items": {

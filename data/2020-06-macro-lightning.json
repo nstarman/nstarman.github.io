@@ -39,6 +39,34 @@
       "affiliation": "Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA"
     }
   ],
+  "funding": [
+    {
+      "funder": "United States Department of Energy",
+      "number": "DE-SC0009946"
+    },
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "award": "Canada Graduate Scholarship – Master's",
+      "number": "542364 / 2019",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "nserc-cgs-m"
+    },
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "award": "Canada Graduate Scholarship – Master's",
+      "number": "542579 / 2019",
+      "recipients": [
+        "Winch"
+      ]
+    },
+    {
+      "funder": "Government of Ontario",
+      "award": "Early Researcher Award",
+      "number": "ER16-12-061"
+    }
+  ],
   "venue": {
     "journal": "Physical Review D",
     "volume": "103",

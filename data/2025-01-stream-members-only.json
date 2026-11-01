@@ -54,6 +54,40 @@
       "orcid": "0000-0002-7846-9787"
     }
   ],
+  "funding": [
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "award": "Canada Graduate Scholarship – Doctoral",
+      "number": "547219 - 2020",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "nserc-cgs-d"
+    },
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "number": "RGPIN-2020-04712",
+      "recipients": [
+        "Bovy"
+      ]
+    },
+    {
+      "funder": "Government of Ontario",
+      "award": "Early Researcher Award",
+      "number": "ER16-12-061",
+      "recipients": [
+        "Bovy"
+      ]
+    },
+    {
+      "funder": "National Science Foundation",
+      "award": "Graduate Research Fellowship",
+      "number": "DGE-2039656",
+      "recipients": [
+        "Nibauer"
+      ]
+    }
+  ],
   "venue": {
     "journal": "The Astrophysical Journal",
     "volume": "980",

@@ -26,6 +26,24 @@
       "orcid": "0000-0001-8042-5794"
     }
   ],
+  "funding": [
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    },
+    {
+      "funder": "National Science Foundation",
+      "award": "Graduate Research Fellowship",
+      "number": "DGE-2039656",
+      "recipients": [
+        "Nibauer"
+      ]
+    }
+  ],
   "venue": {
     "journal": "Journal of Open Source Software"
   },

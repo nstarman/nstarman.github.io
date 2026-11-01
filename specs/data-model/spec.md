@@ -201,7 +201,9 @@ fetched fields (`specs/refresh/spec.md`).
 
 - **FR-037** A publication's `funding` lists what funded it, as its acknowledgements
   say: one `{ funder, award?, number?, recipients?, grant? }` per award. `recipients`
-  are authors' family names (none: the work as a whole); `grant` is my own `grant` or
+  are the award's holders among the authors (its PI, or the fellow), by family name,
+  not whoever it paid ("PI Bovy" makes Bovy the recipient); none when no author holds
+  it. `grant` is my own `grant` or
   `fellowship` record of the award. A paper's site shows it under Funding; nothing
   here renders it yet. *Enforced:* the schema (`funding-without-funder.json`);
   `tests/integrity.test.js` ("names authors and my own records in a paper's funding").

@@ -52,6 +52,23 @@
       "orcid": "0000-0001-6244-6727"
     }
   ],
+  "funding": [
+    {
+      "funder": "National Science Foundation",
+      "award": "Graduate Research Fellowship",
+      "number": "DGE-2039656",
+      "recipients": [
+        "Nibauer"
+      ]
+    },
+    {
+      "funder": "Simons Foundation",
+      "number": "1018465",
+      "recipients": [
+        "Johnston"
+      ]
+    }
+  ],
   "venue": {
     "journal": "The Astrophysical Journal",
     "volume": "983",

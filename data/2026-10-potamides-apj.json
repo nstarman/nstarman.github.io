@@ -50,6 +50,40 @@
       "orcid": "0009-0004-1061-7802"
     }
   ],
+  "funding": [
+    {
+      "funder": "VILLUM FONDEN",
+      "award": "Research grant",
+      "number": "VIL53081",
+      "recipients": [
+        "Pearson"
+      ]
+    },
+    {
+      "funder": "European Research Council",
+      "award": "BeyondSTREAMS",
+      "number": "101115754",
+      "recipients": [
+        "Pearson"
+      ]
+    },
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    },
+    {
+      "funder": "National Science Foundation",
+      "award": "Graduate Research Fellowship",
+      "number": "DGE-2039656",
+      "recipients": [
+        "Nibauer"
+      ]
+    }
+  ],
   "venue": {
     "journal": "The Astrophysical Journal",
     "volume": "1010",
