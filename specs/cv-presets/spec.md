@@ -133,7 +133,10 @@ cards (`specs/cards/spec.md`).
   their status runs, where the section has `groupBy`), then the `"proceedings"`,
   then the rest; the first run of each kind carries a `heading` — Refereed
   Journal Articles, Refereed Proceedings, Other — which the PDF prints over it,
-  numbering running on across them; a kind with no papers prints nothing.
+  bold and a size up from the entries (1.1× the body), numbering running on
+  across them; a kind with no papers prints nothing. The space before a run
+  heading is the spacing key `<id>.run` (gap kind `run` in `cv/lib/gaps.json`),
+  set from the list's "Runs" spacing row in the builder like its Legend and Tally.
   Unsplit, no run has a `heading` and the model is as it was. The builder's
   "Split by refereeing" box, in the list's own settings row, chooses it; Start
   from sets it as the preset has it. *Enforced:* `tests/cvmodel.test.js` ("groups
