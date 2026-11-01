@@ -87,7 +87,8 @@
 #let placeof = cv.at("place", default: (:))
 
 // The page format, a choice apart from the style and the length: none is the
-// style's default paper; "a4" is A4 whatever the style; "letter" is the shape
+// style's default paper; "a4" is A4 and "us-letter" US Letter, whatever the style and with
+// its type and margins; "letter" is the shape
 // formal submissions ask for — US Letter, inch margins all round, no text under
 // 12pt, and every page numbered. The builder sets it in the model; a build can
 // pass `--input page=…`. The pre-built PDFs keep each style's default page.
@@ -114,7 +115,7 @@
 #set document(title: p.name + " — " + cv.label, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
-  paper: if letter { "us-letter" } else if paper == "a4" { "a4" } else if flat { "us-letter" } else { "a4" },
+  paper: if letter or paper == "us-letter" { "us-letter" } else if paper == "a4" { "a4" } else if flat { "us-letter" } else { "a4" },
   margin: if letter { 1in }
           else if flat { (x: 1in, top: 0.85in, bottom: 1in) }
           else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }

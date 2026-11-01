@@ -181,6 +181,7 @@ describe('tolerating the merely odd', () => {
 
   it('carries the page format through a round trip, and reads none as the style\'s own', () => {
     expect(decode(JSON.stringify(encode({ items: [], page: 'a4' }))).page).toBe('a4');
+    expect(decode(JSON.stringify(encode({ items: [], page: 'us-letter' }))).page).toBe('us-letter');
     expect(decode(JSON.stringify(encode({ items: [] }))).page).toBeNull();
   });
 
