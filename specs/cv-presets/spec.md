@@ -127,8 +127,17 @@ cards (`specs/cards/spec.md`).
   by its own index", "tells achievements from complete-only lines…").
 - **FR-017** `groupBy` accepts only `"status"`, giving groups In Preparation,
   Submitted, Accepted, Published in that order, empty ones dropped; any other
-  value throws. *Enforced:* `tests/cvmodel.test.js` ("groups by status, newest
-  state first").
+  value throws. A publication list may also be split by how its papers are
+  refereed: `refereed: "split"` on the section, or the selection's
+  `refereed[<id>]`, which wins. Split, its runs are the `"journal"` papers (in
+  their status runs, where the section has `groupBy`), then the `"proceedings"`,
+  then the rest; the first run of each kind carries a `heading` — Refereed
+  Journal Articles, Refereed Proceedings, Other — which the PDF prints over it,
+  numbering running on across them; a kind with no papers prints nothing.
+  Unsplit, no run has a `heading` and the model is as it was. The builder's
+  "Split by refereeing" box, in the list's own settings row, chooses it; Start
+  from sets it as the preset has it. *Enforced:* `tests/cvmodel.test.js` ("groups
+  by status, newest state first", "splits by refereeing only when asked…").
 - **FR-018** In a section with `cluster: "institution"`, roles at one institution
   print as one row (id `group:<institution>`, titles joined by `groupTitle`, dates
   spanning them, every role's lines) when there are two or more and either every
@@ -230,7 +239,7 @@ cards (`specs/cards/spec.md`).
   absent is the right column; an older file's `location: false` reads as `none` and `locationBelow`
   as `below`), `locationDetail` (how every place prints: `region: false` leaves out the province or
   state, `country: "code"` writes the country as its code; absent, as written), page
-  format (`page`), tally (`true` or `{ hIndex, of, form }` per section, `of` only `"record"` and `form` only `"short"`; any other `of` counts the list and any other `form` is the long one), whether the
+  format (`page`), tally (`true` or `{ hIndex, of, form }` per section, `of` only `"record"` and `form` only `"short"`; any other `of` counts the list and any other `form` is the long one), the lists split by refereeing (`refereed`, section id to `"split"`; any other value is dropped), whether the
   right-hand column is capped (`trailcap`, `true` only) and how wide (`trailcapWidth`, inches, absent for 1.45), each entry's institution-name
   level (`namesFor`, entry id to 1 or 2; absent is full), how amounts are written
   (`currency`, `us` or `dollar`; absent is codes), the entries whose institution
@@ -253,7 +262,7 @@ cards (`specs/cards/spec.md`).
 - **FR-027** Where a builder option lives. An option that applies to the whole CV — Style,
   Page, Institution names, Currency, how a place prints (State or province, Country), the "Select" prefix, the right column's width (Cap its width, Cap width), section
   order, Group Professional Activities — is in the global "Settings for every section" panel. An option that applies to one
-  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally (with Whole record, Short and its own Place) and Legend,
+  section — Places (a talks section's place choice, in the column, below the title, in the title or none, instead), a publication list's Tally (with Whole record, Short and its own Place), Split by refereeing and Legend,
   Education's university below the degree, the mentoring section's papers by identifier — is in that section's own settings row (the sliders
   button on its heading), among its Items controls, and only there. A feature spec for a builder
   option says which. *Enforced:* `tests/builder-placement.test.js`.
@@ -304,6 +313,9 @@ cards (`specs/cards/spec.md`).
   paper in preparation is not counted. `tally: { "of": "record" }` counts the
   whole record — every publication not in preparation — instead of the list's,
   the same numbers whatever the list shows; the 1-page and 2-page CVs do.
+  In a list split by refereeing (FR-017) it also says how many are in refereed
+  journals: "N papers (J in refereed journals, S submitted): …", or in the short
+  form "N papers (J in refereed journals, F first-author, S submitted).".
   `form: "short"` prints "N papers (F first-author, S submitted)." — the student-led
   number left to the key's colours and marks, ", S submitted" only when S > 0.
   Like the key, the count has a place, `place["<id>.tally"]`: `below` (absent — its
@@ -346,7 +358,7 @@ cards (`specs/cards/spec.md`).
 - **Section definition** (`$sections.<id>`): `heading`, `short?`, `icon`,
   `match` (with `not?`) *or* `list`, `layout?` (`publications`, `grid`),
   `groupBy?`, `cluster?`, `sort?`, `page?`, `limit?`, `columns?`, `detail?`,
-  `collapsed?`, `tally?`.
+  `collapsed?`, `tally?`, `refereed?` (`"split"`).
 - **Preset**: `label`, `detail` (`full` | `summary`), `includeAll?`,
   `sections`, `place?`, `spacing?`, `recipientInline?`, `card?`, `location?`.
 - **Resolved CV** (`resolve`): `name`, `label`, `detail`, `includeAll`, `place`,

@@ -133,7 +133,13 @@ fetched fields (`specs/refresh/spec.md`).
   BibTeX's own names (`journal`, `booktitle`, `publisher`, `school`, `series`,
   `volume`, `number`, `pages`, `address`, `year`, `month`); `venue.year` and
   `venue.month` are set only where the issue's differ from `date.start`.
+  `refereed` says how the work is refereed: `"journal"` (published, accepted,
+  submitted or written for a refereed journal, JOSS included), `"proceedings"`
+  (a peer-reviewed conference or workshop paper) or `false` (not refereed: a
+  meeting report, a white paper). It is never emitted to BibTeX; a CV may split
+  its publications by it (`specs/cv-presets/spec.md`, FR-017).
   *Enforced:* the schema (`missing-status.json`, `publication-without-entrytype.json`,
+  `publication-without-refereed.json`, `publication-refereed-not-a-kind.json`,
   `venue-month-without-year.json`); `npm run test:bibtex`.
 - **FR-019** An author is `{ family, given, suffix?, me?, student?, orcid?, mentee?,
   affiliation? }`, or `{ literal }` for a non-person byline; never a display
@@ -272,7 +278,7 @@ fetched fields (`specs/refresh/spec.md`).
 
 | `type` | required | also accepted |
 |---|---|---|
-| `publication` | `authors`, `status`, `entryType` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citeslug`, `citations`, `authorPosition`, `preliminaryOf`, `highlight` |
+| `publication` | `authors`, `status`, `entryType`, `refereed` | `collaboration`, `editors`, `venue`, `abstract`, `arxiv`, `primaryClass`, `bibcode`, `doi`, `citeslug`, `citations`, `authorPosition`, `preliminaryOf`, `highlight` |
 | `software` | `tier`, `group` | `repo`, `authors`, `version`, `role`, `doi`, `order`, `highlight` |
 | `education` | `institution` | `institutionNames`, `degree`, `thesis`, `supervisors`, `location` |
 | `position` | `institution` | `institutionNames`, `role`, `location`, `groupRoles` |
