@@ -140,7 +140,7 @@ cards (`specs/cards/spec.md`).
   the builder all use; every row has the fields `cv.typ` reads. *Enforced:*
   `tests/cvmodel.test.js` ("has the fields cv.typ reads…").
 - **FR-028** A row's heading is its title in bold — in the PDF, a label the title ends in,
-  "(Talk)" or "(Poster)", in regular weight — then `role` if it has one, then
+  "(Talk)", "(Poster)", or "(Workshop)", in regular weight — then `role` if it has one, then
   who it was with, each once: a position's, education's or teaching entry's
   institution; a grant's or award's funder; a fellowship's funder, or its host when
   it has none; a service or outreach entry's organization; media's outlet. A funder

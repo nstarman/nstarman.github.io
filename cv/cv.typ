@@ -357,8 +357,8 @@
 // keeps an entry to two lines rather than three; an education entry marked `below` (the
 // builder's "university on its own line") breaks the line there instead, at the cost of one.
 #let entrybody(it, tail: none) = {
-  // A label the title ends in — "(Talk)", "(Poster)", or "(Talk, Cambridge, MA, USA)" once the
-  // place joins it — says what kind of entry it is, not its name, so it is not bold.
+  // A label the title ends in — "(Talk)", "(Poster)", or "(Workshop)", or "(Talk, Cambridge, MA,
+  // USA)" once the place joins it — says what kind of entry it is, not its name, so it is not bold.
   let m = it.title.match(regex("^(.+?) (\((?:Talk|Poster|Workshop)(?:, [^()]*)?\))$"))
   if m == none { strong(it.title) } else [#strong(m.captures.at(0)) #m.captures.at(1)]
   // With the institution below, the link icon may end the degree line (`linkOnDegree`).
