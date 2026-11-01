@@ -51,6 +51,53 @@
       "orcid": "0000-0003-2806-1414"
     }
   ],
+  "funding": [
+    {
+      "funder": "National Science Foundation",
+      "award": "CAREER award",
+      "number": "AST-2337864",
+      "recipients": [
+        "Necib"
+      ]
+    },
+    {
+      "funder": "National Science Foundation",
+      "award": "Graduate Research Fellowship",
+      "number": "DGE 2039656",
+      "recipients": [
+        "Nibauer"
+      ]
+    },
+    {
+      "funder": "Alfred P. Sloan Foundation",
+      "award": "Sloan Research Fellowship",
+      "recipients": [
+        "Necib"
+      ]
+    },
+    {
+      "funder": "VILLUM FONDEN",
+      "award": "Research grant",
+      "number": "VIL53081",
+      "recipients": [
+        "Pearson",
+        "Wu"
+      ]
+    },
+    {
+      "funder": "European Research Council",
+      "award": "BeyondSTREAMS",
+      "number": "101115754"
+    },
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    }
+  ],
   "links": [
     {
       "rel": "syw",
