@@ -34,6 +34,25 @@
       "affiliation": "Department of Astronomy and Astrophysics, University of Toronto, 50 St. George Street, Toronto, Ontario M5S 3H4, Canada"
     }
   ],
+  "funding": [
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "number": "RGPIN-2015-05235",
+      "recipients": [
+        "Bovy",
+        "Webb"
+      ]
+    },
+    {
+      "funder": "Government of Ontario",
+      "award": "Early Researcher Award",
+      "number": "ER16-12-061",
+      "recipients": [
+        "Bovy",
+        "Webb"
+      ]
+    }
+  ],
   "venue": {
     "journal": "Monthly Notices of the Royal Astronomical Society",
     "year": "2020",

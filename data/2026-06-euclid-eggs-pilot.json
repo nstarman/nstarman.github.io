@@ -71,6 +71,46 @@
       "given": "D."
     }
   ],
+  "funding": [
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    },
+    {
+      "funder": "VILLUM FONDEN",
+      "award": "Research grant",
+      "number": "VIL53081"
+    },
+    {
+      "funder": "European Research Council",
+      "award": "BeyondSTREAMS",
+      "number": "101115754"
+    },
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "number": "RGPIN-2020-04712",
+      "recipients": [
+        "Bovy"
+      ]
+    },
+    {
+      "funder": "Government of Ontario",
+      "award": "Early Researcher Award",
+      "number": "ER16-12-061",
+      "recipients": [
+        "Bovy"
+      ]
+    },
+    {
+      "funder": "International Space Science Institute",
+      "award": "International Team",
+      "number": "23-584"
+    }
+  ],
   "venue": {
     "journal": "Astronomy & Astrophysics"
   },

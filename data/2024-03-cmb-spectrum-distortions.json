@@ -34,6 +34,36 @@
       "affiliation": "Department of Physics and Astronomy, University of Pittsburgh , Pittsburgh, PA 15260 , USA"
     }
   ],
+  "funding": [
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "award": "Canada Graduate Scholarship – Doctoral",
+      "number": "547219 - 2020",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "nserc-cgs-d"
+    },
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "number": "RGPIN-2020-04712",
+      "recipients": [
+        "Starkman"
+      ]
+    },
+    {
+      "funder": "Government of Ontario",
+      "award": "Early Researcher Award",
+      "number": "ER16-12-061",
+      "recipients": [
+        "Starkman"
+      ]
+    },
+    {
+      "funder": "United States Department of Energy",
+      "number": "DE-SC0009946"
+    }
+  ],
   "venue": {
     "journal": "Monthly Notices of the Royal Astronomical Society",
     "volume": "529",

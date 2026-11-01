@@ -34,6 +34,13 @@
       "orcid": "0000-0003-2806-1414"
     }
   ],
+  "funding": [
+    {
+      "funder": "National Science Foundation",
+      "award": "Institute for Artificial Intelligence and Fundamental Interactions",
+      "number": "PHY-2019786"
+    }
+  ],
   "venue": {
     "booktitle": "NeurIPS 2025 Workshop on Machine Learning and the Physical Sciences"
   },

@@ -35,6 +35,13 @@
       "affiliation": "Department of Physics, Princeton University, USA"
     }
   ],
+  "funding": [
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "grant": "brinson-prize-fellowship"
+    }
+  ],
   "venue": {
     "journal": "Journal of Open Source Software",
     "volume": "10",

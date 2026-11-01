@@ -35,6 +35,38 @@
       "orcid": "0000-0003-2806-1414"
     }
   ],
+  "funding": [
+    {
+      "funder": "Massachusetts Institute of Technology",
+      "award": "Undergraduate Research Opportunities Program",
+      "recipients": [
+        "Myers"
+      ]
+    },
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    },
+    {
+      "funder": "Alfred P. Sloan Foundation",
+      "award": "Sloan Research Fellowship",
+      "recipients": [
+        "Necib"
+      ]
+    },
+    {
+      "funder": "National Science Foundation",
+      "award": "Institute for Artificial Intelligence and Fundamental Interactions",
+      "number": "PHY-2019786",
+      "recipients": [
+        "Necib"
+      ]
+    }
+  ],
   "venue": {
     "journal": "The Astrophysical Journal"
   },

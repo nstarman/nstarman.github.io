@@ -39,6 +39,12 @@
       "affiliation": "Department of Physics, University of Oregon, Willamette Hall, Eugene, 9740 OR, USA"
     }
   ],
+  "funding": [
+    {
+      "funder": "Case Western Reserve University",
+      "award": "SOURCE"
+    }
+  ],
   "venue": {
     "journal": "Monthly Notices of the Royal Astronomical Society",
     "volume": "480",

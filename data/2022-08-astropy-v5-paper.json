@@ -585,6 +585,17 @@
       "given": "Andrea"
     }
   ],
+  "funding": [
+    {
+      "funder": "Natural Sciences and Engineering Research Council of Canada",
+      "award": "Canada Graduate Scholarship – Doctoral",
+      "number": "547219 - 2020",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "nserc-cgs-d"
+    }
+  ],
   "venue": {
     "journal": "The Astrophysical Journal",
     "volume": "935",
