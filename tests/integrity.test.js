@@ -20,6 +20,14 @@ describe('the database', () => {
     expect(dangling).toEqual([]);
   });
 
+  it("names authors and my own records in a paper's funding", () => {
+    const bad = items.flatMap((i) => (i.funding ?? []).flatMap((f) => [
+      ...(f.recipients ?? []).filter((r) => !i.authors.some((a) => a.family === r)).map((r) => `${i.id}: ${r} is not an author`),
+      ...(f.grant && !['grant', 'fellowship'].includes(items.find((g) => g.id === f.grant)?.type) ? [`${i.id}: ${f.grant} is not a grant or fellowship`] : []),
+    ]));
+    expect(bad).toEqual([]);
+  });
+
   it('has an amount behind every {amount} in prose', () => {
     const fields = ['details', 'detailsComplete', 'summary'];
     const bad = items.filter((i) => fields.some((f) => JSON.stringify(i[f] ?? '').includes('{amount}')) && !i.amount)

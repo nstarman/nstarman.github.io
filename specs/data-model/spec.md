@@ -77,10 +77,9 @@ fetched fields (`specs/refresh/spec.md`).
   *Enforced:* the schema (`unknown-link-rel.json`); review for the renderers.
 - **FR-011** `refs` are bare ids of other items, and every one resolves. A media
   entry refs the paper it covered; a talk the paper it presented; a paper the
-  packages of mine it used, its main package first, and the `grant`s that funded it
-  (a paper's site lists them as its funding; nothing here changes for them); a package
-  its own paper. *Enforced:* `tests/integrity.test.js` ("resolves every ref");
-  `tests/research-kit.test.js` (a paper's grants).
+  packages of mine it used, its main package first; a package its own paper. What
+  funded a paper is its `funding` (FR-037), not its refs. *Enforced:*
+  `tests/integrity.test.js` ("resolves every ref").
 - **FR-012** Prose fields may link another item as `[text](item:<id>)`, and every
   such target resolves. *Enforced:* `tests/integrity.test.js` ("resolves every
   [text](item:id) cross-link").
@@ -199,6 +198,13 @@ fetched fields (`specs/refresh/spec.md`).
   agrees with the mentee's `person.level`. *Enforced:* `tests/integrity.test.js`
   ("resolves every authors[].mentee", "agrees an author's student level");
   `tests/mentees.test.js`.
+
+- **FR-037** A publication's `funding` lists what funded it, as its acknowledgements
+  say: one `{ funder, award?, number?, recipients?, grant? }` per award. `recipients`
+  are authors' family names (none: the work as a whole); `grant` is my own `grant` or
+  `fellowship` record of the award. A paper's site shows it under Funding; nothing
+  here renders it yet. *Enforced:* the schema (`funding-without-funder.json`);
+  `tests/integrity.test.js` ("names authors and my own records in a paper's funding").
 
 ### Amounts
 
