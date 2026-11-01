@@ -42,12 +42,18 @@
     {
       "funder": "VILLUM FONDEN",
       "award": "Research grant",
-      "number": "VIL53081"
+      "number": "VIL53081",
+      "recipients": [
+        "Pearson"
+      ]
     },
     {
       "funder": "European Research Council",
       "award": "BeyondSTREAMS",
-      "number": "101115754"
+      "number": "101115754",
+      "recipients": [
+        "Pearson"
+      ]
     },
     {
       "funder": "The Brinson Foundation",

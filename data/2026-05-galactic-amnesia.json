@@ -47,8 +47,7 @@
       "award": "CAREER award",
       "number": "AST-2337864",
       "recipients": [
-        "Necib",
-        "Thoyas"
+        "Necib"
       ]
     },
     {
@@ -60,17 +59,11 @@
     },
     {
       "funder": "United States Department of Energy",
-      "number": "DE-SC0007968",
-      "recipients": [
-        "Folsom"
-      ]
+      "number": "DE-SC0007968"
     },
     {
       "funder": "Simons Foundation",
-      "number": "MPS-SIP-00929613",
-      "recipients": [
-        "Folsom"
-      ]
+      "number": "MPS-SIP-00929613"
     },
     {
       "funder": "The Brinson Foundation",
