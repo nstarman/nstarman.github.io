@@ -97,14 +97,15 @@ for (const [name, st] of Object.entries(CV_STYLES)) {
             </span>
           </span>
         ) : null}
-      {/* A grid's columns, a slider of stops as Place is; 3 is the usual. */}
+      {/* A grid's columns, a slider of stops as Place is; 3 is the usual. One column is
+          List: dated rows with their details, which the PDF prints in place of the grid. */}
       {o.columns && (
         <span class="fmtopt">
           <span class="fmtlab">Columns</span>
-          <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="4"
+          <span class="pubfilter pubfilter--inline fmtslider" role="radiogroup" data-stops="5"
                 aria-label={`Columns in the ${s.heading} grid`} data-columns-of={s.id}>
-            {[2, 3, 4, 5].map((n) => (
-              <label><input type="radio" class="posradio" name={`columns:${s.id}`} value={String(n)} checked={n === 3} />{n}</label>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <label><input type="radio" class="posradio" name={`columns:${s.id}`} value={String(n)} checked={n === 3} />{n === 1 ? 'List' : n}</label>
             ))}
           </span>
         </span>

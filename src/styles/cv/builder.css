@@ -78,6 +78,8 @@
 .cvsechead .groupbox,.cvsechead .itembox{margin:0 .1rem 0 0; align-self:center}
 .card .c-name .itembox{margin:0 .3em 0 0}
 .itembox,.groupbox{accent-color:var(--accent); flex:none; cursor:pointer}
+/* Software as cards, or as the List stop's dated rows: one or the other. */
+.softview:not(.softview--list) > .softrows,.softview--list > .soft{display:none}
 /* Unticked entries stay legible but recede, so the shape of the selection is
    visible without reading every checkbox. */
 .tl--pick:has(> .itembox:not(:checked)),

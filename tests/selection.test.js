@@ -155,6 +155,8 @@ describe('tolerating the merely odd', () => {
   it('carries the columns of a grid through a round trip, leaving out the usual 3', () => {
     const doc = encode({ items: [], columns: { software: 4, x: 3, y: 9 } });
     expect(decode(JSON.stringify(doc)).columns).toEqual({ software: 4 });
+    // One column is the List stop.
+    expect(decode(JSON.stringify(encode({ items: [], columns: { software: 1, x: 0 } }))).columns).toEqual({ software: 1 });
     expect(read({}).columns).toEqual({});
   });
 
