@@ -320,7 +320,8 @@ cards (`specs/cards/spec.md`).
   Tally is ticked), h-index menu and the Tally line's Place choose the same, over the preset's; Start from sets
   them as the preset has them. *Enforced:* `tests/presets.test.js` ("tally").
 - **FR-026** The page format is a choice apart from the style and the length:
-  the style's default paper, `"a4"` (A4 whatever the style) or `"letter"` (US
+  the style's default paper, `"a4"` (A4 whatever the style), `"us-letter"` (US Letter
+  whatever the style, with the style's type and margins) or `"letter"` (US
   Letter). The builder's Page menu sets it in the model (`format`); a build may
   pass `--input page=…`. The pre-built PDFs keep each style's default page. On
   `"letter"`: the margins are one inch on every side; no text is set below 12pt,
