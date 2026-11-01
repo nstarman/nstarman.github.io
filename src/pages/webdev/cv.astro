@@ -525,9 +525,10 @@ const builderData = {
         // Title is the last stop, so dropping it moves no other.
         const title = place.querySelector('input[value="title"]');
         title.parentElement.hidden = none;
-        place.querySelector('[data-place-of]').dataset.stops = none ? 2 : 3;
-        if (none && title.checked) setPlace(place.querySelector('[data-place-of]'), 'below');
-        place.closest('.fmtline').querySelector('.fmtopt--legendgap').hidden = !none && place.querySelector(':checked')?.value === 'title';
+        const group = place.querySelector('[data-place-of]');
+        group.dataset.stops = group.querySelectorAll('label:not([hidden])').length;
+        if (none && title.checked) setPlace(group, 'below');
+        place.closest('.fmtline').querySelector('.fmtopt--legendgap').hidden = (!none && place.querySelector(':checked')?.value === 'title') || place.querySelector(':checked')?.value === 'tally';
       }
     };
     // Where a part sits, by its key; a name no stop has is the default.
@@ -680,8 +681,12 @@ const builderData = {
         const show = sum('stu') > 0;
         const inHead = place === 'title';
         const key = group.querySelector('.keyprev');
+        // `Tally`: the key runs on after a tally shown below the heading, as the PDF has it;
+        // with none there, it is Below.
+        const onTally = place === 'tally' && show && !tallyLine.hidden;
+        if (onTally) tallyLine.append(' ', key.querySelector('.keyprev__text').cloneNode(true));
         const head = group.querySelector('.keyhead');
-        key.hidden = !show || inHead;
+        key.hidden = !show || inHead || onTally;
         key.style.textAlign = place === 'right' ? 'right' : 'left';
         head.hidden = !show || !inHead;
         // Shorter beside the tally, as the PDF has it.

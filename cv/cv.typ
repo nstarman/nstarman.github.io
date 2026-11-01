@@ -525,14 +525,18 @@
     [#strong[#t.total papers]#if jn != none or t.submitted > 0 [ (#if jn != none [#jn in refereed journals]#if jn != none and t.submitted > 0 [, ]#if t.submitted > 0 [#t.submitted submitted])]: #t.first first-author#if t.student > 0 [, #t.student led by students I supervised].#hix]
   }
 }
-#let tallyline(t, at: left) = block(sticky: true, width: 100%, below: gap("publications.tally", "legend"),
-  align(at, text(size: look.sub, tallywords(t))))
+#let tallyline(t, at: left, key: none) = block(sticky: true, width: 100%, below: gap("publications.tally", "legend"),
+  align(at, { text(size: look.sub, tallywords(t)); if key != none [ #key] }))
 
-// `legend` is the key's alignment on its own line, and `count` the tally's, or
-// `none` where it has gone up onto the heading's.
+// `legend` is the key's alignment on its own line, `"tally"` to run it on after the
+// tally, or `none` where it has gone up onto the heading's; `count` the tally's,
+// or `none` where it has gone up onto the heading's.
 #let publications(section, legend: left, count: left) = {
-  if count != none and section.at("tally", default: none) != none { tallyline(section.tally, at: count) }
-  if legend != none and hasstudents(section) {
+  let keyon = legend == "tally" and hasstudents(section)
+  if count != none and section.at("tally", default: none) != none {
+    tallyline(section.tally, at: count, key: if keyon { studentkey() } else { none })
+  }
+  if legend != none and legend != "tally" and hasstudents(section) {
     // Sticky, so a wider gap below it can never strand it at a page foot;
     // full width, or an auto block shrinks to the key and it cannot go right.
     block(sticky: true, width: 100%, {
@@ -660,8 +664,11 @@
   } else if "layout" in s and s.layout == "grid" {
     softgrid(s.items, gap(s.id, "grid"), s.at("columns", default: 3))
   } else if "layout" in s and s.layout == "publications" {
+    // `tally` runs the key on after the tally, where there is one below the heading;
+    // otherwise it is `below`.
+    let keyontally = keyplace == "tally" and not countup and s.at("tally", default: none) != none
     publications(s,
-      legend: if keyup { none } else if keyplace == "right" { right } else { left },
+      legend: if keyup { none } else if keyontally { "tally" } else if keyplace == "right" { right } else { left },
       count: if countup { none } else if countplace == "right" { right } else { left })
   } else {
     entries(s.items, gap(s.id, "entries"))
