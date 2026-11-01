@@ -29,7 +29,7 @@
       "url": "https://github.com/astropy/astroplan",
       "first": "2020-04-07",
       "prs": 2,
-      "description": "Observation planning package for astronomers – maintainer @bmorris3"
+      "description": "Observation planning package for astronomers – maintainer @tepickering"
     },
     {
       "repo": "adrn/gala",
@@ -79,7 +79,7 @@
       "repo": "GalOrrery/sampleSCF",
       "url": "https://github.com/GalOrrery/sampleSCF",
       "first": "2021-07-25",
-      "prs": 4,
+      "prs": 5,
       "description": null,
       "archived": true
     },
