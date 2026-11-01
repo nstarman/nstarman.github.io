@@ -39,6 +39,9 @@
     {
       "funder": "The Brinson Foundation",
       "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
       "grant": "brinson-prize-fellowship"
     }
   ],
