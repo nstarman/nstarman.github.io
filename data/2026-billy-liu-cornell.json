@@ -6,7 +6,8 @@
     "np"
   ],
   "date": {
-    "start": "2026"
+    "start": "2026",
+    "present": true
   },
   "title": "Zihan (Billy) Liu (Cornell)",
   "details": "Stellar stream detection in Rubin LSST data",
