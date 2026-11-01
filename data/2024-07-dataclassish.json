@@ -12,6 +12,7 @@
   "title": "dataclassish",
   "summary": "dataclasses, for everything",
   "repo": "GalacticDynamics/dataclassish",
+  "role": "lead developer",
   "links": [
     {
       "rel": "code",
@@ -21,7 +22,10 @@
   "tags": [
     "jax"
   ],
-  "details": "replace, fields and asdict, generalized to any object rather than just dataclasses.",
+  "details": [
+    "replace, fields and asdict, generalized to any object rather than just dataclasses.",
+    "Used by unxt, coordinax, and galax."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/dataclassish.webp",

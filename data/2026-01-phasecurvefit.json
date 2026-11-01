@@ -16,6 +16,7 @@
   "title": "phasecurvefit",
   "summary": "Paths through phase space",
   "repo": "GalacticDynamics/phasecurvefit",
+  "role": "lead developer",
   "links": [
     {
       "rel": "code",
@@ -25,7 +26,11 @@
   "tags": [
     "jax"
   ],
-  "details": "Fit a curve through phase-space points — streams, orbits, trajectories.",
+  "details": [
+    "Fit a curve through phase-space points — streams, orbits, trajectories.",
+    "Designed and wrote the package, and leads its development.",
+    "Accepted by pyOpenSci, with a JOSS submission in progress."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/phasecurvefit.webp",

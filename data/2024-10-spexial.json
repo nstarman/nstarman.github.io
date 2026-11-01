@@ -12,6 +12,7 @@
   "title": "spexial",
   "summary": "scipy.special in JAX",
   "repo": "JAXtronomy/spexial",
+  "role": "lead developer",
   "links": [
     {
       "rel": "code",
@@ -25,7 +26,10 @@
   "tags": [
     "jax"
   ],
-  "details": "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions.",
+  "details": [
+    "Special functions for JAX, following the scipy.special API, filling gaps like zeta at negative integers and the modified Bessel K, Gegenbauer and polylogarithm functions.",
+    "Used by galax."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/spexial.svg",

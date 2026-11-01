@@ -14,7 +14,11 @@
   },
   "title": "coordinax",
   "summary": "Coordinates in JAX",
-  "details": "Vectors, frames and transformations — differentiable, and unit-aware via unxt.",
+  "details": [
+    "Vectors, frames and transformations — differentiable, and unit-aware via unxt.",
+    "Designed and wrote the package, and leads its development.",
+    "Built on unxt, and the coordinate layer under galax."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/coordinax.webp",

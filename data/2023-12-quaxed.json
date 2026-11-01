@@ -12,6 +12,7 @@
   "title": "quaxed",
   "summary": "Pre-quaxed libraries",
   "repo": "GalacticDynamics/quaxed",
+  "role": "lead developer",
   "links": [
     {
       "rel": "code",
@@ -21,7 +22,10 @@
   "tags": [
     "jax"
   ],
-  "details": "Drop-in jax.numpy and friends, already wrapped for dispatch over abstract array types.",
+  "details": [
+    "Drop-in jax.numpy and friends, already wrapped for dispatch over abstract array types.",
+    "Built on quax, and used by unxt, coordinax, and galax."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/quaxed.webp",

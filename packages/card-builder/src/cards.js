@@ -143,7 +143,9 @@ export function defaultSlug(item) {
  *  summary the record's own or, failing that, the description's first
  *  sentence. Either may be missing — a paper with no highlight has neither. */
 export function cardText(item) {
-  if (item.type === 'software') return { summary: item.summary, details: item.details ?? item.summary };
+  // A package's details may run to several lines — its contribution, the stack around it — for the
+  // CVs; the card keeps the first, what the package does.
+  if (item.type === 'software') return { summary: item.summary, details: [item.details ?? []].flat()[0] ?? item.summary };
   const d = item.highlight?.description;
   // ponytail: the first sentence ends at the first ". " — an abbreviation such
   // as "e.g. " would cut it short; give the record a summary if one does.

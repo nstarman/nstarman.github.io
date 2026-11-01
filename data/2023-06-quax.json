@@ -13,7 +13,10 @@
   },
   "title": "quax",
   "summary": "Multiple dispatch in JAX",
-  "details": "Custom array-ish types that work with JAX primitives — the substrate the rest of the stack builds on.",
+  "details": [
+    "Custom array-ish types that work with JAX primitives — the substrate the rest of the stack builds on.",
+    "Took over maintenance from its author, Patrick Kidger, and extended it."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/quax.webp",

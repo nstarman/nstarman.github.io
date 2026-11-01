@@ -14,7 +14,12 @@
   },
   "title": "unxt",
   "summary": "Units in JAX",
-  "details": "Unit-aware quantities that survive jit, grad and vmap.",
+  "details": [
+    "Unit-aware quantities that survive jit, grad and vmap.",
+    "Designed and wrote the package, and leads its development.",
+    "The units layer under coordinax and galax.",
+    "Published in [JOSS](item:unxt-joss) (2025)."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/unxt.webp",

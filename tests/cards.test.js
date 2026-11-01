@@ -484,6 +484,7 @@ describe('card text', () => {
   it('gives a package its own summary, and its details or else the summary again', () => {
     expect(cardText({ type: 'software', summary: 'S.' })).toEqual({ summary: 'S.', details: 'S.' });
     expect(cardText({ type: 'software', summary: 'S.', details: 'D.' }).details).toBe('D.');
+    expect(cardText({ type: 'software', summary: 'S.', details: ['D.', 'More.'] }).details).toBe('D.');
   });
 });
 
