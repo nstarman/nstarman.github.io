@@ -13,7 +13,10 @@
   },
   "title": "plum",
   "summary": "Multiple dispatch in Python",
-  "details": "Multiple dispatch for Python, with type-hint-driven method resolution — the dispatch layer under quax and unxt.",
+  "details": [
+    "Multiple dispatch for Python, with type-hint-driven method resolution — the dispatch layer under quax and unxt.",
+    "Co-maintains it with its author, Wessel Bruinsma."
+  ],
   "repo": "beartype/plum",
   "role": "maintainer",
   "links": [

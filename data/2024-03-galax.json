@@ -14,7 +14,11 @@
   },
   "title": "galax",
   "summary": "Galactic dynamics in JAX",
-  "details": "Orbit integration, potentials and stream generation — GPU-accelerated and fully differentiable.",
+  "details": [
+    "Orbit integration, potentials and stream generation — GPU-accelerated and fully differentiable.",
+    "Started with Adrian Price-Whelan as the JAX successor to gala, and leads its development.",
+    "Built on unxt, coordinax, quaxed, and diffraxtra, and the base for potamides and galactoPINNs."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/galax.webp",

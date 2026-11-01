@@ -7,11 +7,12 @@
   "cvs": [],
   "date": {
     "start": "2020-07",
-    "present": true
+    "end": "2023"
   },
   "title": "trackstream",
   "summary": "Stellar stream tracks",
   "repo": "nstarman/trackstream",
+  "role": "author",
   "links": [
     {
       "rel": "code",

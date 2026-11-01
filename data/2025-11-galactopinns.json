@@ -20,6 +20,12 @@
     "description": "Physics-informed neural networks for galactic potentials, learning only the corrections to an analytic model from stellar kinematics."
   },
   "repo": "charlottemyers/galactoPINNs",
+  "details": [
+    "Physics-informed residual neural networks augmenting analytic baseline models that learn time-dependent galactic gravitational potentials from position + acceleration data, built on JAX.",
+    "Co-developed with Charlotte Myers, who led it as a mentee.",
+    "Built on galax and unxt."
+  ],
+  "role": "co-developer",
   "links": [
     {
       "rel": "code",

@@ -12,6 +12,7 @@
   "title": "diffraxtra",
   "summary": "Extras for Diffrax",
   "repo": "GalacticDynamics/diffraxtra",
+  "role": "lead developer",
   "links": [
     {
       "rel": "code",
@@ -21,7 +22,10 @@
   "tags": [
     "jax"
   ],
-  "details": "OOP interfaces and vectorization for Diffrax.",
+  "details": [
+    "OOP interfaces and vectorization for Diffrax.",
+    "Used by galax."
+  ],
   "highlight": {
     "topic": "software",
     "image": "highlights/diffraxtra.webp",
