@@ -112,7 +112,9 @@
 #let portrait = shows("portrait")
 #let qr = shows("qr")
 
-#set document(title: p.name + " — " + cv.label, author: p.name)
+// A saved selection may name its own title; otherwise the preset's label.
+#let title = cv.at("title", default: none)
+#set document(title: p.name + " — " + if title == none { cv.label } else { title }, author: p.name)
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
   paper: if letter or paper == "us-letter" { "us-letter" } else if paper == "a4" { "a4" } else if flat { "us-letter" } else { "a4" },

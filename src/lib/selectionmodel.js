@@ -51,5 +51,6 @@ export function modelFromSelection(sel) {
   model.spacing = sel.spacing;
   model.heading = sel.heading;
   model.place = sel.place;
+  model.title = sel.title;
   return model;
 }

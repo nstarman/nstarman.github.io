@@ -206,6 +206,8 @@ const builderData = {
     /** The preset the selection was started from — what Compile lays it out as. The page
      *  opens on one; Start from and loading a file change it. */
     const PRESETS = [...document.querySelectorAll('[data-preset]')].map((b) => b.dataset.preset);
+    // A loaded selection's PDF title, kept so Save writes it back; the page has no control for it.
+    let pdfTitle = null;
     let base = document.querySelector('[data-preset][aria-pressed="true"]')?.dataset.preset ?? 'complete';
     /** The "Start from" button whose selection is still exactly what is
      *  ticked stays lit; any change to the selection puts it out. */
@@ -887,7 +889,7 @@ const builderData = {
       page: $('format').value || null, trailcap: $('trailcap').checked, trailcapWidth: currentTrailcapWidth(), fill: $('fill').checked,
       namesFor: currentNamesFor(), currency: $('currency').value || null, funderOff: currentFunderOff(), recipientOff: currentRecipientOff(),
       paperIds: $('paperids').checked, schoolBelow: $('schoolbelow').checked,
-      linkOnDegree: $('linkondegree').checked, tally: currentTally(), refereed: currentRefereed(), runSize: currentRunSize(), preset: base, site: SITE,
+      linkOnDegree: $('linkondegree').checked, tally: currentTally(), refereed: currentRefereed(), runSize: currentRunSize(), preset: base, title: pdfTitle, site: SITE,
     });
 
     const saveSelection = () => {
@@ -970,6 +972,7 @@ const builderData = {
       // Laid out as the file's preset; an older file, or one naming a preset this build
       // lacks, as the complete CV.
       base = PRESETS.includes(sel.preset) ? sel.preset : 'complete';
+      pdfTitle = sel.title;
 
       const known = new Set(boxes().map((b) => b.value));
       const { message, missing } = loadReport(sel, known, SITE, haveStyle, !sel.preset || PRESETS.includes(sel.preset));
