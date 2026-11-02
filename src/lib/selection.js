@@ -203,7 +203,7 @@ const cleanNamesFor = (raw) => Object.fromEntries(
   Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})
     .filter(([k, v]) => k.length <= 64 && [1, 2].includes(v)).slice(0, 256));
 
-export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, refereed, runSize, preset, site = {}, savedAt }) {
+export function encode({ items, lines, inline, style, spacing, heading, place, prefix, order, columns, group, groups, card, locationAt, locationDetail, page, trailcap, trailcapWidth, namesFor, currency, funderOff, recipientOff, fill, paperIds, schoolBelow, linkOnDegree, tally, refereed, runSize, preset, title, site = {}, savedAt }) {
   const clean = {};
   for (const [id, ns] of Object.entries(lines ?? {})) {
     const kept = [...new Set(ns)].filter((n) => Number.isInteger(n) && n >= 0).sort((a, b) => a - b);
@@ -281,11 +281,15 @@ export function encode({ items, lines, inline, style, spacing, heading, place, p
     runSize: cleanRunSize(runSize),
     // The preset it was started from, whose layout it prints in. Absent, the complete CV's.
     preset: presetName(preset),
+    // What the PDF's title says after the name. Absent, the preset's label.
+    title: titleOf(title),
   };
 }
 
 // A name, not a promise that this build has that preset — loadReport says when it does not.
 const presetName = (p) => (typeof p === 'string' && /^[a-z0-9-]{1,64}$/.test(p) ? p : null);
+
+const titleOf = (t) => (typeof t === 'string' && t.trim() && t.length <= 200 ? t.trim() : null);
 
 class SelectionError extends Error {}
 
@@ -295,7 +299,7 @@ const fail = (msg) => {
 
 /**
  * Parse a saved selection. Throws `SelectionError` with a readable message.
- * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, refereed, runSize, preset, site, savedAt }`.
+ * Returns `{ items:Set, lines:Map<string,Set<number>>, inline:Set, style, spacing, heading, place, prefix, order, columns, group, card, locationAt, locationDetail, page, tally, refereed, runSize, preset, title, site, savedAt }`.
  */
 export function decode(text) {
   let raw;
@@ -374,6 +378,7 @@ export function decode(text) {
     refereed: cleanRefereed(raw.refereed),
     runSize: cleanRunSize(raw.runSize),
     preset: presetName(raw.preset),
+    title: titleOf(raw.title),
     savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : null,
     site: {
       commit: typeof site.commit === 'string' ? site.commit : null,

@@ -299,6 +299,13 @@ describe('tolerating the merely odd', () => {
     expect(round(undefined)).toEqual({});
   });
 
+  it('carries the PDF title through a round trip, dropping a blank one', () => {
+    const round = (title) => decode(JSON.stringify(encode({ items: [], title }))).title;
+    expect(round(' Curriculum Vitae ')).toBe('Curriculum Vitae');
+    expect(round('  ')).toBe(null);
+    expect(round(undefined)).toBe(null);
+  });
+
   it('carries the refereed split through a round trip, dropping any other value', () => {
     const round = (refereed) => decode(JSON.stringify(encode({ items: [], refereed }))).refereed;
     expect(round({ publications: 'split', a: true, b: 'yes' })).toEqual({ publications: 'split' });
