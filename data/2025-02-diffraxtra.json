@@ -22,10 +22,7 @@
   "tags": [
     "jax"
   ],
-  "details": [
-    "OOP interfaces and vectorization for Diffrax.",
-    "Used by galax."
-  ],
+  "details": "An object-oriented interface to Diffrax's differential-equation solver, and interpolation over batched solutions.",
   "highlight": {
     "topic": "software",
     "image": "highlights/diffraxtra.webp",

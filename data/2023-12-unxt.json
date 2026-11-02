@@ -15,9 +15,8 @@
   "title": "unxt",
   "summary": "Units in JAX",
   "details": [
-    "Unit-aware quantities that survive jit, grad and vmap.",
+    "Unit-aware computing in JAX, with a Quantity familiar to astropy.units users that passes through jit, vmap, grad, and existing JAX code.",
     "Designed and wrote the package, and leads its development.",
-    "The units layer under coordinax and galax.",
     "Published in [JOSS](item:unxt-joss) (2025)."
   ],
   "highlight": {

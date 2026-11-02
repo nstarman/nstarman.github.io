@@ -15,9 +15,9 @@
   "title": "coordinax",
   "summary": "Coordinates in JAX",
   "details": [
-    "Vectors, frames and transformations — differentiable, and unit-aware via unxt.",
+    "Coordinates in JAX: points, vectors, and reference frames, with differentiable, unit-aware transformations between coordinate systems.",
     "Designed and wrote the package, and leads its development.",
-    "Built on unxt, and the coordinate layer under galax."
+    "Built on unxt."
   ],
   "highlight": {
     "topic": "software",

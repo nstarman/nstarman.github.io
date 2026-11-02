@@ -22,10 +22,7 @@
   "tags": [
     "jax"
   ],
-  "details": [
-    "replace, fields and asdict, generalized to any object rather than just dataclasses.",
-    "Used by unxt, coordinax, and galax."
-  ],
+  "details": "The dataclasses tools replace, fields, and asdict, extended to any Python object by registering per-type methods.",
   "highlight": {
     "topic": "software",
     "image": "highlights/dataclassish.webp",

@@ -19,7 +19,7 @@
       "url": "https://github.com/nstarman/trackstream"
     }
   ],
-  "details": "Characterize a stream's track with minimal prior knowledge. Astropy-powered.",
+  "details": "Builds a stellar stream's track from its member stars with minimal prior knowledge, for the paper [On the fast track](item:characterizing-stream-tracks).",
   "highlight": {
     "topic": "software",
     "image": "highlights/trackstream.webp",
