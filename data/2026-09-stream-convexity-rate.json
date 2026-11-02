@@ -110,6 +110,10 @@
       "rel": "homepage",
       "url": "https://nstarkman.space/paper-stream-convexities-1/",
       "label": "The paper's site"
+    },
+    {
+      "rel": "data",
+      "url": "https://doi.org/10.5281/zenodo.23873449"
     }
   ],
   "refs": [
