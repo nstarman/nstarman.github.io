@@ -53,8 +53,11 @@ const split = splitTitle(item);
 // A paper's figure goes to its card on /publications/, which lists everything
 // but work in preparation; otherwise, and for a synthesis, to the item's own
 // main link.
-const figHref = item.type === 'publication' && item.status !== 'in-prep' ? `/publications/#hl-${item.id}` : href;
-const figLink = spec.figureLink && !!figHref;
+// A card whose context link is Details, to the paper's own site, sends its figure there too, :link or not.
+const details = paperSiteHref(item);
+const toSite = !!details && spec.extras.includes('context');
+const figHref = toSite ? details : item.type === 'publication' && item.status !== 'in-prep' ? `/publications/#hl-${item.id}` : href;
+const figLink = (spec.figureLink || toSite) && !!figHref;
 // A synthesis's papers, each to its card on /research/ — there only if its
 // topic is shown — or out to the paper; with neither, words.
 const refs = item.type === 'highlight' ? item.refs.map(resolve) : [];
@@ -91,7 +94,6 @@ const paperTo = { auto: paperHref(item), journal: paperHref(item, 'journal'), ar
 const paperWord = face.paper && face.paper.label !== 'icon' ? face.paper.label : 'paper';
 const linkList = cardLinks(item, allCounts);
 const contextLabel = topic && `${topic[1]} research highlights`;
-const details = paperSiteHref(item);
 ---
 <article class:list={['card', cls]} id={id} {...attrs} data-type={item.type} {...data} style={style}
          data-paper={isSoftware && softwarePapers(item).length ? 'yes' : undefined}>

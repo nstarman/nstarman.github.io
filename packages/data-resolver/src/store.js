@@ -346,11 +346,11 @@ export function createStore({ items: given, lists = new Map(), config }) {
   const REL_ICON = {
     ads: 'ads', preprint: 'arxiv', paper: 'paper', doi: 'paper', repo: 'repo', syw: 'syw',
     code: 'github', stars: 'star', docs: 'docs', data: 'data', slides: 'slides',
-    event: 'link', homepage: 'link',
+    event: 'link', homepage: 'globe',
   };
 
-  /** A link's mark: its rel's, but a school's homepage is a graduation cap. */
-  const linkIcon = (item, l) => (item.type === 'education' && l.rel === 'homepage' ? 'cap' : REL_ICON[relKey(l)] ?? 'link');
+  /** A link's mark: its rel's, but on the CV a school's homepage is a graduation cap and any other a link. */
+  const linkIcon = (item, l) => (l.rel === 'homepage' ? (item.type === 'education' ? 'cap' : 'link') : REL_ICON[relKey(l)] ?? 'link');
 
   /**
    * The one link a title points at: the article, else the preprint, else its
