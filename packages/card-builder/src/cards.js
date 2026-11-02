@@ -23,14 +23,15 @@ export const SITE_PRESETS = [
   // package's docs to the entry on /publications/, which its title links to —
   // the paper button is the way out to the journal.
   { key: 'carousel', slug: 'size:fill:fit-figure:center:auto:link-title:short:site-authors:none-text:none-extras:position,students-students:photo-buttons:paper,doi,preprint,syw,code:fit-look:titleweight=medium,titleface=mono,partgap=8.8', where: 'Research — the highlight carousels' },
-  // Its figure is no link: on /publications/ that would be to itself.
+  // Its figure is no link to itself here; with a site, it goes there, as Details does (Card).
   { key: 'paperHighlight', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:context-context:bottom:right-buttons:none-look:background=light', where: 'Publications — a paper’s highlight, under its entry' },
   // A paper's own site (syw-site, at nstarkman.space/<repo>/) opens with its entry as
   // /publications/ draws it, but without the context link: the site is its context.
   { key: 'paperSite', slug: 'size:fill:fit-figure:left:center:auto-title:none-authors:none-text:details-extras:none-buttons:none-look:background=light', where: 'Paper sites — the paper’s highlight, under its entry' },
   { key: 'assist', slug: 'size:fill:fit-figure:none-title:full:whole:link-authors:1:plain-text:none-extras:venue-venue:full:authors-buttons:all:fit-look:textsize=minor,padding=12,corners=12,buttons=23,titlesize=13.6,authorssize=12.5,venuesize=12.5,titleface=mono', where: 'Publications — the Assists, papers that thank me' },
-  // A row of a list, not a box: no tint and no padding, its link the paper's.
-  { key: 'home', slug: 'size:fill:fit-figure:none-title:full:split:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton:right-paper:paper:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
+  // A row of a list, not a box: no tint and no padding, its title to the paper's own site where it has
+  // one (else the paper), then the paper glyph and that site's button.
+  { key: 'home', slug: 'size:fill:fit-figure:none-title:full:split:link:status-authors:short:marked-text:none-extras:venue,year-venue:full:undated:noarxiv:authors-buttons:year,paperbutton,homepage:right-paper:icon:grey-look:padding=0,yearstyle=italic,background=none', where: 'Home — the selected publications' },
 ];
 export const PRESET = Object.fromEntries(SITE_PRESETS.map((p) => [p.key, p.slug]));
 
@@ -100,7 +101,8 @@ export const hasStatus = (item) => !!titleStatus(item);
 export const hasContext = (item) => HIGHLIGHT_TOPICS.some(([key]) => key === item.highlight?.topic);
 /** A paper's own site (syw-site, at nstarkman.space/<repo>/): its `homepage` link. Its card's
  *  context link goes there instead, as Details: the site says more than the topic does. */
-export const paperSiteHref = (item) => (item.type === 'publication' ? links(item).find((l) => l.rel === 'homepage')?.url ?? null : null);
+const paperSite = (item) => (item.type === 'publication' ? links(item).find((l) => l.rel === 'homepage') ?? null : null);
+export const paperSiteHref = (item) => paperSite(item)?.url ?? null;
 
 /** The star count, as a button's label: 657 → "657", 1234 → "1.2k". */
 export const starLabel = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
@@ -162,10 +164,11 @@ export function paperHref(item, to) {
   return (to ? by[to] : by.journal ?? by.arxiv) ?? null;
 }
 
-/** Where a card's title links, title:…:link — the item itself: a paper's
- *  paper or preprint, a package's website (homepage, else docs, else its first link). */
+/** Where a card's title links, title:…:link — the item itself: a paper's own
+ *  site (syw-site) where it has one, else its paper or preprint; a package's
+ *  website (homepage, else docs, else its first link). */
 const siteLink = (item) => ['homepage', 'docs'].map((rel) => links(item).find((l) => l.rel === rel)).find(Boolean) ?? links(item)[0];
-export const ownLink = (item) => (item.type === 'software' ? siteLink(item) : (primaryLink(item) ?? links(item)[0])) ?? null;
+export const ownLink = (item) => (item.type === 'software' ? siteLink(item) : (paperSite(item) ?? primaryLink(item) ?? links(item)[0])) ?? null;
 
 /** title:…:ads — its ADS abstract, where it has a bibcode. */
 export const adsHref = (item) => (item.bibcode ? `https://ui.adsabs.harvard.edu/abs/${item.bibcode}/abstract` : null);
