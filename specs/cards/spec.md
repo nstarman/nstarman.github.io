@@ -2,7 +2,7 @@
 
 **Covers**: `packages/card-builder/` (published as `@nstarkman/card-builder`, see `specs/renderers/spec.md` FR-025), `cards/`, `schema/card.schema.json`, `packages/card-builder/src/Card.astro`, `packages/card-builder/src/cardname.js`, `packages/card-builder/src/cards.js`,
 `src/lib/cardlayout.js`, `src/lib/cardpdf.js`, `src/lib/cardsvg.js`,
-`src/lib/card.typ`, `src/lib/cardbuilder/`, `src/pages/embed/`,
+`src/lib/card.typ`, `src/lib/cardbuilder/`, `scripts/build-card.mjs`, `src/pages/embed/`,
 `src/pages/cards/`, `src/pages/webdev/card.astro`
 **Status**: Current — describes the system as it is (constitution, Article X).
 
@@ -56,6 +56,16 @@ rather than a card and is never exported.
   `cardFace` reads it. Its SVG, PNG and PDF downloads are drawn in the browser
   from one measurement of the live preview (`src/lib/cardpdf.js`); the layout is
   the CSS's alone. Its pure modules are tested in `tests/cardbuilder.test.js`.
+  `npm run build:card -- <id> [<name | preset key>] [--theme light|dark] [--width N] [out.svg|.png|.pdf]`
+  (`scripts/build-card.mjs`) writes the same file without anyone opening the builder: it runs the
+  builder's own `downloadCard` in a headless Chromium against a dev server it starts, so it has no
+  layout or drawing of its own. Left out, the name is the item's default card (`defaultSlug`), the
+  theme `light`, and the output the builder's own file name for it (`file`, `src/lib/cardexport.js`),
+  a PNG, where the command was run; the format is the output's extension. A name that fills its width
+  needs `--width`, which a card of set width ignores. Bad arguments exit 2 with the usage; an unknown
+  or card-less item, a name `parseName` cannot read, a filling card with no width, or a failed draw
+  exits 1 with the message; neither leaves a file. *Enforced:* `tests/cardcli.test.js` (the
+  arguments); the draw is `downloadCard`'s.
 - **FR-007** `/cards/<id>-<light|dark>.svg` and `/cards/index.json` are drawn at
   build, in node, for every `flagship` and `major` package, at
   `CARD_SVG_WIDTH`, by `src/lib/cardlayout.js` — a second implementation of the
@@ -190,7 +200,9 @@ rasterized on a canvas at twice its size, with the card's own faces
 cannot reach the page's. As a PDF, Typst (`src/lib/card.typ`, with the compiler
 the CV builder uses) sets it again in the same faces, its text selectable and its
 links live. The layout stays the CSS's alone, so a new axis needs nothing in any
-of them.
+of them. The same downloads are had from the command line, `npm run build:card` (FR-006), which
+runs this very code in a headless browser — for a card on a slide, say — rather than a second
+layout as the software cards' SVGs below have.
 
 The page `src/pages/webdev/card.astro` is markup and thin wiring; the builder is
 a module, `src/lib/cardbuilder/`, whose `index.js` lists its public API and
