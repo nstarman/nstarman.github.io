@@ -90,7 +90,14 @@ if (modelOnly) {
     if (r.error) throw new Error(`could not run ${typst}: ${r.error.message} (set TYPST=/path/to/typst)`);
     if (r.stderr) process.stderr.write(r.stderr);
     if (r.status !== 0 || /unknown font family/.test(r.stderr)) { process.exitCode = 1; fs.rmSync(outPath, { force: true }); }
-    else console.log(`${out}  ${fs.statSync(outPath).size} bytes`);
+    else {
+      // Typst writes a link's `&` into the SVG unescaped (the ADS search URL has one), which is
+      // not XML, and a browser shows such an SVG in an <img> as a broken image.
+      if (ext === '.svg' && fs.existsSync(outPath)) {
+        fs.writeFileSync(outPath, fs.readFileSync(outPath, 'utf8').replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;'));
+      }
+      console.log(`${out}  ${fs.statSync(outPath).size} bytes`);
+    }
   } catch (err) {
     console.error(err.message);
     process.exitCode = 1;

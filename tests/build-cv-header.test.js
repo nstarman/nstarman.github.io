@@ -51,7 +51,11 @@ describe('build:cv --header', () => {
     expect(run(dir, 'empty.json', '--header').status).toBe(0);
     expect(fs.readFileSync(path.join(dir, 'empty-header.pdf')).subarray(0, 4).toString()).toBe('%PDF');
     expect(run(dir, 'empty.json', '--header', 'h.svg').status).toBe(0);
-    expect(fs.readFileSync(path.join(dir, 'h.svg'), 'utf8')).toMatch(/^<svg/);
+    const svg = fs.readFileSync(path.join(dir, 'h.svg'), 'utf8');
+    expect(svg).toMatch(/^<svg/);
+    // Well-formed XML, or a browser will not draw it: no `&` that does not start an entity.
+    expect(svg).not.toMatch(/&(?!(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);)/);
+    expect(svg).toContain('&amp;sort='); // the ADS link, which has one
   }, 120_000);
 
   it.skipIf(!haveTypst)('takes a built render model as its input', () => {
