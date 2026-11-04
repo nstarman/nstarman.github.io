@@ -199,7 +199,8 @@ prevent.
 To compile a saved builder selection to a PDF without the site, run
 `npm run build:cv -- <selection.json> [out.pdf]` (needs the `typst` binary; `TYPST=` names
 one). It draws the selection as the builder's Compile does
-([`renderers`](specs/renderers/spec.md), FR-028).
+([`renderers`](specs/renderers/spec.md), FR-028). `--header [out.pdf|.svg|.png]` draws the
+header card alone, and a built `dist/cv/<preset>.json` works in place of a selection.
 
 Every pull request also gets a live preview URL, posted as a comment.
 

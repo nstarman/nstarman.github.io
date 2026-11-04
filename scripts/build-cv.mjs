@@ -2,6 +2,9 @@
 //
 //   node scripts/build-cv.mjs <selection.json> [out.pdf]
 //   node scripts/build-cv.mjs <selection.json> --model     # print the render model, compile nothing
+//   node scripts/build-cv.mjs <selection.json> --header [out.pdf|.svg|.png]   # the header card alone
+//
+// The input may instead be a built render model, dist/cv/<preset>.json, compiled as it is.
 //
 // The model comes from src/lib/selectionmodel.js, the function the builder page
 // calls, so the PDF is the builder's — same entries, same settings. The template
@@ -20,9 +23,21 @@ import { createServer } from 'vite';
 const cwd = process.cwd();
 const [file, ...rest] = process.argv.slice(2);
 const modelOnly = rest.includes('--model');
-const out = rest.find((a) => !a.startsWith('--')) ?? (file && file.replace(/\.json$/, '') + '.pdf');
+const header = rest.includes('--header');
+const out = rest.find((a) => !a.startsWith('--'))
+  ?? (file && file.replace(/\.json$/, '') + (header ? '-header.pdf' : '.pdf'));
 if (!file) {
-  console.error('usage: build-cv.mjs <selection.json> [out.pdf | --model]');
+  console.error('usage: build-cv.mjs <selection.json | model.json> [out.pdf | --model | --header [out.pdf|.svg|.png]]');
+  process.exit(2);
+}
+if (header && modelOnly) {
+  console.error('--header compiles and --model prints the model: use one.');
+  process.exit(2);
+}
+// Typst picks the format by the extension; the header may be any of its three.
+const ext = path.extname(out).toLowerCase();
+if (header && !['.pdf', '.svg', '.png'].includes(ext)) {
+  console.error(`${out}: use .pdf, .svg or .png`);
   process.exit(2);
 }
 
@@ -41,9 +56,17 @@ let model;
 try {
   const { decode } = await vite.ssrLoadModule('/src/lib/selection.js');
   const { modelFromSelection } = await vite.ssrLoadModule('/src/lib/selectionmodel.js');
-  const sel = decode(fs.readFileSync(path.resolve(cwd, file), 'utf8'));
-  if (!sel.items.size) throw new Error('Nothing selected.');
-  model = modelFromSelection(sel);
+  const text = fs.readFileSync(path.resolve(cwd, file), 'utf8');
+  let raw = null;
+  try { raw = JSON.parse(text); } catch { /* decode says so */ }
+  if (raw?.person && raw?.sections) {
+    model = raw; // a built render model, as dist/cv/<preset>.json
+  } else {
+    const sel = decode(text);
+    // The header needs no entries, only the person and the card.
+    if (!sel.items.size && !header) throw new Error('Nothing selected.');
+    model = modelFromSelection(sel);
+  }
 } catch (err) {
   console.error(err?.message ?? err);
   process.exitCode = 1;
@@ -62,10 +85,11 @@ if (modelOnly) {
   fs.writeFileSync('cv/cv.json', JSON.stringify(model));
   try {
     const r = spawnSync(typst, ['compile', '--root', '.', '--font-path', 'public/fonts', '--ignore-system-fonts',
+      ...(header ? ['--input', 'part=header'] : []), ...(ext === '.png' ? ['--ppi', '300'] : []),
       'cv/cv.typ', outPath], { encoding: 'utf8' });
     if (r.error) throw new Error(`could not run ${typst}: ${r.error.message} (set TYPST=/path/to/typst)`);
     if (r.stderr) process.stderr.write(r.stderr);
-    if (r.status !== 0 || /unknown font family/.test(r.stderr)) process.exitCode = 1;
+    if (r.status !== 0 || /unknown font family/.test(r.stderr)) { process.exitCode = 1; fs.rmSync(outPath, { force: true }); }
     else console.log(`${out}  ${fs.statSync(outPath).size} bytes`);
   } catch (err) {
     console.error(err.message);

@@ -163,7 +163,16 @@ snapshots (`specs/refresh/spec.md`).
   nothing. A selection with nothing ticked, an unreadable or newer-format file, a missing Typst, a
   Typst failure or an "unknown font family" warning exits non-zero with a message and no PDF, and
   `cv/cv.json` is not left behind; an entry the database no longer holds is dropped, as in the
-  builder.
+  builder. The input may instead be a built render model (`dist/cv/<preset>.json`, told apart by
+  having `person` and `sections`), compiled as it is.
+
+  `--header [out]` draws the header card alone: `cv/cv.typ` under `--input part=header` sets the
+  page to the CV's text width plus the wash's 9pt × 5pt outset, `height: auto`, transparent, and
+  drops everything after the header — the same lines that draw page 1, so the two agree and the
+  card honours `card` (cv-presets FR-023), the format and the style. The output is PDF, SVG or PNG
+  (300 ppi) by its extension, any other refused before compiling; it defaults to
+  `<input>-header.pdf`. A selection with nothing ticked is allowed. `--header` with `--model` is
+  refused. A failure leaves no output file. *Enforced:* `tests/build-cv-header.test.js`.
 - **FR-029** The builder and `build:cv` draw one selection as one CV. The model is
   `modelFromSelection(sel)` (`src/lib/selectionmodel.js`) over a decoded selection, and it uses every
   field `decode` returns but the provenance (`savedAt`, `site`). The builder's Compile calls it on `decode(JSON.stringify(currentSelection()))`, the same
