@@ -33,10 +33,11 @@ const groups = [
     id: 'data', name: 'Data',
     tiles: [
       { name: 'Publications', href: '/nstarkman_publications.bib', label: 'BIB' },
-      { name: 'Card index', href: '/cards/index.json', label: 'JSON' },
-      { name: 'Embed index', href: '/embed/index.json', label: 'JSON' },
+      // Both indexes are index.json; each saves under its own name.
+      { name: 'Card index', href: '/cards/index.json', label: 'JSON', as: 'cards-index.json' },
+      { name: 'Embed index', href: '/embed/index.json', label: 'JSON', as: 'embed-index.json' },
       { name: 'Record schema', href: '/records/item.schema.json', label: 'JSON' },
-    ].map((d) => ({ name: d.name, icon: 'data', files: [{ label: d.label, href: d.href }] })),
+    ].map((d) => ({ name: d.name, icon: 'data', files: [{ label: d.label, href: d.href, as: d.as }] })),
   },
 ];
 ---
