@@ -115,13 +115,17 @@
 // A saved selection may name its own title; otherwise the preset's label.
 #let title = cv.at("title", default: none)
 #set document(title: p.name + " — " + if title == none { cv.label } else { title }, author: p.name)
+// `--input part=header` draws the header card alone, on a page cut to it (build:cv --header).
+#let headeronly = sys.inputs.at("part", default: none) == "header"
+#let usletter = letter or paper == "us-letter" or (paper != "a4" and flat)
+#let xmargin = if letter or flat { 1in } else { 1.05cm }
 // geometry scale=0.9 on A4, hmarginratio 1:1, vmarginratio 2:3
 #set page(
-  paper: if letter or paper == "us-letter" { "us-letter" } else if paper == "a4" { "a4" } else if flat { "us-letter" } else { "a4" },
+  paper: if usletter { "us-letter" } else { "a4" },
   margin: if letter { 1in }
-          else if flat { (x: 1in, top: 0.85in, bottom: 1in) }
-          else if tight { (x: 1.05cm, top: 0.95cm, bottom: 1.4cm) }
-          else { (x: 1.05cm, top: 1.19cm, bottom: 1.78cm) },
+          else if flat { (x: xmargin, top: 0.85in, bottom: 1in) }
+          else if tight { (x: xmargin, top: 0.95cm, bottom: 1.4cm) }
+          else { (x: xmargin, top: 1.19cm, bottom: 1.78cm) },
   // fancyhdr in the reference: name, title and page number in grey, from the
   // second page on. The letter format numbers every page, the first included.
   footer: if letter { align(center, text(fill: faint, size: FLOOR, context counter(page).display("1 of 1", both: true))) }
@@ -131,6 +135,12 @@
     grid(columns: (1fr, auto, 1fr), p.name, [Curriculum Vitae], align(right)[#counter(page).display()])
   } },
 )
+// The header alone: the CV's own text width, so every line breaks as on page 1, and a border the
+// size of the wash's outset (9pt by 5pt, below). Transparent, so the rounded corners are.
+#set page(
+  width: (if usletter { 8.5in } else { 210mm }) - 2 * xmargin + 18pt, height: auto,
+  margin: (x: 9pt, y: 5pt), fill: none, header: none, footer: none,
+) if headeronly
 // New Computer Modern is Typst's own, so CI and the browser both have it — and
 // it is Latin Modern's successor, the face the LaTeX CV was already set in.
 #set text(
@@ -283,6 +293,8 @@
 } }
 // The header is a block of its own, so it needs more clearance than two
 // sections need from each other.
+// With part=header, nothing after the header is drawn.
+#show: body => if headeronly { none } else { body }
 #v(if tight { 3pt } else { 6pt })
 
 // ── headings ──────────────────────────────────────────────────────────────
