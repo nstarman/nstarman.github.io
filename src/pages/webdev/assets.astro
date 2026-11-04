@@ -1,0 +1,87 @@
+---
+// /webdev/assets/ — every file the build already publishes, as a gallery of
+// small tiles to download from: the CVs, the software cards, the bibliography
+// and the indexes. The lists are the ones that build those files, so a new
+// preset or card shows here without an edit.
+import SiteLayout from '@nstarkman/site-layout/SiteLayout.astro';
+import { presetNames } from '../../lib/presets.js';
+import { softwareCards, THEMES, cardFile } from '../../lib/softwarecards.js';
+
+const file = (href) => href.split('/').pop();
+// A tile: a picture (an image, or an icon from the site's sprite), a name, and its files.
+const groups = [
+  {
+    id: 'cv', name: 'CV',
+    note: ['Choose what goes in with the ', 'CV Builder', '/webdev/cv/'],
+    tiles: presetNames.map((p) => ({
+      name: p, href: p === 'np' ? '/cv/' : `/cv/${p}/`, icon: 'paper',
+      files: [
+        { label: 'PDF', href: `/cv/starkman-cv-${p}.pdf` },
+        { label: 'JSON', href: `/cv/${p}.json`, as: `starkman-cv-${p}.json` },
+      ],
+    })),
+  },
+  {
+    id: 'cards', name: 'Software Cards',
+    note: ['Any other card is made in the ', 'Card Builder', '/webdev/card/'],
+    tiles: softwareCards.map(({ input }) => ({
+      name: input.title, href: `/software/#sw-${input.id}`, image: cardFile(input.id, 'light'),
+      files: THEMES.map((theme) => ({ label: theme, href: cardFile(input.id, theme) })),
+    })),
+  },
+  {
+    id: 'data', name: 'Data',
+    tiles: [
+      { name: 'Publications', href: '/nstarkman_publications.bib', label: 'BIB' },
+      // Both indexes are index.json; each saves under its own name.
+      { name: 'Card index', href: '/cards/index.json', label: 'JSON', as: 'cards-index.json' },
+      { name: 'Embed index', href: '/embed/index.json', label: 'JSON', as: 'embed-index.json' },
+      { name: 'Record schema', href: '/records/item.schema.json', label: 'JSON' },
+    ].map((d) => ({ name: d.name, icon: 'data', files: [{ label: d.label, href: d.href, as: d.as }] })),
+  },
+];
+---
+<SiteLayout title="Assets — Nathaniel Starkman" description="Every pre-built file on nstarkman.space to download: CVs, software cards, the bibliography and the data indexes.">
+  <main>
+    {groups.map((g) => (
+      <section id={g.id}>
+        <div class="wrap">
+          <div class="h2row"><h2>{g.name} <span class="cvcount">{g.tiles.length}</span></h2></div>
+          {g.note && <p class="gnote">{g.note[0]}<a href={g.note[2]}>{g.note[1]}</a>.</p>}
+          <ul class="gallery">
+            {g.tiles.map((t) => (
+              <li class="tile">
+                <div class="thumb">
+                  {t.image
+                    ? <img src={t.image} alt="" loading="lazy" />
+                    : <svg class="ico" aria-hidden="true" focusable="false"><use href={`#i-${t.icon}`} /></svg>}
+                </div>
+                <span class="tname">{t.href ? <a href={t.href}>{t.name}</a> : t.name}</span>
+                <span class="tfiles">
+                  {t.files.map((f) => (
+                    <a href={f.href} download={f.as ?? file(f.href)} aria-label={`Download ${t.name} ${f.label}`}>
+                      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-download" /></svg>{f.label}
+                    </a>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))}
+  </main>
+</SiteLayout>
+
+<style>
+  .gnote { margin: -.4rem 0 .9rem; font-size: .88rem; color: var(--ink-mute); }
+  .gallery { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; }
+  .tile { display: flex; flex-direction: column; gap: .3rem; padding: .5rem; border: 1px solid var(--rule); border-radius: 8px; min-width: 0; }
+  .thumb { height: 72px; display: grid; place-items: center; overflow: hidden; border-radius: 4px; background: var(--sunk); }
+  .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .thumb .ico { width: 28px; height: 28px; color: var(--ink-mute); }
+  .tname { font-size: .85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tfiles { display: flex; flex-wrap: wrap; gap: .5rem; font-family: var(--mono); font-size: .72rem; }
+  .tfiles a { display: inline-flex; align-items: center; gap: .2rem; }
+  .tfiles .ico { width: 11px; height: 11px; }
+</style>
