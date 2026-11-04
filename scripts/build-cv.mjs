@@ -85,7 +85,7 @@ if (modelOnly) {
   fs.writeFileSync('cv/cv.json', JSON.stringify(model));
   try {
     const r = spawnSync(typst, ['compile', '--root', '.', '--font-path', 'public/fonts', '--ignore-system-fonts',
-      ...(header ? ['--input', 'part=header'] : []), ...(ext === '.png' ? ['--ppi', '300'] : []),
+      ...(header ? ['--input', 'part=header', ...(ext === '.png' ? ['--ppi', '300'] : [])] : []),
       'cv/cv.typ', outPath], { encoding: 'utf8' });
     if (r.error) throw new Error(`could not run ${typst}: ${r.error.message} (set TYPST=/path/to/typst)`);
     if (r.stderr) process.stderr.write(r.stderr);
