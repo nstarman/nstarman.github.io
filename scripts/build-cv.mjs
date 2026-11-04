@@ -94,7 +94,7 @@ if (modelOnly) {
       // Typst writes a link's `&` into the SVG unescaped (the ADS search URL has one), which is
       // not XML, and a browser shows such an SVG in an <img> as a broken image.
       if (ext === '.svg' && fs.existsSync(outPath)) {
-        fs.writeFileSync(outPath, fs.readFileSync(outPath, 'utf8').replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;'));
+        fs.writeFileSync(outPath, fs.readFileSync(outPath, 'utf8').replace(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;'));
       }
       console.log(`${out}  ${fs.statSync(outPath).size} bytes`);
     }
