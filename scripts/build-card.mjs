@@ -27,8 +27,13 @@ const cwd = process.cwd();
 const root = path.resolve(import.meta.dirname, '..');
 process.chdir(root);
 // The PDF's compiler, which predev otherwise makes.
-if (args.format === 'pdf' && !fs.existsSync('src/generated/typst_ts_web_compiler_bg.wasm.gz')) {
-  spawnSync(process.execPath, ['scripts/gzip-compiler.mjs'], { stdio: 'inherit' });
+const COMPILER = 'src/generated/typst_ts_web_compiler_bg.wasm.gz';
+if (args.format === 'pdf' && !fs.existsSync(COMPILER)) {
+  const r = spawnSync(process.execPath, ['scripts/gzip-compiler.mjs'], { stdio: 'inherit' });
+  if (r.status !== 0 || !fs.existsSync(COMPILER)) {
+    console.error(`could not make ${COMPILER} (scripts/gzip-compiler.mjs${r.error ? `: ${r.error.message}` : ` exited ${r.status}`})`);
+    process.exit(1);
+  }
 }
 
 const { dev } = await import('astro');
