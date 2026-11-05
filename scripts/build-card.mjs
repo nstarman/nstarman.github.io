@@ -46,7 +46,7 @@ try {
   // download from the deployed site has no such attributes.
   server = await dev({ root, logLevel: 'error', devToolbar: { enabled: false }, server: { host: '127.0.0.1', port: 0 } });
   const base = `http://127.0.0.1:${server.address.port}`;
-  browser = await chromium.launch().catch((err) => {
+  browser = await chromium.launch({ headless: true }).catch((err) => {
     throw new Error(`${err.message.split('\n')[0]}\n(run: npx playwright install chromium)`);
   });
   // 1280 wide is where the root font size is exactly 16px, as the builder is used.
@@ -64,7 +64,8 @@ try {
       const it = items.find((i) => i.id === args.id);
       if (!it) throw new Error(`no item ${args.id}`);
       if (!CARD_TYPES.includes(it.type)) throw new Error(`${args.id} is a ${it.type}, which has no card`);
-      const spec = parseName(PRESET[args.name] ?? args.name ?? defaultSlug(it));
+      // A preset key only where PRESET has it as its own, so `constructor` reads as a name, not Object's.
+      const spec = parseName((args.name !== null && Object.hasOwn(PRESET, args.name) ? PRESET[args.name] : args.name) ?? defaultSlug(it));
       const width = spec.width === 'fill' ? args.width : spec.width;
       if (width == null) throw new Error('this card fills its width: give one with --width N');
       // As the builder's readSpec has it, the name written in full.
