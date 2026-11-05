@@ -92,9 +92,12 @@ if (modelOnly) {
     if (r.status !== 0 || /unknown font family/.test(r.stderr)) { process.exitCode = 1; fs.rmSync(outPath, { force: true }); }
     else {
       // Typst writes a link's `&` into the SVG unescaped (the ADS search URL has one), which is
-      // not XML, and a browser shows such an SVG in an <img> as a broken image.
+      // not XML, and a browser shows such an SVG in an <img> as a broken image. Its links open in a
+      // new tab, or embedded with <object> or <iframe> they would load inside the frame.
       if (ext === '.svg' && fs.existsSync(outPath)) {
-        fs.writeFileSync(outPath, fs.readFileSync(outPath, 'utf8').replace(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;'));
+        fs.writeFileSync(outPath, fs.readFileSync(outPath, 'utf8')
+          .replace(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;')
+          .replace(/<a /g, '<a target="_blank" rel="noopener" '));
       }
       console.log(`${out}  ${fs.statSync(outPath).size} bytes`);
     }

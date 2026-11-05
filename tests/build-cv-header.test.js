@@ -56,6 +56,10 @@ describe('build:cv --header', () => {
     // Well-formed XML, or a browser will not draw it: no `&` but in one of XML's five entities or a number.
     expect(svg).not.toMatch(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[0-9a-fA-F]+);)/);
     expect(svg).toContain('&amp;sort='); // the ADS link, which has one
+    // Embedded with <object> or <iframe>, a link would otherwise open inside the frame.
+    const anchors = svg.match(/<a\s[^>]*>/g) ?? [];
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const a of anchors) expect(a).toMatch(/ target="_blank" rel="noopener"/);
   }, 120_000);
 
   it.skipIf(!haveTypst)('takes a built render model as its input', () => {
