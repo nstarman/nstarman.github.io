@@ -176,8 +176,8 @@ snapshots (`specs/refresh/spec.md`).
   drops everything after the header — the same lines that draw page 1, so the two agree and the
   card honours `card` (cv-presets FR-023), the format and the style. The output is PDF, SVG or PNG
   (300 ppi) by its extension, any other refused before compiling. The SVG is well-formed XML (a bare
-  `&` Typst writes into a link becomes `&amp;`), and every link in it carries `target="_blank"
-  rel="noopener"`, so embedded with `<object>` or `<iframe>` a link opens in a new tab rather than
+  `&` Typst writes into a link becomes `&amp;`), and every link in it carries
+  `target="_blank" rel="noopener"`, so embedded with `<object>` or `<iframe>` a link opens in a new tab rather than
   inside the frame; PDF and PNG are written as Typst writes them. It defaults to
   `<input>-header.pdf`. A selection with nothing ticked is allowed. `--header` with `--model` is
   refused. A failure leaves no output file. *Enforced:* `tests/build-cv-header.test.js`.
