@@ -18,6 +18,12 @@
 // falling back to the family itself for a face set at its regular weight.
 #let face(f, w) = (f + if w >= 600 { " SmBld" } else if w >= 500 { " Medm" } else { "" }, f)
 
+// Where a line's top is, under its ascender, per family: the hhea ascent, which
+// the browser measures a line's box from. Typst's "ascender" is the OS/2 typo
+// ascent, 0.78em for Plex against its hhea 1.025em, which drew every Plex line a
+// quarter of an em high. tests/cardpdf.test.js reads these from the files.
+#let ascent = ("IBM Plex Sans": 1.025em, "IBM Plex Mono": 1.025em, "Newsreader": 0.735em)
+
 #let corners(r) = (top-left: r.at(0) * px, top-right: r.at(1) * px, bottom-right: r.at(2) * px, bottom-left: r.at(3) * px)
 
 #let draw(o) = {
@@ -33,7 +39,7 @@
   } else if o.k == "svg" {
     image(bytes(o.svg), format: "svg", width: o.w * px, height: o.h * px)
   } else {
-    text(font: face(o.font, o.weight), weight: o.weight, size: o.size * px, fill: rgb(o.color), tracking: o.ls * px, o.s)
+    text(font: face(o.font, o.weight), weight: o.weight, style: o.at("style", default: "normal"), top-edge: ascent.at(o.font, default: "ascender"), size: o.size * px, fill: rgb(o.color), tracking: o.ls * px, o.s)
   }
   place(top + left, dx: o.x * px, dy: o.y * px, if o.href != none { link(o.href, body) } else { body })
 }

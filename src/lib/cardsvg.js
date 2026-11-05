@@ -10,13 +10,13 @@
 
 const SANS = "'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
 const MONO = "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-const SERIF = "'IBM Plex Serif', Georgia, 'Times New Roman', serif";
+const SERIF = "'Newsreader', Georgia, 'Times New Roman', serif";
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const n = (x) => +x.toFixed(2);
 
 /** The font stack for a face the card names. */
-export const stack = (font) => (/mono/i.test(font) ? MONO : /serif/i.test(font) && !/sans/i.test(font) ? SERIF : SANS);
+export const stack = (font) => (/mono/i.test(font) ? MONO : /newsreader|serif/i.test(font) && !/sans/i.test(font) ? SERIF : SANS);
 
 /** #rrggbbaa → the colour and its opacity, as attributes: an 8-digit hex is
  *  not read everywhere SVG is. */
@@ -60,7 +60,7 @@ export function modelToSvg(model, images = {}) {
     } else if (o.k === 'text') {
       // The browser set each line; textLength holds it to that width where the
       // reader's fallback face is a different one, so it never runs on.
-      body.push(link(o, `<text x="${n(o.x)}" y="${n(o.y)}" font-family="${esc(stack(o.font))}" font-size="${n(o.size)}" font-weight="${o.weight}" ${paint('fill', o.color)}`
+      body.push(link(o, `<text x="${n(o.x)}" y="${n(o.y)}" font-family="${esc(stack(o.font))}" font-size="${n(o.size)}" font-weight="${o.weight}"${o.style === 'italic' ? ' font-style="italic"' : ''} ${paint('fill', o.color)}`
         + `${o.ls ? ` letter-spacing="${n(o.ls)}"` : ''} dominant-baseline="text-before-edge" textLength="${n(o.w)}" lengthAdjust="spacing" xml:space="preserve">${esc(o.s)}</text>`));
     } else {
       throw new Error(`no such op, ${o.k}`);
@@ -74,18 +74,25 @@ export function modelToSvg(model, images = {}) {
     + `<g clip-path="url(#card)">\n${body.join('\n')}\n</g>\n</svg>\n`;
 }
 
-/** A face's family and weight from the name of its file: IBMPlexSans-Medium.otf →
- *  IBM Plex Sans, 500. The faces public/fonts/card/ has, the ones the card names. */
+/** A face's family, weight and style from the name of its file: IBMPlexSans-MediumItalic.otf →
+ *  IBM Plex Sans, 500, italic. The faces public/fonts/card/ has, the ones the card names. */
 export function faceOf(file) {
-  const [, family, style] = file.match(/(IBMPlex(?:Sans|Mono))-(\w+)\.otf$/) ?? [];
-  if (!family) throw new Error(`no face for ${file}`);
-  return { family: family.replace(/(Plex)(Sans|Mono)/, '$1 $2').replace('IBMPlex', 'IBM Plex'), weight: { Regular: 400, Medium: 500, SemiBold: 600 }[style] };
+  const [, family, w, italic] = file.match(/(IBMPlex(?:Sans|Mono)|Newsreader)-(Regular|Medium|SemiBold)?(Italic)?\.(?:otf|ttf)$/) ?? [];
+  if (!family || (!w && !italic)) throw new Error(`no face for ${file}`);
+  return { family: family.replace(/IBMPlex(Sans|Mono)/, 'IBM Plex $1'), weight: { Medium: 500, SemiBold: 600 }[w] ?? 400, style: italic ? 'italic' : 'normal' };
+}
+
+/** The files of the faces a measured card draws text in — each family and slant it
+ *  uses, every weight of it — so a PNG or PDF carries those and not all of them. */
+export function facesOf(model, files) {
+  const used = new Set(model.ops.filter((o) => o.k === 'text').map((o) => `${o.font}|${o.style ?? 'normal'}`));
+  return files.filter((f) => { const { family, style } = faceOf(f); return used.has(`${family}|${style}`); });
 }
 
 /** An SVG with the faces in it, as @font-face rules with the font files as data:
  *  URIs, so that it draws in the card's own faces where the page's cannot reach —
  *  as an image, which is how it is made a PNG. faces: [{ file, uri }]. */
 export function withFonts(svg, faces) {
-  const css = faces.map(({ file, uri }) => { const f = faceOf(file); return `@font-face{font-family:'${f.family}';font-weight:${f.weight};src:url(${uri})}`; }).join('');
+  const css = faces.map(({ file, uri }) => { const f = faceOf(file); return `@font-face{font-family:'${f.family}';font-weight:${f.weight};font-style:${f.style};src:url(${uri})}`; }).join('');
   return svg.replace('</title>\n', `</title>\n<style>${css}</style>\n`);
 }

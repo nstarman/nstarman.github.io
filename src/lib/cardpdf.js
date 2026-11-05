@@ -109,7 +109,7 @@ export function measureCard(card, { title, site }) {
       const str = raw.replace(/\s+/g, ' ').trimEnd();
       ops.push({
         k: 'text', ...xy(r), w: right - r.left, s: up ? str.toUpperCase() : str, font: s.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
-        weight: +s.fontWeight, size: parseFloat(s.fontSize), color: hex(s.color), ls: s.letterSpacing === 'normal' ? 0 : parseFloat(s.letterSpacing), href: href(e), clamp: clamped(e),
+        weight: +s.fontWeight, style: s.fontStyle === 'normal' ? 'normal' : 'italic', size: parseFloat(s.fontSize), color: hex(s.color), ls: s.letterSpacing === 'normal' ? 0 : parseFloat(s.letterSpacing), href: href(e), clamp: clamped(e),
       });
     }
   }
