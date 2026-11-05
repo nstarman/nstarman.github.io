@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { hex } from '../src/lib/cardpdf.js';
+import { faceOf } from '../src/lib/cardsvg.js';
 
 describe('hex', () => {
   it('reads each form a browser computes a colour in', () => {
@@ -23,6 +24,23 @@ describe('hex', () => {
 });
 
 const typst = (() => { try { execFileSync('typst', ['--version']); return true; } catch { return false; } })();
+
+// The top of a line in card.typ is each family's hhea ascent, which the browser
+// measures a line's box from; read here from every face of it.
+describe('card.typ line tops', () => {
+  const hhea = (file) => {
+    const b = fs.readFileSync(`public/fonts/card/${file}`);
+    const table = (tag) => { for (let i = 0; i < b.readUInt16BE(4); i++) if (b.toString('latin1', 12 + 16 * i, 16 + 16 * i) === tag) return b.readUInt32BE(20 + 16 * i); throw new Error(`no ${tag} in ${file}`); };
+    return b.readInt16BE(table('hhea') + 4) / b.readUInt16BE(table('head') + 18);
+  };
+  it('are the ascent of every file of each family', () => {
+    const typ = fs.readFileSync('src/lib/card.typ', 'utf8');
+    const ascent = Object.fromEntries([...typ.match(/#let ascent = \(([^)]*)\)/)[1].matchAll(/"([^"]+)": ([\d.]+)em/g)].map(([, f, v]) => [f, +v]));
+    const files = fs.readdirSync('public/fonts/card').filter((f) => /\.(otf|ttf)$/.test(f));
+    expect(Object.keys(ascent).sort()).toEqual([...new Set(files.map((f) => faceOf(f).family))].sort());
+    for (const f of files) expect(hhea(f), f).toBeCloseTo(ascent[faceOf(f).family], 3);
+  });
+});
 
 // CI installs Typst after the unit tests, for the CV PDFs; this runs wherever
 // it is already on the path.
@@ -41,6 +59,8 @@ describe.skipIf(!typst)('card.typ', () => {
         { k: 'svg', x: 286, y: 22, w: 12, h: 12, svg: icon, href: null },
         { k: 'text', x: 110, y: 16, s: 'Stream Members Only', font: 'IBM Plex Sans', weight: 500, size: 15, color: '#12161cff', ls: 0, href: null },
         { k: 'text', x: 110, y: 40, s: '1ST | 2025', font: 'IBM Plex Mono', weight: 400, size: 11, color: '#8a93a1b3', ls: 0.6, href: null },
+        { k: 'text', x: 110, y: 60, s: 'S. Wu', font: 'IBM Plex Sans', weight: 400, style: 'italic', size: 12, color: '#5a6472ff', ls: 0, href: null },
+        { k: 'text', x: 110, y: 80, s: 'The Journal', font: 'Newsreader', weight: 500, style: 'italic', size: 12, color: '#5a6472ff', ls: 0, href: null },
       ],
     }));
     execFileSync('typst', ['compile', '--root', dir, '--font-path', 'public/fonts/card', '--ignore-system-fonts', path.join(dir, 'main.typ'), path.join(dir, 'card.pdf')]);
@@ -49,6 +69,9 @@ describe.skipIf(!typst)('card.typ', () => {
     // The medium weight is its own face, by its own name, not Regular.
     expect(pdf).toMatch(/IBMPlexSans-Medm/);
     expect(pdf).toMatch(/IBMPlexMono/);
+    // Italic and serif in their own faces, not the upright sans set in their place.
+    expect(pdf).toMatch(/IBMPlexSans-Italic/);
+    expect(pdf).toMatch(/Newsreader-MediumItalic/);
     expect(pdf).toContain('https://example.test/');
   });
 });

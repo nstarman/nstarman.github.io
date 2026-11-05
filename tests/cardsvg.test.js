@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { modelToSvg, rrect, stack, faceOf, withFonts } from '../src/lib/cardsvg.js';
+import { modelToSvg, rrect, stack, faceOf, facesOf, withFonts } from '../src/lib/cardsvg.js';
 import { file, themes } from '../src/lib/cardexport.js';
 import { FORMATS } from '../src/lib/cardbuilder/settings.js';
 
@@ -19,6 +19,7 @@ const model = {
     { k: 'svg', x: 286, y: 22, w: 12, h: 12, svg: icon, href: 'https://example.test/code' },
     { k: 'text', x: 110, y: 16, w: 150, h: 18, s: 'Stream <Members> Only', font: 'IBM Plex Sans', weight: 500, size: 15, color: '#12161cff', ls: 0, href: null },
     { k: 'text', x: 110, y: 40, w: 60, h: 14, s: '1ST | 2025', font: 'IBM Plex Mono', weight: 400, size: 11, color: '#8a93a1b3', ls: 0.6, href: null },
+    { k: 'text', x: 110, y: 60, w: 90, h: 14, s: 'The Journal', font: 'Newsreader', weight: 400, style: 'italic', size: 12, color: '#5a6472ff', ls: 0, href: null },
   ],
 };
 const svg = modelToSvg(model, { '/img0.png': PNG });
@@ -41,6 +42,11 @@ describe('modelToSvg', () => {
     expect(svg).toContain('>Stream &lt;Members&gt; Only</text>');
     expect(svg).toContain('x="110" y="16"');
     expect(svg).toContain('textLength="150"');
+  });
+
+  it('slants what the browser set in italic, and only that', () => {
+    expect(svg.match(/font-style="italic"/g)).toHaveLength(1);
+    expect(svg).toMatch(/font-family="'Newsreader'[^>]*font-style="italic"[^>]*>The Journal</);
   });
 
   it('draws a colour and its opacity apart, and a stroke only where there is one', () => {
@@ -69,7 +75,7 @@ describe('the pieces', () => {
   it('falls back from a Plex face to what the reader has', () => {
     expect(stack('IBM Plex Mono')).toMatch(/monospace$/);
     expect(stack('IBM Plex Sans')).toMatch(/sans-serif$/);
-    expect(stack('IBM Plex Serif')).toMatch(/serif$/);
+    expect(stack('Newsreader')).toMatch(/^'Newsreader',.*serif$/);
   });
 
   it('is a format of the builder, named .svg, in both themes when following the reader', () => {
@@ -81,39 +87,59 @@ describe('the pieces', () => {
 });
 
 describe('the faces of a PNG', () => {
-  it('are named from their files: family and weight', () => {
-    expect(faceOf('/fonts/card/IBMPlexSans-Regular.otf')).toEqual({ family: 'IBM Plex Sans', weight: 400 });
-    expect(faceOf('/fonts/card/IBMPlexSans-Medium.otf')).toEqual({ family: 'IBM Plex Sans', weight: 500 });
-    expect(faceOf('/fonts/card/IBMPlexSans-SemiBold.otf')).toEqual({ family: 'IBM Plex Sans', weight: 600 });
-    expect(faceOf('/fonts/card/IBMPlexMono-Medium.otf')).toEqual({ family: 'IBM Plex Mono', weight: 500 });
+  it('are named from their files: family, weight and slant', () => {
+    expect(faceOf('/fonts/card/IBMPlexSans-Regular.otf')).toEqual({ family: 'IBM Plex Sans', weight: 400, style: 'normal' });
+    expect(faceOf('/fonts/card/IBMPlexSans-Medium.otf')).toEqual({ family: 'IBM Plex Sans', weight: 500, style: 'normal' });
+    expect(faceOf('/fonts/card/IBMPlexSans-SemiBoldItalic.otf')).toEqual({ family: 'IBM Plex Sans', weight: 600, style: 'italic' });
+    expect(faceOf('/fonts/card/IBMPlexMono-Italic.otf')).toEqual({ family: 'IBM Plex Mono', weight: 400, style: 'italic' });
+    expect(faceOf('/fonts/card/Newsreader-Medium.ttf')).toEqual({ family: 'Newsreader', weight: 500, style: 'normal' });
     expect(() => faceOf('/fonts/card/Other-Regular.otf')).toThrow(/no face/);
+    expect(() => faceOf('/fonts/card/Newsreader-.ttf')).toThrow(/no face/);
   });
 
   it('are every one the card names, and every one in public/fonts/card has a family and weight', () => {
-    for (const f of fs.readdirSync('public/fonts/card').filter((x) => x.endsWith('.otf'))) expect(() => faceOf(f), f).not.toThrow();
-    for (const o of model.ops.filter((x) => x.k === 'text')) expect(['IBM Plex Sans', 'IBM Plex Mono'], o.font).toContain(o.font);
+    for (const f of fs.readdirSync('public/fonts/card').filter((x) => /\.(otf|ttf)$/.test(x))) expect(() => faceOf(f), f).not.toThrow();
+    for (const o of model.ops.filter((x) => x.k === 'text')) expect(['IBM Plex Sans', 'IBM Plex Mono', 'Newsreader'], o.font).toContain(o.font);
+  });
+
+  it('are, for one card, the families and slants it draws text in, at every weight', () => {
+    const files = fs.readdirSync('public/fonts/card').filter((x) => /\.(otf|ttf)$/.test(x)).sort();
+    expect(facesOf(model, files)).toEqual([
+      'IBMPlexMono-Medium.otf', 'IBMPlexMono-Regular.otf', 'IBMPlexMono-SemiBold.otf',
+      'IBMPlexSans-Medium.otf', 'IBMPlexSans-Regular.otf', 'IBMPlexSans-SemiBold.otf',
+      'Newsreader-Italic.ttf', 'Newsreader-MediumItalic.ttf', 'Newsreader-SemiBoldItalic.ttf',
+    ]);
+  });
+
+  it('cover every family, weight and slant a card can ask for', () => {
+    const files = fs.readdirSync('public/fonts/card').filter((x) => /\.(otf|ttf)$/.test(x));
+    const have = new Set(files.map((f) => { const { family, weight, style } = faceOf(f); return `${family} ${weight} ${style}`; }));
+    for (const family of ['IBM Plex Sans', 'IBM Plex Mono', 'Newsreader']) for (const weight of [400, 500, 600]) for (const style of ['normal', 'italic']) expect(have).toContain(`${family} ${weight} ${style}`);
   });
 
   it('are the faces the embed page lays a card out in, so the text is measured in the files it is drawn in', () => {
     const css = fs.readFileSync('src/styles/card-faces.css', 'utf8');
-    // Each rule's family, weight and file, whatever its spacing and quoting.
+    // Each rule's family, weight, slant and file, whatever its spacing and quoting.
     const rules = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map(([, body]) => ({
       family: body.match(/font-family\s*:\s*['"]?([^'";]+?)['"]?\s*;/)?.[1],
       weight: +body.match(/font-weight\s*:\s*(\d+)/)?.[1],
+      style: body.match(/font-style\s*:\s*(\w+)/)?.[1] ?? 'normal',
       f: body.match(/url\(\s*['"]?\/fonts\/card\/([^'")\s]+)/)?.[1],
     }));
-    const files = fs.readdirSync('public/fonts/card').filter((x) => x.endsWith('.otf')).sort();
+    const files = fs.readdirSync('public/fonts/card').filter((x) => /\.(otf|ttf)$/.test(x)).sort();
     expect(rules.map((r) => r.f).sort()).toEqual(files);
-    for (const r of rules) expect({ family: r.family, weight: r.weight }, r.f).toEqual(faceOf(r.f));
+    for (const r of rules) expect({ family: r.family, weight: r.weight, style: r.style }, r.f).toEqual(faceOf(r.f));
+    // and no other copy of them: a web font of the same name would win the layout.
     const embed = fs.readFileSync('src/layouts/Embed.astro', 'utf8');
     expect(embed).toContain("import '../styles/card-faces.css';");
-    expect(embed).not.toMatch(/fonts\.googleapis\.com[^"]*IBM\+Plex/);
+    expect(embed).not.toMatch(/fonts\.googleapis\.com/);
   });
 
   it('go into the SVG as @font-face rules with data: URIs, still an SVG a renderer reads', async () => {
     const withIt = withFonts(svg, [{ file: 'IBMPlexSans-Regular.otf', uri: 'data:font/otf;base64,AAAA' }, { file: 'IBMPlexMono-Medium.otf', uri: 'data:font/otf;base64,BBBB' }]);
-    expect(withIt).toContain("@font-face{font-family:'IBM Plex Sans';font-weight:400;src:url(data:font/otf;base64,AAAA)}");
-    expect(withIt).toContain("@font-face{font-family:'IBM Plex Mono';font-weight:500;src:url(data:font/otf;base64,BBBB)}");
+    expect(withIt).toContain("@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:normal;src:url(data:font/otf;base64,AAAA)}");
+    expect(withIt).toContain("@font-face{font-family:'IBM Plex Mono';font-weight:500;font-style:normal;src:url(data:font/otf;base64,BBBB)}");
+    expect(withFonts(svg, [{ file: 'Newsreader-Italic.ttf', uri: 'data:font/ttf;base64,CCCC' }])).toContain("@font-face{font-family:'Newsreader';font-weight:400;font-style:italic;src:url(data:font/ttf;base64,CCCC)}");
     expect(withIt.replace(/<style>[\s\S]*?<\/style>\n/, '')).toBe(svg);
     const meta = await sharp(Buffer.from(withIt)).metadata();
     expect([meta.format, meta.width, meta.height]).toEqual(['svg', 320, 120]);

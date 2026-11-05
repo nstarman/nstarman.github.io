@@ -45,7 +45,8 @@ export async function downloadCard({ preview, site, fonts, say }, s) {
       if (!r.ok) throw new Error(`no figure at ${url}`);
       files[path] = new Uint8Array(await r.arrayBuffer());
     }
-    const bytes = await compileTypst(src, files, fonts, say);
+    const { facesOf } = await import('../cardsvg.js');
+    const bytes = await compileTypst(src, files, facesOf(model, fonts), say);
     return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   }
 
@@ -68,16 +69,16 @@ export async function downloadCard({ preview, site, fonts, say }, s) {
     const uris = {};
     for (const [path, url] of images) uris[path] = await dataUri(url);
     const { modelToSvg } = await import('../cardsvg.js');
-    return { svg: modelToSvg(model, uris), w: model.w, h: model.h };
+    return { svg: modelToSvg(model, uris), w: model.w, h: model.h, model };
   }
   const svg = async (theme, s) => URL.createObjectURL(new Blob([(await svgText(theme, s)).svg], { type: 'image/svg+xml' }));
 
   // The card as a PNG, rasterized from that SVG at twice its size. An SVG drawn as
   // an image cannot reach the page's faces, so it carries the card's own.
   async function png(theme, s) {
-    const { svg: text, w, h } = await svgText(theme, s);
-    const { withFonts } = await import('../cardsvg.js');
-    const faces = await Promise.all(fonts.map(async (f) => ({ file: f, uri: await dataUri(f) })));
+    const { svg: text, w, h, model } = await svgText(theme, s);
+    const { withFonts, facesOf } = await import('../cardsvg.js');
+    const faces = await Promise.all(facesOf(model, fonts).map(async (f) => ({ file: f, uri: await dataUri(f) })));
     const img = new Image();
     img.src = URL.createObjectURL(new Blob([withFonts(text, faces)], { type: 'image/svg+xml' }));
     await img.decode();

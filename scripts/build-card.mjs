@@ -38,7 +38,7 @@ if (args.format === 'pdf' && !fs.existsSync(COMPILER)) {
 
 const { dev } = await import('astro');
 const { chromium } = await import('playwright');
-const fonts = fs.readdirSync('public/fonts/card').filter((f) => f.endsWith('.otf')).sort().map((f) => `/fonts/card/${f}`);
+const fonts = fs.readdirSync('public/fonts/card').filter((f) => /\.(otf|ttf)$/.test(f)).sort().map((f) => `/fonts/card/${f}`);
 
 let server, browser;
 try {
