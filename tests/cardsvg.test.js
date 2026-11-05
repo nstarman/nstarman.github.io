@@ -96,8 +96,12 @@ describe('the faces of a PNG', () => {
 
   it('are the faces the embed page lays a card out in, so the text is measured in the files it is drawn in', () => {
     const css = fs.readFileSync('src/styles/card-faces.css', 'utf8');
-    const rules = [...css.matchAll(/@font-face\{font-family:'([^']+)';font-weight:(\d+);[^}]*src:url\(\/fonts\/card\/([^)]+)\)/g)]
-      .map(([, family, weight, f]) => ({ f, family, weight: +weight }));
+    // Each rule's family, weight and file, whatever its spacing and quoting.
+    const rules = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map(([, body]) => ({
+      family: body.match(/font-family\s*:\s*['"]?([^'";]+?)['"]?\s*;/)?.[1],
+      weight: +body.match(/font-weight\s*:\s*(\d+)/)?.[1],
+      f: body.match(/url\(\s*['"]?\/fonts\/card\/([^'")\s]+)/)?.[1],
+    }));
     const files = fs.readdirSync('public/fonts/card').filter((x) => x.endsWith('.otf')).sort();
     expect(rules.map((r) => r.f).sort()).toEqual(files);
     for (const r of rules) expect({ family: r.family, weight: r.weight }, r.f).toEqual(faceOf(r.f));
