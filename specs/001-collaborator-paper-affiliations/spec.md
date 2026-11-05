@@ -107,8 +107,9 @@ appear on no item stay empty; the collector's report lists them.
   institution rules as ORCID ones (FR-011), so the same institution is spelled and placed one way
   across the whole file.
 - **FR-004**: An item affiliation MUST yield an entry only when it names an institution the collector
-  can place from known data: an institution already in the collaborator file or in the site's place
-  configuration. Otherwise it yields nothing and the collector reports it.
+  can place from known data: an institution some collaborator's ORCID history already names (the
+  site's place list is not used, since it also holds talk venues). Otherwise it yields nothing and
+  the collector reports it.
 - **FR-005**: A collaborator with any ORCID employment or education MUST get only ORCID entries.
 - **FR-006**: A collaborator with neither ORCID data nor a placeable item affiliation MUST keep an
   empty `affiliations`.
