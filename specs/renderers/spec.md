@@ -178,6 +178,10 @@ snapshots (`specs/refresh/spec.md`).
   (300 ppi) by its extension, any other refused before compiling; it defaults to
   `<input>-header.pdf`. A selection with nothing ticked is allowed. `--header` with `--model` is
   refused. A failure leaves no output file. *Enforced:* `tests/build-cv-header.test.js`.
+
+  A card from the command line, `npm run build:card`, keeps these conventions — paths from where
+  it was run, the format by the output's extension, a failure non-zero with no file — and is
+  specified with the Card Builder's downloads (cards FR-006).
 - **FR-029** The builder and `build:cv` draw one selection as one CV. The model is
   `modelFromSelection(sel)` (`src/lib/selectionmodel.js`) over a decoded selection, and it uses every
   field `decode` returns but the provenance (`savedAt`, `site`). The builder's Compile calls it on `decode(JSON.stringify(currentSelection()))`, the same
