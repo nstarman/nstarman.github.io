@@ -3,6 +3,7 @@
 // and for the PNG export. The site's stylesheet, so the card looks the same as
 // it does here; none of the site's chrome.
 import '@nstarkman/site-layout/site.css';
+import '../styles/card-faces.css';
 import IconSprite from '@nstarkman/site-layout/IconSprite.astro';
 
 const { title } = Astro.props;
@@ -24,11 +25,12 @@ const { title } = Astro.props;
       var t = new URLSearchParams(location.search).get('theme');
       if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
     </script>
+    {/* Newsreader only: the card's sans and mono are its own files (card-faces.css). */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap"
     />
   </head>
   <body class="embed">

@@ -94,6 +94,22 @@ describe('the faces of a PNG', () => {
     for (const o of model.ops.filter((x) => x.k === 'text')) expect(['IBM Plex Sans', 'IBM Plex Mono'], o.font).toContain(o.font);
   });
 
+  it('are the faces the embed page lays a card out in, so the text is measured in the files it is drawn in', () => {
+    const css = fs.readFileSync('src/styles/card-faces.css', 'utf8');
+    // Each rule's family, weight and file, whatever its spacing and quoting.
+    const rules = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map(([, body]) => ({
+      family: body.match(/font-family\s*:\s*['"]?([^'";]+?)['"]?\s*;/)?.[1],
+      weight: +body.match(/font-weight\s*:\s*(\d+)/)?.[1],
+      f: body.match(/url\(\s*['"]?\/fonts\/card\/([^'")\s]+)/)?.[1],
+    }));
+    const files = fs.readdirSync('public/fonts/card').filter((x) => x.endsWith('.otf')).sort();
+    expect(rules.map((r) => r.f).sort()).toEqual(files);
+    for (const r of rules) expect({ family: r.family, weight: r.weight }, r.f).toEqual(faceOf(r.f));
+    const embed = fs.readFileSync('src/layouts/Embed.astro', 'utf8');
+    expect(embed).toContain("import '../styles/card-faces.css';");
+    expect(embed).not.toMatch(/fonts\.googleapis\.com[^"]*IBM\+Plex/);
+  });
+
   it('go into the SVG as @font-face rules with data: URIs, still an SVG a renderer reads', async () => {
     const withIt = withFonts(svg, [{ file: 'IBMPlexSans-Regular.otf', uri: 'data:font/otf;base64,AAAA' }, { file: 'IBMPlexMono-Medium.otf', uri: 'data:font/otf;base64,BBBB' }]);
     expect(withIt).toContain("@font-face{font-family:'IBM Plex Sans';font-weight:400;src:url(data:font/otf;base64,AAAA)}");
