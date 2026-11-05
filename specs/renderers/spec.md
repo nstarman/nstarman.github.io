@@ -87,14 +87,19 @@ snapshots (`specs/refresh/spec.md`).
   `tests/presets.test.js` ("are the four the site offers"), `tests/cvmodel.test.js`;
   `test:links` once the PDFs are built.
 - **FR-010** `/tools/` lists the Web Dev tools (`/webdev/cv/`, `/webdev/card/`,
-  `/webdev/tiers/`) and tools in their own repos; it is linked from the footer, not the nav.
+  `/webdev/tiers/`, `/webdev/assets/`) and tools in their own repos; it is linked from the footer, not the nav.
   Its Agent Skills cards are `config/skills.json` (see `specs/refresh/spec.md`, FR-023); a skill that
   lives in another repository says "from <owner/repo>" under its text, and a line above the cards
   links to the install instructions in nstarman/skills' README.
   `/webdev/cv/` renders the `complete` CV with a checkbox per entry and line, seeded from `np`,
   and compiles a PDF in the browser through `src/lib/typstcompile.js` (typst.ts, `cv/**/*.typ`
   globbed, the compiler wasm gzipped by `scripts/gzip-compiler.mjs` into `src/generated/`).
-  `/webdev/tiers/` lists each package under its `tier`. *Enforced:* build; review.
+  `/webdev/tiers/` lists each package under its `tier`. `/webdev/assets/` links, each with the
+  `download` attribute, only files the build already publishes: per `presetNames` the CV PDF
+  (FR-019) and `/cv/<preset>.json`; every `softwareCards` card in each of `THEMES` as a preview
+  and its `cardFile` SVG; `/nstarkman_publications.bib`, `/cards/index.json`,
+  `/embed/index.json` and `/records/item.schema.json` — the lists read from the modules that
+  build the files, never kept by hand. *Enforced:* build; `test:links`; review.
 - **FR-011** `/404.html` exists, linking home, publications, software and the CV. *Enforced:*
   build; review.
 

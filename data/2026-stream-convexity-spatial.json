@@ -18,6 +18,16 @@
       "orcid": "0000-0003-3954-3291"
     }
   ],
+  "funding": [
+    {
+      "funder": "The Brinson Foundation",
+      "award": "Brinson Prize Fellowship",
+      "recipients": [
+        "Starkman"
+      ],
+      "grant": "brinson-prize-fellowship"
+    }
+  ],
   "refs": [
     "potamides",
     "galax"
