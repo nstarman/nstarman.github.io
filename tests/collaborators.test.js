@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import doc from '/config/collaborators.json';
 import acknowledgements from '/config/acknowledgements.json';
 import { affiliationAt, items } from '../src/lib/data.js';
+import { paperAffiliations } from '../scripts/lib/paper-affiliations.mjs';
 
 
 describe('the collaborator database', () => {
@@ -122,5 +123,65 @@ describe('affiliationAt', () => {
   it('ignores undated posts, which cannot be said to cover any date', () => {
     // Ana Bonaca's single entry has no start date.
     expect(affiliationAt('0000-0002-7846-9787', '2020-01')).toBeNull();
+  });
+});
+
+describe('paperAffiliations', () => {
+  // A collaborator whose ORCID lists nothing is placed from the affiliation printed on the
+  // site's items — but only at an institution some ORCID history already names.
+  const known = { orcid: 'K', affiliations: [{ organization: 'Case Western Reserve University', city: 'Cleveland', region: 'OH', country: 'US', kind: 'employment' }] };
+  const empty = { orcid: 'E', affiliations: [] };
+  const item = (start, affiliation, orcid = 'E') => ({ date: { start }, authors: [{ orcid, affiliation }] });
+  const run = (items, people = [known, empty], flagged = new Set(['E'])) => paperAffiliations(people, items, flagged);
+  const CWRU = 'Physics Department/CERCA/ISO, Case Western Reserve University, Cleveland, Ohio 44106-7079, USA';
+
+  it('places an empty record at the institution one item prints, where ORCID places it, dated by that item', () => {
+    expect(run([item('2020-06', CWRU)]).byOrcid.get('E')).toEqual([{
+      organization: 'Case Western Reserve University', city: 'Cleveland', region: 'OH', country: 'US',
+      role: null, kind: 'paper', start: '2020-06', end: '2020-06',
+    }]);
+  });
+
+  it('matches whatever the case and punctuation, keeping the known spelling', () => {
+    expect(run([item('2020', 'Dept. of Physics; case western reserve university')]).byOrcid.get('E')[0].organization)
+      .toBe('Case Western Reserve University');
+  });
+
+  it('merges one institution across items, from the earliest to the latest', () => {
+    const [e] = run([item('2021-03', CWRU), item('2019', CWRU), item('2020-06', CWRU)]).byOrcid.get('E');
+    expect([e.start, e.end]).toEqual(['2019', '2021-03']);
+  });
+
+  it('keeps two institutions apart, newest first', () => {
+    const other = { orcid: 'O', affiliations: [{ organization: 'University of Toronto', kind: 'education' }] };
+    const out = run([item('2018', 'University of Toronto, Toronto, Canada'), item('2020', CWRU)], [known, other, empty]);
+    expect(out.byOrcid.get('E').map((e) => e.organization)).toEqual(['Case Western Reserve University', 'University of Toronto']);
+  });
+
+  it('gives nothing to a person whose ORCID record is not empty', () => {
+    expect(run([item('2020', CWRU, 'K')], [known, empty], new Set(['E'])).byOrcid.has('K')).toBe(false);
+  });
+
+  it('leaves a person empty when no item prints an affiliation for them', () => {
+    expect(run([item('2020', undefined)]).byOrcid.has('E')).toBe(false);
+  });
+
+  it('reports an affiliation that names no known institution, and places nothing for it', () => {
+    const out = run([item('2020', 'Department of Physics, Nowhere University, Atlantis')]);
+    expect(out.byOrcid.has('E')).toBe(false);
+    expect(out.unmatched).toEqual([{ orcid: 'E', affiliation: 'Department of Physics, Nowhere University, Atlantis' }]);
+  });
+
+  it('never matches a part against a paper-derived entry, only against ORCID ones', () => {
+    const paperOnly = { orcid: 'P', affiliations: [{ organization: 'Nowhere University', kind: 'paper' }] };
+    expect(run([item('2020', 'Nowhere University')], [paperOnly, empty]).byOrcid.has('E')).toBe(false);
+  });
+});
+
+describe('the collaborator database and paper affiliations', () => {
+  it('never mixes paper-derived entries with ORCID ones for one person', () => {
+    const mixed = doc.people.filter((p) => p.affiliations.some((a) => a.kind === 'paper')
+      && p.affiliations.some((a) => a.kind !== 'paper'));
+    expect(mixed.map((p) => p.name)).toEqual([]);
   });
 });
