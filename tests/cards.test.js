@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   LOOKS, FIGURE_AT, FIGURE_ALIGN, FOOT_AT, FOOT_END, TEXTS, TITLES, AUTHORS, EXTRAS, BACKGROUNDS, SITE_PRESETS, PRESET, STEP_PX, FRAME_PX, CARD_TYPES, formatName, parseName, placeOf, cardFace, cardFacts, defaultSlug, linkKeys, cardLinks, starLabel, STARS_MIN, cardText, hasStatus, paperHref, TIER_PRESET,
-  FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS, studentStamp,
+  FACES, SPACE_TRACKS, FIGURE_SLOTS, PAPER_TO, DIALS, studentStamp, venueYear,
 } from '@nstarkman/card-builder/cards.js';
 import { items, titleOf, splitTitle } from '../src/lib/data.js';
 import { file, snippet } from '../src/lib/cardexport.js';
@@ -779,5 +779,20 @@ describe('student stamp', () => {
   it('links Sirui Wu, a mentee who was not my student', () => {
     const [s] = studentStamp(byId('potamides-apj'));
     expect(s).toMatchObject({ student: 'graduate', pos: 1, href: '/people/sirui-wu/', name: 'Sirui Wu', photo: 'people/sirui-wu.webp' });
+  });
+});
+
+describe('venueYear', () => {
+  it("is the issue's year where the record gives one, as the .bib has it", () => {
+    expect(venueYear({ date: { start: '2020-06' }, venue: { journal: 'PRD', year: '2021' } })).toBe('2021');
+  });
+
+  it("is the record's year otherwise, and for a paper with no venue yet", () => {
+    expect(venueYear({ date: { start: '2025-01' }, venue: { journal: 'ApJ' } })).toBe('2025');
+    expect(venueYear({ date: { start: '2026-05' } })).toBe('2026');
+  });
+
+  it('puts macro-lightning, out in Phys. Rev. D in 2021, at 2021', () => {
+    expect(venueYear(items.find((i) => i.id === 'macro-lightning'))).toBe('2021');
   });
 });
