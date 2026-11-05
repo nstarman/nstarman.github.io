@@ -108,19 +108,36 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   every author with an `orcid` in `data/` or in
   `config/acknowledgements.json`, the site's own author included and marked
   `me: true` (placed on the maps, not counted as a collaborator); only the ORCID
-  iD is sent. An unreadable or
-  empty record is an empty `affiliations`, never a guess. Institution spellings
-  are made to agree (case/punctuation, and containment only within one
-  country), and each gets one city. `--new` looks up only people not yet in the
-  file. *Enforced:* `tests/collaborators.test.js` ("has one entry per ORCID",
-  "only lists people who actually appear as authors", "lists the site's author
-  once, marked `me`, for the maps to place beside the co-authors", "gives each institution exactly one place", "spells each
-  institution one way", "sorts each history newest first").
+  iD is sent. A record that is read and lists no employment and no education
+  (the site's author aside) is filled instead from the `affiliation` printed on
+  that person's author entries in `data/`, through
+  `scripts/lib/paper-affiliations.mjs`, which reads only the items and sends
+  nothing: the affiliation is split on `,` `;` `/`, and a part counts only when it
+  is — case and punctuation aside — an institution some collaborator's ORCID
+  entry names (never `config/places.json`, which also holds talk venues). Each
+  such institution is one entry with `kind: "paper"`, `role: null`, that ORCID
+  entry's place, and `start`/`end` the earliest and latest `date.start` of the
+  items printing it; a person with any ORCID entry gets none. An unreadable
+  record (a failed request) stays empty with no fallback; a person with neither
+  stays empty, never a guess, and the run's summary names everyone still empty
+  with the reason and every printed affiliation that matched nothing.
+  Institution spellings are made to agree (case/punctuation, and containment
+  only within one country), and each gets one city, paper entries included.
+  `--new` looks up only people not yet in the file, keeping everyone else's
+  entry as it is. The maps place a `paper` entry as any other. *Enforced:*
+  `tests/collaborators.test.js` ("has one entry per ORCID", "only lists people
+  who actually appear as authors", "lists the site's author once, marked `me`,
+  for the maps to place beside the co-authors", "gives each institution exactly
+  one place", "spells each institution one way", "sorts each history newest
+  first", "never mixes paper-derived entries with ORCID ones for one person",
+  and `paperAffiliations`: one item, any spelling, merged dates, two
+  institutions, ORCID wins, no affiliation, an unmatched affiliation reported).
 - **FR-012** The yearly collaborator refresh changes recorded history, so it
   opens an **issue**, not a PR: labelled `collaborators`, titled
   `Collaborator affiliations have changed on ORCID (<year>)`, carrying up to
   200 lines of diff and the gates' outcome, and skipped when an open issue has
-  that title. The monthly acknowledgements refresh runs `--new` and proposes the
+  that title; `kind: "paper"` entries that appear, change or are replaced by a
+  new ORCID history show in that diff like any other. The monthly acknowledgements refresh runs `--new` and proposes the
   additions as a PR. *Enforced:* `refresh-collaborators.yml`; review.
 - **FR-013** `scripts/scrape-astropy-voting-members.mjs` writes
   `config/astropy-voting-members.json`: the list under the "Active Voting
@@ -210,12 +227,15 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
 - **Refresh branch** — `chore/refresh-<name>`, reset on each run (FR-003).
 - **`scripts/lib/`** — `ads.mjs` (pure ADS/arXiv/Crossref parsing, tested
   without the network), `items.mjs` (`readItems()`, every `data/*.json` in
-  filename order for plain node), `cardsync.mjs` (`syncKey`).
+  filename order for plain node), `cardsync.mjs` (`syncKey`),
+  `paper-affiliations.mjs` (`orgKey`, `paperAffiliations`: FR-011's fallback,
+  pure, tested on fixtures).
 
 ## Edge Cases
 
 - **Upstream unreachable**: stars keep their last count; a publication logs
-  `failed` and is skipped; an ORCID error gives that person an empty history;
+  `failed` and is skipped; an ORCID error gives that person an empty history,
+  without the paper fallback (FR-011);
   a missing upstream figure throws and stops the whole sync.
 - **Not on ADS / no identifier**: logged and skipped; nothing is written.
 - **A refresh PR has no milestone**: it is opened with the workflow token,
