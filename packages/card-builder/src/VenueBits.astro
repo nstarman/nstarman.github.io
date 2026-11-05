@@ -4,10 +4,10 @@
 // yet is placed by its arXiv number, as on /publications/. The card sets
 // them on their own line and again after the authors, and shows one.
 import Venue from './Venue.astro';
-import { venueLine, year } from '@nstarkman/research-store';
-import { hasStatus } from './cards.js';
+import { venueLine } from '@nstarkman/research-store';
+import { hasStatus, venueYear } from './cards.js';
 
 const { item, link = true } = Astro.props;
 ---
 {venueLine(item) ? <><span class="c-vfull"><Venue item={item} link={link} /></span>{venueLine(item, { short: true }) !== venueLine(item) && <span class="c-vshort"><Venue item={item} short link={link} /></span>}<span class="dot">·</span></>
-  : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{year(item)}</span>{hasStatus(item) && <span class="statustag c-status">{item.status}</span>}
+  : item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}<span class="yr">{venueYear(item)}</span>{hasStatus(item) && <span class="statustag c-status">{item.status}</span>}

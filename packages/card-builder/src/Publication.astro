@@ -1,6 +1,6 @@
 ---
 // One publication, as /publications/ lists it.
-import { PRESET } from './cards.js';
+import { PRESET, venueYear } from './cards.js';
 import { authors, venueLine, year, links, authorPosition, softwareUsed } from '@nstarkman/research-store';
 import { mathParts } from './maths.js';
 import { toBibtex } from '@nstarkman/data-resolver/bibtex.js';
@@ -48,7 +48,7 @@ const more = abstract && (item.abstract || bib);
         <Venue item={item} />
         {venue && <span class="dot">·</span>}
         {!venue && item.arxiv && <>arXiv:{item.arxiv}<span class="dot">·</span></>}
-        <span class="yr">{year(item)}</span>
+        <span class="yr">{venueYear(item)}</span>
         {pending && <span class="statustag">{pending}</span>}
       </p>
     )}

@@ -5,7 +5,7 @@ import { menteeById, menteeName, profileHref } from '@nstarkman/data-resolver/me
 import { siteHref } from '@nstarkman/data-resolver/urls.js';
 
 export { siteHref };
-import { config, links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle } from '@nstarkman/research-store';
+import { config, links, primaryLink, softwarePapers, relKey, authorPosition, HIGHLIGHT_TOPICS, venueUrl, venueLine, splitTitle, year } from '@nstarkman/research-store';
 
 export { placeOf, cardFace, PAPER_TO, LOOKS, DIALS, FIGURE_AT, FIGURE_ALIGN, FIGURE_SLOTS, FOOT_AT, FOOT_END, RAIL_ALIGN, SPACE_TRACKS, FIXED_MIN_HEIGHT, TITLES, AUTHORS, AUTHORS_MAX, FACES, TEXTS, EXTRAS, BACKGROUNDS, FIXED_MIN, FIXED_MAX, formatName, parseName } from './cardname.js';
 
@@ -92,6 +92,10 @@ export const hasRole = (item) => item.type === 'software' && !!item.role;
 export const hasVenue = (item) => item.type === 'publication';
 /** The year stands on its own in a paper's or a synthesis's rail. */
 export const hasYear = (item) => item.type !== 'software';
+/** The year on a paper's venue line: the issue's own (`venue.year`, which a record sets only
+ *  where it differs from `date.start`), else the record's — the rule the .bib follows. The
+ *  `year` extra and the stamp keep the record's (`year`), which orders the papers. */
+export const venueYear = (item) => item.venue?.year ?? year(item);
 /** The pill after a paper's title, title:…:status: where it stands, while
  *  it is not yet out — submitted or accepted. */
 export const titleStatus = (item) => (item.type === 'publication' && ['submitted', 'accepted'].includes(item.status) ? item.status : null);
