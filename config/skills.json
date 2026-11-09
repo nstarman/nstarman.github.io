@@ -14,14 +14,19 @@
     {
       "name": "figpress-apps",
       "description": "Builds an interactive webapp for a scientific paper with figpress-apps: exports the paper's arrays, ports the per-interaction science to tested JavaScript, composes linked views, and publishes a static site plus a single archivable HTML file that also runs in notebooks.",
-      "href": "https://github.com/nstarman/figpress-apps/tree/v2026.10.28/skills/figpress-apps",
+      "href": "https://github.com/nstarman/figpress-apps/tree/v2026.11.01/skills/figpress-apps",
       "from": "nstarman/figpress-apps"
     },
     {
       "name": "figpress-apps-upgrade",
       "description": "Moves a figpress-apps webapp to a newer figpress-apps version by applying the changelog's migration notes in order, then rebuilds and re-checks that the app still reproduces the paper's numbers.",
-      "href": "https://github.com/nstarman/figpress-apps/tree/v2026.10.28/skills/figpress-apps-upgrade",
+      "href": "https://github.com/nstarman/figpress-apps/tree/v2026.11.01/skills/figpress-apps-upgrade",
       "from": "nstarman/figpress-apps"
+    },
+    {
+      "name": "quarto-revealjs",
+      "description": "Builds Quarto reveal.js presentations that work offline for good: one self-contained HTML file plus a PDF, with math, Plotly figures, speaker notes and embedded interactive apps, and a tested guide to which reveal.js features Quarto supports and how to write them.",
+      "href": "https://github.com/nstarman/skills/tree/main/quarto-revealjs"
     },
     {
       "name": "quax",
@@ -47,13 +52,13 @@
     {
       "name": "syw-site",
       "description": "Adds a docs site to a showyourwork paper: its numbers, figures and interactive figpress-apps webapps, built by the paper's own pipeline and published at nstarkman.space with the website's layout, kept private until arXiv.",
-      "href": "https://github.com/nstarman/syw-site/tree/v2026.10.29/skills/syw-site",
+      "href": "https://github.com/nstarman/syw-site/tree/v2026.11.01.1/skills/syw-site",
       "from": "nstarman/syw-site"
     },
     {
       "name": "syw-site-upgrade",
       "description": "Moves a paper's docs site to a newer syw-site release by applying the changelog's migration notes in order, refreshing the scaffold, rebuilding and checking that the site still shows the paper's numbers.",
-      "href": "https://github.com/nstarman/syw-site/tree/v2026.10.29/skills/syw-site-upgrade",
+      "href": "https://github.com/nstarman/syw-site/tree/v2026.11.01.1/skills/syw-site-upgrade",
       "from": "nstarman/syw-site"
     },
     {
