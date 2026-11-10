@@ -100,7 +100,8 @@ export function measureCard(card, { title, site }) {
       const r = range.getClientRects()[0];
       if (!r) continue;
       const line = lines.at(-1);
-      if (line && Math.abs(r.top - line.r.top) < r.height / 2) { line.s += n.data[i]; line.right = Math.max(line.right, r.right); }
+      // Its width ends at the last visible character: the space before the next run is no part of it.
+      if (line && Math.abs(r.top - line.r.top) < r.height / 2) { line.s += n.data[i]; if (n.data[i].trim()) line.right = Math.max(line.right, r.right); }
       else if (n.data[i].trim()) lines.push({ r, s: n.data[i], right: r.right });
     }
     const up = s.textTransform === 'uppercase';

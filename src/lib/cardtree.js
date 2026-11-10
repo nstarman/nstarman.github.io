@@ -135,7 +135,12 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
           : Math.abs(dest.width / dest.height - iw / ih) > 0.01 ? 'stretch' : 'contain';
         const path = `/img${images.length}.${new URL(src, 'http://x/').pathname.split('.').pop()}`;
         images.push([path, src]);
-        ops.push({ k: 'img', ...box, r: (bg ? radiiOf(bg.shape, outer.w, outer.h) : Array(4).fill(Math.min(+(ringOf(parent?.raw.drawables.filter((d) => d.role === 'border') ?? [])?.outer ?? 0), outer.w / 2, outer.h / 2))).map((v) => Math.max(0, v - inset)), src: path, fit, href: hrefOf(node) });
+        // A figure with border-radius of its own and no box behind it has them in its clip; the engine leaves a padded one's
+        // a plain rectangle, so there they come from the box around it, less the padding and border between.
+        const { clip } = node.raw.drawables[0];
+        const r = clip?.type === 'rounded-rect' ? radiiOf(clip, box.w, box.h)
+          : (bg ? radiiOf(bg.shape, outer.w, outer.h) : Array(4).fill(Math.min(+(ringOf(parent?.raw.drawables.filter((d) => d.role === 'border') ?? [])?.outer ?? 0), outer.w / 2, outer.h / 2))).map((v) => Math.max(0, v - inset));
+        ops.push({ k: 'img', ...box, r, src: path, fit, href: hrefOf(node) });
       } else {
         throw new Error(`cannot draw an image that is ${tag === 'svg' ? 'an <svg> that is not an icon' : `a ${tag}`}: ${describe(node)}`);
       }
@@ -155,12 +160,15 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
         const first = lead ? (run.glyphs.find((g) => g.cluster >= lead)?.x ?? 0) : 0;
         // Text with no colour draws nothing, and the engine leaves it no glyphs; the browser's measurement keeps its line.
         const glyphs = node.raw.drawables.find((d) => d.type === 'glyphs' && d.run === i);
+        // A line's width ends at its last visible glyph, as the browser's does: a space before the next run is no part of it.
+        const end = run.text.trimEnd().length;
+        const tail = end < run.text.length ? run.glyphs.find((g) => g.cluster >= end)?.x : undefined;
         const asc = Math.round(run.ascent);
         const baseline = node.transform[5] + run.y;
         lines.push({
           line: run.line,
           op: {
-            k: 'text', x: node.transform[4] - origin.x + run.x + first, y: baseline - asc - origin.y, w: run.width - first, h: asc + Math.round(run.descent),
+            k: 'text', x: node.transform[4] - origin.x + run.x + first, y: baseline - asc - origin.y, w: (tail ?? run.width) - first, h: asc + Math.round(run.descent),
             s: run.text.trim().replace(/\s+/g, ' '), font: run.font.family, weight: run.font.weight, style: run.font.style === 'normal' ? 'normal' : 'italic',
             size: run.fontSize, color: glyphs ? hex(glyphs.paint, `the text of ${describe(node)}`) : null, ls: run.letterSpacing || 0, href: hrefOf(node, run.element ?? node.element),
           },

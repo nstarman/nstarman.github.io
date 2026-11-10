@@ -79,12 +79,16 @@ export async function modelFor({ item, name, theme = 'light', width, minHeight =
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml', gif: 'image/gif', avif: 'image/avif' };
 
 /** Each figure's bytes, read from public/ by the path the item gives (`/highlights/x.webp`). */
-function figures(images) {
-  return Object.fromEntries(images.map(([src, from]) => {
+async function figures(images) {
+  return Object.fromEntries(await Promise.all(images.map(async ([src, from]) => {
     const file = path.resolve('public', decodeURI(new URL(from, SITE).pathname).replace(/^\//, ''));
     if (!fs.existsSync(file)) throw new Error(`no figure at ${file}`);
-    return [src, fs.readFileSync(file)];
-  }));
+    const bytes = fs.readFileSync(file);
+    // A figure that does not decode would be a blank box in one format and an error in another.
+    const ok = /\.svg$/i.test(file) ? /<svg\b/.test(bytes.toString('utf8', 0, 4096)) : await sharp(bytes).metadata().then(() => true, () => false);
+    if (!ok) throw new Error(`the figure at ${file} is not a readable image`);
+    return [src, bytes];
+  })));
 }
 
 /**
@@ -96,7 +100,7 @@ export async function drawCard({ format, ...card }) {
   const key = SITE_PRESETS.find((p) => p.key === card.name)?.key;
   if (key && !OFFLINE_PRESETS.includes(key)) throw new Error(`preset "${key}" is not drawn offline yet: ${NOT_OFFLINE[key]}`);
   const { model, images } = await modelFor(card);
-  const bytes = figures(images);
+  const bytes = await figures(images);
   if (format === 'pdf') return { model, pdf: pdfFromModel(model, bytes) };
   const uri = (src, b, type) => `data:${type ?? MIME[src.split('.').pop()] ?? 'application/octet-stream'};base64,${b.toString('base64')}`;
   const svg = modelToSvg(model, Object.fromEntries(Object.entries(bytes).map(([src, b]) => [src, uri(src, b)])));

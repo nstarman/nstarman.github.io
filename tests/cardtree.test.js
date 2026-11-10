@@ -147,3 +147,38 @@ describe('text with no colour', () => {
     expect(t).toMatchObject({ s: 'Hi', color: null });
   });
 });
+
+describe('a figure', () => {
+  // A 40x20 PNG, drawn in 60x60 boxes by each object-fit.
+  const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAIAAABwJOjsAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAALklEQVRIie3VwQkAMBACwem/aVPGQVjwL4i6xolkrKhXuTQnHci6TEFCWPQ/Fh99+h0OPLImvgAAAABJRU5ErkJggg==';
+  const img = async (style, wrap = (s) => s, o) => (await ops(wrap(`<img src="${PNG}" style="width:60px;height:60px;${style}">`), o)).find((x) => x.k === 'img');
+
+  it('is told how it fits by the rectangle it is drawn in', async () => {
+    expect((await img('object-fit:contain')).fit).toBe('contain');
+    expect((await img('object-fit:cover')).fit).toBe('cover');
+    expect((await img('')).fit).toBe('stretch');
+  });
+
+  it('is rounded by its own border-radius where no box stands behind it, and by the box where one does', async () => {
+    expect((await img('border-radius:30px;object-fit:cover')).r).toEqual([30, 30, 30, 30]);
+    expect((await img('border:3px solid #0a0;border-radius:30px;object-fit:cover')).r).toEqual([27, 27, 27, 27]);
+    // the card's own figure: a padded, white, rounded img, the corners inside its padding
+    expect((await img('border-radius:10px;background:#fff;padding:4px;object-fit:contain')).r).toEqual([6, 6, 6, 6]);
+  });
+
+  it('carries the link it stands in', async () => {
+    const wrap = (s) => `<a href="x" class="x-link-0">${s.replace('<img', '<img class="x-link-0"')}</a>`;
+    expect((await img('', wrap, { links: ['/p'] })).href).toBe('https://nstarkman.space/p');
+    expect((await img('')).href).toBeNull();
+  });
+});
+
+describe('a line followed by another run', () => {
+  it('ends at its last visible glyph, so textLength does not squeeze the letters over the space before the next run', async () => {
+    const t = (await ops('<p style="margin:0;font:16px \'IBM Plex Sans\'">are unit-aware via <a href="#x" style="font:16px \'IBM Plex Sans\'">unxt</a>.</p>')).filter((o) => o.k === 'text');
+    const via = t.find((o) => o.s.endsWith('via'));
+    const next = t.find((o) => o.s === 'unxt');
+    // a space's width, about 4 px, lies between them
+    expect(next.x - (via.x + via.w)).toBeGreaterThan(2.5);
+  });
+});

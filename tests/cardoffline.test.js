@@ -209,3 +209,32 @@ describe('figures in a PNG and a circle photo', () => {
     expect(photo.r.every((v) => v > 5)).toBe(true);
   }, 60_000);
 });
+
+describe('a figure that cannot be drawn', () => {
+  it('is an error naming its file, in every format, rather than a blank box', async () => {
+    const { drawCard } = await import('../src/lib/cardoffline.js');
+    const fs = await import('node:fs');
+    const base = items.find((i) => i.id === 'potamides-apj');
+    const draw = (image, format) => drawCard({ item: { ...base, highlight: { ...base.highlight, image } }, name: 'paperHighlight', width: 500, format });
+    fs.writeFileSync('public/highlights/zz-corrupt.webp', 'not an image');
+    try {
+      for (const format of ['svg', 'png', 'pdf']) {
+        await expect(draw('highlights/zz-corrupt.webp', format)).rejects.toThrow(/zz-corrupt\.webp is not a readable image/);
+        await expect(draw('highlights/zz-missing.webp', format)).rejects.toThrow(/no figure at .*zz-missing\.webp/);
+      }
+    } finally {
+      fs.rmSync('public/highlights/zz-corrupt.webp', { force: true });
+    }
+  }, 60_000);
+
+  it('draws an SVG figure in a PNG, and an SVG that needs no file beside it', async () => {
+    const { drawCard } = await import('../src/lib/cardoffline.js');
+    const sharp = (await import('sharp')).default;
+    const item = items.find((i) => i.id === 'astropy');
+    const { svg, png, model } = await drawCard({ item, name: 'paperHighlight', width: 500, format: 'png' });
+    expect([...svg.matchAll(/<image href="([^"]{0,20})/g)].every((m) => m[1].startsWith('data:'))).toBe(true);
+    const f = model.ops.find((o) => o.k === 'img');
+    const { channels } = await sharp(png).extract({ left: Math.round(f.x * 2), top: Math.round(f.y * 2), width: Math.round(f.w * 2), height: Math.round(f.h * 2) }).stats();
+    expect(Math.max(...channels.map((c) => c.stdev)), 'the logo is not drawn').toBeGreaterThan(5);
+  }, 60_000);
+});
