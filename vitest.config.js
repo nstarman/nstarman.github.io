@@ -9,5 +9,8 @@ export default getViteConfig({
     // tests/kit/ reads the built site: npm run test:kit, after the build.
     exclude: process.env.VITEST_KIT ? [] : ['tests/kit/**'],
     environment: 'node',
+    // vitest replaces a CSS import with an empty string, `?raw` ones included. src/lib/cardcss.js
+    // reads the card's stylesheet that way, so those are let through, and only those.
+    css: { include: [/\.css\?raw$/] },
   },
 });

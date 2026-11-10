@@ -5,15 +5,14 @@
 // Left out, the name is the item's default card, the theme light, and the output the
 // builder's own file name for it, a PNG, where the command was run.
 //
-// It runs the builder's own downloadCard (src/lib/cardbuilder/download.js) in a headless
-// Chromium against the site's dev server, started here, so the file is the builder's —
-// the same measurement of the same CSS — with no layout of its own (specs/cards/spec.md).
-// Needs Playwright's Chromium: npx playwright install chromium.
+// The card's own markup and stylesheet are laid out by the Takumi engine (src/lib/cardoffline.js)
+// and drawn as the website's cards are: no browser and no server (specs/cards/spec.md). A PDF
+// needs the `typst` binary (TYPST=/path/to/typst), as build:cv does.
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { readArgs, USAGE } from './lib/cardargs.mjs';
+import { ssr } from './lib/ssr.mjs';
 
 let args;
 try {
@@ -26,67 +25,28 @@ try {
 const cwd = process.cwd();
 const root = path.resolve(import.meta.dirname, '..');
 process.chdir(root);
-// The PDF's compiler, which predev otherwise makes.
-const COMPILER = 'src/generated/typst_ts_web_compiler_bg.wasm.gz';
-if (args.format === 'pdf' && !fs.existsSync(COMPILER)) {
-  const r = spawnSync(process.execPath, ['scripts/gzip-compiler.mjs'], { stdio: 'inherit' });
-  if (r.status !== 0 || !fs.existsSync(COMPILER)) {
-    console.error(`could not make ${COMPILER} (scripts/gzip-compiler.mjs${r.error ? `: ${r.error.message}` : ` exited ${r.status}`})`);
-    process.exit(1);
-  }
-}
 
-const { dev } = await import('astro');
-const { chromium } = await import('playwright');
-const fonts = fs.readdirSync('public/fonts/card').filter((f) => /\.(otf|ttf)$/.test(f)).sort().map((f) => `/fonts/card/${f}`);
-
-let server, browser;
+const site = await ssr({ root });
 try {
-  // Without the dev toolbar, which marks elements with their source file — the builder's
-  // download from the deployed site has no such attributes.
-  server = await dev({ root, logLevel: 'error', devToolbar: { enabled: false }, server: { host: '127.0.0.1', port: 0 } });
-  const base = `http://127.0.0.1:${server.address.port}`;
-  browser = await chromium.launch({ headless: true }).catch((err) => {
-    throw new Error(`${err.message.split('\n')[0]}\n(run: npx playwright install chromium)`);
-  });
-  // 1280 wide is where the root font size is exactly 16px, as the builder is used.
-  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-  // Any page of the site can import its modules; the item's own embed is a 404 for an unknown id,
-  // which the lookup below names.
-  await page.goto(`${base}/embed/index.json`);
-  const [download] = await Promise.all([
-    page.waitForEvent('download', { timeout: 180_000 }),
-    page.evaluate(async ({ args, fonts }) => {
-      const { items } = await import('/src/lib/data.js');
-      const { CARD_TYPES, PRESET, defaultSlug, formatName, parseName } = await import('/packages/card-builder/src/cards.js');
-      const { query } = await import('/src/lib/cardexport.js');
-      const { downloadCard } = await import('/src/lib/cardbuilder/download.js');
-      const it = items.find((i) => i.id === args.id);
-      if (!it) throw new Error(`no item ${args.id}`);
-      if (!CARD_TYPES.includes(it.type)) throw new Error(`${args.id} is a ${it.type}, which has no card`);
-      // A preset key only where PRESET has it as its own, so `constructor` reads as a name, not Object's.
-      const spec = parseName((args.name !== null && Object.hasOwn(PRESET, args.name) ? PRESET[args.name] : args.name) ?? defaultSlug(it));
-      const width = spec.width === 'fill' ? args.width : spec.width;
-      if (width == null) throw new Error('this card fills its width: give one with --width N');
-      // As the builder's readSpec has it, the name written in full.
-      const s = { id: it.id, it: { title: it.title }, slug: formatName(spec), width, format: args.format, theme: args.theme };
-      // The preview as the builder makes it: an iframe of the embed, as high as the card reports.
-      const preview = document.body.appendChild(document.createElement('div'));
-      preview.innerHTML = `<iframe src="/embed/${s.id}/${query(s)}" width="${width}" style="border:0; max-width:100%"></iframe>`;
-      addEventListener('message', (e) => {
-        if (e.data?.type === 'nstarkman-embed') preview.querySelector('iframe').style.height = `${e.data.height}px`;
-      });
-      await downloadCard({ preview, site: 'https://nstarkman.space', fonts, say: () => {} }, s);
-    }, { args, fonts }),
-  ]);
-  const out = path.resolve(cwd, args.out ?? download.suggestedFilename());
-  await download.saveAs(out);
+  const { items } = await site.load('/src/lib/data.js');
+  const { CARD_TYPES, PRESET, defaultSlug, formatName, parseName } = await site.load('/packages/card-builder/src/cards.js');
+  const { file } = await site.load('/src/lib/cardexport.js');
+  const { drawCard } = await site.load('/src/lib/cardoffline.js');
+  const item = items.find((i) => i.id === args.id);
+  if (!item) throw new Error(`no item ${args.id}`);
+  if (!CARD_TYPES.includes(item.type)) throw new Error(`${args.id} is a ${item.type}, which has no card`);
+  // A preset key only where PRESET has it as its own, so `constructor` reads as a name, not Object's.
+  const spec = parseName((args.name !== null && Object.hasOwn(PRESET, args.name) ? PRESET[args.name] : args.name) ?? defaultSlug(item));
+  const width = spec.width === 'fill' ? args.width : spec.width;
+  if (width == null) throw new Error('this card fills its width: give one with --width N');
+  const slug = formatName(spec);
+  const drawn = await drawCard({ item, name: slug, theme: args.theme, width, format: args.format });
+  const out = path.resolve(cwd, args.out ?? file({ id: item.id, slug, format: args.format }, args.theme));
+  fs.writeFileSync(out, drawn[args.format]);
   console.log(`${path.relative(cwd, out)}  ${fs.statSync(out).size} bytes`);
 } catch (err) {
-  // The page's message, without page.evaluate's prefix and the stack.
-  console.error(err.message.replace(/^page\.evaluate: (Error: )?/, '').split('\n').filter((l) => !/^\s+at /.test(l)).join('\n'));
+  console.error(err.message);
   process.exitCode = 1;
 } finally {
-  await browser?.close();
-  await server?.stop();
+  await site.close();
 }

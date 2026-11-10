@@ -1,0 +1,108 @@
+name: Card check
+
+# The cards drawn with no browser (src/lib/cardoffline.js: the card's own markup and stylesheet laid
+# out by the Takumi engine) are held to Chrome's layout of the same card by `npm run check:cards`:
+# every preset for one item of each type, at two widths, in both themes, comparing every text line,
+# box, icon and figure within half a pixel. It runs on a pull request that touches a card, the
+# stylesheet, the engine or its version; weekly and by hand it also has fast-check generate cards
+# nobody chose (`--fuzz`), shrinks a difference to the smallest card, and keeps a seed to replay it
+# (Actions > Run workflow, with a number of cards and optionally a seed and path).
+# The fuzz-cards label on a pull request runs the generated cards too, and is taken off again.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"   # 05:00 UTC on Mondays
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "How many generated cards to try"
+        default: "500"
+      seed:
+        description: "A seed to replay a failure (from its report); empty for a new one"
+        default: ""
+      path:
+        description: "The failure's path, with the seed, to replay it directly"
+        default: ""
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "packages/card-builder/**"
+      - "packages/site-layout/site.css"
+      - "src/styles/card-*.css"
+      - "src/lib/card*.js"
+      - "src/pages/embed/**"
+      - "src/pages/cards/**"
+      - "scripts/check-cards.mjs"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+  pull-requests: write   # to take the label off
+
+concurrency:
+  group: card-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: check
+    if: github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'fuzz-cards'
+    # A Mac: Chrome on Linux rounds glyph advances to whole px, so its lines break elsewhere, and
+    # it is not the Chrome a reader's Mac draws.
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      FC_RUNS: ${{ inputs.runs || (github.event_name == 'schedule' && '1000') || '300' }}
+      FUZZ_OUT: fuzz-report
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          check-latest: true  # the runner image can lag a security release a dependency then requires
+          cache: npm
+      - run: npm ci
+      - name: Install the browser the cards are compared with
+        run: npx playwright install chromium
+      - run: npm run build
+
+      - name: Compare every preset with Chrome's
+        run: npm run check:cards
+
+      - name: Compare generated cards with Chrome's
+        if: github.event_name != 'pull_request' || github.event.label.name == 'fuzz-cards'
+        run: |
+          args=(--fuzz "$FC_RUNS")
+          [ -n "${{ inputs.seed }}" ] && args+=(--seed "${{ inputs.seed }}")
+          [ -n "${{ inputs.path }}" ] && args+=(--path "${{ inputs.path }}")
+          npm run check:cards -- "${args[@]}"
+
+      - name: Report a difference
+        if: failure()
+        run: |
+          {
+            echo "### A card differs from Chrome's"
+            echo
+            echo 'Seed and path are in the report: replay with the workflow'"'"'s `seed` and `path` inputs, or'
+            echo '`npm run check:cards -- --fuzz 1 --seed … --path …`.'
+            echo
+            echo '```'
+            cat fuzz-report/counterexample.txt 2>/dev/null || echo "(no report written: see the log)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: fuzz-report
+          path: fuzz-report
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # Taken off whatever the result, so that adding it again runs it again.
+      - name: Take the label off
+        if: always() && github.event_name == 'pull_request' && github.event.label.name == 'fuzz-cards'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --remove-label fuzz-cards

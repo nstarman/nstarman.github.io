@@ -4,7 +4,8 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { modelToSvg, rrect, stack, faceOf, facesOf, withFonts } from '../src/lib/cardsvg.js';
+import { paint } from 'takumi-paint';
+import { modelToSvg, rrect, stack, faceOf, facesOf, withFonts, ASCENT } from '../src/lib/cardsvg.js';
 import { file, themes } from '../src/lib/cardexport.js';
 import { FORMATS } from '../src/lib/cardbuilder/settings.js';
 
@@ -40,7 +41,7 @@ describe('modelToSvg', () => {
   it('escapes text and the title, and sets text where it was measured', () => {
     expect(svg).toContain('aria-label="A &lt;card&gt; &amp; more"');
     expect(svg).toContain('>Stream &lt;Members&gt; Only</text>');
-    expect(svg).toContain('x="110" y="16"');
+    expect(svg).toContain('x="110" y="31"');
     expect(svg).toContain('textLength="150"');
   });
 
@@ -143,5 +144,25 @@ describe('the faces of a PNG', () => {
     expect(withIt.replace(/<style>[\s\S]*?<\/style>\n/, '')).toBe(svg);
     const meta = await sharp(Buffer.from(withIt)).metadata();
     expect([meta.format, meta.width, meta.height]).toEqual(['svg', 320, 120]);
+  });
+});
+
+describe('text baselines', () => {
+  it('are explicit, at the line\'s top plus the face\'s ascent, with no dominant-baseline', () => {
+    const svg = modelToSvg(model, { '/img0.png': PNG });
+    expect(svg).not.toContain('dominant-baseline');
+    expect(svg).toContain(`y="${16 + Math.round(15 * ASCENT['IBM Plex Sans'])}"`);
+    expect(svg).toContain(`y="${60 + Math.round(12 * ASCENT.Newsreader)}"`);
+  });
+
+  it('ASCENT is what the layout engine reports for every face, so the table cannot go stale', async () => {
+    const dir = 'public/fonts/card';
+    const fonts = fs.readdirSync(dir).filter((x) => /\.(otf|ttf)$/.test(x)).map((file) => ({ ...faceOf(file), name: faceOf(file).family, data: new Uint8Array(fs.readFileSync(`${dir}/${file}`)) }));
+    for (const f of fonts) {
+      const tree = await paint(`<html><body style="margin:0"><p style="font:${f.style} ${f.weight} 100px '${f.family}';margin:0">Hxg</p></body></html>`, { width: 800, fonts: fonts.map(({ family, ...r }) => r), css: '' });
+      const run = tree.nodes.flatMap((n) => n.runs ?? [])[0];
+      tree.free();
+      expect(run.ascent / 100, `${f.family} ${f.weight} ${f.style}`).toBeCloseTo(ASCENT[f.family], 6);
+    }
   });
 });

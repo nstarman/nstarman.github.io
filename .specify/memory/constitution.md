@@ -76,10 +76,10 @@ specification. Once a paper has a `bibcode` its key is frozen.
 Selection lives in data and presets — `cvs`, `summary`/`details`/
 `detailsComplete`, `tier`, card names. A card's look is a named preset in
 `SITE_PRESETS`, never a class of its own; `cardFace` is the one interpreter of
-a card name; a second implementation (`cardlayout.js`) is held in step by tests.
+a card name; the offline drawing of a card lays out the real card, and its agreement with the browser is held by
+`npm run check:cards`.
 
-*Enforced:* the preset-key test (`tests/cards.test.js`) and the cardlayout tests
-(`tests/cardlayout*.test.js`); review for "never a class of its own".
+*Enforced:* the preset-key test (`tests/cards.test.js`) and `check:cards`; review for "never a class of its own".
 
 ### VIII. Failures are loud
 
@@ -125,4 +125,4 @@ is not used to amend it, since it rewrites from Spec Kit's template and its own
 versioning rule. The footer records the version, ratification date and the
 pinned Spec Kit tag.
 
-**Version**: 2.0.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-23 | **Spec Kit**: v1.1.0
+**Version**: 2.0.2 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-11-09 | **Spec Kit**: v1.1.0
