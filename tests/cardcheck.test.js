@@ -73,6 +73,14 @@ describe('compareModels', () => {
     expect(compareModels(browser, other).ok).toBe(false);
   });
 
+  it('fails a byline with one name more than the browser shows, naming it', () => {
+    const browser = model([box(0, 0, 400, 200), text('J. Nibauer', 20, 20), text(', et al.', 80, 20)]);
+    const engine = model([box(0, 0, 400, 200), text('J. Nibauer', 20, 20), text(', N. Starkman', 80, 20), text(', et al.', 150, 20)]);
+    const r = compareModels(browser, engine);
+    expect(r.ok).toBe(false);
+    expect(r.problems).toContain('extra text ", N. Starkman" at 80.0, 20.0');
+  });
+
   it('is not fooled by the order of the operations', () => {
     expect(differ((e) => { e.ops.reverse(); }).ok).toBe(true);
   });

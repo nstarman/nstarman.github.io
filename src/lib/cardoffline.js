@@ -10,7 +10,7 @@ import { renderMarkup, sprite } from './cardmarkup.js';
 import { engineCss } from './cardcss.js';
 import { engineFonts } from './cardfonts.js';
 import { withLayout } from './cardengine.js';
-import { modelFromTree, cardCorners } from './cardtree.js';
+import { modelFromTree, cardCorners, bylineFits } from './cardtree.js';
 import { modelToSvg } from './cardsvg.js';
 import { pngFromSvg } from './cardraster.js';
 import { pdfFromModel } from './cardtypst.js';
@@ -42,7 +42,6 @@ function nameAt(name, width) {
   } catch (err) {
     throw new Error(`cannot read the card name "${name}": ${err.message}`);
   }
-  if (spec.authorsFit) throw new Error(`cannot draw the card "${name}": authors:…:fit shows as many names as fit, which is not laid out offline yet`);
   if (spec.width !== 'fill') return resolveName(name);
   if (width == null) throw new Error(`the card "${name}" fills its width: give one`);
   return atWidth(resolveName(name), width);
@@ -56,6 +55,23 @@ function withMinHeight(html, px) {
 }
 
 /**
+ * authors:…:fit, as the embed page does it: the most names the name allows, for which the byline, and the venue
+ * after it, is one line, and one where none is. The markup holds a cut for every count, so each candidate is the
+ * same card with one shown, laid out; the first that fits is the markup the card is drawn from.
+ */
+async function fitByline(item, slug, spec, theme, markup) {
+  const cuts = [...markup.html.matchAll(/<span class="c-by-n"[^>]*\bdata-n="(\d+)"/g)].length;
+  if (!cuts) return markup;
+  const most = Math.min(typeof spec.authors === 'number' ? spec.authors : spec.authors === 'short' ? 3 : 8, cuts);
+  let tried = markup;
+  for (let n = most; n >= 1; n -= 1) {
+    tried = await renderMarkup(item, slug, { theme, cut: n });
+    if (n === 1 || await withLayout({ html: tried.html, css: engineCss(theme), fonts: engineFonts() }, bylineFits)) break;
+  }
+  return tried;
+}
+
+/**
  * @param {{ item: object, name: string, theme?: 'light' | 'dark', width?: number, minHeight?: number }} card
  *   `name`: a card name or a SITE_PRESETS key; `width`: for a name that fills its width;
  *   `minHeight`: the height of the tallest card in the row this one is in, in CSS px
@@ -63,7 +79,10 @@ function withMinHeight(html, px) {
  */
 export async function modelFor({ item, name, theme = 'light', width, minHeight = 0 }) {
   const slug = nameAt(name, width);
-  const { html, links, icons } = await renderMarkup(item, slug, { theme });
+  const spec = parseName(slug);
+  let markup = await renderMarkup(item, slug, { theme });
+  if (spec.authorsFit) markup = await fitByline(item, slug, spec, theme, markup);
+  const { html, links, icons } = markup;
   const input = { html: minHeight > 0 ? withMinHeight(html, minHeight) : html, css: engineCss(theme), fonts: engineFonts() };
   const symbols = await sprite();
   const read = (radii) => (tree) => modelFromTree(tree, { title: item.title, site: SITE, links, icons, symbols, radii });

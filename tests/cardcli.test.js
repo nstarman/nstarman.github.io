@@ -60,4 +60,9 @@ describe('build:card', () => {
     expect(r.status).toBe(0);
     expect(fs.readFileSync(path.join(r.cwd, 'out.svg'), 'utf8').startsWith('<svg')).toBe(true);
   }, 60_000);
+  it('writes a paper\'s card with a fitted byline, narrower with fewer names', () => {
+    const name = (w) => `size:${w}:fit-figure:none-title:full:whole:link-authors:full:fit:marked-text:none-extras:venue-buttons:all:fit:right`;
+    const names = (w) => { const r = go(['pinns-neurips', name(w), 'out.svg']); expect(r.stderr).toBe(''); expect(r.status).toBe(0); return (fs.readFileSync(path.join(r.cwd, 'out.svg'), 'utf8').match(/>[A-Z]\. [A-Z][^<]*</g) ?? []).length; };
+    expect(names(808)).toBeGreaterThan(names(240));
+  }, 120_000);
 });
