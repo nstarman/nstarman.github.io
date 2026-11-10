@@ -135,7 +135,7 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
           : Math.abs(dest.width / dest.height - iw / ih) > 0.01 ? 'stretch' : 'contain';
         const path = `/img${images.length}.${new URL(src, 'http://x/').pathname.split('.').pop()}`;
         images.push([path, src]);
-        ops.push({ k: 'img', ...box, r: (bg ? radiiOf(bg.shape, outer.w, outer.h) : [0, 0, 0, 0]).map((v) => Math.max(0, v - inset)), src: path, fit, href: hrefOf(node) });
+        ops.push({ k: 'img', ...box, r: (bg ? radiiOf(bg.shape, outer.w, outer.h) : Array(4).fill(Math.min(+(ringOf(parent?.raw.drawables.filter((d) => d.role === 'border') ?? [])?.outer ?? 0), outer.w / 2, outer.h / 2))).map((v) => Math.max(0, v - inset)), src: path, fit, href: hrefOf(node) });
       } else {
         throw new Error(`cannot draw an image that is ${tag === 'svg' ? 'an <svg> that is not an icon' : `a ${tag}`}: ${describe(node)}`);
       }

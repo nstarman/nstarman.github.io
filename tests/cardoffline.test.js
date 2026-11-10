@@ -196,3 +196,16 @@ describe('the presets drawn offline', () => {
     await expect(modelFor({ item: items.find((i) => i.id === 'euclid-eggs-pilot'), name: SITE_PRESETS.find((p) => p.key === 'proceeding').slug.replace('authors:full:marked', 'authors:full:fit:marked').replace('size:fill', 'size:400'), width: 400 })).rejects.toThrow(/authors:…:fit/);
   });
 });
+
+describe('figures in a PNG and a circle photo', () => {
+  it('draws a WebP figure, which resvg cannot read itself, and clips a student photo to its circle', async () => {
+    const { drawCard } = await import('../src/lib/cardoffline.js');
+    const sharp = (await import('sharp')).default;
+    const fig = await drawCard({ item: items.find((i) => i.id === 'potamides-apj'), name: 'paperHighlight', width: 640, format: 'png' });
+    const img = fig.model.ops.find((o) => o.k === 'img');
+    const { channels } = await sharp(fig.png).extract({ left: Math.round(img.x * 2), top: Math.round(img.y * 2), width: Math.round(img.w * 2), height: Math.round(img.h * 2) }).stats();
+    expect(Math.max(...channels.map((c) => c.stdev)), 'the figure is not drawn').toBeGreaterThan(5);
+    const photo = (await modelFor({ item: items.find((i) => i.id === 'pinns-neurips'), name: 'carousel', width: 400 })).model.ops.find((o) => o.k === 'img');
+    expect(photo.r.every((v) => v > 5)).toBe(true);
+  }, 60_000);
+});

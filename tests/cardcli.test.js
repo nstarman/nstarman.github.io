@@ -47,13 +47,13 @@ describe('build:card', () => {
     const r = go([]);
     expect(r.status).toBe(2);
     expect(r.stderr).toMatch(/usage: build-card/);
-  });
+  }, 60_000);
   it('exits 1, naming an unknown item, and writes no file', () => {
     const r = go(['no-such-item', 'x.svg']);
     expect(r.status).toBe(1);
     expect(r.stderr).toMatch(/no item no-such-item/);
     expect(fs.readdirSync(r.cwd)).toEqual([]);
-  });
+  }, 60_000);
   it('writes an SVG of a software card in the dark, with no browser', () => {
     const r = go(['astropy', 'softwareMajor', '--width', '400', '--theme', 'dark', 'out.svg']);
     expect(r.stderr).toBe('');

@@ -3,6 +3,7 @@
 // from the paint tree (cardtree.js), which src/lib/cardsvg.js and src/lib/card.typ draw as they
 // draw one measured in a browser (specs/001-takumi-card-renderer, data-model.md, *Offline card*).
 import fs from 'node:fs';
+import sharp from 'sharp';
 import path from 'node:path';
 import { SITE_PRESETS, atWidth, parseName } from '@nstarkman/card-builder/cards.js';
 import { renderMarkup, sprite } from './cardmarkup.js';
@@ -97,7 +98,10 @@ export async function drawCard({ format, ...card }) {
   const { model, images } = await modelFor(card);
   const bytes = figures(images);
   if (format === 'pdf') return { model, pdf: pdfFromModel(model, bytes) };
-  const uris = Object.fromEntries(Object.entries(bytes).map(([src, b]) => [src, `data:${MIME[src.split('.').pop()] ?? 'application/octet-stream'};base64,${b.toString('base64')}`]));
-  const svg = modelToSvg(model, uris);
-  return format === 'png' ? { model, svg, png: pngFromSvg(svg, model) } : { model, svg };
+  const uri = (src, b, type) => `data:${type ?? MIME[src.split('.').pop()] ?? 'application/octet-stream'};base64,${b.toString('base64')}`;
+  const svg = modelToSvg(model, Object.fromEntries(Object.entries(bytes).map(([src, b]) => [src, uri(src, b)])));
+  if (format !== 'png') return { model, svg };
+  // resvg decodes PNG, JPEG, GIF and SVG, not WebP or AVIF, which a figure may be: a PNG is drawn from an SVG that has them as PNG.
+  const readable = Object.fromEntries(await Promise.all(Object.entries(bytes).map(async ([src, b]) => [src, /\.(webp|avif)$/i.test(src) ? uri(src, await sharp(b).png().toBuffer(), 'image/png') : uri(src, b)])));
+  return { model, svg, png: pngFromSvg(modelToSvg(model, readable), model) };
 }
