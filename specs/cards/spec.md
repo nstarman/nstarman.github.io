@@ -1,7 +1,8 @@
 # Cards
 
 **Covers**: `packages/card-builder/` (published as `@nstarkman/card-builder`, see `specs/renderers/spec.md` FR-025), `cards/`, `schema/card.schema.json`, `packages/card-builder/src/Card.astro`, `packages/card-builder/src/cardname.js`, `packages/card-builder/src/cards.js`,
-`src/lib/cardlayout.js`, `src/lib/cardpdf.js`, `src/lib/cardsvg.js`,
+`src/lib/cardoffline.js`, `src/lib/cardtree.js`, `src/lib/cardmarkup.js`, `src/lib/cardcss.js`, `src/lib/cardfonts.js`,
+`src/lib/cardengine.js`, `src/lib/cardraster.js`, `src/lib/cardtypst.js`, `scripts/check-cards.mjs`, `src/lib/cardpdf.js`, `src/lib/cardsvg.js`,
 `src/lib/card.typ`, `src/lib/cardbuilder/`, `scripts/build-card.mjs`, `src/pages/embed/`,
 `src/pages/cards/`, `src/pages/webdev/card.astro`
 **Status**: Current — describes the system as it is (constitution, Article X).
@@ -57,23 +58,37 @@ rather than a card and is never exported.
   from one measurement of the live preview (`src/lib/cardpdf.js`); the layout is
   the CSS's alone. Its pure modules are tested in `tests/cardbuilder.test.js`.
   `npm run build:card -- <id> [<name | preset key>] [--theme light|dark] [--width N] [out.svg|.png|.pdf]`
-  (`scripts/build-card.mjs`) writes the same file without anyone opening the builder: it runs the
-  builder's own `downloadCard` in a headless Chromium against a dev server it starts, so it has no
-  layout or drawing of its own. Left out, the name is the item's default card (`defaultSlug`), the
-  theme `light`, and the output the builder's own file name for it (`file`, `src/lib/cardexport.js`),
-  a PNG, where the command was run; the format is the output's extension. A name that fills its width
-  needs `--width`, which a card of set width ignores. Bad arguments exit 2 with the usage; an unknown
-  or card-less item, a name `parseName` cannot read, a filling card with no width, or a failed draw
-  exits 1 with the message; neither leaves a file. *Enforced:* `tests/cardcli.test.js` (the
-  arguments); the draw is `downloadCard`'s.
-- **FR-007** `/cards/<id>-<light|dark>.svg` and `/cards/index.json` are drawn at
-  build, in node, for every `flagship` and `major` package, at
-  `CARD_SVG_WIDTH`, by `src/lib/cardlayout.js` — a second implementation of the
-  CSS for the `TIER_PRESET` presets only. It throws on any name asking for more
-  than it draws. *Enforced:* `tests/cardlayout.test.js` (it reproduces the
-  browser's recorded measurement in `tests/fixtures/software-cards.json`, and
-  that recording's hash of the card CSS and `Card.astro` is current),
-  `tests/cardlayout.property.test.js`, `tests/cardlayout.differential.test.js`.
+  (`scripts/build-card.mjs`) writes the same kind of file without anyone opening the builder or any
+  browser: `drawCard` (`src/lib/cardoffline.js`) lays the card out from its own markup and stylesheet
+  and draws the model with `cardsvg.js`, as a PNG by `@resvg/resvg-js` or a PDF by the `typst` binary
+  (`TYPST=` names one). Left out, the name is the item's default card (`defaultSlug`), the theme
+  `light`, and the output the builder's own file name for it (`file`, `src/lib/cardexport.js`), a PNG,
+  where the command was run; the format is the output's extension. A name that fills its width needs
+  `--width`, which a card of set width ignores. Bad arguments exit 2 with the usage; an unknown or
+  card-less item, a name `parseName` cannot read, a filling card with no width, a preset outside
+  `OFFLINE_PRESETS` or a draw that fails exits 1 with the message; neither leaves a file.
+  *Enforced:* `tests/cardcli.test.js`, `tests/cardraster.test.js`, `tests/cardtypst.test.js`.
+- **FR-007** `/cards/<id>-<light|dark>.svg` and `/cards/index.json` are drawn at build, in node and with
+  no browser, for every `flagship` and `major` package, at `CARD_SVG_WIDTH`, as tall as their row. The
+  card is the real one: `Card.astro` rendered with its name (`cardmarkup.js`), the site's own stylesheet
+  (`cardcss.js`, dark by rewriting `light-dark()`), laid out by the Takumi engine (`takumi-paint`,
+  `cardengine.js`) in the faces in `public/fonts/card/`, and written as the card model by `cardtree.js`;
+  `cardsvg.js`, `card.typ` and the PNG path draw that model as they draw one the browser measured, with
+  an explicit baseline for each line of text. The presets drawn this way are `OFFLINE_PRESETS`: every
+  `SITE_PRESETS` key but `home` (its title is 2.4 px higher than the browser has it), and a name with
+  `authors:…:fit` is refused. A name that asks for more than the engine draws throws. *Enforced:*
+  `tests/cardtree.test.js`, `tests/cardoffline.test.js`, `tests/cardcss.test.js`, `tests/cardmarkup.test.js`,
+  `tests/cardengine.test.js`, and `npm run check:cards` (FR-011).
+- **FR-011** `npm run check:cards` (`scripts/check-cards.mjs`; needs `npm run build`, Playwright's
+  Chromium and a Mac, since Chrome on Linux rounds glyph advances) lays each case out in Chrome, on the
+  real embed page with `measureCard`, and offline, and compares the two models: card size and corners, every
+  line of text (string, place, face, size, colour, link), box, icon and figure, within half a pixel with nothing
+  missing or extra. Left out, the cases are every preset in `OFFLINE_PRESETS` for one item of each type, at 400 and 808 px, in
+  both themes; `--preset`, `--item`, `--width`, `--theme` and `--json` narrow it, and `--fuzz N [--seed S] [--path P]`
+  has fast-check generate widths, titles, roles and texts of the packages and shrinks a difference. It exits
+  1 naming the card, the width and the distance. `.github/workflows/card-check.yml` runs it on a pull request
+  that touches a card, the stylesheet or the engine, and weekly. *Enforced:* the workflow; `tests/cardcheck.test.js`
+  (that the comparison can fail); `tests/cardengine.test.js` (`takumi-paint` and `@resvg/resvg-js` are pinned exactly).
 - **FR-008** A software card's stars button reads `config/stars.json`, shown in
   `buttons:all` only at `STARS_MIN` (40) stars or more; under it the key is
   optional and appears only where a name lists `stars`.
@@ -108,14 +123,11 @@ rather than a card and is never exported.
 
 ## Edge Cases
 
-- **The hash test fails**: the card's CSS or `Card.astro` changed. Run
-  `node scripts/record-card-layouts.mjs` (needs `npm i --no-save playwright` and a
-  dev server), read the fixture's diff as the change in layout, and fix
-  `cardlayout.js` until the rest pass. The recording is at 200, 280, 400, 640 and
-  808 px, light at each and dark too at the README's widths (400 and 808), so
-  wrapping and a second row of buttons are measured.
-- **A property test fails**: it prints a seed; replay with `FC_SEED` and
-  `FC_PATH`. `FC_RUNS=1000` tries more cases.
+- **`check:cards` fails**: the card's CSS, `Card.astro`, the engine or the browser changed. Its report names the
+  card, the width and the line or box that moved; the engine's drawing is the one to fix (`cardcss.js`'s prelude for
+  a browser default it lacks, `cardmarkup.js` for a construct it cannot lay out) or the preset to leave out of
+  `OFFLINE_PRESETS`.
+- **`check:cards --fuzz` fails**: it prints a seed and path; replay with `--seed` and `--path`.
 - **A name `parseName` cannot read** is rejected, not drawn as a default card.
 
 ## Reference
@@ -217,18 +229,11 @@ its `controlOps` and `readSpec` lines in `model.js`, then its markup.
 
 **Software cards as images, without a browser.** `/cards/<id>-<light|dark>.svg` (and
 `/cards/index.json`, which lists them) are the `flagship` and `major` packages' cards, for the profile
-README, drawn at build by a static endpoint (`src/pages/cards/`) in plain node. `src/lib/cardlayout.js`
-lays one out — a second implementation of the CSS, for the `softwareFlagship` and `softwareMajor`
-presets (`TIER_PRESET`) at a set width (`CARD_SVG_WIDTH`) — measuring text from the Plex files, shaped by HarfBuzz as Chrome shapes it
-(`src/lib/textmeasure.js`) and handing the same model `cardpdf.js` measures to `cardsvg.js`. It throws
-on any name that asks for more than it draws. `tests/cardlayout.test.js` keeps it in step: its
-colours, steps and formulas are read from `site.css` (`packages/site-layout/`); it must reproduce what the browser measured
-for every such card (`tests/fixtures/software-cards.json`); and that measurement is stamped with a hash of the
-card's CSS and `Card.astro` (`scripts/lib/cardsync.mjs`). **When that hash test fails, the card's CSS
-has changed:** run `node scripts/record-card-layouts.mjs` (needs `npm i --no-save playwright` and a
-dev server) to measure again, read the fixture's diff as the change in layout, and fix `cardlayout.js`
-until the rest pass. The recording is at several widths (200 to 808 px), so wrapping and a second row of buttons are measured, not reasoned about.
-`tests/cardlayout.property.test.js` (fast-check) holds what must be true of any card it draws — nothing dropped, nothing past the padding, buttons never overlapping — over generated widths, texts and buttons; `FC_RUNS=1000` tries more, and a failure prints a seed to replay (`FC_SEED`, `FC_PATH`). A new look for those presets is a change to `cardlayout.js` first.
+README, drawn at build by a static endpoint (`src/pages/cards/`) in plain node from the real card's markup and
+stylesheet laid out by the Takumi engine (FR-007), so there is no second implementation of the card's CSS to keep
+in step. What keeps the engine in step with the browser is `npm run check:cards` (FR-011), run on a pull request
+that touches a card and weekly. A new look is a preset in `SITE_PRESETS`, which is drawn offline once `check:cards`
+passes for it; `build:card` (FR-006) draws the same cards, in any of the three formats.
 
 The inline-card in a research introduction is not a card in this sense and is
 not exported: a text-sized iframe sits badly in prose.

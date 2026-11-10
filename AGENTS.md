@@ -205,9 +205,12 @@ header card alone, and a built `dist/cv/<preset>.json` works in place of a selec
 To draw a card as the Card Builder downloads it, without opening the builder, run
 `npm run build:card -- <id> [<card name | preset key>] [--theme light|dark] [--width N] [out.svg|.png|.pdf]`.
 Left out, the card is the item's default, the theme light, and the file the builder's own name for
-it, a PNG; a card that fills its width needs `--width`. It runs the builder's own download in a
-headless Chromium against a dev server it starts, so it needs Playwright's browser once
-(`npx playwright install chromium`) ([`cards`](specs/cards/spec.md), FR-006).
+it, a PNG; a card that fills its width needs `--width`. It lays the card out from its own markup
+and stylesheet with no browser (a PDF needs the `typst` binary, `TYPST=` names one), for every preset but `home`
+([`cards`](specs/cards/spec.md), FR-006).
+
+To hold the offline cards to Chrome's, run `npm run build && npm run check:cards` (Playwright's Chromium, on a
+Mac); `-- --fuzz N` tries generated cards ([`cards`](specs/cards/spec.md), FR-011).
 
 Every pull request also gets a live preview URL, posted as a comment.
 

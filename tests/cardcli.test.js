@@ -1,5 +1,9 @@
-// build-card.mjs's command line (scripts/lib/cardargs.mjs). The draw itself is the
-// Card Builder's downloadCard, run in a browser; see specs/cards/spec.md.
+// build-card.mjs's command line (scripts/lib/cardargs.mjs), and the command itself, which draws
+// with the offline engine (src/lib/cardoffline.js): no browser.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { readArgs } from '../scripts/lib/cardargs.mjs';
 
@@ -33,4 +37,27 @@ describe('build:card arguments', () => {
   ])('rejects %j', (argv, msg) => {
     expect(() => readArgs(argv)).toThrow(msg);
   });
+});
+
+describe('build:card', () => {
+  const script = path.resolve('scripts/build-card.mjs');
+  const go = (argv) => { const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'bc-')); return { cwd, ...spawnSync(process.execPath, [script, ...argv], { encoding: 'utf8', cwd, env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: '/nonexistent' } }) }; };
+
+  it('exits 2 with the usage for no arguments', () => {
+    const r = go([]);
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/usage: build-card/);
+  });
+  it('exits 1, naming an unknown item, and writes no file', () => {
+    const r = go(['no-such-item', 'x.svg']);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toMatch(/no item no-such-item/);
+    expect(fs.readdirSync(r.cwd)).toEqual([]);
+  });
+  it('writes an SVG of a software card in the dark, with no browser', () => {
+    const r = go(['astropy', 'softwareMajor', '--width', '400', '--theme', 'dark', 'out.svg']);
+    expect(r.stderr).toBe('');
+    expect(r.status).toBe(0);
+    expect(fs.readFileSync(path.join(r.cwd, 'out.svg'), 'utf8').startsWith('<svg')).toBe(true);
+  }, 60_000);
 });

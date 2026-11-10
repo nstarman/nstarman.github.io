@@ -1,13 +1,13 @@
 # Refresh scripts and snapshots
 
-**Covers**: `.github/workflows/refresh-*.yml`, `.github/workflows/card-layout-fuzz.yml`,
+**Covers**: `.github/workflows/refresh-*.yml`, `.github/workflows/card-check.yml`,
 `.github/workflows/milestone-prs.yml`, `scripts/refresh-publications.mjs`,
 `scripts/collect-stars.mjs`, `scripts/collect-skills.mjs`, `scripts/skills-index.mjs`, `scripts/collect-contributions.mjs`,
 `scripts/collect-collaborators.mjs`, `scripts/collect-acknowledgements.mjs`,
 `scripts/scrape-astropy-voting-members.mjs`, `scripts/scrape-astropy-team-history.mjs`,
 `scripts/sync-software-figures.mjs`, `scripts/fetch-affiliations.mjs`,
 `scripts/geocode-places.mjs`, `scripts/build-worldmap.mjs`,
-`scripts/record-card-layouts.mjs`, `scripts/open-refresh-pr.sh`, `scripts/lib/`
+`scripts/open-refresh-pr.sh`, `scripts/lib/`
 **Status**: Current — describes the system as it is (constitution, Article X).
 
 ## Scope
@@ -19,8 +19,8 @@ a script fetches it, writes a committed **snapshot**, and a workflow proposes
 the change for review. The build and the tests read only the snapshots
 (constitution, Article VIII). Not covered: the fields the snapshots fill and
 their schema (`specs/data-model/spec.md`); how pages, the README and the CVs
-render them (`specs/renderers/spec.md`); what the card fixture and the fuzz
-test hold `cardlayout.js` to (`specs/cards/spec.md`).
+render them (`specs/renderers/spec.md`); how the offline cards are held to the browser's
+(`specs/cards/spec.md`).
 
 ## Requirements
 
@@ -33,7 +33,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   `abstract`, `bibcode`, `doi`, `citations` and author `affiliation` in `data/`.
   The site imports them (`src/lib/data.js`, `collabmap.js`, `places.js`,
   `worldmap.js`, `SoftwareSection.astro`, `pages/tools/index.astro`); no build step or test calls a network
-  service, `tests/cardlayout.differential.test.js` excepted (FR-016)
+  service (`check:cards` runs a local browser on local files)
   (Article VIII). *Enforced:* review — no check exists (Article VIII says so).
 - **FR-002** Every generated snapshot carries a `$comment` naming its script and
   saying not to edit it by hand, and is written as 2-space JSON with a final
@@ -162,17 +162,16 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   wide at quality 85; PNG→`.webp` via `cwebp -q 85`; any other pair throws. An
   item without `source` is never touched. `--check` exits 1 if any is stale.
   *Enforced:* review; `test:links` in the workflow checks the images resolve.
-- **FR-016** `card-layout-fuzz.yml` runs `tests/cardlayout.differential.test.js`
-  (`CARD_FUZZ=1`) against a dev server in Chromium on `macos-latest`, outside
-  CI: weekly with `FC_RUNS=1000`, by hand (default 500, optional `seed` and
-  `path` to replay), and when a PR is labelled `fuzz-cards` (300), after which
-  the label is removed. A failure writes the counterexample to the step summary
-  and uploads `fuzz-report` for 30 days. *Enforced:* the workflow.
+- **FR-016** `card-check.yml` runs `npm run check:cards` (`specs/cards/spec.md`, FR-011) in Chromium on
+  `macos-latest` against a build, on a pull request that touches a card, the card stylesheet, the engine or the
+  lockfile, and weekly and by hand with `--fuzz` (1000 cards weekly; by hand 500, with optional `seed` and `path`
+  to replay); a PR labelled `fuzz-cards` runs the generated cards too (300), after which the label is removed. A
+  failure writes the counterexample to the step summary and uploads `fuzz-report` for 30 days. *Enforced:* the workflow.
 - **FR-017** `milestone-prs.yml` sets the `♾️&➡` milestone on every PR when
   it is opened (`pull_request_target: opened`). *Enforced:* the workflow.
 - **FR-018** Run by hand only, results committed: `geocode-places.mjs` (also
   run by `refresh-acknowledgements`), `scrape-astropy-team-history.mjs`,
-  `fetch-affiliations.mjs`, `build-worldmap.mjs`, `record-card-layouts.mjs`.
+  `fetch-affiliations.mjs`, `build-worldmap.mjs`.
   *Enforced:* review.
 - **FR-019** `scripts/geocode-places.mjs` asks Nominatim (one request per 1.1 s)
   only for names missing from `config/places.json` — collaborator institutions
@@ -194,12 +193,6 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
   projected to Equal Earth, 1000 units wide, simplified (Douglas–Peucker 0.7
   land, 0.25 lakes). *Enforced:* review; `tests/confmap.test.js` reads it
   through `packages/collaborator-map/src/worldmap.js`.
-- **FR-022** `scripts/record-card-layouts.mjs [site]` (needs Playwright and a
-  dev server) writes `tests/fixtures/software-cards.json`: each `flagship` and
-  `major` package's card measured at widths 200, 280, 400, 640 and 808 px,
-  light, plus dark at 400 and 808, and `syncKey` from `scripts/lib/cardsync.mjs`
-  (a hash of the card rules of `site.css` and `Card.astro`). *Enforced:*
-  `tests/cardlayout.test.js` (see `specs/cards/spec.md`).
 - **FR-023** `scripts/collect-skills.mjs` writes `config/skills.json` from
   `nstarman/skills`' generated `index.json` (on `main`, or `SKILLS_REF`): every
   skill that repo registers, kept there or living in another repository, in
@@ -227,7 +220,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
 - **Refresh branch** — `chore/refresh-<name>`, reset on each run (FR-003).
 - **`scripts/lib/`** — `ads.mjs` (pure ADS/arXiv/Crossref parsing, tested
   without the network), `items.mjs` (`readItems()`, every `data/*.json` in
-  filename order for plain node), `cardsync.mjs` (`syncKey`),
+  filename order for plain node),
   `paper-affiliations.mjs` (`orgKey`, `paperAffiliations`: FR-011's fallback,
   pure, tested on fixtures).
 
@@ -265,7 +258,7 @@ test hold `cardlayout.js` to (`specs/cards/spec.md`).
 | `refresh-acknowledgements.yml` | `30 6 1 * *` | `collect-acknowledgements.mjs`, `collect-collaborators.mjs --new`, `geocode-places.mjs` | `config/acknowledgements.json`, `config/collaborators.json`, `config/places.json` | `ADS_TOKEN` |
 | `refresh-astropy-voting-members.yml` | `30 6 1 9 *` | `scrape-astropy-voting-members.mjs` | `config/astropy-voting-members.json` | — |
 | `refresh-collaborators.yml` | `0 7 1 9 *` | `collect-collaborators.mjs` | an issue (nothing committed) | — |
-| `card-layout-fuzz.yml` | `0 5 * * 1` | `tests/cardlayout.differential.test.js` | `fuzz-report` artifact on failure | — |
+| `card-check.yml` | `0 5 * * 1` | `npm run check:cards`, with `--fuzz` | `fuzz-report` artifact on failure | — |
 | `milestone-prs.yml` | — (`pull_request_target: opened`) | `gh pr edit --milestone` | the PR's milestone | — |
 
 All but `milestone-prs` also run on `workflow_dispatch`. Gates run before

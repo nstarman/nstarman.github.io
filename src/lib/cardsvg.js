@@ -15,6 +15,11 @@ const SERIF = "'Newsreader', Georgia, 'Times New Roman', serif";
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const n = (x) => +x.toFixed(2);
 
+/** A face's ascent over its size (hhea): a line's top, which the model holds as `y`, is its baseline
+ *  less this. Written out as the baseline, the SVG draws alike in a browser and in resvg, whose
+ *  `dominant-baseline` places text elsewhere. tests/cardsvg.test.js reads these from the files. */
+export const ASCENT = { 'IBM Plex Sans': 1.025, 'IBM Plex Mono': 1.025, Newsreader: 0.735 };
+
 /** The font stack for a face the card names. */
 export const stack = (font) => (/mono/i.test(font) ? MONO : /newsreader|serif/i.test(font) && !/sans/i.test(font) ? SERIF : SANS);
 
@@ -60,8 +65,8 @@ export function modelToSvg(model, images = {}) {
     } else if (o.k === 'text') {
       // The browser set each line; textLength holds it to that width where the
       // reader's fallback face is a different one, so it never runs on.
-      body.push(link(o, `<text x="${n(o.x)}" y="${n(o.y)}" font-family="${esc(stack(o.font))}" font-size="${n(o.size)}" font-weight="${o.weight}"${o.style === 'italic' ? ' font-style="italic"' : ''} ${paint('fill', o.color)}`
-        + `${o.ls ? ` letter-spacing="${n(o.ls)}"` : ''} dominant-baseline="text-before-edge" textLength="${n(o.w)}" lengthAdjust="spacing" xml:space="preserve">${esc(o.s)}</text>`));
+      body.push(link(o, `<text x="${n(o.x)}" y="${n(o.y + Math.round(o.size * ASCENT[o.font]))}" font-family="${esc(stack(o.font))}" font-size="${n(o.size)}" font-weight="${o.weight}"${o.style === 'italic' ? ' font-style="italic"' : ''} ${paint('fill', o.color)}`
+        + `${o.ls ? ` letter-spacing="${n(o.ls)}"` : ''} textLength="${n(o.w)}" lengthAdjust="spacing" xml:space="preserve">${esc(o.s)}</text>`));
     } else {
       throw new Error(`no such op, ${o.k}`);
     }
