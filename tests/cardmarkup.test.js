@@ -55,4 +55,23 @@ describe('sprite', () => {
       expect(symbols.get(symbol).body, 'no path of this machine in a drawing').not.toMatch(/data-astro-|\/Users\/|\/home\//);
     }
   });
+
+  describe('cut', () => {
+    const paper = items.find((i) => i.id === 'pinns-neurips');
+    const slug = 'size:400:fit-figure:none-title:full:whole:link-authors:full:fit:marked-text:none-extras:venue-buttons:all:fit:right';
+
+    it('puts the card in count mode and shows only the byline of that many names', async () => {
+      const { html } = await renderMarkup(paper, slug, { cut: 2 });
+      expect(html).toMatch(/<article[^>]*\bdata-authors="count"/);
+      const open = [...html.matchAll(/<span class="c-by-n"[^>]*>/g)].map((m) => m[0]).filter((t) => !/\bhidden\b/.test(t));
+      expect(open).toHaveLength(1);
+      expect(open[0]).toContain('data-n="2"');
+    });
+
+    it('leaves the markup as it was without one', async () => {
+      const [a, b] = await Promise.all([renderMarkup(paper, slug), renderMarkup(paper, slug, {})]);
+      expect(a.html).toBe(b.html);
+      expect(a.html).toMatch(/<article[^>]*\bdata-authors="full"/);
+    });
+  });
 });

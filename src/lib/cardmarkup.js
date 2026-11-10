@@ -45,20 +45,30 @@ export function unwrapEmptyRail(card) {
   return out;
 }
 
+/** The card with `data-authors="count"` and only the `n`-name cut of the byline shown (the embed page's `show(n)`). */
+function cutByline(card, n) {
+  if (n == null) return card;
+  const shown = (tag) => tag.replace(/\shidden(="[^"]*")?/, '');
+  return card
+    .replace(/<article\b[^>]*>/, (tag) => tag.replace(/\bdata-authors="[^"]*"/, 'data-authors="count"'))
+    .replace(/<span class="c-by-n"[^>]*>/g, (tag) => (+/\bdata-n="(\d+)"/.exec(tag)[1] === n ? shown(tag) : `${shown(tag).slice(0, -1)} hidden>`));
+}
+
 let container;
 const astro = () => (container ??= AstroContainer.create());
 
 /**
  * @param {object} item  an item with a card, as the site's store holds it
  * @param {string} name  a card name (src/lib/cardname.js)
- * @param {{ theme?: 'light' | 'dark' }} [options]  sets data-theme on the root, as the embed page does
+ * @param {{ theme?: 'light' | 'dark', cut?: number }} [options]  `theme` sets data-theme on the root, as the embed page does;
+ *   `cut` puts the card in count mode and shows the byline of that many names, as the embed page's authors:…:fit does
  * @returns {Promise<{ html: string, links: string[], icons: { symbol: string | null }[] }>}
  */
-export async function renderMarkup(item, name, { theme = 'light' } = {}) {
+export async function renderMarkup(item, name, { theme = 'light', cut } = {}) {
   const card = await (await astro()).renderToString(Card, { props: { item, preset: name, allCounts: true } });
   const links = [];
   const icons = [];
-  const markup = unwrapEmptyRail(card);
+  const markup = cutByline(unwrapEmptyRail(card), cut);
   // `<a>` is inline, so it has no box of its own in the layout, and a run of text inside it reports the
   // element it came from, which is a <span> in the link as often as the link. Every element in a link
   // therefore carries its marker, and so does a figure or an icon inside one.

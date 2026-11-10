@@ -53,6 +53,21 @@ function ringOf(borders) {
 }
 
 /**
+ * Whether the card's byline, and the venue after it, is one line: the embed page's rule for authors:…:fit,
+ * a `.c-by` under one and a half lines tall (src/pages/embed/[id].astro).
+ * @param {import('takumi-paint').PaintTree} tree
+ */
+export function bylineFits(tree) {
+  const by = tree.nodes.find((n) => n.type === 'box' && named(n, 'c-by'));
+  if (!by) throw new Error('no byline in the card: the markup has no <p class="c-by">');
+  const byId = new Map(tree.nodes.map((n) => [n.raw.id, n]));
+  const within = (n) => { for (let p = n; p; p = byId.get(p.raw.parent)) if (p === by) return true; return false; };
+  const line = tree.nodes.find((n) => n.runs?.length && within(n))?.runs[0].lineHeight;
+  if (!line) throw new Error('no text in the card\'s byline to take its line height from');
+  return by.bounds.height < line * 1.5;
+}
+
+/**
  * @param {import('takumi-paint').PaintTree} tree  the layout of the markup src/lib/cardmarkup.js made
  * @param {{ title: string, site: string, links: string[], icons: { symbol: string | null }[],
  *           symbols: Map<string, { viewBox: string, body: string }> }} o

@@ -5,10 +5,11 @@
 //
 //   npm run build                       # the pages it measures are dist/embed/<id>/
 //   npx playwright install chromium     # once
-//   npm run check:cards -- [--preset <key>]… [--item <id>]… [--width N]… [--theme light|dark] [--json]
+//   npm run check:cards -- [--preset <key>]… [--item <id>]… [--width N]… [--theme light|dark] [--fit] [--json]
 //
 // Left out, the cases are every preset in OFFLINE_PRESETS (`--preset home` asks for one left out) for one item of each type that has a card
-// (astropy, four papers, a highlight where there is one), at 400 and 808 px, in both themes. A case
+// (astropy, four papers, a highlight where there is one), at 400 and 808 px, in both themes, and the fit cases: the
+// byline preset with authors:…:fit, :short:fit and :5:fit on four papers with long lists, at 320–808 px; --fit runs only those. A case
 // passes when everything the model holds is within half a pixel and nothing is missing or extra.
 // Exit 0 when every case does, 1 when one does not, 2 for bad arguments.
 //
@@ -20,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ssr } from './lib/ssr.mjs';
 
-const USAGE = 'usage: npm run check:cards -- [--preset <key>]… [--item <id>]… [--width N]… [--theme light|dark] [--json] | --fuzz N [--seed S] [--path P]';
+const USAGE = 'usage: npm run check:cards -- [--preset <key>]… [--item <id>]… [--width N]… [--theme light|dark] [--fit] [--json] | --fuzz N [--seed S] [--path P]';
 const HALF = 0.5; // CSS px: the spec's tolerance (FR-002)
 const TEXT_WIDTH = 1; // a line's width is drawn as textLength, which squeezes a line that is wrong by more
 const COLOUR = 1; // per channel of #rrggbbaa: the two round a computed colour differently
@@ -28,9 +29,15 @@ const SITE = 'https://nstarkman.space';
 const MIME = { html: 'text/html', css: 'text/css', svg: 'image/svg+xml', js: 'text/javascript', json: 'application/json', otf: 'font/otf', ttf: 'font/ttf', webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', woff2: 'font/woff2' };
 const DEFAULT_ITEMS = ['astropy', 'pinns-neurips', 'potamides-apj', 'euclid-eggs-pilot', 'coordinax-paper'];
 const DEFAULT_WIDTHS = [400, 808];
+// authors:…:fit is a name made in the builder, no preset has it: the fit cases are the presets with a byline, with :fit added, on papers with long lists.
+const FIT_WIDTHS = [320, 400, 600, 808]; // the cut moves with the width, so more than the other cases'
+const FIT_ITEMS = ['potamides-apj', 'pinns-neurips', 'euclid-eggs-pilot', 'coordinax-paper'];
+// `proceeding` has authors:full; the variants fit it to three names and to five as well.
+const FIT_VARIANTS = [['fit', 'authors:$1:fit'], ['fit-short', 'authors:short:fit'], ['fit-5', 'authors:5:fit']];
+const withFit = (slug, to = 'authors:$1:fit') => slug.replace(/authors:(short|full)\b/, to);
 
 function readArgs(argv) {
-  const a = { presets: [], items: [], widths: [], theme: null, json: false, fuzz: 0, seed: undefined, path: undefined };
+  const a = { presets: [], items: [], widths: [], theme: null, fit: false, json: false, fuzz: 0, seed: undefined, path: undefined };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     const value = () => { if (argv[i + 1] === undefined) throw new Error(`${arg} needs a value`); return argv[++i]; };
@@ -38,6 +45,7 @@ function readArgs(argv) {
     else if (arg === '--item') a.items.push(value());
     else if (arg === '--width') { const n = Number(value()); if (!Number.isInteger(n) || n < 120 || n > 1600) throw new Error('--width is a whole number of px, 120–1600'); a.widths.push(n); }
     else if (arg === '--theme') { a.theme = value(); if (!['light', 'dark'].includes(a.theme)) throw new Error('--theme is light or dark'); }
+    else if (arg === '--fit') a.fit = true;
     else if (arg === '--json') a.json = true;
     else if (arg === '--fuzz') { a.fuzz = Number(value()); if (!Number.isInteger(a.fuzz) || a.fuzz < 1) throw new Error('--fuzz is a number of cards, 1 or more'); }
     else if (arg === '--seed') a.seed = Number(value());
@@ -147,8 +155,17 @@ async function main(args) {
     // One item of each type that has a card, and every preset, unless asked for others.
     const ids = args.items.length ? args.items : [...DEFAULT_ITEMS, items.find((i) => i.type === 'highlight')?.id].filter(Boolean);
     const sizes = (args.widths.length ? args.widths : DEFAULT_WIDTHS).flatMap((w) => (args.theme ? [args.theme] : ['light', 'dark']).map((t) => [w, t]));
-    const cases = ids.flatMap((id) => (args.presets.length ? args.presets : OFFLINE_PRESETS).flatMap((preset) => sizes
-      .map(([width, theme]) => ({ item: items.find((i) => i.id === id), preset, width, theme, name: atWidth(SITE_PRESETS.find((p) => p.key === preset).slug, width) }))));
+    const presets = args.presets.length ? args.presets : OFFLINE_PRESETS;
+    const slug = (preset) => SITE_PRESETS.find((p) => p.key === preset).slug;
+    const plain = args.fit ? [] : ids.flatMap((id) => presets.flatMap((preset) => sizes
+      .map(([width, theme]) => ({ item: items.find((i) => i.id === id), preset, width, theme, name: atWidth(slug(preset), width) }))));
+    // A fit case is a preset with a byline and :fit added, on a paper with a long list; `--item` names others.
+    const fitIds = args.items.length ? ids : FIT_ITEMS;
+    const fitSizes = args.widths.length ? sizes : FIT_WIDTHS.flatMap((w) => (args.theme ? [args.theme] : ['light', 'dark']).map((t) => [w, t]));
+    const fit = fitIds.filter((id) => items.find((i) => i.id === id)?.type === 'publication').flatMap((id) => presets.flatMap((preset) => FIT_VARIANTS
+      .filter(([, to]) => withFit(slug(preset), to) !== slug(preset))
+      .flatMap(([label, to]) => fitSizes.map(([width, theme]) => ({ item: items.find((i) => i.id === id), preset: `${preset}:${label}`, width, theme, fit: true, name: atWidth(withFit(slug(preset), to), width) })))));
+    const cases = [...plain, ...fit];
     if (!cases.length) throw Object.assign(new Error('no cards to check'), { usage: true });
 
     for (const id of new Set(cases.map((c) => c.item.id))) {
@@ -179,6 +196,8 @@ async function main(args) {
         // The buttons ease their colours, and a card read in between is half in each theme.
         await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important }' });
         await page.evaluate(() => document.fonts.ready);
+        // The embed page fits the byline on the next frame, and again when the fonts are ready.
+        if (c.fit) await page.waitForFunction(() => document.querySelector('.card').dataset.authors === 'count');
         await page.waitForTimeout(80);
         const chrome = await page.evaluate(({ title, site }) => window.measureCard(document.querySelector('.card'), { title, site }).model, { title: c.item.title, site: SITE });
         const { model: engine } = await modelFor({ item: c.item, name: c.name, theme: c.theme, width: c.width });

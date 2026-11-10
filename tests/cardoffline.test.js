@@ -6,6 +6,7 @@
 // That what it draws is what Chrome draws needs Chrome, so it is not here: `npm run check:cards`
 // asks Chrome itself, in CI weekly and when the card's CSS, markup or the engine's version changes.
 // FC_RUNS sets how many cases each property tries (100 by default).
+import { spawnSync } from 'node:child_process';
 import fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 import { items } from '../src/lib/data.js';
@@ -190,11 +191,58 @@ describe('the presets drawn offline', () => {
     expect(OFFLINE_PRESETS).not.toContain('home');
     await expect(drawCard({ item: items.find((i) => i.id === 'astropy'), name: 'home', width: 400, format: 'svg' })).rejects.toThrow(/preset "home" is not drawn offline yet/);
   });
+});
 
-  it('refuses a name whose byline is fitted, which is not laid out offline', async () => {
-    const { modelFor } = await import('../src/lib/cardoffline.js');
-    await expect(modelFor({ item: items.find((i) => i.id === 'euclid-eggs-pilot'), name: SITE_PRESETS.find((p) => p.key === 'proceeding').slug.replace('authors:full:marked', 'authors:full:fit:marked').replace('size:fill', 'size:400'), width: 400 })).rejects.toThrow(/authors:…:fit/);
+describe('authors:…:fit', () => {
+  const byline = (w, authors) => `size:${w}:fit-figure:none-title:full:whole:link-authors:${authors}:marked-text:none-extras:venue-buttons:all:fit:right`;
+  const paper = (id) => items.find((i) => i.id === id);
+  // The fitted card is the card with that many names, and which count it is is read by finding it.
+  async function names(id, w, length = 'full') {
+    const { model } = await modelFor({ item: paper(id), name: byline(w, `${length}:fit`), width: w });
+    const most = length === 'full' ? 8 : length === 'short' ? 3 : +length;
+    for (let k = 1; k <= most; k += 1) {
+      const counted = await modelFor({ item: paper(id), name: byline(w, k), width: w });
+      if (JSON.stringify(counted.model) === JSON.stringify(model)) return k;
+    }
+    throw new Error(`${id} at ${w}: the fitted card is not the card of any count`);
+  }
+
+  it('draws a card with fewer names where it is narrower, and never more than the name allows', async () => {
+    for (const id of ['potamides-apj', 'pinns-neurips', 'euclid-eggs-pilot']) {
+      const ks = [];
+      for (const w of [240, 320, 400, 600, 808]) ks.push(await names(id, w));
+      expect(ks, id).toEqual([...ks].sort((x, y) => x - y));
+      expect(Math.max(...ks)).toBeLessThanOrEqual(8);
+      expect(Math.min(...ks)).toBeGreaterThanOrEqual(1);
+      expect(ks[0], `${id}: narrower than wider`).toBeLessThan(ks.at(-1));
+    }
+  }, 120000);
+
+  it('keeps to the length the name asks: short is three, a number is that many', async () => {
+    expect(await names('pinns-neurips', 808, 'short')).toBeLessThanOrEqual(3);
+    expect(await names('pinns-neurips', 808, '2')).toBeLessThanOrEqual(2);
+  }, 60000);
+
+  it('shows one name where none makes one line', async () => {
+    expect(await names('euclid-eggs-pilot', 120)).toBe(1);
+  }, 60000);
+
+  it('is the card without :fit where the whole list fits', async () => {
+    const few = items.find((i) => i.type === 'publication' && i.authors?.length === 2 && !i.collaboration);
+    if (!few) return;
+    const [fit, plain] = await Promise.all([byline(808, 'full:fit'), byline(808, 'full')].map((name) => modelFor({ item: few, name, width: 808 })));
+    expect(fit.model).toEqual(plain.model);
   });
+
+  it('is drawn in SVG, PNG and PDF alike', async () => {
+    const { drawCard } = await import('../src/lib/cardoffline.js');
+    // The PDF needs the typst binary, which a test run may not have (tests/cardtypst.test.js).
+    const hasTypst = !spawnSync(process.env.TYPST ?? 'typst', ['--version']).error;
+    for (const format of ['svg', 'png', ...(hasTypst ? ['pdf'] : [])]) {
+      const r = await drawCard({ item: paper('pinns-neurips'), name: byline(400, 'full:fit'), width: 400, format });
+      expect(r[format].length).toBeGreaterThan(500);
+    }
+  }, 60000);
 });
 
 describe('figures in a PNG and a circle photo', () => {
