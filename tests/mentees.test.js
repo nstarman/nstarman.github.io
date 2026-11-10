@@ -27,6 +27,7 @@ describe('achievements', () => {
 describe('a mentee', () => {
   it('is named and linked from the record', () => {
     expect(menteeName({ person: { given: 'Amir', family: 'Abdul' } })).toBe('Amir Abdul');
+    expect(menteeName({ title: 'Zihan (Billy) Liu (Cornell)', person: { given: 'Zihan', family: 'Liu' } })).toBe('Zihan (Billy) Liu');
   });
 
   it('labels every level the schema allows', () => {

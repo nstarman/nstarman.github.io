@@ -14,7 +14,15 @@ import { spans } from './inline.js';
 const newestFirst = (key) => (a, b) => (key(a) < key(b) ? 1 : key(a) > key(b) ? -1 : 0);
 const byStart = newestFirst((i) => i.date?.start ?? '');
 
-export const menteeName = (m) => `${m.person.given} ${m.person.family}`;
+// Their name as the record's title opens with it — "Zihan (Billy) Liu", a nickname kept —
+// else given and family.
+export const menteeName = (m) => {
+  const { given, family } = m.person;
+  const title = m.title ?? '';
+  const end = title.indexOf(family) + family.length;
+  const lead = title.slice(0, end);
+  return title.startsWith(given) && end > family.length && lead.endsWith(family) ? lead : `${given} ${family}`;
+};
 /** What the collaborator map calls them: their ORCID, else their slug. */
 export const menteeKey = (m) => m.person.orcid ?? m.slug;
 export const profileHref = (m) => `/people/${m.slug}/`;
