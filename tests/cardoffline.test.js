@@ -6,6 +6,7 @@
 // That what it draws is what Chrome draws needs Chrome, so it is not here: `npm run check:cards`
 // asks Chrome itself, in CI weekly and when the card's CSS, markup or the engine's version changes.
 // FC_RUNS sets how many cases each property tries (100 by default).
+import { spawnSync } from 'node:child_process';
 import fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 import { items } from '../src/lib/data.js';
@@ -235,7 +236,9 @@ describe('authors:…:fit', () => {
 
   it('is drawn in SVG, PNG and PDF alike', async () => {
     const { drawCard } = await import('../src/lib/cardoffline.js');
-    for (const format of ['svg', 'png', 'pdf']) {
+    // The PDF needs the typst binary, which a test run may not have (tests/cardtypst.test.js).
+    const hasTypst = !spawnSync(process.env.TYPST ?? 'typst', ['--version']).error;
+    for (const format of ['svg', 'png', ...(hasTypst ? ['pdf'] : [])]) {
       const r = await drawCard({ item: paper('pinns-neurips'), name: byline(400, 'full:fit'), width: 400, format });
       expect(r[format].length).toBeGreaterThan(500);
     }
