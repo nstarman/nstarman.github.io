@@ -14,8 +14,9 @@ export const STYLESHEETS = ['@nstarkman/site-layout/site.css', '../styles/card-f
  */
 export const PRELUDE = ':where([hidden]){display:none}'; // the byline's unused author-count variants
 
-// The engine paints the background and border of an inline-block, not of an inline: the title's status tag (home) is the one
-// inline box on a card that has either, and, last, it is laid out as inline-block, which moves nothing.
+// The title's status tag (home) is the one inline box on a card with a background and a border. The engine paints those as fills of
+// the text around it, from the font's ascent and descent as they are, and a browser rounds each to a whole pixel: laid out as an
+// inline-block whose line height is that rounded content height, it is the box a browser draws, and a box of its own in the tree.
 const INLINE_BOXES = '.statustag{display:inline-block; line-height:calc(round(1.025em, 1px) + round(.275em, 1px))}';
 
 /** The fonts come from the files in public/fonts/card/, which the engine is given directly. */
