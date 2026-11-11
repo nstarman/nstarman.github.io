@@ -18,13 +18,8 @@ import { pdfFromModel } from './cardtypst.js';
 /** Where a link to a page of this site is written against: not a preview, nor this machine. */
 export const SITE = 'https://nstarkman.space';
 
-/**
- * The presets drawn offline, those `npm run check:cards` finds within half a pixel of the browser for every
- * item type and both themes it tries (research E17). `home` is left out: its title sits 2.4 px higher than the
- * browser has it, and the cause is not found yet.
- */
-export const OFFLINE_PRESETS = SITE_PRESETS.map((p) => p.key).filter((k) => k !== 'home');
-const NOT_OFFLINE = { home: 'its title is 2.4 px higher than in the browser' };
+/** The presets drawn offline: every one, each held to the browser's within half a pixel by `npm run check:cards`. */
+export const OFFLINE_PRESETS = SITE_PRESETS.map((p) => p.key);
 
 /** A name as the pipeline reads it: a card name, or the key of a preset in SITE_PRESETS. */
 export function resolveName(name) {
@@ -116,8 +111,6 @@ async function figures(images) {
  * @returns {Promise<{ model: object, svg?: string, png?: Buffer, pdf?: Buffer }>}
  */
 export async function drawCard({ format, ...card }) {
-  const key = SITE_PRESETS.find((p) => p.key === card.name)?.key;
-  if (key && !OFFLINE_PRESETS.includes(key)) throw new Error(`preset "${key}" is not drawn offline yet: ${NOT_OFFLINE[key]}`);
   const { model, images } = await modelFor(card);
   const bytes = await figures(images);
   if (format === 'pdf') return { model, pdf: pdfFromModel(model, bytes) };

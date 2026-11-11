@@ -63,6 +63,12 @@ describe('a box', () => {
   it('refuses a background it cannot write rather than leaving it out', async () => {
     await expect(ops('<div style="width:60px;height:30px;background:linear-gradient(red,blue)"></div>')).rejects.toThrow(/cannot draw a .*background/);
   });
+
+  it('refuses the background of an inline element, which the engine paints in the text, and draws it as an inline-block', async () => {
+    const tag = (display) => `<p>Hello <span style="${display}background:#eaf0f9;border:1px solid #7fa6d9;padding:1px 6px">tag</span></p>`;
+    await expect(ops(tag(''))).rejects.toThrow(/inline element.*inline-block/);
+    expect((await ops(tag('display:inline-block;'))).filter((o) => o.k === 'box' && o.fill === '#eaf0f9ff')).toHaveLength(1);
+  });
 });
 
 describe('a line of text', () => {

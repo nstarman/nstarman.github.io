@@ -160,6 +160,9 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
         throw new Error(`cannot draw an image that is ${tag === 'svg' ? 'an <svg> that is not an icon' : `a ${tag}`}: ${describe(node)}`);
       }
     } else if (node.type === 'text') {
+      // An inline element's background and border are fills of the text node that holds it. Their box is a hair off the browser's
+      // (the engine takes the font's unrounded ascent and descent), so a card lays such an element out as an inline-block (cardcss.js).
+      if (node.raw.drawables.some((d) => d.role === 'inline-background')) throw new Error(`cannot draw the background of an inline element in ${describe(node)}: lay it out as an inline-block`);
       const lines = [];
       node.runs.forEach((run, i) => {
         // The engine draws the ellipsis of a clamped last line as a run of its own, with no text.
