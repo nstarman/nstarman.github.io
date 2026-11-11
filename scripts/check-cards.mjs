@@ -7,7 +7,7 @@
 //   npx playwright install chromium     # once
 //   npm run check:cards -- [--preset <key>]… [--item <id>]… [--width N]… [--theme light|dark] [--fit] [--json]
 //
-// Left out, the cases are every preset in OFFLINE_PRESETS (`--preset home` asks for one left out) for one item of each type that has a card
+// Left out, the cases are every preset in OFFLINE_PRESETS for one item of each type that has a card
 // (astropy, four papers, a highlight where there is one), at 400 and 808 px, in both themes, and the fit cases: the
 // byline preset with authors:…:fit, :short:fit and :5:fit on four papers with long lists, at 320–808 px; --fit runs only those. A case
 // passes when everything the model holds is within half a pixel and nothing is missing or extra.

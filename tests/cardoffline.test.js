@@ -184,12 +184,18 @@ describe('a card by name', () => {
 });
 
 describe('the presets drawn offline', () => {
-  it('are all in SITE_PRESETS, and a preset outside them is refused by name', async () => {
-    const { OFFLINE_PRESETS, drawCard } = await import('../src/lib/cardoffline.js');
-    const keys = SITE_PRESETS.map((p) => p.key);
-    for (const k of OFFLINE_PRESETS) expect(keys).toContain(k);
-    expect(OFFLINE_PRESETS).not.toContain('home');
-    await expect(drawCard({ item: items.find((i) => i.id === 'astropy'), name: 'home', width: 400, format: 'svg' })).rejects.toThrow(/preset "home" is not drawn offline yet/);
+  it('are every preset in SITE_PRESETS, home among them', async () => {
+    const { OFFLINE_PRESETS } = await import('../src/lib/cardoffline.js');
+    expect(OFFLINE_PRESETS).toEqual(SITE_PRESETS.map((p) => p.key));
+    expect(OFFLINE_PRESETS).toContain('home');
+  });
+
+  it('draws the home card, its status tag in the pill the browser draws', async () => {
+    const { model } = await modelFor({ item: items.find((i) => i.id === 'euclid-eggs-pilot'), name: 'home', width: 808 });
+    const pill = model.ops.filter((o) => o.k === 'box' && o.stroke && o.h < 30 && o.w > 60);
+    expect(pill, 'the status tag is a box with a fill and a border').toHaveLength(1);
+    // It starts with the card, whose padding the look sets to 0: a negative calc() padding would pull it up.
+    expect(Math.min(...model.ops.filter((o) => o.k === 'text').map((o) => o.y))).toBeGreaterThanOrEqual(0);
   });
 });
 

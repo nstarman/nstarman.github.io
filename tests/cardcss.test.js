@@ -55,6 +55,19 @@ describe('engineCss', () => {
   });
 });
 
+describe('what the engine needs that a browser does not', () => {
+  it('clamps every padding written as a calc() at 0, as a browser does', () => {
+    const css = engineCss('light');
+    expect(css).toContain('padding-top:max(0px, calc(var(--pad-t) + var(--tc) - var(--gr)))');
+    expect(css).not.toMatch(/padding[a-z-]*:\s*calc\(/);
+  });
+
+  it('lays the status tag out as an inline-block of the height a browser gives an inline box', () => {
+    const css = engineCss('light');
+    expect(css.trimEnd()).toMatch(/\.statustag\{display:inline-block; line-height:calc\(round\(1\.025em, 1px\) \+ round\(\.275em, 1px\)\)\}$/);
+  });
+});
+
 describe('the stylesheets', () => {
   it('are the ones the embed page imports', () => {
     const embed = fs.readFileSync(new URL('../src/layouts/Embed.astro', import.meta.url), 'utf8');

@@ -65,17 +65,18 @@ rather than a card and is never exported.
   `light`, and the output the builder's own file name for it (`file`, `src/lib/cardexport.js`), a PNG,
   where the command was run; the format is the output's extension. A name that fills its width needs
   `--width`, which a card of set width ignores. Bad arguments exit 2 with the usage; an unknown or
-  card-less item, a name `parseName` cannot read, a filling card with no width, a preset outside
-  `OFFLINE_PRESETS` or a draw that fails exits 1 with the message; neither leaves a file.
+  card-less item, a name `parseName` cannot read, a filling card with no width or a draw that fails exits 1 with the message; neither leaves a file.
   *Enforced:* `tests/cardcli.test.js`, `tests/cardraster.test.js`, `tests/cardtypst.test.js`.
 - **FR-007** `/cards/<id>-<light|dark>.svg` and `/cards/index.json` are drawn at build, in node and with
   no browser, for every `flagship` and `major` package, at `CARD_SVG_WIDTH`, as tall as their row. The
   card is the real one: `Card.astro` rendered with its name (`cardmarkup.js`), the site's own stylesheet
-  (`cardcss.js`, dark by rewriting `light-dark()`), laid out by the Takumi engine (`takumi-paint`,
+  (`cardcss.js`: dark by rewriting `light-dark()`; a `calc()` padding clamped at 0 as a browser clamps it; the title's
+  status tag laid out as an `inline-block` of the height Chrome gives an inline box, since the engine paints the
+  background and border of an inline-block and not of an inline), laid out by the Takumi engine (`takumi-paint`,
   `cardengine.js`) in the faces in `public/fonts/card/`, and written as the card model by `cardtree.js`;
   `cardsvg.js`, `card.typ` and the PNG path draw that model as they draw one the browser measured, with
   an explicit baseline for each line of text. The presets drawn this way are `OFFLINE_PRESETS`: every
-  `SITE_PRESETS` key but `home` (its title is 2.4 px higher than the browser has it). A name with
+  `SITE_PRESETS` key. A name with
   `authors:…:fit` is drawn as the embed page draws it: the byline at each count of names from the most the name
   allows (three for `short`, eight for `full`, the count for a number, the paper's list at most) is laid out with
   that one cut shown, and the first whose `.c-by` is under one and a half lines tall is the card, one name where
@@ -130,8 +131,7 @@ rather than a card and is never exported.
 
 - **`check:cards` fails**: the card's CSS, `Card.astro`, the engine or the browser changed. Its report names the
   card, the width and the line or box that moved; the engine's drawing is the one to fix (`cardcss.js`'s prelude for
-  a browser default it lacks, `cardmarkup.js` for a construct it cannot lay out) or the preset to leave out of
-  `OFFLINE_PRESETS`.
+  a browser default it lacks, `cardmarkup.js` for a construct it cannot lay out) or a behaviour it lacks.
 - **`check:cards --fuzz` fails**: it prints a seed and path; replay with `--seed` and `--path`.
 - **A name `parseName` cannot read** is rejected, not drawn as a default card.
 
