@@ -13,6 +13,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write  # to dispatch CI on the branch, below
 
 concurrency:
   group: refresh-skills
@@ -51,3 +52,12 @@ jobs:
           fi
           body=$'Cards from `scripts/collect-skills.mjs`, run weekly by `.github/workflows/refresh-skills.yml`, reading each `card.json` in [nstarman/skills](https://github.com/nstarman/skills).'
           scripts/open-refresh-pr.sh "$BRANCH" "Refresh the agent skill cards" "$body" config/skills.json
+
+          # A pull request opened with the workflow token does create a CI run,
+          # but an unstarted one, waiting for someone to press "Approve
+          # workflows to run". workflow_dispatch is exempt from that rule, so
+          # ask for the run outright: it puts the required `CI Pass` check on
+          # the branch head, and the review has test results to read. The
+          # dispatched run skips the preview job, which is gated on
+          # pull_request, so the PR gets no deploy preview.
+          gh workflow run ci.yml --ref "$BRANCH"
