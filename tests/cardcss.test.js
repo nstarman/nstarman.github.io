@@ -56,15 +56,10 @@ describe('engineCss', () => {
 });
 
 describe('what the engine needs that a browser does not', () => {
-  it('clamps every padding written as a calc() at 0, as a browser does', () => {
+  it('leaves a calc() padding and the inline status tag as the site writes them, which the engine lays out as a browser does', () => {
     const css = engineCss('light');
-    expect(css).toContain('padding-top:max(0px, calc(var(--pad-t) + var(--tc) - var(--gr)))');
-    expect(css).not.toMatch(/padding[a-z-]*:\s*calc\(/);
-  });
-
-  it('lays the status tag out as an inline-block of the height a browser gives an inline box', () => {
-    const css = engineCss('light');
-    expect(css.trimEnd()).toMatch(/\.statustag\{display:inline-block; line-height:calc\(round\(1\.025em, 1px\) \+ round\(\.275em, 1px\)\)\}$/);
+    expect(css).toContain('padding-top:calc(var(--pad-t) + var(--tc) - var(--gr))');
+    expect(css).not.toMatch(/max\(0px, calc\(|\.statustag\{display:inline-block/);
   });
 });
 

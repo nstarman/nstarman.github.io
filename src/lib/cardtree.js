@@ -115,8 +115,10 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
       const box = at(node.bounds);
       if (!box.w || !box.h) continue;
       const fills = node.raw.drawables.filter((d) => d.type === 'fill');
-      for (const d of fills) if (d.role !== 'background' && d.role !== 'border') throw new Error(`cannot draw a ${d.role} on ${describe(node)}`);
-      const bg = fills.find((d) => d.role === 'background');
+      // An inline element's background is an inline-background, on the box of its own the engine gives it.
+      const BACKGROUND = ['background', 'inline-background'];
+      for (const d of fills) if (!BACKGROUND.includes(d.role) && d.role !== 'border') throw new Error(`cannot draw a ${d.role} on ${describe(node)}`);
+      const bg = fills.find((d) => BACKGROUND.includes(d.role));
       const ring = ringOf(fills.filter((d) => d.role === 'border'));
       const fill = bg ? hex(bg.paint, `the background of ${describe(node)}`) : null;
       const stroke = ring ? hex(fills.find((d) => d.role === 'border').paint, `the border of ${describe(node)}`) : null;
@@ -160,9 +162,6 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
         throw new Error(`cannot draw an image that is ${tag === 'svg' ? 'an <svg> that is not an icon' : `a ${tag}`}: ${describe(node)}`);
       }
     } else if (node.type === 'text') {
-      // An inline element's background and border are fills of the text node that holds it. Their box is a hair off the browser's
-      // (the engine takes the font's unrounded ascent and descent), so a card lays such an element out as an inline-block (cardcss.js).
-      if (node.raw.drawables.some((d) => d.role === 'inline-background')) throw new Error(`cannot draw the background of an inline element in ${describe(node)}: lay it out as an inline-block`);
       const lines = [];
       node.runs.forEach((run, i) => {
         // The engine draws the ellipsis of a clamped last line as a run of its own, with no text.

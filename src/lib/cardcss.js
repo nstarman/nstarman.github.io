@@ -14,11 +14,6 @@ export const STYLESHEETS = ['@nstarkman/site-layout/site.css', '../styles/card-f
  */
 export const PRELUDE = ':where([hidden]){display:none}'; // the byline's unused author-count variants
 
-// The title's status tag (home) is the one inline box on a card with a background and a border. The engine paints those as fills of
-// the text around it, from the font's ascent and descent as they are, and a browser rounds each to a whole pixel: laid out as an
-// inline-block whose line height is that rounded content height, it is the box a browser draws, and a box of its own in the tree.
-const INLINE_BOXES = '.statustag{display:inline-block; line-height:calc(round(1.025em, 1px) + round(.275em, 1px))}';
-
 /** The fonts come from the files in public/fonts/card/, which the engine is given directly. */
 const FONT_FACE = /@font-face\s*\{[^}]*\}/g;
 const COMMENT = /\/\*[\s\S]*?\*\//g;
@@ -54,13 +49,9 @@ export function darkCss(text) {
 // its rules, written on `.c-foot [data-strip]`, are made to match the card itself in that case.
 const STRIP = /\.c-foot (\[data-strip)/g;
 
-// A padding written as a calc() that comes out below zero is 0 in a browser, where the engine takes the
-// negative value (the home card's top: `--pad-t` 0 less `--gr`), so each is clamped.
-const PADDING_CALC = /(padding[a-z-]*:\s*)(calc\([^;{}]*\))(?=\s*[;}])/g;
-
 /** @param {'light' | 'dark'} theme */
 export function engineCss(theme) {
   // Comments are dropped: one that mentions light-dark( would not be a call to read.
-  const css = `${PRELUDE}\n${[site, faces].join('\n').replace(COMMENT, '').replace(FONT_FACE, '').replace(STRIP, ':is(.c-foot, .card[data-rail="empty"]) $1').replace(PADDING_CALC, '$1max(0px, $2)')}\n${INLINE_BOXES}`;
+  const css = `${PRELUDE}\n${[site, faces].join('\n').replace(COMMENT, '').replace(FONT_FACE, '').replace(STRIP, ':is(.c-foot, .card[data-rail="empty"]) $1')}`;
   return theme === 'dark' ? darkCss(css) : css;
 }
