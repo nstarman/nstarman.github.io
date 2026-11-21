@@ -11,26 +11,19 @@ const CANVAS = 1280;
  * @param {(tree: import('takumi-paint').PaintTree) => any} use  reads the tree; it is freed when this returns
  */
 export async function withLayout({ html, css, fonts }, use) {
-  const tree = await paintQuietly(html, { width: CANVAS, fonts, css });
+  // The engine prints a line for each property of the site's it drops; the tree lists them, and
+  // tests/cardengine.test.js names them, so those lines are kept quiet and its other warnings print.
+  const { warn } = console;
+  console.warn = (message, ...rest) => String(message).startsWith('takumi: ignored the property') || warn(message, ...rest);
+  let tree;
+  try {
+    tree = await paint(html, { width: CANVAS, fonts, css });
+  } finally {
+    console.warn = warn;
+  }
   try {
     return await use(tree);
   } finally {
     tree.free();
-  }
-}
-
-// The site's stylesheet has properties the engine drops and a card does not need (tests/cardengine.test.js names them).
-// The tree lists each in ignoredDeclarations, so the engine's console line for one is dropped; its other warnings print.
-const DROPPED = 'takumi: ignored the property';
-
-async function paintQuietly(html, options) {
-  const { warn } = console;
-  console.warn = (message, ...rest) => {
-    if (!String(message).startsWith(DROPPED)) warn(message, ...rest);
-  };
-  try {
-    return await paint(html, options);
-  } finally {
-    console.warn = warn;
   }
 }

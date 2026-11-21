@@ -116,9 +116,8 @@ export function modelFromTree(tree, { title, site, links, icons, symbols, radii 
       if (!box.w || !box.h) continue;
       const fills = node.raw.drawables.filter((d) => d.type === 'fill');
       // An inline element's background is an inline-background, on the box of its own the engine gives it.
-      const BACKGROUND = ['background', 'inline-background'];
-      for (const d of fills) if (!BACKGROUND.includes(d.role) && d.role !== 'border') throw new Error(`cannot draw a ${d.role} on ${describe(node)}`);
-      const bg = fills.find((d) => BACKGROUND.includes(d.role));
+      for (const d of fills) if (!/^(inline-)?background$|^border$/.test(d.role)) throw new Error(`cannot draw a ${d.role} on ${describe(node)}`);
+      const bg = fills.find((d) => d.role !== 'border');
       const ring = ringOf(fills.filter((d) => d.role === 'border'));
       const fill = bg ? hex(bg.paint, `the background of ${describe(node)}`) : null;
       const stroke = ring ? hex(fills.find((d) => d.role === 'border').paint, `the border of ${describe(node)}`) : null;
