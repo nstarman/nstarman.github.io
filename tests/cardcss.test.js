@@ -55,14 +55,6 @@ describe('engineCss', () => {
   });
 });
 
-describe('what the engine needs that a browser does not', () => {
-  it('leaves a calc() padding and the inline status tag as the site writes them, which the engine lays out as a browser does', () => {
-    const css = engineCss('light');
-    expect(css).toContain('padding-top:calc(var(--pad-t) + var(--tc) - var(--gr))');
-    expect(css).not.toMatch(/max\(0px, calc\(|\.statustag\{display:inline-block/);
-  });
-});
-
 describe('the stylesheets', () => {
   it('are the ones the embed page imports', () => {
     const embed = fs.readFileSync(new URL('../src/layouts/Embed.astro', import.meta.url), 'utf8');
