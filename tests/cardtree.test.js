@@ -64,10 +64,12 @@ describe('a box', () => {
     await expect(ops('<div style="width:60px;height:30px;background:linear-gradient(red,blue)"></div>')).rejects.toThrow(/cannot draw a .*background/);
   });
 
-  it('refuses the background of an inline element, which the engine paints in the text, and draws it as an inline-block', async () => {
+  it('draws the background and border of an inline element as a box, as of an inline-block', async () => {
     const tag = (display) => `<p>Hello <span style="${display}background:#eaf0f9;border:1px solid #7fa6d9;padding:1px 6px">tag</span></p>`;
-    await expect(ops(tag(''))).rejects.toThrow(/inline element.*inline-block/);
-    expect((await ops(tag('display:inline-block;'))).filter((o) => o.k === 'box' && o.fill === '#eaf0f9ff')).toHaveLength(1);
+    for (const display of ['', 'display:inline-block;']) {
+      const boxes = (await ops(tag(display))).filter((o) => o.k === 'box' && o.fill === '#eaf0f9ff' && o.stroke === '#7fa6d9ff');
+      expect(boxes, display || 'inline').toHaveLength(1);
+    }
   });
 });
 

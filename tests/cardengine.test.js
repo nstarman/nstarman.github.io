@@ -1,5 +1,5 @@
 // The layout engine on the card's own markup and stylesheet (src/lib/cardengine.js).
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { items } from '../src/lib/data.js';
 import { renderMarkup } from '../src/lib/cardmarkup.js';
 import { engineCss } from '../src/lib/cardcss.js';
@@ -45,6 +45,20 @@ describe('withLayout', () => {
     let failed;
     await expect(withLayout(await input(), (tree) => { failed = tree; throw new Error('read failed'); })).rejects.toThrow('read failed');
     expect(() => failed.toJSON()).toThrow();
+  });
+
+  it('drops only CSS a card does not need, and prints nothing for it', async () => {
+    const warned = vi.spyOn(console, 'warn');
+    const dropped = await withLayout(await input('dark'), (tree) => tree.ignoredDeclarations.map((d) => d.property));
+    // The site's interaction, scrolling and page-layout CSS, which no card draws. One added here is a choice:
+    // a property the engine drops that changes a card would make a difference npm run check:cards finds.
+    expect([...new Set(dropped)].sort()).toEqual([
+      '-webkit-font-smoothing', '@container', 'appearance', 'color-scheme', 'contain', 'container-type', 'cursor',
+      'overflow-x', 'overflow-y', 'overscroll-behavior-x', 'padding', 'pointer-events', 'position', 'scroll-margin-top',
+      'scroll-snap-align', 'scroll-snap-type', 'scrollbar-width', 'transition', 'user-select',
+    ]);
+    expect(warned).not.toHaveBeenCalled();
+    warned.mockRestore();
   });
 
   it('does it in a few milliseconds', async () => {

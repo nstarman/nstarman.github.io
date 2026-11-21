@@ -70,10 +70,11 @@ rather than a card and is never exported.
 - **FR-007** `/cards/<id>-<light|dark>.svg` and `/cards/index.json` are drawn at build, in node and with
   no browser, for every `flagship` and `major` package, at `CARD_SVG_WIDTH`, as tall as their row. The
   card is the real one: `Card.astro` rendered with its name (`cardmarkup.js`), the site's own stylesheet
-  (`cardcss.js`: dark by rewriting `light-dark()`; a `calc()` padding clamped at 0 as a browser clamps it; the title's
-  status tag laid out as an `inline-block` of the height Chrome gives an inline box, since the engine paints the
-  background and border of an inline-block and not of an inline), laid out by the Takumi engine (`takumi-paint`,
-  `cardengine.js`) in the faces in `public/fonts/card/`, and written as the card model by `cardtree.js`;
+  (`cardcss.js`: dark by rewriting `light-dark()`), laid out by the Takumi engine (`takumi-paint`,
+  `cardengine.js`) in the faces in `public/fonts/card/`, and written as the card model by `cardtree.js`, which draws the
+  background and border of an inline element such as the title's status tag as a box. The engine drops the site's
+  interaction, scrolling and page-layout CSS, which no card draws; `cardengine.js` keeps its console line for each quiet,
+  and the test names every property it drops, so a new one is a choice;
   `cardsvg.js`, `card.typ` and the PNG path draw that model as they draw one the browser measured, with
   an explicit baseline for each line of text. The presets drawn this way are `OFFLINE_PRESETS`: every
   `SITE_PRESETS` key. A name with
